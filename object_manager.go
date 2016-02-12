@@ -2,10 +2,7 @@ package ibclient
 
 import (
 	"fmt"
-	"math/rand"
 	"regexp"
-	"strings"
-	"time"
 )
 
 type ObjectManager struct {
@@ -142,16 +139,6 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string) (*Network, 
 	return &res[0], nil
 }
 
-func generateMAC() string {
-	var n []string = make([]string, 6)
-
-	rand.Seed(time.Now().UnixNano())
-	for i := 0; i < 6; i++ {
-		n[i] = fmt.Sprintf("%02x", rand.Intn(64))
-	}
-	return strings.Join(n, ":")
-}
-
 func GetIPAddressFromRef(ref string) string {
 	// fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external
 	r := regexp.MustCompile(`fixedaddress/\w+:(\d+\.\d+\.\d+\.\d+)/.+`)
@@ -169,7 +156,7 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, macAddress 
 	fixedAddr.Cidr = cidr
 
 	if len(macAddress) == 0 {
-		macAddress = generateMAC()
+		macAddress = "00:00:00:00:00:00"
 	}
 
 	payload := make(Payload)
