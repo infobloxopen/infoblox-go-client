@@ -112,7 +112,7 @@ func BuildNetworkViewFromRef(ref string) *NetworkView {
 
 func BuildNetworkFromRef(ref string) *Network {
 	// network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:89.0.0.0/24/global_view
-	r := regexp.MustCompile(`network/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(\w+)`)
+	r := regexp.MustCompile(`network/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(.+)`)
 	m := r.FindStringSubmatch(ref)
 
 	if m == nil {
@@ -154,7 +154,7 @@ func generateMAC() string {
 
 func GetIPAddressFromRef(ref string) string {
 	// fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external
-	r := regexp.MustCompile(`fixedaddress/\w+:(\d+\.\d+\.\d+\.\d+)/\w+`)
+	r := regexp.MustCompile(`fixedaddress/\w+:(\d+\.\d+\.\d+\.\d+)/.+`)
 	m := r.FindStringSubmatch(ref)
 
 	if m != nil {
