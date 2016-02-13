@@ -193,3 +193,12 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, ipAddr string) (string, e
 
 	return objMgr.connector.DeleteObject(fixAddress.Ref)
 }
+
+func (objMgr *ObjectManager) DeleteLocalNetwork(ref string) (string, error) {
+	network := BuildNetworkFromRef(ref)
+	if network != nil && network.NetviewName == objMgr.localAddressSpace {
+		return objMgr.connector.DeleteObject(ref)
+	}
+
+	return "", nil
+}
