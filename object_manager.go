@@ -163,7 +163,10 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, macAddress 
 	payload["network_view"] = netview
 	payload["ipv4addr"] = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
 	payload["mac"] = macAddress
-	payload["extattrs"] = objMgr.getBasicEA(true)
+
+	ea := objMgr.getBasicEA(true)
+	ea["VM ID"] = "N/A"
+	payload["extattrs"] = ea
 
 	ref, err := objMgr.connector.CreateObject("fixedaddress", payload)
 	fixedAddr.Ref = ref
