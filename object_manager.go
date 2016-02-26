@@ -7,19 +7,13 @@ import (
 
 type ObjectManager struct {
 	connector *Connector
-
-	localAddressSpace  string
-	globalAddressSpace string
-
 	dockerID string
 }
 
-func NewObjectManager(connector *Connector, globalAddressSpace string, localAddressSpace string, dockerID string) *ObjectManager {
+func NewObjectManager(connector *Connector, dockerID string) *ObjectManager {
 	objMgr := new(ObjectManager)
 
 	objMgr.connector = connector
-	objMgr.localAddressSpace = localAddressSpace
-	objMgr.globalAddressSpace = globalAddressSpace
 	objMgr.dockerID = dockerID
 
 	return objMgr
@@ -47,6 +41,20 @@ func (objMgr *ObjectManager) CreateNetworkView(name string) (*NetworkView, error
 	return networkView, err
 }
 
+func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string) {
+	globalNetviewObj, _ := objMgr.GetNetworkView(globalNetview)
+	if globalNetviewObj == nil {
+		globalNetviewObj, _ = objMgr.CreateNetworkView(globalNetview)
+	}
+
+	localNetviewObj, _ := objMgr.GetNetworkView(localNetview)
+	if localNetviewObj == nil {
+		localNetviewObj, _ = objMgr.CreateNetworkView(localNetview)
+	}
+
+	return globalNetviewObj.Ref, localNetviewObj.Ref
+}
+
 func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string) (*Network, error) {
 	network := new(Network)
 	network.NetviewName = netview
@@ -61,20 +69,6 @@ func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string) (*Networ
 	network.Ref = ref
 
 	return network, err
-}
-
-func (objMgr *ObjectManager) CreateDefaultNetviews() (globalNetview *NetworkView, localNetview *NetworkView) {
-	globalNetview, _ = objMgr.GetNetworkView(objMgr.globalAddressSpace)
-	if globalNetview == nil {
-		globalNetview, _ = objMgr.CreateNetworkView(objMgr.globalAddressSpace)
-	}
-
-	localNetview, _ = objMgr.GetNetworkView(objMgr.localAddressSpace)
-	if localNetview == nil {
-		localNetview, _ = objMgr.CreateNetworkView(objMgr.localAddressSpace)
-	}
-
-	return
 }
 
 func (objMgr *ObjectManager) GetNetworkView(name string) (*NetworkView, error) {
@@ -197,9 +191,9 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, ipAddr string) (string, e
 	return objMgr.connector.DeleteObject(fixAddress.Ref)
 }
 
-func (objMgr *ObjectManager) DeleteLocalNetwork(ref string) (string, error) {
+func (objMgr *ObjectManager) DeleteLocalNetwork(ref string, localNetview string) (string, error) {
 	network := BuildNetworkFromRef(ref)
-	if network != nil && network.NetviewName == objMgr.localAddressSpace {
+	if network != nil && network.NetviewName == localNetview {
 		return objMgr.connector.DeleteObject(ref)
 	}
 
