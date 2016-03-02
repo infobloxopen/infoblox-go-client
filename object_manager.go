@@ -7,7 +7,7 @@ import (
 
 type ObjectManager struct {
 	connector *Connector
-	dockerID string
+	dockerID  string
 }
 
 func NewObjectManager(connector *Connector, dockerID string) *ObjectManager {
@@ -69,6 +69,22 @@ func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string) (*Networ
 	network.Ref = ref
 
 	return network, err
+}
+
+func (objMgr *ObjectManager) CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error) {
+	container := new(NetworkContainer)
+	container.NetviewName = netview
+	container.Cidr = cidr
+
+	payload := make(Payload)
+	payload["network_view"] = netview
+	payload["network"] = cidr
+	payload["extattrs"] = objMgr.getBasicEA(true)
+
+	ref, err := objMgr.connector.CreateObject("networkcontainer", payload)
+	container.Ref = ref
+
+	return container, err
 }
 
 func (objMgr *ObjectManager) GetNetworkView(name string) (*NetworkView, error) {
@@ -133,6 +149,22 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string) (*Network, 
 	return &res[0], nil
 }
 
+func (objMgr *ObjectManager) GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error) {
+	res := make([]NetworkContainer, 1)
+
+	payload := make(Payload)
+	payload["network_view"] = netview
+	payload["network"] = cidr
+
+	err := objMgr.connector.GetObject("networkcontainer", payload, "", &res)
+
+	if err != nil || res == nil || len(res) == 0 {
+		return nil, err
+	}
+
+	return &res[0], nil
+}
+
 func GetIPAddressFromRef(ref string) string {
 	// fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external
 	r := regexp.MustCompile(`fixedaddress/\w+:(\d+\.\d+\.\d+\.\d+)/.+`)
@@ -167,6 +199,24 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, macAddress 
 	fixedAddr.IPAddress = GetIPAddressFromRef(ref)
 
 	return fixedAddr, err
+}
+
+func (objMgr *ObjectManager) AllocateNetwork(netview string, cidr string, prefixLen uint) (network *Network, err error) {
+	network = nil
+
+	payload := make(Payload)
+	payload["network_view"] = netview
+	payload["network"] = fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen)
+
+	ea := objMgr.getBasicEA(true)
+	payload["extattrs"] = ea
+
+	ref, err := objMgr.connector.CreateObject("network", payload)
+	if err == nil && len(ref) > 0 {
+		network = BuildNetworkFromRef(ref)
+	}
+
+	return
 }
 
 func (objMgr *ObjectManager) GetFixedAddress(netview string, ipAddr string) (*FixedAddress, error) {
