@@ -21,6 +21,12 @@ type Network struct {
 	Cidr        string `json:"network"`
 }
 
+type NetworkContainer struct {
+	Ref         string `json:"_ref"`
+	NetviewName string `json:"network_view"`
+	Cidr        string `json:"network"`
+}
+
 type FixedAddress struct {
 	Ref         string `json:"_ref"`
 	NetviewName string `json:"network_view"`

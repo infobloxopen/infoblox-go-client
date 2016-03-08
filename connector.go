@@ -147,49 +147,52 @@ func (c *Connector) makeRequest(t RequestType, objType string, payload Payload, 
 	return []byte(""), nil
 }
 
-func (c *Connector) CreateObject(objType string, payload Payload) (string, error) {
-	resp, err := c.makeRequest(CREATE, objType, payload, "")
+func (c *Connector) CreateObject(objType string, payload Payload) (ref string, err error) {
+	ref = ""
 
-	var ref string
+	resp, err := c.makeRequest(CREATE, objType, payload, "")
+	if err != nil || len(resp) == 0 {
+		return
+	}
 
 	err = json.Unmarshal(resp, &ref)
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return "", err
+		return
 	}
 
-	return ref, err
+	return
 }
 
-func (c *Connector) GetObject(objType string, payload Payload, ref string, res interface{}) error {
+func (c *Connector) GetObject(objType string, payload Payload, ref string, res interface{}) (err error) {
 	resp, err := c.makeRequest(GET, objType, payload, ref)
 
 	if len(resp) == 0 {
-		return err
+		return
 	}
 
 	err = json.Unmarshal(resp, res)
 
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return err
+		return
 	}
 
-	return err
+	return
 }
 
-func (c *Connector) DeleteObject(ref string) (string, error) {
-	resp, err := c.makeRequest(DELETE, "", nil, ref)
+func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
+	refRes = ""
 
-	var refRes string
+	resp, err := c.makeRequest(DELETE, "", nil, ref)
 
 	err = json.Unmarshal(resp, &refRes)
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return "", err
+		return
 	}
 
-	return refRes, err
+	return
 }
 
 func NewConnector(host string, wapiVersion string, wapiPort string,
