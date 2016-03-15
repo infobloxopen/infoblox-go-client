@@ -41,18 +41,33 @@ func (objMgr *ObjectManager) CreateNetworkView(name string) (*NetworkView, error
 	return networkView, err
 }
 
-func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string) {
-	globalNetviewObj, _ := objMgr.GetNetworkView(globalNetview)
+func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error) {
+	globalNetviewRef = ""
+	localNetviewRef = ""
+
+	var globalNetviewObj *NetworkView
+	if globalNetviewObj, err = objMgr.GetNetworkView(globalNetview); err != nil {
+		return
+	}
 	if globalNetviewObj == nil {
-		globalNetviewObj, _ = objMgr.CreateNetworkView(globalNetview)
+		if globalNetviewObj, err = objMgr.CreateNetworkView(globalNetview); err != nil {
+			return
+		}
 	}
+	globalNetviewRef = globalNetviewObj.Ref
 
-	localNetviewObj, _ := objMgr.GetNetworkView(localNetview)
+	var localNetviewObj *NetworkView
+	if localNetviewObj, err = objMgr.GetNetworkView(localNetview); err != nil {
+		return
+	}
 	if localNetviewObj == nil {
-		localNetviewObj, _ = objMgr.CreateNetworkView(localNetview)
+		if localNetviewObj, err = objMgr.CreateNetworkView(localNetview); err != nil {
+			return
+		}
 	}
+	localNetviewRef = localNetviewObj.Ref
 
-	return globalNetviewObj.Ref, localNetviewObj.Ref
+	return
 }
 
 func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string) (*Network, error) {
