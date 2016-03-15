@@ -3,7 +3,9 @@ package ibclient
 import (
 	"bytes"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -20,7 +22,7 @@ type Connector struct {
 	Username            string
 	Password            string
 	SslVerify           bool
-	SslCertificate      string
+	certPool            *x509.CertPool
 	HttpRequestTimeout  int
 	HttpPoolConnections int
 	HttpPoolMaxSize     int
@@ -55,12 +57,6 @@ func logHttpResponse(resp *http.Response) {
 	defer resp.Body.Close()
 	content, _ := ioutil.ReadAll(resp.Body)
 	log.Printf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
-}
-
-func (c *Connector) makeWapiUrl(fmt_str string, args ...interface{}) string {
-	wapiBase := fmt.Sprintf("https://%s:%s/wapi/v%s", c.Host, c.WapiPort, c.WapiVersion)
-
-	return fmt.Sprintf("%s/%s", wapiBase, fmt.Sprintf(fmt_str, args...))
 }
 
 func (c *Connector) buildUrl(t RequestType, objType string, payload Payload, ref string) url.URL {
@@ -107,44 +103,40 @@ func (c *Connector) buildBody(t RequestType, payload Payload) io.Reader {
 	return bytes.NewBuffer(jsonStr)
 }
 
-func (c *Connector) makeRequest(t RequestType, objType string, payload Payload, ref string) ([]byte, error) {
+func (c *Connector) makeRequest(t RequestType, objType string, payload Payload, ref string) (res []byte, err error) {
+	res = []byte("")
+
 	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: !c.SslVerify},
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: !c.SslVerify, RootCAs: c.certPool},
 	}
 	client := &http.Client{Transport: tr}
 
 	url := c.buildUrl(t, objType, payload, ref)
 	body := c.buildBody(t, payload)
-	req, err1 := http.NewRequest(t.toMethod(), url.String(), body)
-	if err1 != nil {
-		log.Printf("err1: '%s'", err1)
-		return []byte(""), err1
+	req, err := http.NewRequest(t.toMethod(), url.String(), body)
+	if err != nil {
+		log.Printf("err1: '%s'", err)
+		return
 	}
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(c.Username, c.Password)
 
-	resp, err3 := client.Do(req)
-	if !(resp.StatusCode == http.StatusOK ||
+	resp, err := client.Do(req)
+	if err != nil {
+		return
+	} else if !(resp.StatusCode == http.StatusOK ||
 		(resp.StatusCode == http.StatusCreated && t == CREATE)) {
 		logHttpResponse(resp)
-		return []byte(""), err3
+		return
 	}
-	if err3 != nil {
-		log.Printf("Error : %s", err3)
-		logHttpResponse(resp)
-		return []byte(""), err3
-	} else {
-		defer resp.Body.Close()
-		contents, err4 := ioutil.ReadAll(resp.Body)
-		if err4 != nil {
-			log.Printf("Http Reponse ioutil.ReadAll() Error: '%s'", err4)
-			return []byte(""), err4
-		}
-
-		return contents, err4
+	defer resp.Body.Close()
+	res, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Http Reponse ioutil.ReadAll() Error: '%s'", err)
+		return
 	}
 
-	return []byte(""), nil
+	return
 }
 
 func (c *Connector) CreateObject(objType string, payload Payload) (ref string, err error) {
@@ -196,19 +188,44 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 }
 
 func NewConnector(host string, wapiVersion string, wapiPort string,
-	username string, password string, sslVerify bool, sslCertificate string,
-	httpRequestTimeout int, httpPoolConnections int, httpPoolMaxSize int) *Connector {
+	username string, password string, sslVerify string, httpRequestTimeout int,
+	httpPoolConnections int, httpPoolMaxSize int) (res *Connector, err error) {
+	res = nil
 
-	return &Connector{
+	connector := &Connector{
 		Host:                host,
 		WapiVersion:         wapiVersion,
 		WapiPort:            wapiPort,
 		Username:            username,
 		Password:            password,
-		SslVerify:           sslVerify,
-		SslCertificate:      sslCertificate,
+		SslVerify:           false,
+		certPool:            nil,
 		HttpRequestTimeout:  httpRequestTimeout,
 		HttpPoolConnections: httpPoolConnections,
 		HttpPoolMaxSize:     httpPoolMaxSize,
 	}
+
+	switch {
+	case "false" == strings.ToLower(sslVerify):
+		connector.SslVerify = false
+	case "true" == strings.ToLower(sslVerify):
+		connector.SslVerify = true
+	default:
+		var cert []byte
+		caPool := x509.NewCertPool()
+		cert, err = ioutil.ReadFile(sslVerify)
+		if err != nil {
+			log.Printf("Cannot load certificate file '%s'", sslVerify)
+			return
+		}
+		if !caPool.AppendCertsFromPEM(cert) {
+			err = errors.New(fmt.Sprintf("Cannot append certificate from file '%s'", sslVerify))
+			return
+		}
+		connector.certPool = caPool
+		connector.SslVerify = true
+	}
+	res = connector
+
+	return
 }
