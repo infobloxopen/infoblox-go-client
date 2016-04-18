@@ -59,7 +59,7 @@ func logHttpResponse(resp *http.Response) {
 	log.Printf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
 }
 
-func (c *Connector) buildUrl(t RequestType, objType string, payload Payload, ref string) url.URL {
+func (c *Connector) buildUrl(t RequestType, objType string, ref string) url.URL {
 	path := []string{"wapi", "v" + c.WapiVersion}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -73,37 +73,23 @@ func (c *Connector) buildUrl(t RequestType, objType string, payload Payload, ref
 		Path:   strings.Join(path, "/"),
 	}
 
-	switch t {
-	case GET, DELETE:
-		values := make(url.Values)
-		for k, v := range payload {
-			values.Add(k, v.(string))
-		}
-		u.RawQuery = values.Encode()
-	}
-
 	return u
 }
 
-func (c *Connector) buildBody(t RequestType, payload Payload) io.Reader {
+func (c *Connector) buildBody(t RequestType, obj IBObject) io.Reader {
 	var jsonStr []byte
 	var err error
 
-	switch t {
-	case CREATE, UPDATE:
-		jsonStr, err = json.Marshal(payload)
-		if err != nil {
-			log.Printf("Cannot unmarshal payload: '%s'", payload)
-			return nil
-		}
-	default:
+	jsonStr, err = json.Marshal(obj)
+	if err != nil {
+		log.Printf("Cannot unmarshal payload: '%s'", obj)
 		return nil
 	}
 
 	return bytes.NewBuffer(jsonStr)
 }
 
-func (c *Connector) makeRequest(t RequestType, objType string, payload Payload, ref string) (res []byte, err error) {
+func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []byte, err error) {
 	res = []byte("")
 
 	tr := &http.Transport{
@@ -111,8 +97,17 @@ func (c *Connector) makeRequest(t RequestType, objType string, payload Payload, 
 	}
 	client := &http.Client{Transport: tr}
 
-	url := c.buildUrl(t, objType, payload, ref)
-	body := c.buildBody(t, payload)
+	var objType string = ""
+	if obj != nil {
+		objType = obj.ObjectType()
+	}
+	url := c.buildUrl(t, objType, ref)
+
+	var body io.Reader = nil
+	if obj != nil {
+		body = c.buildBody(t, obj)
+	}
+
 	req, err := http.NewRequest(t.toMethod(), url.String(), body)
 	if err != nil {
 		log.Printf("err1: '%s'", err)
@@ -139,10 +134,10 @@ func (c *Connector) makeRequest(t RequestType, objType string, payload Payload, 
 	return
 }
 
-func (c *Connector) CreateObject(objType string, payload Payload) (ref string, err error) {
+func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 	ref = ""
 
-	resp, err := c.makeRequest(CREATE, objType, payload, "")
+	resp, err := c.makeRequest(CREATE, obj, "")
 	if err != nil || len(resp) == 0 {
 		return
 	}
@@ -156,8 +151,8 @@ func (c *Connector) CreateObject(objType string, payload Payload) (ref string, e
 	return
 }
 
-func (c *Connector) GetObject(objType string, payload Payload, ref string, res interface{}) (err error) {
-	resp, err := c.makeRequest(GET, objType, payload, ref)
+func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
+	resp, err := c.makeRequest(GET, obj, ref)
 
 	if len(resp) == 0 {
 		return
@@ -176,7 +171,7 @@ func (c *Connector) GetObject(objType string, payload Payload, ref string, res i
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	refRes = ""
 
-	resp, err := c.makeRequest(DELETE, "", nil, ref)
+	resp, err := c.makeRequest(DELETE, nil, ref)
 
 	err = json.Unmarshal(resp, &refRes)
 	if err != nil {
