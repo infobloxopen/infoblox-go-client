@@ -59,7 +59,7 @@ func logHttpResponse(resp *http.Response) {
 	log.Printf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
 }
 
-func (c *Connector) buildUrl(t RequestType, objType string, ref string) url.URL {
+func (c *Connector) buildUrl(t RequestType, objType string, ref string, returnFields []string) url.URL {
 	path := []string{"wapi", "v" + c.WapiVersion}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -67,10 +67,18 @@ func (c *Connector) buildUrl(t RequestType, objType string, ref string) url.URL 
 		path = append(path, objType)
 	}
 
+	qry := ""
+	if t == GET && len(returnFields) > 0 {
+		v := url.Values{}
+		v.Set("_return_fields", strings.Join(returnFields, ","))
+		qry = v.Encode()
+	}
+
 	u := url.URL{
-		Scheme: "https",
-		Host:   c.Host + ":" + c.WapiPort,
-		Path:   strings.Join(path, "/"),
+		Scheme:   "https",
+		Host:     c.Host + ":" + c.WapiPort,
+		Path:     strings.Join(path, "/"),
+		RawQuery: qry,
 	}
 
 	return u
@@ -82,7 +90,7 @@ func (c *Connector) buildBody(t RequestType, obj IBObject) io.Reader {
 
 	jsonStr, err = json.Marshal(obj)
 	if err != nil {
-		log.Printf("Cannot unmarshal payload: '%s'", obj)
+		log.Printf("Cannot marshal payload: '%s'", obj)
 		return nil
 	}
 
@@ -101,7 +109,7 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []
 	if obj != nil {
 		objType = obj.ObjectType()
 	}
-	url := c.buildUrl(t, objType, ref)
+	url := c.buildUrl(t, objType, ref, obj.ReturnFields())
 
 	var body io.Reader = nil
 	if obj != nil {

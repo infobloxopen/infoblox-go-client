@@ -8,18 +8,29 @@ type Bool bool
 
 type EA map[string]interface{}
 
+type EASearch struct {
+	NetworkName string `json:"*Network Name,omitempty"`
+	VmID        string `json:"*VM ID,omitempty"`
+}
+
 type EADefListValue string
 
 type IBBase struct {
-	objectType string `json:"-"`
+	objectType   string   `json:"-"`
+	returnFields []string `json:"-"`
 }
 
 type IBObject interface {
 	ObjectType() string
+	ReturnFields() []string
 }
 
 func (obj *IBBase) ObjectType() string {
 	return obj.objectType
+}
+
+func (obj *IBBase) ReturnFields() []string {
+	return obj.returnFields
 }
 
 type NetworkView struct {
@@ -37,16 +48,18 @@ func NewNetworkView(nv NetworkView) *NetworkView {
 }
 
 type Network struct {
-	IBBase      `json:"-"`
+	IBBase
 	Ref         string `json:"_ref,omitempty"`
 	NetviewName string `json:"network_view,omitempty"`
 	Cidr        string `json:"network,omitempty"`
 	Ea          EA     `json:"extattrs,omitempty"`
+	EASearch
 }
 
 func NewNetwork(nw Network) *Network {
 	res := nw
 	res.objectType = "network"
+	res.returnFields = []string{"extattrs", "network_view", "network"}
 
 	return &res
 }
@@ -125,6 +138,28 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 	}
 
 	return json.Marshal("False")
+}
+
+func (ea *EA) UnmarshalJSON(b []byte) (err error) {
+	var m map[string]map[string]interface{}
+	err = json.Unmarshal(b, &m)
+	if err != nil {
+		return
+	}
+
+	*ea = make(EA)
+	for k, v := range m {
+		val := v["value"]
+		if val.(string) == "True" {
+			val = Bool(true)
+		} else if val.(string) == "False" {
+			val = Bool(false)
+		}
+
+		(*ea)[k] = val
+	}
+
+	return
 }
 
 func (v *EADefListValue) UnmarshalJSON(b []byte) (err error) {
