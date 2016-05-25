@@ -141,28 +141,19 @@ func BuildNetworkFromRef(ref string) *Network {
 	}
 }
 
-func (objMgr *ObjectManager) GetNetwork(netview string, cidr string) (*Network, error) {
+func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Network, error) {
 	var res []Network
 
 	network := NewNetwork(Network{
-		NetviewName: netview,
-		Cidr:        cidr})
+		NetviewName: netview})
 
-	err := objMgr.connector.GetObject(network, "", &res)
-
-	if err != nil || res == nil || len(res) == 0 {
-		return nil, err
+	if cidr != "" {
+		network.Cidr = cidr
 	}
 
-	return &res[0], nil
-}
-
-func (objMgr *ObjectManager) GetNetworkByName(netview string, name string) (*Network, error) {
-	var res []Network
-
-	network := NewNetwork(Network{})
-	network.NetviewName = netview
-	network.NetworkName = name
+	if ea != nil && len(ea) > 0 {
+		network.eaSearch = ea
+	}
 
 	err := objMgr.connector.GetObject(network, "", &res)
 
@@ -200,7 +191,7 @@ func GetIPAddressFromRef(ref string) string {
 	return ""
 }
 
-func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, macAddress string, vmID string) (*FixedAddress, error) {
+func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error) {
 	if len(macAddress) == 0 {
 		macAddress = "00:00:00:00:00:00"
 	}
@@ -214,9 +205,14 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, macAddress 
 	fixedAddr := NewFixedAddress(FixedAddress{
 		NetviewName: netview,
 		Cidr:        cidr,
-		IPAddress:   fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview),
 		Mac:         macAddress,
 		Ea:          ea})
+
+	if ipAddr == "" {
+		fixedAddr.IPAddress = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
+	} else {
+		fixedAddr.IPAddress = ipAddr
+	}
 
 	ref, err := objMgr.connector.CreateObject(fixedAddr)
 	fixedAddr.Ref = ref
@@ -242,12 +238,19 @@ func (objMgr *ObjectManager) AllocateNetwork(netview string, cidr string, prefix
 	return
 }
 
-func (objMgr *ObjectManager) GetFixedAddress(netview string, ipAddr string) (*FixedAddress, error) {
+func (objMgr *ObjectManager) GetFixedAddress(netview string, ipAddr string, macAddr string) (*FixedAddress, error) {
 	var res []FixedAddress
 
 	fixedAddr := NewFixedAddress(FixedAddress{
-		NetviewName: netview,
-		IPAddress:   ipAddr})
+		NetviewName: netview})
+
+	if ipAddr != "" {
+		fixedAddr.IPAddress = ipAddr
+	}
+
+	if macAddr != "" {
+		fixedAddr.Mac = macAddr
+	}
 
 	err := objMgr.connector.GetObject(fixedAddr, "", &res)
 
@@ -258,8 +261,10 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, ipAddr string) (*Fi
 	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) ReleaseIP(netview string, ipAddr string) (string, error) {
-	fixAddress, _ := objMgr.GetFixedAddress(netview, ipAddr)
+func (objMgr *ObjectManager) ReleaseIP(netview string, ipAddr string, macAddr string) (string, error) {
+	fmt.Printf("ReleaseIP called: '%s', '%s', '%s'\n", netview, ipAddr, macAddr)
+	fixAddress, _ := objMgr.GetFixedAddress(netview, ipAddr, macAddr)
+	fmt.Printf("GetFixedAddress() returns: '%s'\n", fixAddress)
 
 	return objMgr.connector.DeleteObject(fixAddress.Ref)
 }

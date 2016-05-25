@@ -59,7 +59,7 @@ func logHttpResponse(resp *http.Response) {
 	log.Printf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
 }
 
-func (c *Connector) buildUrl(t RequestType, objType string, ref string, returnFields []string) url.URL {
+func (c *Connector) buildUrl(t RequestType, objType string, ref string, returnFields []string, eaSearch EA) url.URL {
 	path := []string{"wapi", "v" + c.WapiVersion}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -68,10 +68,24 @@ func (c *Connector) buildUrl(t RequestType, objType string, ref string, returnFi
 	}
 
 	qry := ""
-	if t == GET && len(returnFields) > 0 {
-		v := url.Values{}
-		v.Set("_return_fields", strings.Join(returnFields, ","))
-		qry = v.Encode()
+	vals := url.Values{}
+	if t == GET {
+		if len(returnFields) > 0 {
+			vals.Set("_return_fields", strings.Join(returnFields, ","))
+		}
+
+		if len(eaSearch) > 0 {
+			for k, v := range eaSearch {
+				str, ok := v.(string)
+				if !ok {
+					log.Printf("Cannot marshal EA Search attribute for '%s'\n", k)
+				} else {
+					vals.Set("*"+k, str)
+				}
+			}
+		}
+
+		qry = vals.Encode()
 	}
 
 	u := url.URL{
@@ -105,13 +119,19 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []
 	}
 	client := &http.Client{Transport: tr}
 
-	var objType string = ""
+	var (
+		objType      string
+		returnFields []string
+		eaSearch     EA
+	)
 	if obj != nil {
 		objType = obj.ObjectType()
+		returnFields = obj.ReturnFields()
+		eaSearch = obj.EaSearch()
 	}
-	url := c.buildUrl(t, objType, ref, obj.ReturnFields())
+	url := c.buildUrl(t, objType, ref, returnFields, eaSearch)
 
-	var body io.Reader = nil
+	var body io.Reader
 	if obj != nil {
 		body = c.buildBody(t, obj)
 	}
@@ -177,6 +197,7 @@ func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err er
 }
 
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
+	fmt.Printf("DeleteObject called: ref is '%s'\n", ref)
 	refRes = ""
 
 	resp, err := c.makeRequest(DELETE, nil, ref)
@@ -186,6 +207,8 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
 		return
 	}
+
+	fmt.Printf("DeleteObject called: refRes is '%s'\n", refRes)
 
 	return
 }

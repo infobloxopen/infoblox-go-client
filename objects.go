@@ -8,21 +8,18 @@ type Bool bool
 
 type EA map[string]interface{}
 
-type EASearch struct {
-	NetworkName string `json:"*Network Name,omitempty"`
-	VmID        string `json:"*VM ID,omitempty"`
-}
-
 type EADefListValue string
 
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
+	eaSearch     EA       `json:"-"`
 }
 
 type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
+	EaSearch() EA
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -31,6 +28,10 @@ func (obj *IBBase) ObjectType() string {
 
 func (obj *IBBase) ReturnFields() []string {
 	return obj.returnFields
+}
+
+func (obj *IBBase) EaSearch() EA {
+	return obj.eaSearch
 }
 
 type NetworkView struct {
@@ -53,7 +54,6 @@ type Network struct {
 	NetviewName string `json:"network_view,omitempty"`
 	Cidr        string `json:"network,omitempty"`
 	Ea          EA     `json:"extattrs,omitempty"`
-	EASearch
 }
 
 func NewNetwork(nw Network) *Network {
