@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 )
 
+const MACADDR_ZERO = "00:00:00:00:00:00"
+
 type Bool bool
 
 type EA map[string]interface{}

@@ -13,6 +13,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type Connector struct {
@@ -23,10 +24,9 @@ type Connector struct {
 	Password            string
 	SslVerify           bool
 	certPool            *x509.CertPool
-	HttpRequestTimeout  int
+	HttpRequestTimeout  int // in seconds
 	HttpPoolConnections int
-	HttpPoolMaxSize     int
-	url                 url.URL
+	client              *http.Client
 }
 
 type RequestType int
@@ -114,11 +114,6 @@ func (c *Connector) buildBody(t RequestType, obj IBObject) io.Reader {
 func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []byte, err error) {
 	res = []byte("")
 
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: !c.SslVerify, RootCAs: c.certPool},
-	}
-	client := &http.Client{Transport: tr}
-
 	var (
 		objType      string
 		returnFields []string
@@ -144,7 +139,7 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(c.Username, c.Password)
 
-	resp, err := client.Do(req)
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return
 	} else if !(resp.StatusCode == http.StatusOK ||
@@ -213,9 +208,19 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	return
 }
 
+func (c *Connector) newHttpClient() *http.Client {
+	tr := &http.Transport{
+		TLSClientConfig:       &tls.Config{InsecureSkipVerify: !c.SslVerify, RootCAs: c.certPool},
+		MaxIdleConnsPerHost:   c.HttpPoolConnections,
+		ResponseHeaderTimeout: time.Duration(c.HttpRequestTimeout * 1000000000), // ResponseHeaderTimeout is in nanoseconds
+	}
+
+	return &http.Client{Transport: tr}
+}
+
 func NewConnector(host string, wapiVersion string, wapiPort string,
 	username string, password string, sslVerify string, httpRequestTimeout int,
-	httpPoolConnections int, httpPoolMaxSize int) (res *Connector, err error) {
+	httpPoolConnections int) (res *Connector, err error) {
 	res = nil
 
 	connector := &Connector{
@@ -228,7 +233,6 @@ func NewConnector(host string, wapiVersion string, wapiPort string,
 		certPool:            nil,
 		HttpRequestTimeout:  httpRequestTimeout,
 		HttpPoolConnections: httpPoolConnections,
-		HttpPoolMaxSize:     httpPoolMaxSize,
 	}
 
 	switch {
@@ -251,6 +255,8 @@ func NewConnector(host string, wapiVersion string, wapiPort string,
 		connector.certPool = caPool
 		connector.SslVerify = true
 	}
+
+	connector.client = connector.newHttpClient()
 	res = connector
 
 	return

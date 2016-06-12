@@ -193,7 +193,7 @@ func GetIPAddressFromRef(ref string) string {
 
 func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error) {
 	if len(macAddress) == 0 {
-		macAddress = "00:00:00:00:00:00"
+		macAddress = MACADDR_ZERO
 	}
 
 	ea := objMgr.getBasicEA(true)
@@ -228,7 +228,9 @@ func (objMgr *ObjectManager) AllocateNetwork(netview string, cidr string, prefix
 		NetviewName: netview,
 		Cidr:        fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen),
 		Ea:          objMgr.getBasicEA(true)})
-	networkReq.Ea["Network Name"] = name
+	if name != "" {
+		networkReq.Ea["Network Name"] = name
+	}
 
 	ref, err := objMgr.connector.CreateObject(networkReq)
 	if err == nil && len(ref) > 0 {
