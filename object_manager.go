@@ -271,9 +271,9 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, ipAddr string, macAddr st
 	return objMgr.connector.DeleteObject(fixAddress.Ref)
 }
 
-func (objMgr *ObjectManager) DeleteLocalNetwork(ref string, localNetview string) (string, error) {
+func (objMgr *ObjectManager) DeleteNetwork(ref string, netview string) (string, error) {
 	network := BuildNetworkFromRef(ref)
-	if network != nil && network.NetviewName == localNetview {
+	if network != nil && network.NetviewName == netview {
 		return objMgr.connector.DeleteObject(ref)
 	}
 
