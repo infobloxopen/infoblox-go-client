@@ -268,6 +268,9 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, ipAddr string, macAddr st
 	fixAddress, _ := objMgr.GetFixedAddress(netview, ipAddr, macAddr)
 	fmt.Printf("GetFixedAddress() returns: '%s'\n", fixAddress)
 
+	if fixAddress == nil {
+		return "", nil
+	}
 	return objMgr.connector.DeleteObject(fixAddress.Ref)
 }
 
