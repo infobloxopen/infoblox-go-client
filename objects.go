@@ -46,6 +46,7 @@ type NetworkView struct {
 func NewNetworkView(nv NetworkView) *NetworkView {
 	res := nv
 	res.objectType = "networkview"
+	res.returnFields = []string{"extattrs", "name"}
 
 	return &res
 }
@@ -61,7 +62,7 @@ type Network struct {
 func NewNetwork(nw Network) *Network {
 	res := nw
 	res.objectType = "network"
-	res.returnFields = []string{"extattrs", "network_view", "network"}
+	res.returnFields = []string{"extattrs", "network", "network_view"}
 
 	return &res
 }
@@ -77,6 +78,7 @@ type NetworkContainer struct {
 func NewNetworkContainer(nc NetworkContainer) *NetworkContainer {
 	res := nc
 	res.objectType = "networkcontainer"
+	res.returnFields = []string{"extattrs", "network", "network_view"}
 
 	return &res
 }
@@ -94,6 +96,7 @@ type FixedAddress struct {
 func NewFixedAddress(fixedAddr FixedAddress) *FixedAddress {
 	res := fixedAddr
 	res.objectType = "fixedaddress"
+	res.returnFields = []string{"extattrs", "ipv4addr", "mac", "network", "network_view"}
 
 	return &res
 }
@@ -112,6 +115,7 @@ type EADefinition struct {
 func NewEADefinition(eadef EADefinition) *EADefinition {
 	res := eadef
 	res.objectType = "extensibleattributedef"
+	res.returnFields = []string{"allowed_object_types", "comment", "flags", "list_values", "name", "type"}
 
 	return &res
 }
