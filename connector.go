@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -16,17 +15,76 @@ import (
 	"time"
 )
 
-type Connector struct {
-	Host                string
-	WapiVersion         string
-	WapiPort            string
-	Username            string
-	Password            string
+type HostConfig struct {
+	Host     string
+	Version  string
+	Port     string
+	Username string
+	Password string
+}
+
+type TransportConfig struct {
 	SslVerify           bool
 	certPool            *x509.CertPool
 	HttpRequestTimeout  int // in seconds
 	HttpPoolConnections int
-	client              *http.Client
+}
+
+func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnections int) (cfg TransportConfig) {
+	switch {
+	case "false" == strings.ToLower(sslVerify):
+		cfg.SslVerify = false
+	case "true" == strings.ToLower(sslVerify):
+		cfg.SslVerify = true
+	default:
+		caPool := x509.NewCertPool()
+		cert, err := ioutil.ReadFile(sslVerify)
+		if err != nil {
+			log.Printf("Cannot load certificate file '%s'", sslVerify)
+			return
+		}
+		if !caPool.AppendCertsFromPEM(cert) {
+			err = errors.New(fmt.Sprintf("Cannot append certificate from file '%s'", sslVerify))
+			return
+		}
+		cfg.certPool = caPool
+		cfg.SslVerify = true
+	}
+
+	return
+}
+
+type HttpRequestBuilder interface {
+	Init(HostConfig)
+	BuildUrl(r RequestType, objType string, ref string, returnFields []string, eaSearch EA) (urlStr string)
+	BuildBody(obj IBObject) (jsonStr []byte)
+	BuildRequest(r RequestType, obj IBObject, ref string) (req *http.Request, err error)
+}
+
+type HttpRequestor interface {
+	Init(TransportConfig)
+	SendRequest(*http.Request) ([]byte, error)
+}
+
+type WapiRequestBuilder struct {
+	HostConfig HostConfig
+}
+
+type WapiHttpRequestor struct {
+	client http.Client
+}
+
+type IBConnector interface {
+	CreateObject(obj IBObject) (ref string, err error)
+	GetObject(obj IBObject, ref string, res interface{}) error
+	DeleteObject(ref string) (refRes string, err error)
+}
+
+type Connector struct {
+	HostConfig      HostConfig
+	TransportConfig TransportConfig
+	RequestBuilder  HttpRequestBuilder
+	Requestor       HttpRequestor
 }
 
 type RequestType int
@@ -59,8 +117,44 @@ func logHttpResponse(resp *http.Response) {
 	log.Printf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
 }
 
-func (c *Connector) buildUrl(t RequestType, objType string, ref string, returnFields []string, eaSearch EA) url.URL {
-	path := []string{"wapi", "v" + c.WapiVersion}
+func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: !cfg.SslVerify,
+			RootCAs: cfg.certPool},
+		MaxIdleConnsPerHost:   cfg.HttpPoolConnections,
+		ResponseHeaderTimeout: time.Duration(cfg.HttpRequestTimeout * 1000000000), // ResponseHeaderTimeout is in nanoseconds
+	}
+
+	whr.client = http.Client{Transport: tr}
+}
+
+func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err error) {
+	var resp *http.Response
+	resp, err = whr.client.Do(req)
+	if err != nil {
+		return
+	} else if !(resp.StatusCode == http.StatusOK ||
+		(resp.StatusCode == http.StatusCreated &&
+			req.Method == RequestType(CREATE).toMethod())) {
+		logHttpResponse(resp)
+		return
+	}
+	defer resp.Body.Close()
+	res, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Printf("Http Reponse ioutil.ReadAll() Error: '%s'", err)
+		return
+	}
+
+	return
+}
+
+func (wrb *WapiRequestBuilder) Init(cfg HostConfig) {
+	wrb.HostConfig = cfg
+}
+
+func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, eaSearch EA) (urlStr string) {
+	path := []string{"wapi", "v" + wrb.HostConfig.Version}
 	if len(ref) > 0 {
 		path = append(path, ref)
 	} else {
@@ -90,15 +184,15 @@ func (c *Connector) buildUrl(t RequestType, objType string, ref string, returnFi
 
 	u := url.URL{
 		Scheme:   "https",
-		Host:     c.Host + ":" + c.WapiPort,
+		Host:     wrb.HostConfig.Host + ":" + wrb.HostConfig.Port,
 		Path:     strings.Join(path, "/"),
 		RawQuery: qry,
 	}
 
-	return u
+	return u.String()
 }
 
-func (c *Connector) buildBody(t RequestType, obj IBObject) io.Reader {
+func (wrb *WapiRequestBuilder) BuildBody(obj IBObject) []byte {
 	var jsonStr []byte
 	var err error
 
@@ -108,12 +202,10 @@ func (c *Connector) buildBody(t RequestType, obj IBObject) io.Reader {
 		return nil
 	}
 
-	return bytes.NewBuffer(jsonStr)
+	return jsonStr
 }
 
-func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []byte, err error) {
-	res = []byte("")
-
+func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string) (req *http.Request, err error) {
 	var (
 		objType      string
 		returnFields []string
@@ -124,35 +216,28 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []
 		returnFields = obj.ReturnFields()
 		eaSearch = obj.EaSearch()
 	}
-	url := c.buildUrl(t, objType, ref, returnFields, eaSearch)
+	urlStr := wrb.BuildUrl(t, objType, ref, returnFields, eaSearch)
 
-	var body io.Reader
+	var bodyStr []byte
 	if obj != nil {
-		body = c.buildBody(t, obj)
+		bodyStr = wrb.BuildBody(obj)
 	}
 
-	req, err := http.NewRequest(t.toMethod(), url.String(), body)
+	req, err = http.NewRequest(t.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
 	if err != nil {
 		log.Printf("err1: '%s'", err)
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
-	req.SetBasicAuth(c.Username, c.Password)
+	req.SetBasicAuth(wrb.HostConfig.Username, wrb.HostConfig.Password)
 
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return
-	} else if !(resp.StatusCode == http.StatusOK ||
-		(resp.StatusCode == http.StatusCreated && t == CREATE)) {
-		logHttpResponse(resp)
-		return
-	}
-	defer resp.Body.Close()
-	res, err = ioutil.ReadAll(resp.Body)
-	if err != nil {
-		log.Printf("Http Reponse ioutil.ReadAll() Error: '%s'", err)
-		return
-	}
+	return
+}
+
+func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []byte, err error) {
+	var req *http.Request
+	req, err = c.RequestBuilder.BuildRequest(t, obj, ref)
+	res, err = c.Requestor.SendRequest(req)
 
 	return
 }
@@ -162,6 +247,7 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 
 	resp, err := c.makeRequest(CREATE, obj, "")
 	if err != nil || len(resp) == 0 {
+		log.Printf("CreateObject request error: '%s'\n", err)
 		return
 	}
 
@@ -176,6 +262,9 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
 	resp, err := c.makeRequest(GET, obj, ref)
+	if err != nil {
+		log.Printf("GetObject request error: '%s'\n", err)
+	}
 
 	if len(resp) == 0 {
 		return
@@ -192,10 +281,12 @@ func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err er
 }
 
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
-	fmt.Printf("DeleteObject called: ref is '%s'\n", ref)
 	refRes = ""
 
 	resp, err := c.makeRequest(DELETE, nil, ref)
+	if err != nil {
+		log.Printf("DeleteObject request error: '%s'\n", err)
+	}
 
 	err = json.Unmarshal(resp, &refRes)
 	if err != nil {
@@ -203,60 +294,25 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 		return
 	}
 
-	fmt.Printf("DeleteObject called: refRes is '%s'\n", refRes)
-
 	return
 }
 
-func (c *Connector) newHttpClient() *http.Client {
-	tr := &http.Transport{
-		TLSClientConfig:       &tls.Config{InsecureSkipVerify: !c.SslVerify, RootCAs: c.certPool},
-		MaxIdleConnsPerHost:   c.HttpPoolConnections,
-		ResponseHeaderTimeout: time.Duration(c.HttpRequestTimeout * 1000000000), // ResponseHeaderTimeout is in nanoseconds
-	}
-
-	return &http.Client{Transport: tr}
-}
-
-func NewConnector(host string, wapiVersion string, wapiPort string,
-	username string, password string, sslVerify string, httpRequestTimeout int,
-	httpPoolConnections int) (res *Connector, err error) {
+func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
+	requestBuilder HttpRequestBuilder, requestor HttpRequestor) (res *Connector, err error) {
 	res = nil
 
 	connector := &Connector{
-		Host:                host,
-		WapiVersion:         wapiVersion,
-		WapiPort:            wapiPort,
-		Username:            username,
-		Password:            password,
-		SslVerify:           false,
-		certPool:            nil,
-		HttpRequestTimeout:  httpRequestTimeout,
-		HttpPoolConnections: httpPoolConnections,
+		HostConfig:      hostConfig,
+		TransportConfig: transportConfig,
 	}
 
-	switch {
-	case "false" == strings.ToLower(sslVerify):
-		connector.SslVerify = false
-	case "true" == strings.ToLower(sslVerify):
-		connector.SslVerify = true
-	default:
-		var cert []byte
-		caPool := x509.NewCertPool()
-		cert, err = ioutil.ReadFile(sslVerify)
-		if err != nil {
-			log.Printf("Cannot load certificate file '%s'", sslVerify)
-			return
-		}
-		if !caPool.AppendCertsFromPEM(cert) {
-			err = errors.New(fmt.Sprintf("Cannot append certificate from file '%s'", sslVerify))
-			return
-		}
-		connector.certPool = caPool
-		connector.SslVerify = true
-	}
+	//connector.RequestBuilder = WapiRequestBuilder{WaipHostConfig: connector.HostConfig}
+	connector.RequestBuilder = requestBuilder
+	connector.RequestBuilder.Init(connector.HostConfig)
 
-	connector.client = connector.newHttpClient()
+	connector.Requestor = requestor
+	connector.Requestor.Init(connector.TransportConfig)
+
 	res = connector
 
 	return
