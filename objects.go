@@ -1,7 +1,9 @@
 package ibclient
 
 import (
+	"bytes"
 	"encoding/json"
+	"reflect"
 )
 
 const MACADDR_ZERO = "00:00:00:00:00:00"
@@ -148,7 +150,10 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 
 func (ea *EA) UnmarshalJSON(b []byte) (err error) {
 	var m map[string]map[string]interface{}
-	err = json.Unmarshal(b, &m)
+
+	decoder := json.NewDecoder(bytes.NewBuffer(b))
+	decoder.UseNumber()
+	err = decoder.Decode(&m)
 	if err != nil {
 		return
 	}
@@ -156,7 +161,11 @@ func (ea *EA) UnmarshalJSON(b []byte) (err error) {
 	*ea = make(EA)
 	for k, v := range m {
 		val := v["value"]
-		if val.(string) == "True" {
+		if reflect.TypeOf(val).String() == "json.Number" {
+			var i64 int64
+			i64, err = val.(json.Number).Int64()
+			val = int(i64)
+		} else if val.(string) == "True" {
 			val = Bool(true)
 		} else if val.(string) == "False" {
 			val = Bool(false)
