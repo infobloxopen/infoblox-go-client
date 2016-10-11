@@ -5,13 +5,30 @@ import (
 	"regexp"
 )
 
+type IBObjectManager interface {
+	CreateNetworkView(name string) (*NetworkView, error)
+	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
+	CreateNetwork(netview string, cidr string, name string) (*Network, error)
+	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
+	GetNetworkView(name string) (*NetworkView, error)
+	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
+	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
+	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error)
+	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
+	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
+	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
+	DeleteNetwork(ref string, netview string) (string, error)
+	GetEADefinition(name string) (*EADefinition, error)
+	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
+}
+
 type ObjectManager struct {
-	connector *Connector
+	connector IBConnector
 	cmpType   string
 	tenantID  string
 }
 
-func NewObjectManager(connector *Connector, cmpType string, tenantID string) *ObjectManager {
+func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
 	objMgr := new(ObjectManager)
 
 	objMgr.connector = connector
@@ -40,31 +57,30 @@ func (objMgr *ObjectManager) CreateNetworkView(name string) (*NetworkView, error
 	return networkView, err
 }
 
+func (objMgr *ObjectManager) makeNetworkView(netviewName string) (netviewRef string, err error) {
+	var netviewObj *NetworkView
+	if netviewObj, err = objMgr.GetNetworkView(netviewName); err != nil {
+		return
+	}
+	if netviewObj == nil {
+		if netviewObj, err = objMgr.CreateNetworkView(netviewName); err != nil {
+			return
+		}
+	}
+
+	netviewRef = netviewObj.Ref
+
+	return
+}
+
 func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error) {
-	globalNetviewRef = ""
-	localNetviewRef = ""
-
-	var globalNetviewObj *NetworkView
-	if globalNetviewObj, err = objMgr.GetNetworkView(globalNetview); err != nil {
+	if globalNetviewRef, err = objMgr.makeNetworkView(globalNetview); err != nil {
 		return
 	}
-	if globalNetviewObj == nil {
-		if globalNetviewObj, err = objMgr.CreateNetworkView(globalNetview); err != nil {
-			return
-		}
-	}
-	globalNetviewRef = globalNetviewObj.Ref
 
-	var localNetviewObj *NetworkView
-	if localNetviewObj, err = objMgr.GetNetworkView(localNetview); err != nil {
+	if localNetviewRef, err = objMgr.makeNetworkView(localNetview); err != nil {
 		return
 	}
-	if localNetviewObj == nil {
-		if localNetviewObj, err = objMgr.CreateNetworkView(localNetview); err != nil {
-			return
-		}
-	}
-	localNetviewRef = localNetviewObj.Ref
 
 	return
 }
@@ -259,10 +275,7 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 }
 
 func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error) {
-	fmt.Printf("ReleaseIP called: '%s', '%s', '%s'\n", netview, ipAddr, macAddr)
 	fixAddress, _ := objMgr.GetFixedAddress(netview, cidr, ipAddr, macAddr)
-	fmt.Printf("GetFixedAddress() returns: '%s'\n", fixAddress)
-
 	if fixAddress == nil {
 		return "", nil
 	}
