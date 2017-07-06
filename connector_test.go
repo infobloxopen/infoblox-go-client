@@ -27,11 +27,11 @@ func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
 	rb.hostConfig = cfg
 }
 
-func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, eaSearch EA) string {
+func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string) string {
 	return rb.urlStr
 }
 
-func (rb *FakeRequestBuilder) BuildBody(obj IBObject) []byte {
+func (rb *FakeRequestBuilder) BuildBody(r RequestType, obj IBObject) []byte {
 	return []byte{}
 }
 
@@ -87,26 +87,21 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
-				eaSearch := EA{}
 				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, objType)
-				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, eaSearch)
+				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields)
 				Expect(urlStr).To(Equal(expectedUrlStr))
 			})
 
-			It("should return expected url string for GET by EA request", func() {
+			It("should return expected url string for GET for the return fields", func() {
 				objType := "network"
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
-				eaKey := "Network Name"
-				eaVal := "yellow-net"
-				eaSearch := EA{eaKey: eaVal}
 
-				eaSearchStr := url.QueryEscape("*"+eaKey) + "=" + url.QueryEscape(eaVal)
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
-				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s&%s",
-					host, port, version, objType, eaSearchStr, returnFieldsStr)
-				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, eaSearch)
+				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
+					host, port, version, objType, returnFieldsStr)
+				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields)
 				Expect(urlStr).To(Equal(expectedUrlStr))
 			})
 
@@ -114,11 +109,10 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
-				eaSearch := EA{}
 
 				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, ref)
-				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, eaSearch)
+				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields)
 				Expect(urlStr).To(Equal(expectedUrlStr))
 			})
 		})
@@ -137,7 +131,31 @@ var _ = Describe("Connector", func() {
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr}, ",") + "}"
 
-				bodyStr := wrb.BuildBody(nw)
+				bodyStr := wrb.BuildBody(CREATE, nw)
+				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
+			})
+		})
+
+		Describe("BuildBody", func() {
+			It("should return expected body for GET by EA request", func() {
+				networkView := "private-view"
+				cidr := "172.22.18.0/24"
+				eaKey := "Network Name"
+				eaVal := "yellow-net"
+				eaSearch := EA{eaKey: eaVal}
+				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr})
+				nw.eaSearch = eaSearch
+
+				netviewStr := `"network_view":"` + networkView + `"`
+				networkStr := `"network":"` + cidr + `"`
+				eaSearchStr := `"*` + eaKey + `":"` + eaVal + `"`
+				expectedBodyStr := "{" + strings.Join([]string{eaSearchStr, networkStr, netviewStr}, ",") + "}"
+				bodyStr := wrb.BuildBody(GET, nw)
+				fmt.Println("==================")
+				fmt.Println(expectedBodyStr)
+				fmt.Println(string(bodyStr))
+				fmt.Println("==================")
+
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
 			})
 		})
