@@ -151,10 +151,6 @@ var _ = Describe("Connector", func() {
 				eaSearchStr := `"*` + eaKey + `":"` + eaVal + `"`
 				expectedBodyStr := "{" + strings.Join([]string{eaSearchStr, networkStr, netviewStr}, ",") + "}"
 				bodyStr := wrb.BuildBody(GET, nw)
-				fmt.Println("==================")
-				fmt.Println(expectedBodyStr)
-				fmt.Println(string(bodyStr))
-				fmt.Println("==================")
 
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
 			})

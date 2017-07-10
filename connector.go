@@ -192,7 +192,7 @@ func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
 		return nil
 	}
 
-        eaSearch := obj.EaSearch()
+	eaSearch := obj.EaSearch()
 	if t == GET && len(eaSearch) > 0 {
 		payload := make(map[string]string)
 		json.Unmarshal(jsonStr, &payload)
