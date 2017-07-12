@@ -160,7 +160,7 @@ func BuildNetworkFromRef(ref string) *Network {
 	}
 }
 
-func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, eaSearch EAS) (*Network, error) {
+func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, eaSearch EASearch) (*Network, error) {
 	var res []Network
 
 	network := NewNetwork(Network{

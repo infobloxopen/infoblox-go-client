@@ -54,7 +54,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Context("EA Search Object", func() {
-		eas := EAS{
+		eas := EASearch{
 			"Network Name": "Shared-Net",
 			"Network View": "Global",
 		}
@@ -131,7 +131,7 @@ var _ = Describe("Objects", func() {
 			cidr := "123.0.0.0/24"
 			netviewName := "localview"
 			nw := NewNetwork(Network{Cidr: cidr, NetviewName: netviewName})
-			searchEAs := EAS{"Network Name": "shared-net"}
+			searchEAs := EASearch{"Network Name": "shared-net"}
 			nw.eaSearch = searchEAs
 
 			It("should set fields correctly", func() {

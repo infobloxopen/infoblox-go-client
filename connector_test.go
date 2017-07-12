@@ -142,7 +142,7 @@ var _ = Describe("Connector", func() {
 				cidr := "172.22.18.0/24"
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
-				eaSearch := EAS{eaKey: eaVal}
+				eaSearch := EASearch{eaKey: eaVal}
 				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr})
 				nw.eaSearch = eaSearch
 

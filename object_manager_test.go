@@ -358,7 +358,7 @@ var _ = Describe("Object Manager", func() {
 		netviewName := "default_view"
 		cidr := "28.0.42.0/24"
 		networkName := "private-net"
-		eaSearch := EAS{"Network Name": networkName}
+		eaSearch := EASearch{"Network Name": networkName}
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		nwFakeConnector := &fakeConnector{
 			getObjectObj: NewNetwork(Network{NetviewName: netviewName, Cidr: cidr}),
