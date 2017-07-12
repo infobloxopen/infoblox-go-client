@@ -358,7 +358,7 @@ var _ = Describe("Object Manager", func() {
 		netviewName := "default_view"
 		cidr := "28.0.42.0/24"
 		networkName := "private-net"
-		ea := EA{"Network Name": networkName}
+		eaSearch := EAS{"Network Name": networkName}
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		nwFakeConnector := &fakeConnector{
 			getObjectObj: NewNetwork(Network{NetviewName: netviewName, Cidr: cidr}),
@@ -366,15 +366,15 @@ var _ = Describe("Object Manager", func() {
 			resultObject: []Network{*NewNetwork(Network{NetviewName: netviewName, Cidr: cidr, Ref: fakeRefReturn})},
 		}
 
-		nwFakeConnector.getObjectObj.(*Network).eaSearch = ea
-		nwFakeConnector.resultObject.([]Network)[0].eaSearch = ea
+		nwFakeConnector.getObjectObj.(*Network).eaSearch = eaSearch
+		nwFakeConnector.resultObject.([]Network)[0].eaSearch = eaSearch
 
 		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualNetwork *Network
 		var err error
 		It("should pass expected Network Object to GetObject", func() {
-			actualNetwork, err = objMgr.GetNetwork(netviewName, cidr, ea)
+			actualNetwork, err = objMgr.GetNetwork(netviewName, cidr, eaSearch)
 		})
 		It("should return expected Network Object", func() {
 			Expect(*actualNetwork).To(Equal(nwFakeConnector.resultObject.([]Network)[0]))

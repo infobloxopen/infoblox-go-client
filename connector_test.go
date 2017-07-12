@@ -142,14 +142,14 @@ var _ = Describe("Connector", func() {
 				cidr := "172.22.18.0/24"
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
-				eaSearch := EA{eaKey: eaVal}
+				eaSearch := EAS{eaKey: eaVal}
 				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr})
 				nw.eaSearch = eaSearch
 
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaSearchStr := `"*` + eaKey + `":"` + eaVal + `"`
-				expectedBodyStr := "{" + strings.Join([]string{eaSearchStr, networkStr, netviewStr}, ",") + "}"
+				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaSearchStr}, ",") + "}"
 				bodyStr := wrb.BuildBody(GET, nw)
 
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))

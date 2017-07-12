@@ -11,19 +11,20 @@ const MACADDR_ZERO = "00:00:00:00:00:00"
 type Bool bool
 
 type EA map[string]interface{}
+type EAS map[string]interface{}
 
 type EADefListValue string
 
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
-	eaSearch     EA       `json:"-"`
+	eaSearch     EAS      `json:"-"`
 }
 
 type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
-	EaSearch() EA
+	EaSearch() EAS
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -34,7 +35,7 @@ func (obj *IBBase) ReturnFields() []string {
 	return obj.returnFields
 }
 
-func (obj *IBBase) EaSearch() EA {
+func (obj *IBBase) EaSearch() EAS {
 	return obj.eaSearch
 }
 
@@ -128,6 +129,15 @@ func (ea EA) MarshalJSON() ([]byte, error) {
 		value := make(map[string]interface{})
 		value["value"] = v
 		m[k] = value
+	}
+
+	return json.Marshal(m)
+}
+
+func (eas EAS) MarshalJSON() ([]byte, error) {
+	m := make(map[string]interface{})
+	for k, v := range eas {
+		m["*"+k] = v
 	}
 
 	return json.Marshal(m)

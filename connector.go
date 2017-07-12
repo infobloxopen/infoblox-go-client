@@ -183,35 +183,26 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 }
 
 func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
-	var jsonStr []byte
+	var objJson []byte
 	var err error
 
-	jsonStr, err = json.Marshal(obj)
+	objJson, err = json.Marshal(obj)
 	if err != nil {
-		log.Printf("Cannot marshal payload: '%s'", obj)
+		log.Printf("Cannot marshal object '%s': %s", obj, err)
 		return nil
 	}
 
 	eaSearch := obj.EaSearch()
 	if t == GET && len(eaSearch) > 0 {
-		payload := make(map[string]string)
-		json.Unmarshal(jsonStr, &payload)
-		for k, v := range eaSearch {
-			str, ok := v.(string)
-			if !ok {
-				log.Printf("Cannot marshal EA Search attribute for '%s'\n", k)
-			} else {
-				payload["*"+k] = str
-			}
-		}
-		jsonStr, err = json.Marshal(payload)
+		eaSearchJson, err := json.Marshal(eaSearch)
 		if err != nil {
-			log.Printf("Cannot marshal EA's in the payload: '%s'", payload)
+			log.Printf("Cannot marshal EA Search attributes. '%s'\n", err)
 			return nil
 		}
+		objJson = append(append(objJson[:len(objJson)-1], []byte(",")...), eaSearchJson[1:]...)
 	}
 
-	return jsonStr
+	return objJson
 }
 
 func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string) (req *http.Request, err error) {
