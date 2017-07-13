@@ -160,7 +160,7 @@ func BuildNetworkFromRef(ref string) *Network {
 	}
 }
 
-func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, eaSearch EASearch) (*Network, error) {
+func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Network, error) {
 	var res []Network
 
 	network := NewNetwork(Network{
@@ -170,8 +170,8 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, eaSearch EA
 		network.Cidr = cidr
 	}
 
-	if eaSearch != nil && len(eaSearch) > 0 {
-		network.eaSearch = eaSearch
+	if ea != nil && len(ea) > 0 {
+		network.eaSearch = EASearch(ea)
 	}
 
 	err := objMgr.connector.GetObject(network, "", &res)

@@ -199,7 +199,7 @@ func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
 			log.Printf("Cannot marshal EA Search attributes. '%s'\n", err)
 			return nil
 		}
-		objJson = append(append(objJson[:len(objJson)-1], []byte(",")...), eaSearchJson[1:]...)
+		objJson = append(append(objJson[:len(objJson)-1], byte(',')), eaSearchJson[1:]...)
 	}
 
 	return objJson
