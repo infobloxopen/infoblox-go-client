@@ -15,6 +15,9 @@ type fakeConnector struct {
 
 	deleteObjectRef string
 
+	updateObjectObj interface{}
+	updateObjectRef string
+
 	resultObject interface{}
 
 	fakeRefReturn string
@@ -30,17 +33,26 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 	Expect(obj).To(Equal(c.getObjectObj))
 	Expect(ref).To(Equal(c.getObjectRef))
 
-	switch obj.(type) {
-	case *NetworkView:
-		*res.(*[]NetworkView) = c.resultObject.([]NetworkView)
-	case *NetworkContainer:
-		*res.(*[]NetworkContainer) = c.resultObject.([]NetworkContainer)
-	case *Network:
-		*res.(*[]Network) = c.resultObject.([]Network)
-	case *FixedAddress:
-		*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
-	case *EADefinition:
-		*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
+	if ref == "" {
+		switch obj.(type) {
+		case *NetworkView:
+			*res.(*[]NetworkView) = c.resultObject.([]NetworkView)
+		case *NetworkContainer:
+			*res.(*[]NetworkContainer) = c.resultObject.([]NetworkContainer)
+		case *Network:
+			*res.(*[]Network) = c.resultObject.([]Network)
+		case *FixedAddress:
+			*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
+		case *EADefinition:
+			*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
+		}
+	} else {
+		switch obj.(type) {
+		case *NetworkView:
+			fmt.Printf("%T \t %T \n", res, c.resultObject)
+
+			*res.(*NetworkView) = c.resultObject.(NetworkView)
+		}
 	}
 
 	err = nil
@@ -49,6 +61,13 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 
 func (c *fakeConnector) DeleteObject(ref string) (string, error) {
 	Expect(ref).To(Equal(c.deleteObjectRef))
+
+	return c.fakeRefReturn, nil
+}
+
+func (c *fakeConnector) UpdateObject(obj IBObject, ref string) (string, error) {
+	Expect(obj).To(Equal(c.updateObjectObj))
+	Expect(ref).To(Equal(c.updateObjectRef))
 
 	return c.fakeRefReturn, nil
 }
@@ -77,6 +96,39 @@ var _ = Describe("Object Manager", func() {
 		})
 		It("should return expected NetworkView Object", func() {
 			Expect(actualNetworkView).To(Equal(nvFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Update Network View", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "Global View"
+		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
+
+		returnGetObject := NetworkView{Name: netviewName, Ref: fakeRefReturn, Ea: EA{"network-name": "net1", "Lock": "Removed"}}
+		returnUpdateObject := NetworkView{Name: netviewName, Ref: fakeRefReturn, Ea: EA{"network-name": "net2", "New": "Added"}}
+		getObjectObj := &NetworkView{}
+		getObjectObj.returnFields = []string{"extattrs"}
+		nvFakeConnector := &fakeConnector{
+			getObjectObj:  getObjectObj,
+			getObjectRef:  fakeRefReturn,
+			fakeRefReturn: fakeRefReturn,
+			resultObject:  returnGetObject,
+			updateObjectObj: &returnUpdateObject,
+			updateObjectRef: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
+
+		var err error
+		It("should pass expected updated object to UpdateObject", func() {
+			addEA := EA{"network-name": "net2", "New": "Added"}
+			delEA := EA{"Lock": "Removed"}
+			err = objMgr.UpdateNetworkView(fakeRefReturn, addEA, delEA)
+		})
+		It("should updated the GetObject with new EA and with no error", func() {
+			Expect(returnGetObject).To(Equal(returnUpdateObject))
 			Expect(err).To(BeNil())
 		})
 	})
