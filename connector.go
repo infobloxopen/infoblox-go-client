@@ -56,8 +56,8 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 
 type HttpRequestBuilder interface {
 	Init(HostConfig)
-	BuildUrl(r RequestType, objType string, ref string, returnFields []string, eaSearch EA) (urlStr string)
-	BuildBody(obj IBObject) (jsonStr []byte)
+	BuildUrl(r RequestType, objType string, ref string, returnFields []string) (urlStr string)
+	BuildBody(r RequestType, obj IBObject) (jsonStr []byte)
 	BuildRequest(r RequestType, obj IBObject, ref string) (req *http.Request, err error)
 }
 
@@ -111,10 +111,12 @@ func (r RequestType) toMethod() string {
 	return ""
 }
 
-func logHttpResponse(resp *http.Response) {
+func getHttpResponseError(resp *http.Response) error {
 	defer resp.Body.Close()
 	content, _ := ioutil.ReadAll(resp.Body)
-	log.Printf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
+	msg := fmt.Sprintf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
+	log.Printf(msg)
+	return errors.New(msg)
 }
 
 func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
@@ -136,8 +138,8 @@ func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err er
 	} else if !(resp.StatusCode == http.StatusOK ||
 		(resp.StatusCode == http.StatusCreated &&
 			req.Method == RequestType(CREATE).toMethod())) {
-		logHttpResponse(resp)
-		return
+		err := getHttpResponseError(resp)
+		return nil, err
 	}
 	defer resp.Body.Close()
 	res, err = ioutil.ReadAll(resp.Body)
@@ -153,7 +155,7 @@ func (wrb *WapiRequestBuilder) Init(cfg HostConfig) {
 	wrb.HostConfig = cfg
 }
 
-func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, eaSearch EA) (urlStr string) {
+func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string) (urlStr string) {
 	path := []string{"wapi", "v" + wrb.HostConfig.Version}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -167,18 +169,6 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 		if len(returnFields) > 0 {
 			vals.Set("_return_fields", strings.Join(returnFields, ","))
 		}
-
-		if len(eaSearch) > 0 {
-			for k, v := range eaSearch {
-				str, ok := v.(string)
-				if !ok {
-					log.Printf("Cannot marshal EA Search attribute for '%s'\n", k)
-				} else {
-					vals.Set("*"+k, str)
-				}
-			}
-		}
-
 		qry = vals.Encode()
 	}
 
@@ -192,35 +182,43 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 	return u.String()
 }
 
-func (wrb *WapiRequestBuilder) BuildBody(obj IBObject) []byte {
-	var jsonStr []byte
+func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
+	var objJson []byte
 	var err error
 
-	jsonStr, err = json.Marshal(obj)
+	objJson, err = json.Marshal(obj)
 	if err != nil {
-		log.Printf("Cannot marshal payload: '%s'", obj)
+		log.Printf("Cannot marshal object '%s': %s", obj, err)
 		return nil
 	}
 
-	return jsonStr
+	eaSearch := obj.EaSearch()
+	if t == GET && len(eaSearch) > 0 {
+		eaSearchJson, err := json.Marshal(eaSearch)
+		if err != nil {
+			log.Printf("Cannot marshal EA Search attributes. '%s'\n", err)
+			return nil
+		}
+		objJson = append(append(objJson[:len(objJson)-1], byte(',')), eaSearchJson[1:]...)
+	}
+
+	return objJson
 }
 
 func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string) (req *http.Request, err error) {
 	var (
 		objType      string
 		returnFields []string
-		eaSearch     EA
 	)
 	if obj != nil {
 		objType = obj.ObjectType()
 		returnFields = obj.ReturnFields()
-		eaSearch = obj.EaSearch()
 	}
-	urlStr := wrb.BuildUrl(t, objType, ref, returnFields, eaSearch)
+	urlStr := wrb.BuildUrl(t, objType, ref, returnFields)
 
 	var bodyStr []byte
 	if obj != nil {
-		bodyStr = wrb.BuildBody(obj)
+		bodyStr = wrb.BuildBody(t, obj)
 	}
 
 	req, err = http.NewRequest(t.toMethod(), urlStr, bytes.NewBuffer(bodyStr))

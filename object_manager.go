@@ -95,6 +95,9 @@ func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name str
 		network.Ea["Network Name"] = name
 	}
 	ref, err := objMgr.connector.CreateObject(network)
+	if err != nil {
+		return nil, err
+	}
 	network.Ref = ref
 
 	return network, err
@@ -168,7 +171,7 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Ne
 	}
 
 	if ea != nil && len(ea) > 0 {
-		network.eaSearch = ea
+		network.eaSearch = EASearch(ea)
 	}
 
 	err := objMgr.connector.GetObject(network, "", &res)
