@@ -53,6 +53,29 @@ var _ = Describe("Objects", func() {
 
 	})
 
+	Context("EA Search Object", func() {
+		eas := EASearch{
+			"Network Name": "Shared-Net",
+			"Network View": "Global",
+		}
+		expectedJSON := `{"*Network Name" :"Shared-Net",` +
+			`"*Network View" :"Global"}`
+
+		Context("Marshalling", func() {
+			Context("expected JSON is returned", func() {
+				js, err := json.Marshal(eas)
+
+				It("should not error", func() {
+					Expect(err).NotTo(HaveOccurred())
+				})
+
+				It("should match json expected", func() {
+					Expect(js).To(MatchJSON(expectedJSON))
+				})
+			})
+		})
+	})
+
 	Context("EADefListValue Object", func() {
 		var eadListVal EADefListValue = "Host Record"
 
@@ -108,7 +131,7 @@ var _ = Describe("Objects", func() {
 			cidr := "123.0.0.0/24"
 			netviewName := "localview"
 			nw := NewNetwork(Network{Cidr: cidr, NetviewName: netviewName})
-			searchEAs := EA{"Network Name": "shared-net"}
+			searchEAs := EASearch{"Network Name": "shared-net"}
 			nw.eaSearch = searchEAs
 
 			It("should set fields correctly", func() {
@@ -195,7 +218,7 @@ var _ = Describe("Objects", func() {
 
 	})
 
-	Context("Umnarshalling malformed JSON", func() {
+	Context("Unmarshalling malformed JSON", func() {
 		Context("for EA", func() {
 			badJSON := `""`
 			var ea EA

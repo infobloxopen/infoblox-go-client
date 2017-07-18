@@ -366,8 +366,8 @@ var _ = Describe("Object Manager", func() {
 			resultObject: []Network{*NewNetwork(Network{NetviewName: netviewName, Cidr: cidr, Ref: fakeRefReturn})},
 		}
 
-		nwFakeConnector.getObjectObj.(*Network).eaSearch = ea
-		nwFakeConnector.resultObject.([]Network)[0].eaSearch = ea
+		nwFakeConnector.getObjectObj.(*Network).eaSearch = EASearch(ea)
+		nwFakeConnector.resultObject.([]Network)[0].eaSearch = EASearch(ea)
 
 		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
