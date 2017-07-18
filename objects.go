@@ -198,3 +198,37 @@ func (v *EADefListValue) UnmarshalJSON(b []byte) (err error) {
 	*v = EADefListValue(m["value"])
 	return
 }
+
+type RequestBody struct{
+	Data map[string]interface{} `json:"data,omitempty"`
+	Args map[string]string `json:"args,omitempty"`
+	Method string `json:"method"`
+	Object string `json:"object,omitempty"`
+	EnableSubstitution bool `json:"enable_substitution,omitempty"`
+	AssignState map[string]string `json:"assign_state,omitempty"`
+	Discard bool `json:"discard,omitempty"`
+}
+
+type Request struct{
+	IBBase      `json:"-"`
+}
+
+type SingleRequest struct{
+	Request
+	Body *RequestBody
+}
+
+type MultiRequest struct{
+	Request
+	Body []*RequestBody
+}
+
+func (r *MultiRequest) MarshalJSON() ([]byte, error) {
+	return json.Marshal(r.Body)
+}
+
+func NewMultiRequest(body []*RequestBody) *MultiRequest {
+	req := &MultiRequest{Body: body}
+	req.objectType = "request"
+	return req
+}
