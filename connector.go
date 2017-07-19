@@ -78,6 +78,7 @@ type IBConnector interface {
 	CreateObject(obj IBObject) (ref string, err error)
 	GetObject(obj IBObject, ref string, res interface{}) error
 	DeleteObject(ref string) (refRes string, err error)
+	UpdateObject(obj IBObject, ref string) (refRes string, err error)
 }
 
 type Connector struct {
@@ -284,6 +285,7 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	resp, err := c.makeRequest(DELETE, nil, ref)
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
+		return
 	}
 
 	err = json.Unmarshal(resp, &refRes)
@@ -292,6 +294,23 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 		return
 	}
 
+	return
+}
+
+func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {
+
+	refRes = ""
+	resp, err := c.makeRequest(UPDATE, obj, ref)
+	if err != nil{
+		log.Printf("Failed to update object %s: %s", obj.ObjectType(), err)
+		return
+	}
+
+	err = json.Unmarshal(resp, &refRes)
+	if err != nil {
+		log.Printf("Cannot unmarshall update object response'%s', err: '%s'\n", string(resp), err)
+		return
+	}
 	return
 }
 
