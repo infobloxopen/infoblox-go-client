@@ -209,17 +209,13 @@ type RequestBody struct{
 	Discard bool `json:"discard,omitempty"`
 }
 
-type Request struct{
-	IBBase      `json:"-"`
-}
-
 type SingleRequest struct{
-	Request
+	IBBase      `json:"-"`
 	Body *RequestBody
 }
 
 type MultiRequest struct{
-	Request
+	IBBase      `json:"-"`
 	Body []*RequestBody
 }
 

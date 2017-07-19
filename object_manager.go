@@ -130,7 +130,7 @@ func (objMgr *ObjectManager) GetNetworkView(name string) (*NetworkView, error) {
 	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) UpdateNetworkView(ref string, addEA EA, removeEA EA) error {
+func (objMgr *ObjectManager) UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error {
 	var res NetworkView
 
 	nv := NetworkView{}
@@ -346,8 +346,8 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 }
 
 
-func (objMgr *ObjectManager) CreateMultiObjectRequest(body []*RequestBody) ([]map[string]interface{}, error){
-	req := NewMultiRequest(body)
+func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]interface{}, error){
+
 	conn := objMgr.connector.(*Connector)
 
 	res, err := conn.makeRequest(CREATE, req, "")
