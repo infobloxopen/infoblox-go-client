@@ -49,8 +49,6 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 	} else {
 		switch obj.(type) {
 		case *NetworkView:
-			fmt.Printf("%T \t %T \n", res, c.resultObject)
-
 			*res.(*NetworkView) = c.resultObject.(NetworkView)
 		}
 	}
@@ -125,7 +123,7 @@ var _ = Describe("Object Manager", func() {
 		It("should pass expected updated object to UpdateObject", func() {
 			addEA := EA{"network-name": "net2", "New": "Added"}
 			delEA := EA{"Lock": "Removed"}
-			err = objMgr.UpdateNetworkView(fakeRefReturn, addEA, delEA)
+			err = objMgr.UpdateNetworkViewEA(fakeRefReturn, addEA, delEA)
 		})
 		It("should updated the GetObject with new EA and with no error", func() {
 			Expect(returnGetObject).To(Equal(returnUpdateObject))
