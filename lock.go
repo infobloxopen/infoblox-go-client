@@ -17,14 +17,14 @@ type Lock interface {
 	UnLock(force bool) bool
 }
 
-type NVLocker struct {
+type NetworkViewLocker struct {
 	name          string
 	objMgr        *ObjectManager
 	LockEA        string
 	LockTimeoutEA string
 }
 
-func (l *NVLocker) createLockRequest() *MultiRequest {
+func (l *NetworkViewLocker) createLockRequest() *MultiRequest {
 
 	req := NewMultiRequest(
 		[]*RequestBody{
@@ -49,7 +49,7 @@ func (l *NVLocker) createLockRequest() *MultiRequest {
 				Data: map[string]interface{}{
 					"extattrs+": map[string]interface{}{
 						l.LockEA: map[string]string{
-							"value": l.objMgr.TenantID,
+							"value": l.objMgr.tenantID,
 						},
 						l.LockTimeoutEA: map[string]int32{
 							"value": int32(time.Now().Unix()),
@@ -80,11 +80,11 @@ func (l *NVLocker) createLockRequest() *MultiRequest {
 	return req
 }
 
-func (l *NVLocker) createUnlockRequest(force bool) *MultiRequest {
+func (l *NetworkViewLocker) createUnlockRequest(force bool) *MultiRequest {
 
 	getData := map[string]interface{}{"name": l.name}
 	if !force {
-		getData["*"+l.LockEA] = l.objMgr.TenantID
+		getData["*"+l.LockEA] = l.objMgr.tenantID
 	}
 
 	req := NewMultiRequest(
@@ -146,7 +146,7 @@ func (l *NVLocker) createUnlockRequest(force bool) *MultiRequest {
 	return req
 }
 
-func (l *NVLocker) Lock() bool {
+func (l *NetworkViewLocker) Lock() bool {
 	logrus.Debugf("Creating lock on network niew %s\n", l.name)
 	req := l.createLockRequest()
 	res, err := l.objMgr.CreateMultiObject(req)
@@ -174,7 +174,7 @@ func (l *NVLocker) Lock() bool {
 	}
 
 	dockerID := res[0]["DOCKER-ID"]
-	if dockerID == l.objMgr.TenantID {
+	if dockerID == l.objMgr.tenantID {
 		logrus.Debugln("Got the lock !!!")
 		return true
 	}
@@ -182,7 +182,7 @@ func (l *NVLocker) Lock() bool {
 	return false
 }
 
-func (l *NVLocker) UnLock(force bool) bool {
+func (l *NetworkViewLocker) UnLock(force bool) bool {
 	// To unlock set the Docker-Plugin-Lock EA of network view to Available and
 	// remove the Docker-Plugin-Lock-Time EA
 	req := l.createUnlockRequest(force)
@@ -219,7 +219,7 @@ func GetNVLock(netViewName string, objMgr *ObjectManager, lockEA string, lockTim
 		}
 	}
 
-	l := &NVLocker{name: netViewName, objMgr: objMgr, LockEA: lockEA, LockTimeoutEA: lockTimeoutEA}
+	l := &NetworkViewLocker{name: netViewName, objMgr: objMgr, LockEA: lockEA, LockTimeoutEA: lockTimeoutEA}
 	retryCount := 0
 	for {
 		// Get lock on the network view

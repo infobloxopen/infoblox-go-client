@@ -26,7 +26,7 @@ type IBObjectManager interface {
 type ObjectManager struct {
 	connector IBConnector
 	cmpType   string
-	TenantID  string
+	tenantID  string
 }
 
 func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
@@ -34,7 +34,7 @@ func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *O
 
 	objMgr.connector = connector
 	objMgr.cmpType = cmpType
-	objMgr.TenantID = tenantID
+	objMgr.tenantID = tenantID
 
 	return objMgr
 }
@@ -43,7 +43,7 @@ func (objMgr *ObjectManager) getBasicEA(cloudApiOwned Bool) EA {
 	ea := make(EA)
 	ea["Cloud API Owned"] = cloudApiOwned
 	ea["CMP Type"] = objMgr.cmpType
-	ea["Tenant ID"] = objMgr.TenantID
+	ea["Tenant ID"] = objMgr.tenantID
 	return ea
 }
 
