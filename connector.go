@@ -301,7 +301,7 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 
 	refRes = ""
 	resp, err := c.makeRequest(UPDATE, obj, ref)
-	if err != nil{
+	if err != nil {
 		log.Printf("Failed to update object %s: %s", obj.ObjectType(), err)
 		return
 	}

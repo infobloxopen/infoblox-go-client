@@ -1,9 +1,9 @@
 package ibclient
 
 import (
+	"encoding/json"
 	"fmt"
 	"regexp"
-	"encoding/json"
 )
 
 type IBObjectManager interface {
@@ -26,7 +26,7 @@ type IBObjectManager interface {
 type ObjectManager struct {
 	connector IBConnector
 	cmpType   string
-	TenantID  string
+	tenantID  string
 }
 
 func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
@@ -34,7 +34,7 @@ func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *O
 
 	objMgr.connector = connector
 	objMgr.cmpType = cmpType
-	objMgr.TenantID = tenantID
+	objMgr.tenantID = tenantID
 
 	return objMgr
 }
@@ -43,7 +43,7 @@ func (objMgr *ObjectManager) getBasicEA(cloudApiOwned Bool) EA {
 	ea := make(EA)
 	ea["Cloud API Owned"] = cloudApiOwned
 	ea["CMP Type"] = objMgr.cmpType
-	ea["Tenant ID"] = objMgr.TenantID
+	ea["Tenant ID"] = objMgr.tenantID
 	return ea
 }
 
@@ -141,7 +141,7 @@ func (objMgr *ObjectManager) UpdateNetworkViewEA(ref string, addEA EA, removeEA 
 		return err
 	}
 
-	for k,v := range addEA {
+	for k, v := range addEA {
 		res.Ea[k] = v
 	}
 
@@ -155,7 +155,6 @@ func (objMgr *ObjectManager) UpdateNetworkViewEA(ref string, addEA EA, removeEA 
 	_, err = objMgr.connector.UpdateObject(&res, ref)
 	return err
 }
-
 
 func BuildNetworkViewFromRef(ref string) *NetworkView {
 	// networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false
@@ -345,22 +344,21 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 	return newEadef, err
 }
 
-
-func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]interface{}, error){
+func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]interface{}, error) {
 
 	conn := objMgr.connector.(*Connector)
 
 	res, err := conn.makeRequest(CREATE, req, "")
 
-	if err != nil{
+	if err != nil {
 		return nil, err
 	}
 
 	var result []map[string]interface{}
 	err = json.Unmarshal(res, &result)
 
-	if err != nil{
-		return nil ,err
+	if err != nil {
+		return nil, err
 	}
 
 	return result, nil

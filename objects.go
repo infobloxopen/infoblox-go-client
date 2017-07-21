@@ -199,24 +199,24 @@ func (v *EADefListValue) UnmarshalJSON(b []byte) (err error) {
 	return
 }
 
-type RequestBody struct{
-	Data map[string]interface{} `json:"data,omitempty"`
-	Args map[string]string `json:"args,omitempty"`
-	Method string `json:"method"`
-	Object string `json:"object,omitempty"`
-	EnableSubstitution bool `json:"enable_substitution,omitempty"`
-	AssignState map[string]string `json:"assign_state,omitempty"`
-	Discard bool `json:"discard,omitempty"`
+type RequestBody struct {
+	Data               map[string]interface{} `json:"data,omitempty"`
+	Args               map[string]string      `json:"args,omitempty"`
+	Method             string                 `json:"method"`
+	Object             string                 `json:"object,omitempty"`
+	EnableSubstitution bool                   `json:"enable_substitution,omitempty"`
+	AssignState        map[string]string      `json:"assign_state,omitempty"`
+	Discard            bool                   `json:"discard,omitempty"`
 }
 
-type SingleRequest struct{
-	IBBase      `json:"-"`
-	Body *RequestBody
+type SingleRequest struct {
+	IBBase `json:"-"`
+	Body   *RequestBody
 }
 
-type MultiRequest struct{
-	IBBase      `json:"-"`
-	Body []*RequestBody
+type MultiRequest struct {
+	IBBase `json:"-"`
+	Body   []*RequestBody
 }
 
 func (r *MultiRequest) MarshalJSON() ([]byte, error) {

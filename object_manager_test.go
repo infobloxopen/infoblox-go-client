@@ -109,10 +109,10 @@ var _ = Describe("Object Manager", func() {
 		getObjectObj := &NetworkView{}
 		getObjectObj.returnFields = []string{"extattrs"}
 		nvFakeConnector := &fakeConnector{
-			getObjectObj:  getObjectObj,
-			getObjectRef:  fakeRefReturn,
-			fakeRefReturn: fakeRefReturn,
-			resultObject:  returnGetObject,
+			getObjectObj:    getObjectObj,
+			getObjectRef:    fakeRefReturn,
+			fakeRefReturn:   fakeRefReturn,
+			resultObject:    returnGetObject,
 			updateObjectObj: &returnUpdateObject,
 			updateObjectRef: fakeRefReturn,
 		}
