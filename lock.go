@@ -182,7 +182,7 @@ func (l *NetworkViewLock) getLock() bool {
 	return false
 }
 
-func (l *NetworkViewLock) Lock() (error) {
+func (l *NetworkViewLock) Lock() error {
 
 	// verify if network view exists and has EA for the lock
 	nw, err := l.ObjMgr.GetNetworkView(l.Name)
@@ -198,7 +198,6 @@ func (l *NetworkViewLock) Lock() (error) {
 			return fmt.Errorf("Failed to Update Network view with Lock EA")
 		}
 	}
-
 
 	retryCount := 0
 	for {
