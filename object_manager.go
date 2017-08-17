@@ -16,7 +16,7 @@ type IBObjectManager interface {
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
-	UpdateFixedAddress(fixedAddr *FixedAddress, macAddress string, vmID string) (*FixedAddress, error)
+	UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
@@ -309,21 +309,23 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddr *FixedAddress, macAddress string, vmID string) (*FixedAddress, error) {
+func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error) {
+
+	updateFixedAddr := NewFixedAddress(FixedAddress{Ref: fixedAddrRef})
 
 	if len(macAddress) != 0 {
-		fixedAddr.Mac = macAddress
+		updateFixedAddr.Mac = macAddress
 	}
 
 	if vmID != "" {
 		ea := objMgr.getBasicEA(true)
 		ea["VM ID"] = vmID
-		fixedAddr.Ea = ea
+		updateFixedAddr.Ea = ea
 	}
 
-	refResp, err := objMgr.connector.UpdateObject(fixedAddr, fixedAddr.Ref)
-	fixedAddr.Ref = refResp
-	return fixedAddr, err
+	refResp, err := objMgr.connector.UpdateObject(updateFixedAddr, fixedAddrRef)
+	updateFixedAddr.Ref = refResp
+	return updateFixedAddr, err
 }
 
 func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error) {
