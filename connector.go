@@ -331,6 +331,11 @@ func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 	connector.Requestor.Init(connector.TransportConfig)
 
 	res = connector
-
+	// GET UserProfile request is used here to validate connector's basic auth and reachability.
+	userprofile := NewUserProfile(UserProfile{})
+	_, err = connector.makeRequest(GET, userprofile, "")
+	if err != nil {
+		log.Printf("Failed to connect to the Grid, err: %s \n", err)
+	}
 	return
 }

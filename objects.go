@@ -124,6 +124,20 @@ func NewEADefinition(eadef EADefinition) *EADefinition {
 	return &res
 }
 
+type UserProfile struct {
+	IBBase `json:"-"`
+	Ref    string `json:"_ref,omitempty"`
+	Name   string `json:"name,omitempty"`
+}
+
+func NewUserProfile(userprofile UserProfile) *UserProfile {
+	res := userprofile
+	res.objectType = "userprofile"
+	res.returnFields = []string{"name"}
+
+	return &res
+}
+
 func (ea EA) MarshalJSON() ([]byte, error) {
 	m := make(map[string]interface{})
 	for k, v := range ea {
