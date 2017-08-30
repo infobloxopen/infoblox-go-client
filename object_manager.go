@@ -387,3 +387,20 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 
 	return result, nil
 }
+
+/// GetUpgradeStatus returns the status of the grid information of a map
+func (objMgr *ObjectManager) GetUpgradeStatus(type_ string) ([]map[string]interface{}, error) {
+	var res []map[string]interface{}
+
+	if type_ == "" {
+		type_ = "GROUP"
+	}
+	upgradeS := NewUpgradeStatus(UpgradeStatus{Type: type_})
+
+	err := objMgr.connector.GetObject(upgradeS, "", &res)
+
+	if err != nil || res == nil {
+		return nil, err
+	}
+	return res, nil
+}

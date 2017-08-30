@@ -55,6 +55,20 @@ func NewNetworkView(nv NetworkView) *NetworkView {
 	return &res
 }
 
+type UpgradeStatus struct {
+	IBBase `json:"-"`
+	Ref    string `json:"_ref,omitempty"`
+	Type   string `json:"type"`
+}
+
+func NewUpgradeStatus(ustatus UpgradeStatus) *UpgradeStatus {
+	result := ustatus
+	result.objectType = "upgradestatus"
+	result.returnFields = []string{"member", "type", "element_status", "subelements_status",
+       "element_status", "grid_state", "ha_status", "hotfixes", "ipv4_address", "ipv6_address"}
+	return &result
+}
+
 type Network struct {
 	IBBase
 	Ref         string `json:"_ref,omitempty"`
