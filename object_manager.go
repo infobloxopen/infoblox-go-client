@@ -16,13 +16,11 @@ type IBObjectManager interface {
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
-	UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
-	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
 }
 
 type ObjectManager struct {
@@ -294,11 +292,8 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	fixedAddr := NewFixedAddress(FixedAddress{
 		NetviewName: netview,
 		Cidr:        cidr,
-		IPAddress:   ipAddr})
-
-	if macAddr != "" {
-		fixedAddr.Mac = macAddr
-	}
+		IPAddress:   ipAddr,
+		Mac:         macAddr})
 
 	err := objMgr.connector.GetObject(fixedAddr, "", &res)
 
@@ -307,25 +302,6 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	}
 
 	return &res[0], nil
-}
-
-func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error) {
-
-	updateFixedAddr := NewFixedAddress(FixedAddress{Ref: fixedAddrRef})
-
-	if len(macAddress) != 0 {
-		updateFixedAddr.Mac = macAddress
-	}
-
-	if vmID != "" {
-		ea := objMgr.getBasicEA(true)
-		ea["VM ID"] = vmID
-		updateFixedAddr.Ea = ea
-	}
-
-	refResp, err := objMgr.connector.UpdateObject(updateFixedAddr, fixedAddrRef)
-	updateFixedAddr.Ref = refResp
-	return updateFixedAddr, err
 }
 
 func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error) {
@@ -368,6 +344,7 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 	return newEadef, err
 }
 
+// CreateMultiObject unmarshals the result into slice of maps
 func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]interface{}, error) {
 
 	conn := objMgr.connector.(*Connector)
@@ -377,7 +354,6 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 	if err != nil {
 		return nil, err
 	}
-
 	var result []map[string]interface{}
 	err = json.Unmarshal(res, &result)
 
@@ -388,14 +364,35 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 	return result, nil
 }
 
-/// GetUpgradeStatus returns the status of the grid information of a map
-func (objMgr *ObjectManager) GetUpgradeStatus(type_ string) ([]map[string]interface{}, error) {
-	var res []map[string]interface{}
+// CreateMultiObjects unmarshals the result into slice of slice of maps 
+func (objMgr *ObjectManager) CreateMultiObjects(req *MultiRequest) (MultiObjectResult, error) {
 
-	if type_ == "" {
-		type_ = "GROUP"
+	conn := objMgr.connector.(*Connector)
+
+	res, err := conn.makeRequest(CREATE, req, "")
+
+	if err != nil {
+		return nil, err
 	}
-	upgradeS := NewUpgradeStatus(UpgradeStatus{Type: type_})
+
+	var result MultiObjectResult
+	err = json.Unmarshal(res, &result)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return result, nil
+}
+
+/// GetUpgradeStatus returns the grid information
+func (objMgr *ObjectManager) GetUpgradeStatus(subelementType string) (UpgradeStatusResult, error) {
+	res := UpgradeStatusResult{}
+
+	if subelementType == "" {
+		subelementType = "GROUP"
+	}
+	upgradeS := NewUpgradeStatus(UpgradeStatus{Type: subelementType})
 
 	err := objMgr.connector.GetObject(upgradeS, "", &res)
 

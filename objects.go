@@ -13,8 +13,10 @@ type Bool bool
 type EA map[string]interface{}
 
 type EASearch map[string]interface{}
-
+type UpgradeStatusResult []map[string]interface{}
 type EADefListValue string
+
+type MultiObjectResult [][]map[string]interface{}
 
 type IBBase struct {
 	objectType   string   `json:"-"`
@@ -61,11 +63,11 @@ type UpgradeStatus struct {
 	Type   string `json:"type"`
 }
 
-func NewUpgradeStatus(ustatus UpgradeStatus) *UpgradeStatus {
-	result := ustatus
+func NewUpgradeStatus(upgradeStatus UpgradeStatus) *UpgradeStatus {
+	result := upgradeStatus
 	result.objectType = "upgradestatus"
 	result.returnFields = []string{"member", "type", "element_status", "subelements_status",
-       "element_status", "grid_state", "ha_status", "hotfixes", "ipv4_address", "ipv6_address"}
+		"element_status", "grid_state", "ha_status", "hotfixes", "ipv4_address", "ipv6_address"}
 	return &result
 }
 
