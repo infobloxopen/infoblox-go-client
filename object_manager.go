@@ -300,6 +300,7 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	if macAddr != "" {
 		fixedAddr.Mac = macAddr
 	}
+
 	err := objMgr.connector.GetObject(fixedAddr, "", &res)
 
 	if err != nil || res == nil || len(res) == 0 {
@@ -378,6 +379,7 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 	if err != nil {
 		return nil, err
 	}
+
 	var result []map[string]interface{}
 	err = json.Unmarshal(res, &result)
 
@@ -409,7 +411,7 @@ func (objMgr *ObjectManager) CreateMultiObjects(req *MultiRequest) (MultiObjectR
 	return result, nil
 }
 
-/// GetUpgradeStatus returns the grid information
+// GetUpgradeStatus returns the grid information
 func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) (UpgradeStatusResult, error) {
 	res := UpgradeStatusResult{}
 
