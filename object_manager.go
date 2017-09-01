@@ -2,6 +2,7 @@ package ibclient
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"regexp"
 )
@@ -16,11 +17,13 @@ type IBObjectManager interface {
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
+	UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
+	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
 }
 
 type ObjectManager struct {
@@ -292,9 +295,11 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	fixedAddr := NewFixedAddress(FixedAddress{
 		NetviewName: netview,
 		Cidr:        cidr,
-		IPAddress:   ipAddr,
-		Mac:         macAddr})
+		IPAddress:   ipAddr})
 
+	if macAddr != "" {
+		fixedAddr.Mac = macAddr
+	}
 	err := objMgr.connector.GetObject(fixedAddr, "", &res)
 
 	if err != nil || res == nil || len(res) == 0 {
@@ -302,6 +307,25 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	}
 
 	return &res[0], nil
+}
+
+func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error) {
+
+	updateFixedAddr := NewFixedAddress(FixedAddress{Ref: fixedAddrRef})
+
+	if len(macAddress) != 0 {
+		updateFixedAddr.Mac = macAddress
+	}
+
+	if vmID != "" {
+		ea := objMgr.getBasicEA(true)
+		ea["VM ID"] = vmID
+		updateFixedAddr.Ea = ea
+	}
+
+	refResp, err := objMgr.connector.UpdateObject(updateFixedAddr, fixedAddrRef)
+	updateFixedAddr.Ref = refResp
+	return updateFixedAddr, err
 }
 
 func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error) {
@@ -364,7 +388,7 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 	return result, nil
 }
 
-// CreateMultiObjects unmarshals the result into slice of slice of maps 
+// CreateMultiObjects unmarshals the result into slice of slice of maps
 func (objMgr *ObjectManager) CreateMultiObjects(req *MultiRequest) (MultiObjectResult, error) {
 
 	conn := objMgr.connector.(*Connector)
@@ -386,15 +410,16 @@ func (objMgr *ObjectManager) CreateMultiObjects(req *MultiRequest) (MultiObjectR
 }
 
 /// GetUpgradeStatus returns the grid information
-func (objMgr *ObjectManager) GetUpgradeStatus(subelementType string) (UpgradeStatusResult, error) {
+func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) (UpgradeStatusResult, error) {
 	res := UpgradeStatusResult{}
 
-	if subelementType == "" {
-		subelementType = "GROUP"
+	if statusType == "" {
+		msg := fmt.Sprintf("Status type can not be nil, Valid choices are [''GRID', GROUP', 'VNODE', 'PNODE']")
+		return nil, errors.New(msg)
 	}
-	upgradeS := NewUpgradeStatus(UpgradeStatus{Type: subelementType})
+	upgradestatus := NewUpgradeStatus(UpgradeStatus{Type: statusType})
 
-	err := objMgr.connector.GetObject(upgradeS, "", &res)
+	err := objMgr.connector.GetObject(upgradestatus, "", &res)
 
 	if err != nil || res == nil {
 		return nil, err
