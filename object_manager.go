@@ -390,41 +390,75 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 	return result, nil
 }
 
-// CreateMultiObjects unmarshals the result into slice of slice of maps
-func (objMgr *ObjectManager) CreateMultiObjects(req *MultiRequest) (MultiObjectResult, error) {
-
-	conn := objMgr.connector.(*Connector)
-
-	res, err := conn.makeRequest(CREATE, req, "")
-
-	if err != nil {
-		return nil, err
-	}
-
-	var result MultiObjectResult
-	err = json.Unmarshal(res, &result)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return result, nil
-}
-
-// GetUpgradeStatus returns the grid information
-func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) (UpgradeStatusResult, error) {
-	res := UpgradeStatusResult{}
+// GetUpgradeStatus returns the grid upgrade information
+func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatusResult, error) {
+	res := []UpgradeStatusResult{}
 
 	if statusType == "" {
-		msg := fmt.Sprintf("Status type can not be nil, Valid choices are [''GRID', GROUP', 'VNODE', 'PNODE']")
-		return nil, errors.New(msg)
+		// TODO option may vary according to the WAPI version, need to
+		// throw relevant  error.
+		msg := fmt.Sprintf("Status type can not be nil, Valid choices are ['GRID', GROUP', 'VNODE', 'PNODE']")
+		return res, errors.New(msg)
 	}
-	upgradestatus := NewUpgradeStatus(UpgradeStatus{Type: statusType})
+	returnFields := []string{"subelements_status,type"}
+	upgradestatus := NewUpgradeStatus(UpgradeStatus{Type: statusType},
+		returnFields)
 
 	err := objMgr.connector.GetObject(upgradestatus, "", &res)
+
+	return res, err
+}
+
+// GetAllMembers returns all members information
+func (objMgr *ObjectManager) GetAllMembers() ([]MemberResult, error) {
+	res := []MemberResult{}
+	returnFields := []string{"host_name", "node_info", "time_zone"}
+	memberObj := NewMember(Member{}, returnFields)
+
+	err := objMgr.connector.GetObject(memberObj, "", &res)
 
 	if err != nil || res == nil {
 		return nil, err
 	}
 	return res, nil
+}
+
+// GetCapacityReport returns all capacity for members
+func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, error) {
+	res := []CapacityReport{}
+	returnFields := []string{"name",
+		"hardware_type", "max_capacity", "object_counts",
+		"percent_used", "role", "total_objects"}
+	args := make(Args)
+	args["name"] = name
+	capacityObj := CapacityReport{}
+	capacityReport := NewCapcityReport(capacityObj, returnFields, args)
+
+	err := objMgr.connector.GetObject(capacityReport, "", &res)
+	return res, err
+}
+
+// GetLicense returns the license details for
+func (objMgr *ObjectManager) GetLicense() ([]License, error) {
+	res := []License{}
+	returnFields := []string{"expiration_status",
+		"expiry_date",
+		"hwid",
+		"key",
+		"kind",
+		"limit",
+		"limit_context",
+		"type"}
+	licenseObj := NewLicense(License{}, returnFields)
+	err := objMgr.connector.GetObject(licenseObj, "", &res)
+	return res, err
+}
+
+func (objMgr *ObjectManager) GetGridInfo() ([]GridResult, error) {
+	res := []GridResult{}
+	returnFields := []string{"name",
+		"ntp_setting"}
+	gridObj := NewGrid(Grid{}, returnFields)
+	err := objMgr.connector.GetObject(gridObj, "", &res)
+	return res, err
 }

@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"net/http"
 	"net/url"
 	"strings"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 type FakeRequestBuilder struct {
@@ -27,7 +28,7 @@ func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
 	rb.hostConfig = cfg
 }
 
-func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string) string {
+func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, args Args) string {
 	return rb.urlStr
 }
 
@@ -86,10 +87,11 @@ var _ = Describe("Connector", func() {
 			It("should return expected url string for CREATE request", func() {
 				objType := "networkview"
 				ref := ""
+				args := make(Args)
 				returnFields := []string{}
 				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, objType)
-				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields)
+				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, args)
 				Expect(urlStr).To(Equal(expectedUrlStr))
 			})
 
@@ -97,11 +99,12 @@ var _ = Describe("Connector", func() {
 				objType := "network"
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
+				args := make(Args)
 
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
 				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
 					host, port, version, objType, returnFieldsStr)
-				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields)
+				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, args)
 				Expect(urlStr).To(Equal(expectedUrlStr))
 			})
 
@@ -109,10 +112,11 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
+				args := make(Args)
 
 				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, ref)
-				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields)
+				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, args)
 				Expect(urlStr).To(Equal(expectedUrlStr))
 			})
 		})

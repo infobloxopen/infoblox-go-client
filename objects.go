@@ -13,21 +13,25 @@ type Bool bool
 type EA map[string]interface{}
 
 type EASearch map[string]interface{}
-type UpgradeStatusResult []map[string]interface{}
+
 type EADefListValue string
 
 type MultiObjectResult [][]map[string]interface{}
+
+type Args map[string]string
 
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
 	eaSearch     EASearch `json:"-"`
+	args         Args     `json:"-"`
 }
 
 type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
 	EaSearch() EASearch
+	Args() Args
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -40,6 +44,9 @@ func (obj *IBBase) ReturnFields() []string {
 
 func (obj *IBBase) EaSearch() EASearch {
 	return obj.eaSearch
+}
+func (obj *IBBase) Args() Args {
+	return obj.args
 }
 
 type NetworkView struct {
@@ -63,11 +70,31 @@ type UpgradeStatus struct {
 	Type   string `json:"type"`
 }
 
-func NewUpgradeStatus(upgradeStatus UpgradeStatus) *UpgradeStatus {
+// SubElementsStatus object representation
+type SubElementsStatus struct {
+	Ref            string `json:"_ref,omitempty"`
+	CurrentVersion string `json:"current_version"`
+	ElementStatus  string `json:"element_status"`
+	Ipv4Address    string `json:"ipv4_address"`
+	Ipv6Address    string `json:"ipv6_address"`
+	StatusValue    string `json:"status_value"`
+	StepsTotal     int    `json:"steps_total"`
+	StepsCompleted int    `json:"steps_completed"`
+	NodeType       string `json:"type"`
+	Member         string `json:member`
+}
+
+type UpgradeStatusResult struct {
+	Ref              string              `json:"_ref,omitempty"`
+	SubElementStatus []SubElementsStatus `json:"subelements_status",omitempty`
+	NodeType         string              `json:"type"`
+	UpgradeGroup     string              `json:"upgrade_group"`
+}
+
+func NewUpgradeStatus(upgradeStatus UpgradeStatus, returnFields []string) *UpgradeStatus {
 	result := upgradeStatus
 	result.objectType = "upgradestatus"
-	result.returnFields = []string{"member", "type", "element_status", "subelements_status",
-		"element_status", "grid_state", "ha_status", "hotfixes", "ipv4_address", "ipv6_address"}
+	result.returnFields = returnFields
 	return &result
 }
 
@@ -79,9 +106,130 @@ type Network struct {
 	Ea          EA     `json:"extattrs,omitempty"`
 }
 
+type Members []Member
+
+type ServiceStatus struct {
+	Desciption string `json:"description,omitempty"`
+	Service    string `json:"service,omitempty"`
+	Status     string `json:"status,omitempty"`
+}
+
+type LanHaPortSetting struct {
+	HaPortSetting  map[string]interface{} `json:"ha_port_setting,omitempty"`
+	LanPortSetting map[string]bool        `json:"lan_port_setting,omitempty"`
+}
+
+type NodeInfo struct {
+	HaStatus             string                 `json:"ha_status,omitempty"`
+	HwId                 string                 `json:"hwid,omitempty"`
+	HwModel              string                 `json:"hwmodel,omitempty"`
+	HwPlatform           string                 `json:"hwplatform,omitempty"`
+	HwType               string                 `json:"hwtype,omitempty"`
+	Lan2PhysicalSetting  map[string]bool        `json:"lan2_physical_setting,omitempty"`
+	LanHaPortSetting     LanHaPortSetting       `json:"lan_Ha_Port_Setting,omitempty"`
+	MgmtNetworkSetting   map[string]interface{} `json:"mgmt_network_setting,omitempty"`
+	MgmtPhysicalSetting  map[string]bool        `json:"mgmt_physical_setting,omitempty"`
+	PaidNios             bool                   `json:"paid_nios,omitempty"`
+	PhysicalOid          string                 `json:"physical_oid,omitempty"`
+	ServiceStatus        []ServiceStatus        `json:"service_status,omitempty"`
+	V6MgmtNetworkSetting map[string]interface{} `json:"v6_mgmt_network_setting,omitempty"`
+}
+
+type Member struct {
+	IBBase                   `json:"-"`
+	Ref                      string `json:"_ref,omitempty"`
+	HostName                 string `json:"host_name,omitempty"`
+	ConfigAddrType           string `json:"config_addr_type,omitempty"`
+	PLATFORM                 string `json:"platform,omitempty"`
+	ServiceTypeConfiguration string `json:"service_type_configuration,omitempty"`
+}
+
+// License represents license wapi object
+type License struct {
+	IBBase           `json:"-"`
+	Ref              string `json:"_ref,omitempty"`
+	ExpirationStatus string `json:"expiration_status,omitempty"`
+	ExpiryDate       int    `json:"expiry_date,omitempty"`
+	HwID             string `json:"hwid,omitempty"`
+	Key              string `json:"key,omitempty"`
+	Kind             string `json:"kind,omitempty"`
+	Limit            string `json:"limit,omitempty"`
+	LimitContext     string `json:"limit_context,omitempty"`
+	Licensetype      string `json:"type,omitempty"`
+}
+
+type MemberResult struct {
+	Ref      string     `json:"_ref,omitempty"`
+	HostName string     `json:"host_name,omitempty"`
+	Nodeinfo []NodeInfo `json:"node_info,omitempty"`
+	TimeZone string     `json:"time_zone"`
+}
+
+// CapacityReport represents capacityreport object
+type CapacityReport struct {
+	IBBase `json:"-"`
+	Ref    string `json:"_ref,omitempty"`
+
+	Name         string                   `json:"name,omitempty"`
+	HardwareType string                   `json:"hardware_type,omitempty"`
+	MaxCapacity  int                      `json:"max_capacity,omitempty"`
+	ObjectCount  []map[string]interface{} `json:"object_counts,omitempty"`
+	PercentUsed  int                      `json:"percent_used,omitempty"`
+	Role         string                   `json:"role,omitempty"`
+	TotalObjects int                      `json:"total_objects,omitempty"`
+}
+type NTPSetting struct {
+	enable_ntp bool                   `json:"enable_ntp,omitempty"`
+	NTPAcl     map[string]interface{} `json:"ntp_acl,omitempty"`
+	NTPKeys    []string               `json:"ntp_keys,omitempty"`
+	NTPKod     bool                   `json:"ntp_kod,omitempty"`
+	NTPServers []string               `json:"ntp_servers,omitempty"`
+}
+
+type Grid struct {
+	IBBase `json:"-"`
+	Ref    string `json:"_ref,omitempty"`
+}
+
+type GridResult struct {
+	Ref        string     `json:"_ref,omitempty"`
+	Name       string     `json:"name,omitempty"`
+	NTPSetting NTPSetting `json:"ntp_setting"`
+}
+
+func NewGrid(grid Grid, returnFields []string) *Grid {
+	result := grid
+	result.objectType = "grid"
+	result.returnFields = returnFields
+	return &result
+}
+
+func NewLicense(license License, returnFields []string) *License {
+	result := license
+	result.objectType = "member:license"
+	result.returnFields = returnFields
+	return &result
+}
+
+func NewCapcityReport(capReport CapacityReport, returnFields []string, args Args) *CapacityReport {
+	res := capReport
+	res.objectType = "capacityreport"
+	res.returnFields = returnFields
+	res.args = args
+	return &res
+}
+
+func NewMember(member Member, returnFields []string) *Member {
+	res := member
+	res.objectType = "member"
+	res.returnFields = returnFields
+	return &res
+}
+
 func NewNetwork(nw Network) *Network {
 	res := nw
 	res.objectType = "network"
+
 	res.returnFields = []string{"extattrs", "network", "network_view"}
 
 	return &res
@@ -255,6 +403,12 @@ func (r *MultiRequest) MarshalJSON() ([]byte, error) {
 
 func NewMultiRequest(body []*RequestBody) *MultiRequest {
 	req := &MultiRequest{Body: body}
+	req.objectType = "request"
+	return req
+}
+
+func NewRequest(body *RequestBody) *SingleRequest {
+	req := &SingleRequest{Body: body}
 	req.objectType = "request"
 	return req
 }

@@ -56,7 +56,7 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 
 type HttpRequestBuilder interface {
 	Init(HostConfig)
-	BuildUrl(r RequestType, objType string, ref string, returnFields []string) (urlStr string)
+	BuildUrl(r RequestType, objType string, ref string, returnFields []string, args Args) (urlStr string)
 	BuildBody(r RequestType, obj IBObject) (jsonStr []byte)
 	BuildRequest(r RequestType, obj IBObject, ref string) (req *http.Request, err error)
 }
@@ -156,7 +156,7 @@ func (wrb *WapiRequestBuilder) Init(cfg HostConfig) {
 	wrb.HostConfig = cfg
 }
 
-func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string) (urlStr string) {
+func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, args Args) (urlStr string) {
 	path := []string{"wapi", "v" + wrb.HostConfig.Version}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -169,6 +169,12 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 	if t == GET {
 		if len(returnFields) > 0 {
 			vals.Set("_return_fields", strings.Join(returnFields, ","))
+		}
+		// Query params are being set
+		if len(args) > 0 {
+			for key, value := range args {
+				vals.Set(key, value)
+			}
 		}
 		qry = vals.Encode()
 	}
@@ -210,12 +216,14 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 	var (
 		objType      string
 		returnFields []string
+		args         Args
 	)
 	if obj != nil {
 		objType = obj.ObjectType()
 		returnFields = obj.ReturnFields()
+		args = obj.Args()
 	}
-	urlStr := wrb.BuildUrl(t, objType, ref, returnFields)
+	urlStr := wrb.BuildUrl(t, objType, ref, returnFields, args)
 
 	var bodyStr []byte
 	if obj != nil {
@@ -336,7 +344,8 @@ func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 	userprofile := NewUserProfile(UserProfile{})
 	err = connector.GetObject(userprofile, "", &response)
 	if err != nil {
-		log.Printf("Failed to connect to the Grid, err: %s \n", err)
+	        log.Printf("Failed to connect to the Grid, err: %s \n", err)
 	}
+
 	return
 }
