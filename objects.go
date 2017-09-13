@@ -31,7 +31,6 @@ type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
 	EaSearch() EASearch
-	Args() Args
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -44,9 +43,6 @@ func (obj *IBBase) ReturnFields() []string {
 
 func (obj *IBBase) EaSearch() EASearch {
 	return obj.eaSearch
-}
-func (obj *IBBase) Args() Args {
-	return obj.args
 }
 
 type NetworkView struct {
@@ -211,11 +207,10 @@ func NewLicense(license License, returnFields []string) *License {
 	return &result
 }
 
-func NewCapcityReport(capReport CapacityReport, returnFields []string, args Args) *CapacityReport {
+func NewCapcityReport(capReport CapacityReport, returnFields []string) *CapacityReport {
 	res := capReport
 	res.objectType = "capacityreport"
 	res.returnFields = returnFields
-	res.args = args
 	return &res
 }
 

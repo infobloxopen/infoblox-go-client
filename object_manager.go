@@ -429,10 +429,9 @@ func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, e
 	returnFields := []string{"name",
 		"hardware_type", "max_capacity", "object_counts",
 		"percent_used", "role", "total_objects"}
-	args := make(Args)
-	args["name"] = name
-	capacityObj := CapacityReport{}
-	capacityReport := NewCapcityReport(capacityObj, returnFields, args)
+
+	capacityObj := CapacityReport{Name: name}
+	capacityReport := NewCapcityReport(capacityObj, returnFields)
 
 	err := objMgr.connector.GetObject(capacityReport, "", &res)
 	return res, err
