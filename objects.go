@@ -18,13 +18,10 @@ type EADefListValue string
 
 type MultiObjectResult [][]map[string]interface{}
 
-type Args map[string]string
-
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
 	eaSearch     EASearch `json:"-"`
-	args         Args     `json:"-"`
 }
 
 type IBObject interface {
