@@ -7,9 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 )
 
 type FakeRequestBuilder struct {

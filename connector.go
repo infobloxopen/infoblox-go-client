@@ -338,6 +338,5 @@ func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 	if err != nil {
 		log.Printf("Failed to connect to the Grid, err: %s \n", err)
 	}
-
 	return
 }

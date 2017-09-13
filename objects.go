@@ -16,8 +16,6 @@ type EASearch map[string]interface{}
 
 type EADefListValue string
 
-type MultiObjectResult [][]map[string]interface{}
-
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
@@ -223,7 +221,6 @@ func NewNetwork(nw Network) *Network {
 	res.objectType = "network"
 
 	res.returnFields = []string{"extattrs", "network", "network_view"}
-
 	return &res
 }
 
