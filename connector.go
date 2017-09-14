@@ -314,6 +314,19 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 	return
 }
 
+var ValidateConnector = validateConnector
+
+func validateConnector(c *Connector) (err error) {
+	// GET UserProfile request is used here to validate connector's basic auth and reachability.
+	var response []UserProfile
+	userprofile := NewUserProfile(UserProfile{})
+	err = c.GetObject(userprofile, "", &response)
+	if err != nil {
+		log.Printf("Failed to connect to the Grid, err: %s \n", err)
+	}
+	return
+}
+
 func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 	requestBuilder HttpRequestBuilder, requestor HttpRequestor) (res *Connector, err error) {
 	res = nil
@@ -331,12 +344,6 @@ func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 	connector.Requestor.Init(connector.TransportConfig)
 
 	res = connector
-	// GET UserProfile request is used here to validate connector's basic auth and reachability.
-	var response []UserProfile
-	userprofile := NewUserProfile(UserProfile{})
-	err = connector.GetObject(userprofile, "", &response)
-	if err != nil {
-		log.Printf("Failed to connect to the Grid, err: %s \n", err)
-	}
+	err = ValidateConnector(connector)
 	return
 }
