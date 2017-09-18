@@ -138,6 +138,76 @@ func NewUserProfile(userprofile UserProfile) *UserProfile {
 	return &res
 }
 
+type RecordA struct {
+	IBBase   `json:"-"`
+	Ref      string `json:"_ref,omitempty"`
+	Ipv4Addr string `json:"ipv4addr,omitempty"`
+	Name     string `json:"name,omitempty"`
+	View     string `json:"view,omitempty"`
+	Zone     string `json:"zone,omitempty"`
+	Ea       EA     `json:"extattrs,omitempty"`
+}
+
+func NewRecordA(ra RecordA) *RecordA {
+	res := ra
+	res.objectType = "record:a"
+	res.returnFields = []string{"extattrs", "ipv4addr", "name", "view", "zone"}
+
+	return &res
+}
+
+type RecordCNAME struct {
+	IBBase    `json:"-"`
+	Ref       string `json:"_ref,omitempty"`
+	Canonical string `json:"canonical,omitempty"`
+	Name      string `json:"name,omitempty"`
+	View      string `json:"view,omitempty"`
+	Zone      string `json:"zone,omitempty"`
+	Ea        EA     `json:"extattrs,omitempty"`
+}
+
+func NewRecordCNAME(rc RecordCNAME) *RecordCNAME {
+	res := rc
+	res.objectType = "record:cname"
+	res.returnFields = []string{"extattrs", "canonical", "name", "view", "zone"}
+
+	return &res
+}
+
+type RecordTXT struct {
+	IBBase `json:"-"`
+	Ref    string `json:"_ref,omitempty"`
+	Name   string `json:"name,omitempty"`
+	Text   string `json:"text,omitempty"`
+	View   string `json:"view,omitempty"`
+	Zone   string `json:"zone,omitempty"`
+	Ea     EA     `json:"extattrs,omitempty"`
+}
+
+func NewRecordTXT(rt RecordTXT) *RecordTXT {
+	res := rt
+	res.objectType = "record:txt"
+	res.returnFields = []string{"extattrs", "name", "text", "view", "zone"}
+
+	return &res
+}
+
+type ZoneAuth struct {
+	IBBase `json:"-"`
+	Ref    string `json:"_ref,omitempty"`
+	Fqdn   string `json:"fqdn,omitempty"`
+	View   string `json:"view,omitempty"`
+	Ea     EA     `json:"extattrs,omitempty"`
+}
+
+func NewZoneAuth(za ZoneAuth) *ZoneAuth {
+	res := za
+	res.objectType = "zone_auth"
+	res.returnFields = []string{"extattrs", "fqdn", "view"}
+
+	return &res
+}
+
 func (ea EA) MarshalJSON() ([]byte, error) {
 	m := make(map[string]interface{})
 	for k, v := range ea {
