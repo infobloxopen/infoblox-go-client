@@ -16,6 +16,8 @@ type EASearch map[string]interface{}
 
 type EADefListValue string
 
+type MultiObjectResult [][]map[string]interface{}
+
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
@@ -55,10 +57,20 @@ func NewNetworkView(nv NetworkView) *NetworkView {
 	return &res
 }
 
+// UpgradeStatus object representation
 type UpgradeStatus struct {
-	IBBase `json:"-"`
-	Ref    string `json:"_ref,omitempty"`
-	Type   string `json:"type"`
+	IBBase           `json:"-"`
+	Ref              string              `json:"_ref,omitempty"`
+	Type             string              `json:"type"`
+	SubElementStatus []SubElementsStatus `json:"subelements_status,omitempty"`
+	UpgradeGroup     string              `json:"upgrade_group,omitempty"`
+}
+
+func NewUpgradeStatus(upgradeStatus UpgradeStatus, returnFields []string) *UpgradeStatus {
+	result := upgradeStatus
+	result.objectType = "upgradestatus"
+	result.returnFields = returnFields
+	return &result
 }
 
 // SubElementsStatus object representation
@@ -75,26 +87,20 @@ type SubElementsStatus struct {
 	Member         string `json:member`
 }
 
-type UpgradeStatusResult struct {
-	Ref              string              `json:"_ref,omitempty"`
-	SubElementStatus []SubElementsStatus `json:"subelements_status",omitempty`
-	NodeType         string              `json:"type"`
-	UpgradeGroup     string              `json:"upgrade_group"`
-}
-
-func NewUpgradeStatus(upgradeStatus UpgradeStatus, returnFields []string) *UpgradeStatus {
-	result := upgradeStatus
-	result.objectType = "upgradestatus"
-	result.returnFields = returnFields
-	return &result
-}
-
 type Network struct {
 	IBBase
 	Ref         string `json:"_ref,omitempty"`
 	NetviewName string `json:"network_view,omitempty"`
 	Cidr        string `json:"network,omitempty"`
 	Ea          EA     `json:"extattrs,omitempty"`
+}
+
+func NewNetwork(nw Network) *Network {
+	res := nw
+	res.objectType = "network"
+	res.returnFields = []string{"extattrs", "network", "network_view"}
+
+	return &res
 }
 
 type Members []Member
@@ -126,13 +132,23 @@ type NodeInfo struct {
 	V6MgmtNetworkSetting map[string]interface{} `json:"v6_mgmt_network_setting,omitempty"`
 }
 
+// Member represents NIOS member
 type Member struct {
 	IBBase                   `json:"-"`
-	Ref                      string `json:"_ref,omitempty"`
-	HostName                 string `json:"host_name,omitempty"`
-	ConfigAddrType           string `json:"config_addr_type,omitempty"`
-	PLATFORM                 string `json:"platform,omitempty"`
-	ServiceTypeConfiguration string `json:"service_type_configuration,omitempty"`
+	Ref                      string     `json:"_ref,omitempty"`
+	HostName                 string     `json:"host_name,omitempty"`
+	ConfigAddrType           string     `json:"config_addr_type,omitempty"`
+	PLATFORM                 string     `json:"platform,omitempty"`
+	ServiceTypeConfiguration string     `json:"service_type_configuration,omitempty"`
+	Nodeinfo                 []NodeInfo `json:"node_info,omitempty"`
+	TimeZone                 string     `json:"time_zone,omitempty"`
+}
+
+func NewMember(member Member, returnFields []string) *Member {
+	res := member
+	res.objectType = "member"
+	res.returnFields = returnFields
+	return &res
 }
 
 // License represents license wapi object
@@ -149,11 +165,18 @@ type License struct {
 	Licensetype      string `json:"type,omitempty"`
 }
 
-type MemberResult struct {
-	Ref      string     `json:"_ref,omitempty"`
-	HostName string     `json:"host_name,omitempty"`
-	Nodeinfo []NodeInfo `json:"node_info,omitempty"`
-	TimeZone string     `json:"time_zone"`
+func NewGridLicense(license License, returnFields []string) *License {
+	result := license
+	result.objectType = "license:gridwide"
+	result.returnFields = returnFields
+	return &result
+}
+
+func NewLicense(license License, returnFields []string) *License {
+	result := license
+	result.objectType = "member:license"
+	result.returnFields = returnFields
+	return &result
 }
 
 // CapacityReport represents capacityreport object
@@ -169,7 +192,16 @@ type CapacityReport struct {
 	Role         string                   `json:"role,omitempty"`
 	TotalObjects int                      `json:"total_objects,omitempty"`
 }
+
+func NewCapcityReport(capReport CapacityReport, returnFields []string) *CapacityReport {
+	res := capReport
+	res.objectType = "capacityreport"
+	res.returnFields = returnFields
+	return &res
+}
+
 type NTPSetting struct {
+	IBBase     `json:"-"`
 	enable_ntp bool                   `json:"enable_ntp,omitempty"`
 	NTPAcl     map[string]interface{} `json:"ntp_acl,omitempty"`
 	NTPKeys    []string               `json:"ntp_keys,omitempty"`
@@ -180,12 +212,7 @@ type NTPSetting struct {
 type Grid struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
-}
-
-type GridResult struct {
-	Ref        string     `json:"_ref,omitempty"`
-	Name       string     `json:"name,omitempty"`
-	NTPSetting NTPSetting `json:"ntp_setting"`
+	Name   string `json:"name,omitempty"`
 }
 
 func NewGrid(grid Grid, returnFields []string) *Grid {
@@ -195,33 +222,10 @@ func NewGrid(grid Grid, returnFields []string) *Grid {
 	return &result
 }
 
-func NewLicense(license License, returnFields []string) *License {
-	result := license
-	result.objectType = "member:license"
-	result.returnFields = returnFields
-	return &result
-}
-
-func NewCapcityReport(capReport CapacityReport, returnFields []string) *CapacityReport {
-	res := capReport
-	res.objectType = "capacityreport"
-	res.returnFields = returnFields
-	return &res
-}
-
-func NewMember(member Member, returnFields []string) *Member {
-	res := member
-	res.objectType = "member"
-	res.returnFields = returnFields
-	return &res
-}
-
-func NewNetwork(nw Network) *Network {
-	res := nw
-	res.objectType = "network"
-
-	res.returnFields = []string{"extattrs", "network", "network_view"}
-	return &res
+type GridResult struct {
+	Ref        string     `json:"_ref,omitempty"`
+	Name       string     `json:"name,omitempty"`
+	NTPSetting NTPSetting `json:"ntp_setting,omitempty"`
 }
 
 type NetworkContainer struct {
