@@ -397,12 +397,11 @@ func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatu
 	if statusType == "" {
 		// TODO option may vary according to the WAPI version, need to
 		// throw relevant  error.
-		msg := fmt.Sprintf("Status type can not be nil, Valid choices are ['GRID', GROUP', 'VNODE', 'PNODE']")
+		msg := fmt.Sprintf("Status type can not be nil")
 		return res, errors.New(msg)
 	}
-	returnFields := []string{"subelements_status,type"}
-	upgradestatus := NewUpgradeStatus(UpgradeStatus{Type: statusType},
-		returnFields)
+
+	upgradestatus := NewUpgradeStatus(UpgradeStatus{Type: statusType})
 
 	err := objMgr.connector.GetObject(upgradestatus, "", &res)
 
@@ -412,8 +411,8 @@ func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatu
 // GetAllMembers returns all members information
 func (objMgr *ObjectManager) GetAllMembers() ([]Member, error) {
 	var res []Member
-	returnFields := []string{"host_name", "node_info", "time_zone"}
-	memberObj := NewMember(Member{}, returnFields)
+
+	memberObj := NewMember(Member{})
 
 	err := objMgr.connector.GetObject(memberObj, "", &res)
 
@@ -426,12 +425,9 @@ func (objMgr *ObjectManager) GetAllMembers() ([]Member, error) {
 // GetCapacityReport returns all capacity for members
 func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, error) {
 	var res []CapacityReport
-	returnFields := []string{"name",
-		"hardware_type", "max_capacity", "object_counts",
-		"percent_used", "role", "total_objects"}
 
 	capacityObj := CapacityReport{Name: name}
-	capacityReport := NewCapcityReport(capacityObj, returnFields)
+	capacityReport := NewCapcityReport(capacityObj)
 
 	err := objMgr.connector.GetObject(capacityReport, "", &res)
 	return res, err
@@ -440,15 +436,8 @@ func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, e
 // GetLicense returns the license details for member
 func (objMgr *ObjectManager) GetLicense() ([]License, error) {
 	var res []License
-	returnFields := []string{"expiration_status",
-		"expiry_date",
-		"hwid",
-		"key",
-		"kind",
-		"limit",
-		"limit_context",
-		"type"}
-	licenseObj := NewLicense(License{}, returnFields)
+
+	licenseObj := NewLicense(License{})
 	err := objMgr.connector.GetObject(licenseObj, "", &res)
 	return res, err
 }
@@ -456,22 +445,16 @@ func (objMgr *ObjectManager) GetLicense() ([]License, error) {
 // GetLicense returns the license details for grid
 func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 	var res []License
-	returnFields := []string{"expiration_status",
-		"expiry_date",
-		"key",
-		"limit",
-		"limit_context",
-		"type"}
-	licenseObj := NewGridLicense(License{}, returnFields)
+	licenseObj := NewGridLicense(License{})
 	err := objMgr.connector.GetObject(licenseObj, "", &res)
 	return res, err
 }
 
+// GetLicense returns the details for grid
 func (objMgr *ObjectManager) GetGridInfo() ([]GridResult, error) {
 	var res []GridResult
-	returnFields := []string{"name",
-		"ntp_setting"}
-	gridObj := NewGrid(Grid{}, returnFields)
+
+	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(gridObj, "", &res)
 	return res, err
 }

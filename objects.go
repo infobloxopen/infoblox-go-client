@@ -16,8 +16,6 @@ type EASearch map[string]interface{}
 
 type EADefListValue string
 
-type MultiObjectResult [][]map[string]interface{}
-
 type IBBase struct {
 	objectType   string   `json:"-"`
 	returnFields []string `json:"-"`
@@ -28,6 +26,7 @@ type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
 	EaSearch() EASearch
+	//SetReturnFields([]string)
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -66,8 +65,9 @@ type UpgradeStatus struct {
 	UpgradeGroup     string              `json:"upgrade_group,omitempty"`
 }
 
-func NewUpgradeStatus(upgradeStatus UpgradeStatus, returnFields []string) *UpgradeStatus {
+func NewUpgradeStatus(upgradeStatus UpgradeStatus) *UpgradeStatus {
 	result := upgradeStatus
+	returnFields := []string{"subelements_status,type"}
 	result.objectType = "upgradestatus"
 	result.returnFields = returnFields
 	return &result
@@ -112,24 +112,54 @@ type ServiceStatus struct {
 }
 
 type LanHaPortSetting struct {
-	HaPortSetting  map[string]interface{} `json:"ha_port_setting,omitempty"`
-	LanPortSetting map[string]bool        `json:"lan_port_setting,omitempty"`
+	HAIpAddress    string              `json:"ha_ip_address,omitempty"`
+	HaPortSetting  PhysicalPortSetting `json:"ha_port_setting,omitempty"`
+	LanPortSetting PhysicalPortSetting `json:"lan_port_setting,omitempty"`
+	MgmtIpv6addr   string              `json:"mgmt_ipv6addr,omitempty"`
+	MgmtLan        string              `json:"mgmt_lan,omitempty"`
+}
+
+type PhysicalPortSetting struct {
+	AutoPortSettingEnabled bool   `json:"auto_port_setting_enabled"`
+	duplex                 string `json:"duplex,omitempty"`
+	speed                  string
+}
+
+type NetworkSetting struct {
+	Address    string `json:"address"`
+	Dscp       uint   `json:"dscp"`
+	Gateway    string `json:"gateway"`
+	Primary    bool   `json:"primary"`
+	SubnetMask string `json:"subnet_mask"`
+	UseDscp    bool   `json:"use_dscp,omiempty"`
+	VlanId     uint   `json:"vlan_id,omitempty"`
+}
+type Ipv6Setting struct {
+	AutoRouterConfigEnabled bool   `json:"auto_router_config_enabled"`
+	CidrPrefix              uint   `json:"cidr_prefix,omitempty"`
+	Dscp                    uint   `json:"dscp,omitempty"`
+	Enabled                 bool   `json:"enabled,omitempty"`
+	Gateway                 string `json:"gateway"`
+	Primary                 string `json:"primary,omitempty"`
+	VirtualIp               string `json:"virtual_ip"`
+	VlanId                  uint   `json:"vlan_id,emitempty"`
+	UseDscp                 bool   `json:"use_dscp,omitempty"`
 }
 
 type NodeInfo struct {
-	HaStatus             string                 `json:"ha_status,omitempty"`
-	HwId                 string                 `json:"hwid,omitempty"`
-	HwModel              string                 `json:"hwmodel,omitempty"`
-	HwPlatform           string                 `json:"hwplatform,omitempty"`
-	HwType               string                 `json:"hwtype,omitempty"`
-	Lan2PhysicalSetting  map[string]bool        `json:"lan2_physical_setting,omitempty"`
-	LanHaPortSetting     LanHaPortSetting       `json:"lan_Ha_Port_Setting,omitempty"`
-	MgmtNetworkSetting   map[string]interface{} `json:"mgmt_network_setting,omitempty"`
-	MgmtPhysicalSetting  map[string]bool        `json:"mgmt_physical_setting,omitempty"`
-	PaidNios             bool                   `json:"paid_nios,omitempty"`
-	PhysicalOid          string                 `json:"physical_oid,omitempty"`
-	ServiceStatus        []ServiceStatus        `json:"service_status,omitempty"`
-	V6MgmtNetworkSetting map[string]interface{} `json:"v6_mgmt_network_setting,omitempty"`
+	HaStatus             string              `json:"ha_status,omitempty"`
+	HwId                 string              `json:"hwid,omitempty"`
+	HwModel              string              `json:"hwmodel,omitempty"`
+	HwPlatform           string              `json:"hwplatform,omitempty"`
+	HwType               string              `json:"hwtype,omitempty"`
+	Lan2PhysicalSetting  PhysicalPortSetting `json:"lan2_physical_setting,omitempty"`
+	LanHaPortSetting     LanHaPortSetting    `json:"lan_ha_Port_Setting,omitempty"`
+	MgmtNetworkSetting   NetworkSetting      `json:"mgmt_network_setting,omitempty"`
+	MgmtPhysicalSetting  PhysicalPortSetting `json:"mgmt_physical_setting,omitempty"`
+	PaidNios             bool                `json:"paid_nios,omitempty"`
+	PhysicalOid          string              `json:"physical_oid,omitempty"`
+	ServiceStatus        []ServiceStatus     `json:"service_status,omitempty"`
+	V6MgmtNetworkSetting Ipv6Setting         `json:"v6_mgmt_network_setting,omitempty"`
 }
 
 // Member represents NIOS member
@@ -144,9 +174,10 @@ type Member struct {
 	TimeZone                 string     `json:"time_zone,omitempty"`
 }
 
-func NewMember(member Member, returnFields []string) *Member {
+func NewMember(member Member) *Member {
 	res := member
 	res.objectType = "member"
+	returnFields := []string{"host_name", "node_info", "time_zone"}
 	res.returnFields = returnFields
 	return &res
 }
@@ -165,15 +196,29 @@ type License struct {
 	Licensetype      string `json:"type,omitempty"`
 }
 
-func NewGridLicense(license License, returnFields []string) *License {
+func NewGridLicense(license License) *License {
 	result := license
 	result.objectType = "license:gridwide"
+	returnFields := []string{"expiration_status",
+		"expiry_date",
+		"key",
+		"limit",
+		"limit_context",
+		"type"}
 	result.returnFields = returnFields
 	return &result
 }
 
-func NewLicense(license License, returnFields []string) *License {
+func NewLicense(license License) *License {
 	result := license
+	returnFields := []string{"expiration_status",
+		"expiry_date",
+		"hwid",
+		"key",
+		"kind",
+		"limit",
+		"limit_context",
+		"type"}
 	result.objectType = "member:license"
 	result.returnFields = returnFields
 	return &result
@@ -193,11 +238,21 @@ type CapacityReport struct {
 	TotalObjects int                      `json:"total_objects,omitempty"`
 }
 
-func NewCapcityReport(capReport CapacityReport, returnFields []string) *CapacityReport {
+func NewCapcityReport(capReport CapacityReport) *CapacityReport {
 	res := capReport
+	returnFields := []string{"name", "hardware_type", "max_capacity", "object_counts", "percent_used", "role", "total_objects"}
 	res.objectType = "capacityreport"
 	res.returnFields = returnFields
 	return &res
+}
+
+type NTPserver struct {
+	Address              string `json:"address,omitempty"`
+	Burst                bool   `json:"burst,omitempty"`
+	EnableAuthentication bool   `json:"enable_authentication,omitempty"`
+	IBurst               bool   `json:"iburst,omitempty"`
+	NTPKeyNumber         uint   `json:"ntp_key_number,omitempty"`
+	Preffered            bool   `json:"preffered,omitempty"`
 }
 
 type NTPSetting struct {
@@ -206,7 +261,7 @@ type NTPSetting struct {
 	NTPAcl     map[string]interface{} `json:"ntp_acl,omitempty"`
 	NTPKeys    []string               `json:"ntp_keys,omitempty"`
 	NTPKod     bool                   `json:"ntp_kod,omitempty"`
-	NTPServers []string               `json:"ntp_servers,omitempty"`
+	NTPServers []NTPserver            `json:"ntp_servers,omitempty"`
 }
 
 type Grid struct {
@@ -215,9 +270,10 @@ type Grid struct {
 	Name   string `json:"name,omitempty"`
 }
 
-func NewGrid(grid Grid, returnFields []string) *Grid {
+func NewGrid(grid Grid) *Grid {
 	result := grid
 	result.objectType = "grid"
+	returnFields := []string{"name", "ntp_setting"}
 	result.returnFields = returnFields
 	return &result
 }
