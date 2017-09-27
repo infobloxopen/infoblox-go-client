@@ -67,7 +67,7 @@ type UpgradeStatus struct {
 
 func NewUpgradeStatus(upgradeStatus UpgradeStatus) *UpgradeStatus {
 	result := upgradeStatus
-	returnFields := []string{"subelements_status,type"}
+	returnFields := []string{"subelements_status", "type"}
 	result.objectType = "upgradestatus"
 	result.returnFields = returnFields
 	return &result
@@ -84,7 +84,7 @@ type SubElementsStatus struct {
 	StepsTotal     int    `json:"steps_total"`
 	StepsCompleted int    `json:"steps_completed"`
 	NodeType       string `json:"type"`
-	Member         string `json:member`
+	Member         string `json:"member"`
 }
 
 type Network struct {
@@ -256,7 +256,6 @@ type NTPserver struct {
 }
 
 type NTPSetting struct {
-	IBBase     `json:"-"`
 	enable_ntp bool                   `json:"enable_ntp,omitempty"`
 	NTPAcl     map[string]interface{} `json:"ntp_acl,omitempty"`
 	NTPKeys    []string               `json:"ntp_keys,omitempty"`
@@ -279,9 +278,9 @@ func NewGrid(grid Grid) *Grid {
 }
 
 type GridResult struct {
-	Ref        string     `json:"_ref,omitempty"`
-	Name       string     `json:"name,omitempty"`
-	NTPSetting NTPSetting `json:"ntp_setting,omitempty"`
+	Ref        string      `json:"_ref,omitempty"`
+	Name       string      `json:"name,omitempty"`
+	NTPSetting *NTPSetting `json:"ntp_setting,omitempty"`
 }
 
 type NetworkContainer struct {
