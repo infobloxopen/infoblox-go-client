@@ -256,7 +256,7 @@ type NTPserver struct {
 }
 
 type NTPSetting struct {
-	enable_ntp bool                   `json:"enable_ntp,omitempty"`
+	EnableNTP bool                   `json:"enable_ntp,omitempty"`
 	NTPAcl     map[string]interface{} `json:"ntp_acl,omitempty"`
 	NTPKeys    []string               `json:"ntp_keys,omitempty"`
 	NTPKod     bool                   `json:"ntp_kod,omitempty"`

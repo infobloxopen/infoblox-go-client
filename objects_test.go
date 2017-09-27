@@ -11,8 +11,33 @@ var _ = Describe("Objects", func() {
 
 	Context("Grid object", func() {
 
-		grid := Grid{}
-		gridJSON := `{}`
+		tesNtpserver := NTPserver{
+			Address:              "16.4.1.2",
+			Burst:                true,
+			EnableAuthentication: true,
+			IBurst:               true,
+			Preffered:            true,
+		}
+		grid := Grid{Name: "test", NTPSetting: &NTPSetting{EnableNTP: true,
+			NTPAcl:     nil,
+			NTPKeys:    nil,
+			NTPKod:     false,
+			NTPServers: []NTPserver{tesNtpserver},
+		},
+		}
+		gridJSON := `{
+			"name": "test",
+			"ntp_setting": {
+				"enable_ntp": true,
+				"ntp_servers": [{
+					"address": "16.4.1.2",
+					"burst": true,
+					"enable_authentication": true,
+					"iburst": true,
+					"preffered": true
+					}]
+				}
+				}`
 
 		Context("Marshalling", func() {
 			Context("expected JSON is returned", func() {
