@@ -264,9 +264,10 @@ type NTPSetting struct {
 }
 
 type Grid struct {
-	IBBase `json:"-"`
-	Ref    string `json:"_ref,omitempty"`
-	Name   string `json:"name,omitempty"`
+	IBBase     `json:"-"`
+	Ref        string      `json:"_ref,omitempty"`
+	Name       string      `json:"name,omitempty"`
+	NTPSetting *NTPSetting `json:"ntp_setting,omitempty"`
 }
 
 func NewGrid(grid Grid) *Grid {
@@ -275,12 +276,6 @@ func NewGrid(grid Grid) *Grid {
 	returnFields := []string{"name", "ntp_setting"}
 	result.returnFields = returnFields
 	return &result
-}
-
-type GridResult struct {
-	Ref        string      `json:"_ref,omitempty"`
-	Name       string      `json:"name,omitempty"`
-	NTPSetting *NTPSetting `json:"ntp_setting,omitempty"`
 }
 
 type NetworkContainer struct {

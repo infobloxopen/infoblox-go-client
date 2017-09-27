@@ -451,8 +451,8 @@ func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 }
 
 // GetLicense returns the details for grid
-func (objMgr *ObjectManager) GetGridInfo() ([]GridResult, error) {
-	var res []GridResult
+func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
+	var res []Grid
 
 	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(gridObj, "", &res)
