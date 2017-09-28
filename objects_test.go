@@ -222,6 +222,8 @@ var _ = Describe("Objects", func() {
 			It("should set base fields correctly", func() {
 				Expect(userprofile.ObjectType()).To(Equal("userprofile"))
 				Expect(userprofile.ReturnFields()).To(ConsistOf("name"))
+			})
+		})
 
 		Context("RecordA object", func() {
 			ipv4addr := "1.1.1.1"
