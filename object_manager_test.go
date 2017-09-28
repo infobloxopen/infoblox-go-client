@@ -1,6 +1,8 @@
 package ibclient
 
 import (
+	"errors"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
@@ -45,6 +47,10 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
 		case *EADefinition:
 			*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
+		case *CapacityReport:
+			*res.(*[]CapacityReport) = c.resultObject.([]CapacityReport)
+		case *UpgradeStatus:
+			*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
 		}
 	} else {
 		switch obj.(type) {
@@ -606,6 +612,89 @@ var _ = Describe("Object Manager", func() {
 		It("should failed if bad Network Ref is provided", func() {
 			Expect(BuildNetworkFromRef("network/ZG5zLm5ldHdvcmtfdmlldyQyMw")).To(BeNil())
 		})
+	})
+
+	Describe("Get Capacity report", func() {
+		cmpType := "Heka"
+		tenantID := "0123"
+		var name string = "Member1"
+		fakeRefReturn := fmt.Sprintf("member/ZG5zLmJpbmRfY25h:/%s", name)
+
+		fakeConnector := &fakeConnector{
+			getObjectObj: NewCapcityReport(CapacityReport{Name: name}),
+			getObjectRef: "",
+			resultObject: []CapacityReport{*NewCapcityReport(CapacityReport{
+				Ref:  fakeRefReturn,
+				Name: name,
+			})},
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(fakeConnector, cmpType, tenantID)
+
+		var actualReport []CapacityReport
+		var err error
+
+		It("should pass expected Capacityreport object to GetObject", func() {
+			actualReport, err = objMgr.GetCapacityReport(name)
+		})
+		It("should return expected CapacityReport Object", func() {
+			Expect(actualReport[0]).To(Equal(fakeConnector.resultObject.([]CapacityReport)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get upgrade status", func() {
+		cmpType := "Heka"
+		tenantID := "0123"
+		var StatusType string = "GRID"
+		fakeRefReturn := fmt.Sprintf("upgradestatus/Li51cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
+
+		USFakeConnector := &fakeConnector{
+			getObjectObj: NewUpgradeStatus(UpgradeStatus{Type: StatusType}),
+			getObjectRef: "",
+			resultObject: []UpgradeStatus{*NewUpgradeStatus(UpgradeStatus{
+				Ref:  fakeRefReturn,
+				Type: StatusType,
+			})},
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(USFakeConnector, cmpType, tenantID)
+
+		var actualStatus []UpgradeStatus
+		var err error
+
+		It("should pass expected upgradestatus object to GetObject", func() {
+			actualStatus, err = objMgr.GetUpgradeStatus(StatusType)
+		})
+		It("should return expected upgradestatus Object", func() {
+			Expect(actualStatus[0]).To(Equal(USFakeConnector.resultObject.([]UpgradeStatus)[0]))
+			Expect(err).To(BeNil())
+		})
+
+	})
+	Describe("Get upgrade status Error case", func() {
+		cmpType := "Heka"
+		tenantID := "0123"
+		StatusType := ""
+		fakeRefReturn := fmt.Sprintf("upgradestatus/Li51cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
+		expectErr := errors.New("Status type can not be nil")
+		USFakeConnector := &fakeConnector{
+			getObjectObj: NewUpgradeStatus(UpgradeStatus{Type: StatusType}),
+			getObjectRef: "",
+			resultObject: []UpgradeStatus{*NewUpgradeStatus(UpgradeStatus{
+				Ref:  fakeRefReturn,
+				Type: StatusType,
+			})},
+			fakeRefReturn: fakeRefReturn,
+		}
+		objMgr := NewObjectManager(USFakeConnector, cmpType, tenantID)
+		It("upgradestatus object to GetObject", func() {
+			_, err := objMgr.GetUpgradeStatus(StatusType)
+			Expect(err).To(Equal(expectErr))
+		})
+
 	})
 
 })
