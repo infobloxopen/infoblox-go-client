@@ -216,6 +216,15 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("UserProfile object", func() {
+			userprofile := NewUserProfile(UserProfile{})
+
+			It("should set base fields correctly", func() {
+				Expect(userprofile.ObjectType()).To(Equal("userprofile"))
+				Expect(userprofile.ReturnFields()).To(ConsistOf("name"))
+			})
+		})
+
 		Context("RecordA object", func() {
 			ipv4addr := "1.1.1.1"
 			name := "bind_a.domain.com"
