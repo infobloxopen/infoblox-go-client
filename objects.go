@@ -103,8 +103,6 @@ func NewNetwork(nw Network) *Network {
 	return &res
 }
 
-type Members []Member
-
 type ServiceStatus struct {
 	Desciption string `json:"description,omitempty"`
 	Service    string `json:"service,omitempty"`
@@ -121,8 +119,8 @@ type LanHaPortSetting struct {
 
 type PhysicalPortSetting struct {
 	AutoPortSettingEnabled bool   `json:"auto_port_setting_enabled"`
-	duplex                 string `json:"duplex,omitempty"`
-	speed                  string
+	Duplex                 string `json:"duplex,omitempty"`
+	Speed                  string `json:"speed,omitempty"`
 }
 
 type NetworkSetting struct {
@@ -256,7 +254,7 @@ type NTPserver struct {
 }
 
 type NTPSetting struct {
-	EnableNTP bool                   `json:"enable_ntp,omitempty"`
+	EnableNTP  bool                   `json:"enable_ntp,omitempty"`
 	NTPAcl     map[string]interface{} `json:"ntp_acl,omitempty"`
 	NTPKeys    []string               `json:"ntp_keys,omitempty"`
 	NTPKod     bool                   `json:"ntp_kod,omitempty"`

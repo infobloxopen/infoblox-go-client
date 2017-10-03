@@ -51,6 +51,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]CapacityReport) = c.resultObject.([]CapacityReport)
 		case *UpgradeStatus:
 			*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
+		case *Member:
+			*res.(*[]Member) = c.resultObject.([]Member)
 		}
 	} else {
 		switch obj.(type) {
@@ -693,6 +695,30 @@ var _ = Describe("Object Manager", func() {
 		It("upgradestatus object to GetObject", func() {
 			_, err := objMgr.GetUpgradeStatus(StatusType)
 			Expect(err).To(Equal(expectErr))
+		})
+
+	})
+	Describe("GetAllMembers", func() {
+		cmpType := "Heka"
+		tenantID := "0123"
+		var err error
+		fakeRefReturn := fmt.Sprintf("member/Li51cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
+		returnFields := []string{"host_name", "node_info", "time_zone"}
+		MemFakeConnector := &fakeConnector{
+			getObjectObj: NewMember(Member{}),
+			getObjectRef: "",
+			resultObject: []Member{*NewMember(Member{
+				Ref: fakeRefReturn,
+			})},
+			fakeRefReturn: fakeRefReturn,
+		}
+		objMgr := NewObjectManager(MemFakeConnector, cmpType, tenantID)
+		var actualMembers []Member
+		It("should return expected member Object", func() {
+			actualMembers, err = objMgr.GetAllMembers()
+			Expect(actualMembers[0]).To(Equal(MemFakeConnector.resultObject.([]Member)[0]))
+			Expect(actualMembers[0].returnFields).To(Equal(returnFields))
+			Expect(err).To(BeNil())
 		})
 
 	})

@@ -400,9 +400,7 @@ func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatu
 		msg := fmt.Sprintf("Status type can not be nil")
 		return res, errors.New(msg)
 	}
-
 	upgradestatus := NewUpgradeStatus(UpgradeStatus{Type: statusType})
-
 	err := objMgr.connector.GetObject(upgradestatus, "", &res)
 
 	return res, err
@@ -413,13 +411,8 @@ func (objMgr *ObjectManager) GetAllMembers() ([]Member, error) {
 	var res []Member
 
 	memberObj := NewMember(Member{})
-
 	err := objMgr.connector.GetObject(memberObj, "", &res)
-
-	if err != nil || res == nil {
-		return nil, err
-	}
-	return res, nil
+	return res, err
 }
 
 // GetCapacityReport returns all capacity for members
@@ -428,7 +421,6 @@ func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, e
 
 	capacityObj := CapacityReport{Name: name}
 	capacityReport := NewCapcityReport(capacityObj)
-
 	err := objMgr.connector.GetObject(capacityReport, "", &res)
 	return res, err
 }
@@ -445,6 +437,7 @@ func (objMgr *ObjectManager) GetLicense() ([]License, error) {
 // GetLicense returns the license details for grid
 func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 	var res []License
+
 	licenseObj := NewGridLicense(License{})
 	err := objMgr.connector.GetObject(licenseObj, "", &res)
 	return res, err
