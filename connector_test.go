@@ -64,6 +64,10 @@ func (hr *FakeHttpRequestor) SendRequest(req *http.Request) ([]byte, error) {
 	return hr.res, nil
 }
 
+func MockValidateConnector(c *Connector) (err error) {
+	return
+}
+
 var _ = Describe("Connector", func() {
 
 	Describe("WapiRequestBuilder", func() {
@@ -251,6 +255,9 @@ var _ = Describe("Connector", func() {
 				res: []byte(fakeref),
 			}
 
+			OrigValidateConnector := ValidateConnector
+			ValidateConnector = MockValidateConnector
+			defer func() { ValidateConnector = OrigValidateConnector }()
 			conn, err := NewConnector(hostConfig, transportConfig,
 				frb, fhr)
 
@@ -292,6 +299,9 @@ var _ = Describe("Connector", func() {
 				res: []byte(fakeref),
 			}
 
+			OrigValidateConnector := ValidateConnector
+			ValidateConnector = MockValidateConnector
+			defer func() { ValidateConnector = OrigValidateConnector }()
 			conn, err := NewConnector(hostConfig, transportConfig,
 				frb, fhr)
 
@@ -346,6 +356,10 @@ var _ = Describe("Connector", func() {
 				req: httpReq,
 				res: expectRes,
 			}
+
+			OrigValidateConnector := ValidateConnector
+			ValidateConnector = MockValidateConnector
+			defer func() { ValidateConnector = OrigValidateConnector }()
 
 			conn, err := NewConnector(hostConfig, transportConfig,
 				frb, fhr)

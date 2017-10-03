@@ -277,6 +277,109 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("UserProfile object", func() {
+			userprofile := NewUserProfile(UserProfile{})
+
+			It("should set base fields correctly", func() {
+				Expect(userprofile.ObjectType()).To(Equal("userprofile"))
+				Expect(userprofile.ReturnFields()).To(ConsistOf("name"))
+			})
+		})
+
+		Context("RecordA object", func() {
+			ipv4addr := "1.1.1.1"
+			name := "bind_a.domain.com"
+			view := "default"
+			zone := "domain.com"
+
+			ra := NewRecordA(RecordA{
+				Ipv4Addr: ipv4addr,
+				Name:     name,
+				View:     view,
+				Zone:     zone})
+
+			It("should set fields correctly", func() {
+				Expect(ra.Ipv4Addr).To(Equal(ipv4addr))
+				Expect(ra.Name).To(Equal(name))
+				Expect(ra.View).To(Equal(view))
+				Expect(ra.Zone).To(Equal(zone))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(ra.ObjectType()).To(Equal("record:a"))
+				Expect(ra.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "name", "view", "zone"))
+			})
+		})
+
+		Context("RecordCNAME object", func() {
+			canonical := "cname.domain.com"
+			name := "bind_cname.domain.com"
+			view := "default"
+			zone := "domain.com"
+
+			rc := NewRecordCNAME(RecordCNAME{
+				Canonical: canonical,
+				Name:      name,
+				View:      view,
+				Zone:      zone})
+
+			It("should set fields correctly", func() {
+				Expect(rc.Canonical).To(Equal(canonical))
+				Expect(rc.Name).To(Equal(name))
+				Expect(rc.View).To(Equal(view))
+				Expect(rc.Zone).To(Equal(zone))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(rc.ObjectType()).To(Equal("record:cname"))
+				Expect(rc.ReturnFields()).To(ConsistOf("extattrs", "canonical", "name", "view", "zone"))
+			})
+		})
+
+		Context("RecordTXT object", func() {
+			name := "txt.domain.com"
+			text := "this is text string"
+			view := "default"
+			zone := "domain.com"
+
+			rt := NewRecordTXT(RecordTXT{
+				Name: name,
+				Text: text,
+				View: view,
+				Zone: zone})
+
+			It("should set fields correctly", func() {
+				Expect(rt.Name).To(Equal(name))
+				Expect(rt.Text).To(Equal(text))
+				Expect(rt.View).To(Equal(view))
+				Expect(rt.Zone).To(Equal(zone))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(rt.ObjectType()).To(Equal("record:txt"))
+				Expect(rt.ReturnFields()).To(ConsistOf("extattrs", "name", "text", "view", "zone"))
+			})
+		})
+
+		Context("ZoneAuth object", func() {
+			fqdn := "domain.com"
+			view := "default"
+
+			za := NewZoneAuth(ZoneAuth{
+				Fqdn: fqdn,
+				View: view})
+
+			It("should set fields correctly", func() {
+				Expect(za.Fqdn).To(Equal(fqdn))
+				Expect(za.View).To(Equal(view))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(za.ObjectType()).To(Equal("zone_auth"))
+				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view"))
+			})
+		})
+
 	})
 
 	Context("Unmarshalling malformed JSON", func() {
