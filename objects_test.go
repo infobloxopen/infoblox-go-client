@@ -336,6 +336,31 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("RecordHost object", func() {
+			ipv4addrs := []RecordHostIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
+			name := "bind_host.domain.com"
+			view := "default"
+			zone := "domain.com"
+
+			rh := NewRecordHost(RecordHost{
+				Ipv4Addrs: ipv4addrs,
+				Name:      name,
+				View:      view,
+				Zone:      zone})
+
+			It("should set fields correctly", func() {
+				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))
+				Expect(rh.Name).To(Equal(name))
+				Expect(rh.View).To(Equal(view))
+				Expect(rh.Zone).To(Equal(zone))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(rh.ObjectType()).To(Equal("record:host"))
+				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "name", "view", "zone"))
+			})
+		})
+
 		Context("RecordTXT object", func() {
 			name := "txt.domain.com"
 			text := "this is text string"
