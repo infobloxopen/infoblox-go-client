@@ -53,6 +53,10 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
 		case *Member:
 			*res.(*[]Member) = c.resultObject.([]Member)
+		case *Grid:
+			*res.(*[]Grid) = c.resultObject.([]Grid)
+		case *License:
+			*res.(*[]License) = c.resultObject.([]License)
 		}
 	} else {
 		switch obj.(type) {
@@ -720,7 +724,58 @@ var _ = Describe("Object Manager", func() {
 			Expect(actualMembers[0].returnFields).To(Equal(returnFields))
 			Expect(err).To(BeNil())
 		})
-
 	})
 
+	Describe("GetGridInfo", func() {
+		cmpType := "Heka"
+		tenantID := "0123"
+		var err error
+		fakeRefReturn := fmt.Sprintf("grid/Li511cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
+		returnFields := []string{"name", "ntp_setting"}
+		GridFakeConnector := &fakeConnector{
+			getObjectObj: NewGrid(Grid{}),
+			getObjectRef: "",
+			resultObject: []Grid{*NewGrid(Grid{
+				Ref: fakeRefReturn,
+			})},
+			fakeRefReturn: fakeRefReturn,
+		}
+		objMgr := NewObjectManager(GridFakeConnector, cmpType, tenantID)
+		var actualGridInfo []Grid
+		It("should return expected Grid Object", func() {
+			actualGridInfo, err = objMgr.GetGridInfo()
+			Expect(actualGridInfo[0]).To(Equal(GridFakeConnector.resultObject.([]Grid)[0]))
+			Expect(actualGridInfo[0].returnFields).To(Equal(returnFields))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("GetGridLicense", func() {
+		cmpType := "Heka"
+		tenantID := "0123"
+		var err error
+		fakeRefReturn := fmt.Sprintf("license/Li511cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
+		returnFields := []string{"expiration_status",
+			"expiry_date",
+			"key",
+			"limit",
+			"limit_context",
+			"type"}
+		LicFakeConnector := &fakeConnector{
+			getObjectObj: NewGridLicense(License{}),
+			getObjectRef: "",
+			resultObject: []License{*NewGridLicense(License{
+				Ref: fakeRefReturn,
+			})},
+			fakeRefReturn: fakeRefReturn,
+		}
+		objMgr := NewObjectManager(LicFakeConnector, cmpType, tenantID)
+		var actualGridLicense []License
+		It("should return expected License Object", func() {
+			actualGridLicense, err = objMgr.GetGridLicense()
+			Expect(actualGridLicense[0]).To(Equal(LicFakeConnector.resultObject.([]License)[0]))
+			Expect(actualGridLicense[0].returnFields).To(Equal(returnFields))
+			Expect(err).To(BeNil())
+		})
+	})
 })

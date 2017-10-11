@@ -443,7 +443,7 @@ func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 	return res, err
 }
 
-// GetLicense returns the details for grid
+// GetGridInfo returns the details for grid
 func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	var res []Grid
 
