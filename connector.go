@@ -26,7 +26,7 @@ type HostConfig struct {
 type TransportConfig struct {
 	SslVerify           bool
 	certPool            *x509.CertPool
-	HttpRequestTimeout  int // in seconds
+	HttpRequestTimeout  time.Duration // in seconds
 	HttpPoolConnections int
 }
 
@@ -127,7 +127,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: !cfg.SslVerify,
 			RootCAs: cfg.certPool},
 		MaxIdleConnsPerHost:   cfg.HttpPoolConnections,
-		ResponseHeaderTimeout: time.Duration(cfg.HttpRequestTimeout * 1000000000), // ResponseHeaderTimeout is in nanoseconds
+		ResponseHeaderTimeout: cfg.HttpRequestTimeout * time.Second,
 	}
 
 	whr.client = http.Client{Transport: tr}
