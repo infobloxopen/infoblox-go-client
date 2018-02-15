@@ -17,9 +17,9 @@ type EASearch map[string]interface{}
 type EADefListValue string
 
 type IBBase struct {
-	objectType   string   `json:"-"`
-	returnFields []string `json:"-"`
-	eaSearch     EASearch `json:"-"`
+	objectType   string
+	returnFields []string
+	eaSearch     EASearch
 }
 
 type IBObject interface {
