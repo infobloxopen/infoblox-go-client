@@ -322,6 +322,15 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 	return
 }
 
+func (c *Connector) Logout() (err error) {
+	_, err = c.makeRequest(CREATE, nil, "logout")
+	if err != nil {
+		log.Printf("Logout request error: '%s'\n", err)
+	}
+
+	return
+}
+
 var ValidateConnector = validateConnector
 
 func validateConnector(c *Connector) (err error) {
@@ -353,14 +362,5 @@ func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 
 	res = connector
 	err = ValidateConnector(connector)
-	return
-}
-
-func (c *Connector) Logout() (err error) {
-	_, err = c.makeRequest(CREATE, nil, "logout")
-	if err != nil {
-		log.Printf("Logout request error: '%s'\n", err)
-	}
-
 	return
 }
