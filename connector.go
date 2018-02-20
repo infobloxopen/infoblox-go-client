@@ -51,6 +51,8 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 		cfg.SslVerify = true
 	}
 
+	cfg.HttpPoolConnections = httpPoolConnections
+	cfg.HttpRequestTimeout = httpRequestTimeout
 	return
 }
 
