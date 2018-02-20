@@ -27,11 +27,11 @@ This library is compatible with Go 1.2+
 
        func main() {
    	    hostConfig := ibclient.HostConfig{
-   		    Host:     "10.196.107.209",
-   		    Version:  "2.8",
-   		    Port:     "443",
-   		    Username: "admin",
-   		    Password: "infoblox",
+   		    Host:     "<NIOS grid IP>",
+   		    Version:  "<WAPI version>",
+   		    Port:     "PORT",
+   		    Username: "username",
+   		    Password: "password",
    	    }
    	    transportConfig := ibclient.NewTransportConfig("false", 20, 10)
    	    requestBuilder := &ibclient.WapiRequestBuilder{}
