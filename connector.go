@@ -7,9 +7,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"golang.org/x/net/publicsuffix"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"strings"
 	"time"
@@ -130,7 +132,13 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 		ResponseHeaderTimeout: cfg.HttpRequestTimeout * time.Second,
 	}
 
-	whr.client = http.Client{Transport: tr}
+	// All users of cookiejar should import "golang.org/x/net/publicsuffix"
+	jar, err := cookiejar.New(&cookiejar.Options{PublicSuffixList: publicsuffix.List})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	whr.client = http.Client{Jar: jar, Transport: tr}
 }
 
 func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err error) {
@@ -313,6 +321,15 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 		log.Printf("Cannot unmarshall update object response'%s', err: '%s'\n", string(resp), err)
 		return
 	}
+	return
+}
+
+func (c *Connector) Logout() (err error) {
+	_, err = c.makeRequest(CREATE, nil, "logout")
+	if err != nil {
+		log.Printf("Logout request error: '%s'\n", err)
+	}
+
 	return
 }
 
