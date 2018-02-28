@@ -40,6 +40,7 @@ This library is compatible with Go 1.2+
    	    if err != nil {
    		    fmt.Println(err)
    	    }
+   	    defer conn.Logout()
    	    objMgr := ibclient.NewObjectManager(conn, "myclient", "")
    	    //Fetches grid information
    	    fmt.Println(objMgr.GetLicense())
