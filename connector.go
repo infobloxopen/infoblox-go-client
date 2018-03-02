@@ -46,7 +46,7 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 			return
 		}
 		if !caPool.AppendCertsFromPEM(cert) {
-			err = errors.New(fmt.Sprintf("Cannot append certificate from file '%s'", sslVerify))
+			err = fmt.Errorf("Cannot append certificate from file '%s'", sslVerify)
 			return
 		}
 		cfg.certPool = caPool
@@ -116,7 +116,7 @@ func (r RequestType) toMethod() string {
 	return ""
 }
 
-func getHttpResponseError(resp *http.Response) error {
+func getHTTPResponseError(resp *http.Response) error {
 	defer resp.Body.Close()
 	content, _ := ioutil.ReadAll(resp.Body)
 	msg := fmt.Sprintf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
@@ -149,7 +149,7 @@ func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err er
 	} else if !(resp.StatusCode == http.StatusOK ||
 		(resp.StatusCode == http.StatusCreated &&
 			req.Method == RequestType(CREATE).toMethod())) {
-		err := getHttpResponseError(resp)
+		err := getHTTPResponseError(resp)
 		return nil, err
 	}
 	defer resp.Body.Close()
@@ -194,10 +194,10 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 }
 
 func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
-	var objJson []byte
+	var objJSON []byte
 	var err error
 
-	objJson, err = json.Marshal(obj)
+	objJSON, err = json.Marshal(obj)
 	if err != nil {
 		log.Printf("Cannot marshal object '%s': %s", obj, err)
 		return nil
@@ -205,15 +205,15 @@ func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
 
 	eaSearch := obj.EaSearch()
 	if t == GET && len(eaSearch) > 0 {
-		eaSearchJson, err := json.Marshal(eaSearch)
+		eaSearchJSON, err := json.Marshal(eaSearch)
 		if err != nil {
 			log.Printf("Cannot marshal EA Search attributes. '%s'\n", err)
 			return nil
 		}
-		objJson = append(append(objJson[:len(objJson)-1], byte(',')), eaSearchJson[1:]...)
+		objJSON = append(append(objJSON[:len(objJSON)-1], byte(',')), eaSearchJSON[1:]...)
 	}
 
-	return objJson
+	return objJSON
 }
 
 func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string) (req *http.Request, err error) {
