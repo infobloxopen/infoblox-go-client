@@ -324,6 +324,9 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 	return
 }
 
+// Logout sends a request to invalidate the ibapauth cookie and should
+// be used in a defer statement after the Connector has been successfully
+// initialized.
 func (c *Connector) Logout() (err error) {
 	_, err = c.makeRequest(CREATE, nil, "logout")
 	if err != nil {
