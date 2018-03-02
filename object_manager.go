@@ -42,9 +42,9 @@ func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *O
 	return objMgr
 }
 
-func (objMgr *ObjectManager) getBasicEA(cloudApiOwned Bool) EA {
+func (objMgr *ObjectManager) getBasicEA(cloudAPIOwned Bool) EA {
 	ea := make(EA)
-	ea["Cloud API Owned"] = cloudApiOwned
+	ea["Cloud API Owned"] = cloudAPIOwned
 	ea["CMP Type"] = objMgr.cmpType
 	ea["Tenant ID"] = objMgr.tenantID
 	return ea
@@ -148,7 +148,7 @@ func (objMgr *ObjectManager) UpdateNetworkViewEA(ref string, addEA EA, removeEA 
 		res.Ea[k] = v
 	}
 
-	for k, _ := range removeEA {
+	for k := range removeEA {
 		_, ok := res.Ea[k]
 		if ok {
 			delete(res.Ea, k)
