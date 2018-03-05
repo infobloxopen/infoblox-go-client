@@ -207,18 +207,18 @@ func (l *NetworkViewLock) Lock() error {
 			// Got the lock.
 			logrus.Debugf("Got the lock on Network View %s\n", l.Name)
 			return nil
-		} else {
-			// Lock is held by some other agent. Wait for some time and retry it again
-			if retryCount >= 10 {
-				return fmt.Errorf("Failed to get Lock on Network View %s", l.Name)
-			}
-
-			retryCount++
-			logrus.Debugf("Lock on Network View %s not free. Retrying again %d out of 10.\n", l.Name, retryCount)
-			// sleep for random time (between 1 - 10 seconds) to reduce collisions
-			time.Sleep(time.Duration(rand.Intn(9)+1) * time.Second)
-			continue
 		}
+
+		// Lock is held by some other agent. Wait for some time and retry it again
+		if retryCount >= 10 {
+			return fmt.Errorf("Failed to get Lock on Network View %s", l.Name)
+		}
+
+		retryCount++
+		logrus.Debugf("Lock on Network View %s not free. Retrying again %d out of 10.\n", l.Name, retryCount)
+		// sleep for random time (between 1 - 10 seconds) to reduce collisions
+		time.Sleep(time.Duration(rand.Intn(9)+1) * time.Second)
+		continue
 	}
 }
 
