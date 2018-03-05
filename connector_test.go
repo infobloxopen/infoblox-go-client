@@ -91,10 +91,10 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
-				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
+				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, objType)
 				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields)
-				Expect(urlStr).To(Equal(expectedUrlStr))
+				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 
 			It("should return expected url string for GET for the return fields", func() {
@@ -103,10 +103,10 @@ var _ = Describe("Connector", func() {
 				returnFields := []string{"extattrs", "network", "network_view"}
 
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
-				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
+				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
 					host, port, version, objType, returnFieldsStr)
 				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields)
-				Expect(urlStr).To(Equal(expectedUrlStr))
+				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 
 			It("should return expected url string for DELETE request", func() {
@@ -114,10 +114,10 @@ var _ = Describe("Connector", func() {
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
 
-				expectedUrlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
+				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, ref)
 				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields)
-				Expect(urlStr).To(Equal(expectedUrlStr))
+				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 		})
 
