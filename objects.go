@@ -456,9 +456,9 @@ func (eas EASearch) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-func (val EADefListValue) MarshalJSON() ([]byte, error) {
+func (v EADefListValue) MarshalJSON() ([]byte, error) {
 	m := make(map[string]string)
-	m["value"] = string(val)
+	m["value"] = string(v)
 
 	return json.Marshal(m)
 }
