@@ -451,3 +451,16 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	err := objMgr.connector.GetObject(gridObj, "", &res)
 	return res, err
 }
+
+// GetRecordA returns all the A-records
+func (objMgr *ObjectManager) GetRecordA(ea EA) ([]RecordA, error) {
+	var res []RecordA
+
+	recordA := NewRecordA(RecordA{})
+	if ea != nil && len(ea) > 0 {
+		recordA.eaSearch = EASearch(ea)
+	}
+
+	err := objMgr.connector.GetObject(recordA, "", &res)
+	return res, err
+}
