@@ -4,11 +4,12 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	. "github.com/onsi/ginkgo"
-	. "github.com/onsi/gomega"
 	"net/http"
 	"net/url"
 	"strings"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
 )
 
 type FakeRequestBuilder struct {
@@ -100,11 +101,12 @@ var _ = Describe("Connector", func() {
 			It("should return expected url string for GET for the return fields", func() {
 				objType := "network"
 				ref := ""
+				qry := "_proxy_search=GM"
 				returnFields := []string{"extattrs", "network", "network_view"}
 
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
-				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
-					host, port, version, objType, returnFieldsStr)
+				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s&%s",
+					host, port, version, objType, qry, returnFieldsStr)
 				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields)
 				Expect(urlStr).To(Equal(expectedURLStr))
 			})

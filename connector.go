@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"golang.org/x/net/publicsuffix"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -15,6 +14,8 @@ import (
 	"net/url"
 	"strings"
 	"time"
+
+	"golang.org/x/net/publicsuffix"
 )
 
 type HostConfig struct {
@@ -180,6 +181,8 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 		if len(returnFields) > 0 {
 			vals.Set("_return_fields", strings.Join(returnFields, ","))
 		}
+		// TODO need to get this from individual objects in future
+		vals.Set("_proxy_search", "GM")
 		qry = vals.Encode()
 	}
 
