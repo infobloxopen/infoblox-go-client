@@ -192,6 +192,8 @@ func (wrb *WapiRequestBuilder) BuildURL(t RequestType, obj IBObject, ref string)
 				}
 			}
 		}
+		// TODO need to get this from individual objects in future
+		vals.Set("_proxy_search", "GM")
 		qry = vals.Encode()
 	}
 
