@@ -266,6 +266,7 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 }
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
+
 	resp, err := c.makeRequest(GET, obj, ref)
 	if err != nil {
 		log.Printf("GetObject request error: '%s'\n", err)

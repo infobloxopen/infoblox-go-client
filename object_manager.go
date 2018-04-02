@@ -196,12 +196,12 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Ne
 	network := NewNetwork(Network{
 		NetviewName: netview})
 
+	if ea != nil && len(ea) > 0 {
+        network.eaSearch = EASearch(ea)
+    }
+
 	if cidr != "" {
 		network.Cidr = cidr
-	}
-
-	if ea != nil && len(ea) > 0 {
-		network.eaSearch = EASearch(ea)
 	}
 
 	err := objMgr.connector.GetObject(network, "", &res)

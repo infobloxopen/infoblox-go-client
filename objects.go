@@ -26,7 +26,7 @@ type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
 	EaSearch() EASearch
-	//SetReturnFields([]string)
+	SetReturnFields([]string)
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -37,8 +37,16 @@ func (obj *IBBase) ReturnFields() []string {
 	return obj.returnFields
 }
 
+func (obj *IBBase) SetReturnFields(returnFields []string) {
+	obj.returnFields = returnFields
+}
+
 func (obj *IBBase) EaSearch() EASearch {
 	return obj.eaSearch
+}
+
+func (obj *IBBase) SetEaSearch(eaSearch EASearch) {
+	obj.eaSearch = eaSearch
 }
 
 type NetworkView struct {
