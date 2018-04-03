@@ -381,17 +381,25 @@ func NewRecordCNAME(rc RecordCNAME) *RecordCNAME {
 
 type RecordHostIpv4Addr struct {
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
+	Ref      string `json:"_ref,omitempty"`
+	Mac      string `json:"mac,omitempty"`
+}
+
+func NewRecordHostIpv4Addr(hostAddr RecordHostIpv4Addr) *RecordHostIpv4Addr {
+	res := hostAddr
+	return &res
 }
 
 type RecordHost struct {
-	IBBase    `json:"-"`
-	Ref       string               `json:"_ref,omitempty"`
-	Ipv4Addr  string               `json:"ipv4addr,omitempty"`
-	Ipv4Addrs []RecordHostIpv4Addr `json:"ipv4addrs,omitempty"`
-	Name      string               `json:"name,omitempty"`
-	View      string               `json:"view,omitempty"`
-	Zone      string               `json:"zone,omitempty"`
-	Ea        EA                   `json:"extattrs,omitempty"`
+	IBBase      `json:"-"`
+	Ref         string               `json:"_ref,omitempty"`
+	Ipv4Addrs   []RecordHostIpv4Addr `json:"ipv4addrs,omitempty"`
+	Name        string               `json:"name,omitempty"`
+	View        string               `json:"view,omitempty"`
+	Zone        string               `json:"zone,omitempty"`
+	EnableDns   *bool                `json:"configure_for_dns,omitempty"`
+	NetworkView string               `json:"network_view,omitempty"`
+	Ea          EA                   `json:"extattrs,omitempty"`
 }
 
 func NewRecordHost(rh RecordHost) *RecordHost {
