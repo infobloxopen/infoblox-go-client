@@ -243,6 +243,7 @@ var _ = Describe("Object Manager", func() {
 		ipAddr := "53.0.0.21"
 		macAddr := "01:23:45:67:80:ab"
 		vmID := "93f9249abc039284"
+		name := "testvm"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", ipAddr)
 
 		asiFakeConnector := &fakeConnector{
@@ -251,6 +252,7 @@ var _ = Describe("Object Manager", func() {
 				Cidr:        cidr,
 				IPAddress:   ipAddr,
 				Mac:         macAddr,
+				Name:        name,
 			}),
 			resultObject: NewFixedAddress(FixedAddress{
 				NetviewName: netviewName,
@@ -258,6 +260,7 @@ var _ = Describe("Object Manager", func() {
 				IPAddress:   GetIPAddressFromRef(fakeRefReturn),
 				Mac:         macAddr,
 				Ref:         fakeRefReturn,
+				Name:        name,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -273,7 +276,7 @@ var _ = Describe("Object Manager", func() {
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr, vmID)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr,name, vmID)
 		})
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(asiFakeConnector.resultObject))
@@ -289,6 +292,7 @@ var _ = Describe("Object Manager", func() {
 		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
 		macAddr := "01:23:45:67:80:ab"
 		vmID := "93f9249abc039284"
+		name := "testvm"
 		resultIP := "53.0.0.32"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", resultIP)
 
@@ -298,6 +302,7 @@ var _ = Describe("Object Manager", func() {
 				Cidr:        cidr,
 				IPAddress:   ipAddr,
 				Mac:         macAddr,
+				Name:        name,
 			}),
 			resultObject: NewFixedAddress(FixedAddress{
 				NetviewName: netviewName,
@@ -305,6 +310,7 @@ var _ = Describe("Object Manager", func() {
 				IPAddress:   resultIP,
 				Mac:         macAddr,
 				Ref:         fakeRefReturn,
+				Name:        name,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -320,7 +326,7 @@ var _ = Describe("Object Manager", func() {
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", macAddr, vmID)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", macAddr, name, vmID)
 		})
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(aniFakeConnector.resultObject))
