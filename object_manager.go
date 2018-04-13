@@ -12,6 +12,12 @@ type IBObjectManager interface {
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateNetwork(netview string, cidr string, name string) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
+	CreateRecordHostWithoutDNS(recordName string, netview string, cidr string, ipAddr string, macAddress string, vmID string) (*RecordHost, error)
+	UpdateRecordHostWithoutDNS(hostRref string, ipAddr string, macAddress string) (string, error)
+	DeleteRecordHost(ref string) (string, error)
+	GetRecordHostWithoutDNS(recordName string, netview string, cidr string, ipAddr string, macAddress string, vmID string) (*RecordHost, error)
+	GetRecordHost(ref string) (*RecordHost, error)
+	GetIpAddressFromRecordHost(host RecordHost) (string, error)
 	GetNetworkView(name string) (*NetworkView, error)
 	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
@@ -368,6 +374,61 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 	newEadef.Ref = ref
 
 	return newEadef, err
+}
+
+func (objMgr *ObjectManager) CreateRecordHostWithoutDNS(recordName string, netview string, cidr string, ipAddr string, macAddress string, vmID string) (*RecordHost, error) {
+
+	ea := objMgr.getBasicEA(true)
+	ea["VM ID"] = "N/A"
+	if vmID != "" {
+		ea["VM ID"] = vmID
+	}
+
+	recordHostIpAddr := NewRecordHostIpv4Addr(RecordHostIpv4Addr{Mac: macAddress})
+
+	if ipAddr == "" {
+		recordHostIpAddr.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
+	} else {
+		recordHostIpAddr.Ipv4Addr = ipAddr
+	}
+	enableDNS := new(bool)
+	*enableDNS = false
+	recordHostIpAddrSlice := make([]RecordHostIpv4Addr, 0)
+	recordHostIpAddrSlice = append(recordHostIpAddrSlice, *recordHostIpAddr)
+
+	recordHost := NewRecordHost(RecordHost{
+		Name:        recordName,
+		EnableDns:   enableDNS,
+		NetworkView: netview,
+		Ipv4Addrs:   recordHostIpAddrSlice})
+	ref, err := objMgr.connector.CreateObject(recordHost)
+	recordHost.Ref = ref
+	return recordHost, err
+}
+
+func (objMgr *ObjectManager) GetRecordHost(ref string) (*RecordHost, error) {
+	recordHost := NewRecordHost(RecordHost{})
+	err := objMgr.connector.GetObject(recordHost, ref, &recordHost)
+	return recordHost, err
+}
+
+func (objMgr *ObjectManager) GetIpAddressFromRecordHost(host RecordHost) (string, error) {
+	err := objMgr.connector.GetObject(&host, host.Ref, &host)
+	return host.Ipv4Addrs[0].Ipv4Addr, err
+}
+
+func (objMgr *ObjectManager) UpdateRecordHostWithoutDNS(hostRref string, ipAddr string, macAddress string) (string, error) {
+	recordHostIpAddr := NewRecordHostIpv4Addr(RecordHostIpv4Addr{Mac: macAddress, Ipv4Addr: ipAddr})
+	recordHostIpAddrSlice := make([]RecordHostIpv4Addr, 0)
+	recordHostIpAddrSlice = append(recordHostIpAddrSlice, *recordHostIpAddr)
+	updateHostRecord := NewRecordHost(RecordHost{Ipv4Addrs: recordHostIpAddrSlice})
+
+	ref, err := objMgr.connector.UpdateObject(updateHostRecord, hostRref)
+	return ref, err
+}
+
+func (objMgr *ObjectManager) DeleteRecordHost(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
 }
 
 // CreateMultiObject unmarshals the result into slice of maps
