@@ -196,12 +196,12 @@ func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Ne
 	network := NewNetwork(Network{
 		NetviewName: netview})
 
+	if ea != nil && len(ea) > 0 {
+        network.eaSearch = EASearch(ea)
+    }
+
 	if cidr != "" {
 		network.Cidr = cidr
-	}
-
-	if ea != nil && len(ea) > 0 {
-		network.eaSearch = EASearch(ea)
 	}
 
 	err := objMgr.connector.GetObject(network, "", &res)
@@ -450,5 +450,18 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 
 	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(gridObj, "", &res)
+	return res, err
+}
+
+// GetRecordA returns all the A-records
+func (objMgr *ObjectManager) GetRecordA(ea EA) ([]RecordA, error) {
+	var res []RecordA
+
+	recordA := NewRecordA(RecordA{})
+	if ea != nil && len(ea) > 0 {
+		recordA.eaSearch = EASearch(ea)
+	}
+
+	err := objMgr.connector.GetObject(recordA, "", &res)
 	return res, err
 }
