@@ -380,22 +380,34 @@ func NewRecordCNAME(rc RecordCNAME) *RecordCNAME {
 	return &res
 }
 
-type RecordHostIpv4Addr struct {
+type HostRecordIpv4Addr struct {
+	IBBase   `json:"-"`
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
+	Ref      string `json:"_ref,omitempty"`
+	Mac      string `json:"mac,omitempty"`
+	View     string `json:"view,omitempty"`
+	Cidr     string `json:"network,omitempty"`
 }
 
-type RecordHost struct {
-	IBBase    `json:"-"`
-	Ref       string               `json:"_ref,omitempty"`
-	Ipv4Addr  string               `json:"ipv4addr,omitempty"`
-	Ipv4Addrs []RecordHostIpv4Addr `json:"ipv4addrs,omitempty"`
-	Name      string               `json:"name,omitempty"`
-	View      string               `json:"view,omitempty"`
-	Zone      string               `json:"zone,omitempty"`
-	Ea        EA                   `json:"extattrs,omitempty"`
+func NewHostRecordIpv4Addr(hostAddr HostRecordIpv4Addr) *HostRecordIpv4Addr {
+	res := hostAddr
+	res.objectType = "record:host_ipv4addr"
+	return &res
 }
 
-func NewRecordHost(rh RecordHost) *RecordHost {
+type HostRecord struct {
+	IBBase      `json:"-"`
+	Ref         string               `json:"_ref,omitempty"`
+	Ipv4Addrs   []HostRecordIpv4Addr `json:"ipv4addrs,omitempty"`
+	Name        string               `json:"name,omitempty"`
+	View        string               `json:"view,omitempty"`
+	Zone        string               `json:"zone,omitempty"`
+	EnableDns   *bool                `json:"configure_for_dns,omitempty"`
+	NetworkView string               `json:"network_view,omitempty"`
+	Ea          EA                   `json:"extattrs,omitempty"`
+}
+
+func NewHostRecord(rh HostRecord) *HostRecord {
 	res := rh
 	res.objectType = "record:host"
 	res.returnFields = []string{"extattrs", "ipv4addrs", "name", "view", "zone"}

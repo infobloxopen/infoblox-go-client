@@ -336,13 +336,57 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("RecordHostIpv4Addr object", func() {
+			netviewName := "globalview"
+			cidr := "25.0.7.0/24"
+			ipAddress := "25.0.7.59/24"
+			mac := "11:22:33:44:55:66"
+			hostAddr := NewHostRecordIpv4Addr(HostRecordIpv4Addr{
+				View:     netviewName,
+				Cidr:     cidr,
+				Ipv4Addr: ipAddress,
+				Mac:      mac})
+
+			It("should set fields correctly", func() {
+				Expect(hostAddr.View).To(Equal(netviewName))
+				Expect(hostAddr.Cidr).To(Equal(cidr))
+				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
+				Expect(hostAddr.Mac).To(Equal(mac))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(hostAddr.ObjectType()).To(Equal("record:host_ipv4addr"))
+				//Expect(hostAddr.ReturnFields()).To(ConsistOf("configure_for_dhcp", "host", "ipv4addr", "mac"))
+			})
+		})
+
+		Context("RecordHostIpv4Addr macaddress empty", func() {
+			netviewName := "globalview"
+			cidr := "25.0.7.0/24"
+			ipAddress := "25.0.7.59/24"
+			hostAddr := NewHostRecordIpv4Addr(HostRecordIpv4Addr{
+				View:     netviewName,
+				Cidr:     cidr,
+				Ipv4Addr: ipAddress})
+
+			It("should set fields correctly", func() {
+				Expect(hostAddr.View).To(Equal(netviewName))
+				Expect(hostAddr.Cidr).To(Equal(cidr))
+				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(hostAddr.ObjectType()).To(Equal("record:host_ipv4addr"))
+				//Expect(hostAddr.ReturnFields()).To(ConsistOf("configure_for_dhcp", "host", "ipv4addr", "mac"))
+			})
+		})
 		Context("RecordHost object", func() {
-			ipv4addrs := []RecordHostIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
+			ipv4addrs := []HostRecordIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
 			name := "bind_host.domain.com"
 			view := "default"
 			zone := "domain.com"
 
-			rh := NewRecordHost(RecordHost{
+			rh := NewHostRecord(HostRecord{
 				Ipv4Addrs: ipv4addrs,
 				Name:      name,
 				View:      view,
