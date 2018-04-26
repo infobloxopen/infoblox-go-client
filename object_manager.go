@@ -413,7 +413,7 @@ func (objMgr *ObjectManager) GetHostRecord(ref string) (*HostRecord, error) {
 	return recordHost, err
 }
 
-func (objMgr *ObjectManager) GetHostRecordtWithoutDNS(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error) {
+func (objMgr *ObjectManager) GetHostRecordWithoutDNS(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error) {
 	var res []HostRecord
 
 	recordHost := NewHostRecord(HostRecord{})

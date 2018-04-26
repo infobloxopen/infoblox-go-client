@@ -666,7 +666,7 @@ var _ = Describe("Object Manager", func() {
 		var actualhostRecord *HostRecord
 		var err error
 		It("should pass expected Host record Object to GetObject", func() {
-			actualhostRecord, err = objMgr.GetHostRecordtWithoutDNS(hostName, netviewName, cidr, ipAddr)
+			actualhostRecord, err = objMgr.GetHostRecordWithoutDNS(hostName, netviewName, cidr, ipAddr)
 		})
 		It("should return expected Host record Object", func() {
 			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]HostRecord)[0]))
