@@ -24,6 +24,7 @@ type IBObjectManager interface {
 	GetEADefinition(name string) (*EADefinition, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
+	GetNetworks(netview string, cidr string, ea EA) (*[]Network, error)
 }
 
 type ObjectManager struct {
@@ -535,4 +536,27 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(gridObj, "", &res)
 	return res, err
+}
+
+// Get the all networks
+func (objMgr *ObjectManager) GetNetworks(netview string, cidr string, ea EA) (*[]Network, error) {
+	var res []Network
+
+	network := NewNetwork(Network{
+		NetviewName: netview})
+
+	if cidr != "" {
+		network.Cidr = cidr
+	}
+
+	if ea != nil && len(ea) > 0 {
+		network.eaSearch = EASearch(ea)
+	}
+
+	err := objMgr.connector.GetObject(network, "", &res)
+
+	if err != nil || res == nil || len(res) == 0 {
+		return nil, err
+	}
+	return &res, nil
 }
