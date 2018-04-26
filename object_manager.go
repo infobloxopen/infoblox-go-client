@@ -15,9 +15,9 @@ type IBObjectManager interface {
 	GetNetworkView(name string) (*NetworkView, error)
 	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
-	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error)
+	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, vmID string) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
-	UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error)
+	UpdateFixedAddress(fixedAddrRef string, macAddress string, name string, vmID string) (*FixedAddress, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
@@ -246,7 +246,7 @@ func GetIPAddressFromRef(ref string) string {
 	return ""
 }
 
-func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr string, macAddress string, vmID string) (*FixedAddress, error) {
+func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, vmID string) (*FixedAddress, error) {
 	if len(macAddress) == 0 {
 		macAddress = MACADDR_ZERO
 	}
@@ -261,6 +261,7 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr stri
 		NetviewName: netview,
 		Cidr:        cidr,
 		Mac:         macAddress,
+		Name:        name,
 		Ea:          ea})
 
 	if ipAddr == "" {
@@ -316,7 +317,7 @@ func (objMgr *ObjectManager) GetFixedAddress(netview string, cidr string, ipAddr
 	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, macAddress string, vmID string) (*FixedAddress, error) {
+func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, macAddress string, name string, vmID string) (*FixedAddress, error) {
 
 	updateFixedAddr := NewFixedAddress(FixedAddress{Ref: fixedAddrRef})
 

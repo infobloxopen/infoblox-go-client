@@ -299,6 +299,7 @@ type FixedAddress struct {
 	Cidr        string `json:"network,omitempty"`
 	IPAddress   string `json:"ipv4addr,omitempty"`
 	Mac         string `json:"mac,omitempty"`
+	Name        string `json:"name,omitempty"`
 	Ea          EA     `json:"extattrs,omitempty"`
 }
 
