@@ -139,7 +139,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 		log.Fatal(err)
 	}
 
-	whr.client = http.Client{Jar: jar, Transport: tr}
+	whr.client = http.Client{Jar: jar, Transport: tr, Timeout: cfg.HttpRequestTimeout * time.Second}
 }
 
 func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err error) {
