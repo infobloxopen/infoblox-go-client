@@ -129,8 +129,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: !cfg.SslVerify,
 			RootCAs: cfg.certPool},
-		MaxIdleConnsPerHost:   cfg.HttpPoolConnections,
-		ResponseHeaderTimeout: cfg.HttpRequestTimeout * time.Second,
+		MaxIdleConnsPerHost: cfg.HttpPoolConnections,
 	}
 
 	// All users of cookiejar should import "golang.org/x/net/publicsuffix"
