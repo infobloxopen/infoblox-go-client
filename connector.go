@@ -129,8 +129,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: !cfg.SslVerify,
 			RootCAs: cfg.certPool},
-		MaxIdleConnsPerHost:   cfg.HttpPoolConnections,
-		ResponseHeaderTimeout: cfg.HttpRequestTimeout * time.Second,
+		MaxIdleConnsPerHost: cfg.HttpPoolConnections,
 	}
 
 	// All users of cookiejar should import "golang.org/x/net/publicsuffix"
@@ -139,7 +138,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 		log.Fatal(err)
 	}
 
-	whr.client = http.Client{Jar: jar, Transport: tr}
+	whr.client = http.Client{Jar: jar, Transport: tr, Timeout: cfg.HttpRequestTimeout * time.Second}
 }
 
 func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err error) {
