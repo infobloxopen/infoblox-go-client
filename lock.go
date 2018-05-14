@@ -2,9 +2,10 @@ package ibclient
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"math/rand"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -66,7 +67,7 @@ func (l *NetworkViewLock) createLockRequest() *MultiRequest {
 					"_return_fields": "extattrs",
 				},
 				AssignState: map[string]string{
-					"DOCKER-ID": "*" + l.LockEA,
+					"TENANT-ID": "*" + l.LockEA,
 				},
 				EnableSubstitution: true,
 				Discard:            true,
@@ -132,7 +133,7 @@ func (l *NetworkViewLock) createUnlockRequest(force bool) *MultiRequest {
 					"_return_fields": "extattrs",
 				},
 				AssignState: map[string]string{
-					"DOCKER-ID": "*" + l.LockEA,
+					"TENANT-ID": "*" + l.LockEA,
 				},
 				EnableSubstitution: true,
 				Discard:            true,
@@ -173,7 +174,7 @@ func (l *NetworkViewLock) getLock() bool {
 		return false
 	}
 
-	dockerID := res[0]["DOCKER-ID"]
+	dockerID := res[0]["TENANT-ID"]
 	if dockerID == l.ObjMgr.tenantID {
 		logrus.Debugln("Got the lock !!!")
 		return true
@@ -234,7 +235,7 @@ func (l *NetworkViewLock) UnLock(force bool) error {
 		return fmt.Errorf(msg)
 	}
 
-	dockerID := res[0]["DOCKER-ID"]
+	dockerID := res[0]["TENANT-ID"]
 	if dockerID == freeLockVal {
 		logrus.Debugln("Removed the lock!")
 		return nil
