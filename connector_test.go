@@ -102,13 +102,12 @@ var _ = Describe("Connector", func() {
 			It("should return expected url string for GET for the return fields", func() {
 				objType := "network"
 				ref := ""
-				qry := "_proxy_search=GM"
 				returnFields := []string{"extattrs", "network", "network_view"}
-
+				forcedProxy := false
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
-				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s&%s",
-					host, port, version, objType, qry, returnFieldsStr)
-				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields)
+				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
+					host, port, version, objType, returnFieldsStr)
+				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, forcedProxy)
 				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 
@@ -116,10 +115,10 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
-
+				forcedProxy := false
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, ref)
-				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields)
+				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, forcedProxy)
 				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 		})
