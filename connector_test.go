@@ -28,7 +28,7 @@ func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
 	rb.hostConfig = cfg
 }
 
-func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string) string {
+func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, forcedProxy bool) string {
 	return rb.urlStr
 }
 
@@ -36,7 +36,7 @@ func (rb *FakeRequestBuilder) BuildBody(r RequestType, obj IBObject) []byte {
 	return []byte{}
 }
 
-func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string) (*http.Request, error) {
+func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string, forcedProxy bool) (*http.Request, error) {
 	Expect(r).To(Equal(rb.r))
 	if rb.obj == nil {
 		Expect(obj).To(BeNil())
@@ -92,9 +92,10 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
+				forcedProxy := false
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, objType)
-				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields)
+				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, forcedProxy)
 				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 
@@ -170,14 +171,14 @@ var _ = Describe("Connector", func() {
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
 				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr, Ea: ea})
-
+				forcedProxy := false
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr}, ",") + "}"
 
 				hostStr := fmt.Sprintf("%s:%s", host, port)
-				req, err := wrb.BuildRequest(CREATE, nw, "")
+				req, err := wrb.BuildRequest(CREATE, nw, "", forcedProxy)
 				Expect(err).To(BeNil())
 				Expect(req.Method).To(Equal("POST"))
 				Expect(req.URL.Host).To(Equal(hostStr))
