@@ -253,6 +253,8 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []
 	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, forcedProxy)
 	res, err = c.Requestor.SendRequest(req)
 	if err != nil {
+		/* Forcing the request to redirect to Grid Master by making forcedProxy=true
+		to get the information from the Grid Master*/
 		forcedProxy = true
 		req, err = c.RequestBuilder.BuildRequest(t, obj, ref, forcedProxy)
 		res, err = c.Requestor.SendRequest(req)
