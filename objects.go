@@ -306,7 +306,7 @@ type FixedAddress struct {
 func NewFixedAddress(fixedAddr FixedAddress) *FixedAddress {
 	res := fixedAddr
 	res.objectType = "fixedaddress"
-	res.returnFields = []string{"extattrs", "ipv4addr", "mac", "network", "network_view"}
+	res.returnFields = []string{"extattrs", "ipv4addr", "mac", "name", "network", "network_view"}
 
 	return &res
 }

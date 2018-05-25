@@ -243,7 +243,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(fixedAddr.ObjectType()).To(Equal("fixedaddress"))
-				Expect(fixedAddr.ReturnFields()).To(ConsistOf("network_view", "network", "ipv4addr", "mac", "extattrs"))
+				Expect(fixedAddr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "mac", "name", "network", "network_view"))
 			})
 		})
 
