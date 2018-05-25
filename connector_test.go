@@ -103,11 +103,19 @@ var _ = Describe("Connector", func() {
 				objType := "network"
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
-				forcedProxy := false
+
+				forcedProxy := false //disable proxy
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
 					host, port, version, objType, returnFieldsStr)
 				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, forcedProxy)
+				Expect(urlStr).To(Equal(expectedURLStr))
+
+				forcedProxy = true // proxy enabled
+				qry := "_proxy_search=GM"
+				expectedURLStr = fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s&%s",
+					host, port, version, objType, qry, returnFieldsStr)
+				urlStr = wrb.BuildUrl(GET, objType, ref, returnFields, forcedProxy)
 				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 
