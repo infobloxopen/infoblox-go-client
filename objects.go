@@ -398,6 +398,7 @@ func NewHostRecordIpv4Addr(hostAddr HostRecordIpv4Addr) *HostRecordIpv4Addr {
 type HostRecord struct {
 	IBBase      `json:"-"`
 	Ref         string               `json:"_ref,omitempty"`
+	Ipv4Addr    string               `json:"ipv4addr,omitempty"`
 	Ipv4Addrs   []HostRecordIpv4Addr `json:"ipv4addrs,omitempty"`
 	Name        string               `json:"name,omitempty"`
 	View        string               `json:"view,omitempty"`
