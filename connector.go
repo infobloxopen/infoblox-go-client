@@ -247,9 +247,8 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 	return
 }
 
-func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []byte, err error) {
+func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, forcedProxy bool) (res []byte, err error) {
 	var req *http.Request
-	var forcedProxy bool
 	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, forcedProxy)
 	res, err = c.Requestor.SendRequest(req)
 	if err != nil {
@@ -264,8 +263,8 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string) (res []
 
 func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 	ref = ""
-
-	resp, err := c.makeRequest(CREATE, obj, "")
+	var forcedProxy bool
+	resp, err := c.makeRequest(CREATE, obj, "", forcedProxy)
 	if err != nil || len(resp) == 0 {
 		log.Printf("CreateObject request error: '%s'\n", err)
 		return
@@ -281,29 +280,37 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 }
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
-	resp, err := c.makeRequest(GET, obj, ref)
+	var forcedProxy bool
+	resp, err := c.makeRequest(GET, obj, ref, forcedProxy)
+	//to check empty underlying value of interface
+	var result []map[string]interface{}
+	err = json.Unmarshal(resp, &result)
+	if err != nil {
+		log.Printf("Cannot unmarshall to check empty value '%s', err: '%s'\n", string(resp), err)
+	}
+	if resp == nil || len(result) == 0 {
+		forcedProxy = true
+		resp, err = c.makeRequest(GET, obj, ref, forcedProxy)
+	}
 	if err != nil {
 		log.Printf("GetObject request error: '%s'\n", err)
 	}
-
 	if len(resp) == 0 {
 		return
 	}
-
 	err = json.Unmarshal(resp, res)
 
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
 		return
 	}
-
 	return
 }
 
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	refRes = ""
-
-	resp, err := c.makeRequest(DELETE, nil, ref)
+	var forcedProxy bool
+	resp, err := c.makeRequest(DELETE, nil, ref, forcedProxy)
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
 		return
@@ -319,9 +326,9 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 }
 
 func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {
-
+	var forcedProxy bool
 	refRes = ""
-	resp, err := c.makeRequest(UPDATE, obj, ref)
+	resp, err := c.makeRequest(UPDATE, obj, ref, forcedProxy)
 	if err != nil {
 		log.Printf("Failed to update object %s: %s", obj.ObjectType(), err)
 		return
@@ -339,7 +346,8 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 // be used in a defer statement after the Connector has been successfully
 // initialized.
 func (c *Connector) Logout() (err error) {
-	_, err = c.makeRequest(CREATE, nil, "logout")
+	var forcedProxy bool
+	_, err = c.makeRequest(CREATE, nil, "logout", forcedProxy)
 	if err != nil {
 		log.Printf("Logout request error: '%s'\n", err)
 	}
