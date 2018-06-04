@@ -92,8 +92,7 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
-				var options Options
-				options.forceProxy = false
+				options := Options{forceProxy: false}
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, objType)
 			FORCED_PROXY:
@@ -111,8 +110,7 @@ var _ = Describe("Connector", func() {
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
 
-				var options Options
-				options.forceProxy = false // disable proxy
+				options := Options{forceProxy: false} // disable proxy
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
 					host, port, version, objType, returnFieldsStr)
@@ -131,8 +129,7 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
-				var options Options
-				options.forceProxy = false
+				options := Options{forceProxy: false} //disable the proxy
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, ref)
 			FORCED_PROXY:
@@ -192,8 +189,7 @@ var _ = Describe("Connector", func() {
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
 				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr, Ea: ea})
-				var options Options
-				options.forceProxy = false
+				options := Options{forceProxy: false} //disable the proxy
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
@@ -410,8 +406,7 @@ var _ = Describe("Connector", func() {
 			eaKey := "CMP Type"
 			eaVal := "OpenStack"
 			ref := ""
-			var options Options
-			options.forceProxy = false
+			options := Options{forceProxy: false} //disable the proxy
 			netViewObj := NewNetworkView(NetworkView{
 				Name: netviewName,
 				Ea:   EA{eaKey: eaVal},

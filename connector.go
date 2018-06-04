@@ -263,8 +263,7 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, options
 
 func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 	ref = ""
-	var options Options
-	options.forceProxy = false
+	options := Options{forceProxy: false}
 	resp, err := c.makeRequest(CREATE, obj, "", options)
 	if err != nil || len(resp) == 0 {
 		log.Printf("CreateObject request error: '%s'\n", err)
@@ -281,8 +280,7 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 }
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
-	var options Options
-	options.forceProxy = false
+	options := Options{forceProxy: false}
 	resp, err := c.makeRequest(GET, obj, ref, options)
 	//to check empty underlying value of interface
 	var result []map[string]interface{}
@@ -311,8 +309,7 @@ func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err er
 
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	refRes = ""
-	var options Options
-	options.forceProxy = false
+	options := Options{forceProxy: false}
 	resp, err := c.makeRequest(DELETE, nil, ref, options)
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
@@ -329,8 +326,7 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 }
 
 func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {
-	var options Options
-	options.forceProxy = false
+	options := Options{forceProxy: false}
 	refRes = ""
 	resp, err := c.makeRequest(UPDATE, obj, ref, options)
 	if err != nil {
@@ -350,8 +346,7 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 // be used in a defer statement after the Connector has been successfully
 // initialized.
 func (c *Connector) Logout() (err error) {
-	var options Options
-	options.forceProxy = false
+	options := Options{forceProxy: false}
 	_, err = c.makeRequest(CREATE, nil, "logout", options)
 	if err != nil {
 		log.Printf("Logout request error: '%s'\n", err)
