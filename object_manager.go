@@ -458,8 +458,9 @@ func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
 func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]interface{}, error) {
 
 	conn := objMgr.connector.(*Connector)
-	var forcedProxy bool
-	res, err := conn.makeRequest(CREATE, req, "", forcedProxy)
+	var options Options
+	options.forceProxy = false
+	res, err := conn.makeRequest(CREATE, req, "", options)
 
 	if err != nil {
 		return nil, err

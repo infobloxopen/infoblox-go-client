@@ -302,6 +302,9 @@ type FixedAddress struct {
 	Name        string `json:"name,omitempty"`
 	Ea          EA     `json:"extattrs,omitempty"`
 }
+type Options struct {
+	forceProxy bool
+}
 
 func NewFixedAddress(fixedAddr FixedAddress) *FixedAddress {
 	res := fixedAddr

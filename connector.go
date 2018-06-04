@@ -61,9 +61,9 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 
 type HttpRequestBuilder interface {
 	Init(HostConfig)
-	BuildUrl(r RequestType, objType string, ref string, returnFields []string, forcedProxy bool) (urlStr string)
+	BuildUrl(r RequestType, objType string, ref string, returnFields []string, options Options) (urlStr string)
 	BuildBody(r RequestType, obj IBObject) (jsonStr []byte)
-	BuildRequest(r RequestType, obj IBObject, ref string, forcedProxy bool) (req *http.Request, err error)
+	BuildRequest(r RequestType, obj IBObject, ref string, options Options) (req *http.Request, err error)
 }
 
 type HttpRequestor interface {
@@ -166,7 +166,7 @@ func (wrb *WapiRequestBuilder) Init(cfg HostConfig) {
 	wrb.HostConfig = cfg
 }
 
-func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, forcedProxy bool) (urlStr string) {
+func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, options Options) (urlStr string) {
 	path := []string{"wapi", "v" + wrb.HostConfig.Version}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -181,7 +181,7 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 			vals.Set("_return_fields", strings.Join(returnFields, ","))
 		}
 		// TODO need to get this from individual objects in future
-		if forcedProxy {
+		if options.forceProxy {
 			vals.Set("_proxy_search", "GM")
 		}
 		qry = vals.Encode()
@@ -220,7 +220,7 @@ func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
 	return objJSON
 }
 
-func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string, forcedProxy bool) (req *http.Request, err error) {
+func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string, options Options) (req *http.Request, err error) {
 	var (
 		objType      string
 		returnFields []string
@@ -229,7 +229,7 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 		objType = obj.ObjectType()
 		returnFields = obj.ReturnFields()
 	}
-	urlStr := wrb.BuildUrl(t, objType, ref, returnFields, forcedProxy)
+	urlStr := wrb.BuildUrl(t, objType, ref, returnFields, options)
 
 	var bodyStr []byte
 	if obj != nil {
@@ -247,14 +247,14 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 	return
 }
 
-func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, forcedProxy bool) (res []byte, err error) {
+func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, options Options) (res []byte, err error) {
 	var req *http.Request
-	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, forcedProxy)
+	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, options)
 	res, err = c.Requestor.SendRequest(req)
 	if err != nil {
 		/* Forcing the request to redirect to Grid Master by making forcedProxy=true */
-		forcedProxy = true
-		req, err = c.RequestBuilder.BuildRequest(t, obj, ref, forcedProxy)
+		options.forceProxy = true
+		req, err = c.RequestBuilder.BuildRequest(t, obj, ref, options)
 		res, err = c.Requestor.SendRequest(req)
 	}
 
@@ -263,8 +263,9 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, forcedP
 
 func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 	ref = ""
-	var forcedProxy bool
-	resp, err := c.makeRequest(CREATE, obj, "", forcedProxy)
+	var options Options
+	options.forceProxy = false
+	resp, err := c.makeRequest(CREATE, obj, "", options)
 	if err != nil || len(resp) == 0 {
 		log.Printf("CreateObject request error: '%s'\n", err)
 		return
@@ -280,8 +281,9 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 }
 
 func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
-	var forcedProxy bool
-	resp, err := c.makeRequest(GET, obj, ref, forcedProxy)
+	var options Options
+	options.forceProxy = false
+	resp, err := c.makeRequest(GET, obj, ref, options)
 	//to check empty underlying value of interface
 	var result []map[string]interface{}
 	err = json.Unmarshal(resp, &result)
@@ -289,8 +291,8 @@ func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err er
 		log.Printf("Cannot unmarshall to check empty value '%s', err: '%s'\n", string(resp), err)
 	}
 	if resp == nil || len(result) == 0 {
-		forcedProxy = true
-		resp, err = c.makeRequest(GET, obj, ref, forcedProxy)
+		options.forceProxy = true
+		resp, err = c.makeRequest(GET, obj, ref, options)
 	}
 	if err != nil {
 		log.Printf("GetObject request error: '%s'\n", err)
@@ -309,8 +311,9 @@ func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err er
 
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	refRes = ""
-	var forcedProxy bool
-	resp, err := c.makeRequest(DELETE, nil, ref, forcedProxy)
+	var options Options
+	options.forceProxy = false
+	resp, err := c.makeRequest(DELETE, nil, ref, options)
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
 		return
@@ -326,9 +329,10 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 }
 
 func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {
-	var forcedProxy bool
+	var options Options
+	options.forceProxy = false
 	refRes = ""
-	resp, err := c.makeRequest(UPDATE, obj, ref, forcedProxy)
+	resp, err := c.makeRequest(UPDATE, obj, ref, options)
 	if err != nil {
 		log.Printf("Failed to update object %s: %s", obj.ObjectType(), err)
 		return
@@ -346,8 +350,9 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 // be used in a defer statement after the Connector has been successfully
 // initialized.
 func (c *Connector) Logout() (err error) {
-	var forcedProxy bool
-	_, err = c.makeRequest(CREATE, nil, "logout", forcedProxy)
+	var options Options
+	options.forceProxy = false
+	_, err = c.makeRequest(CREATE, nil, "logout", options)
 	if err != nil {
 		log.Printf("Logout request error: '%s'\n", err)
 	}
