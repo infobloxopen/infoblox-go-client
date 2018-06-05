@@ -303,9 +303,8 @@ type FixedAddress struct {
 	Ea          EA     `json:"extattrs,omitempty"`
 }
 
-/*Now for the forced proxy, In the future we may need to have include other query params,
-like "max_results/paging" etc.*/
-type Options struct {
+/*This is a general struct to add query params used in makeRequest*/
+type QueryParams struct {
 	forceProxy bool
 }
 
