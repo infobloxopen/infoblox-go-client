@@ -303,6 +303,11 @@ type FixedAddress struct {
 	Ea          EA     `json:"extattrs,omitempty"`
 }
 
+/*This is a general struct to add query params used in makeRequest*/
+type QueryParams struct {
+	forceProxy bool
+}
+
 func NewFixedAddress(fixedAddr FixedAddress) *FixedAddress {
 	res := fixedAddr
 	res.objectType = "fixedaddress"

@@ -28,7 +28,7 @@ func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
 	rb.hostConfig = cfg
 }
 
-func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, forcedProxy bool) string {
+func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, queryParams QueryParams) string {
 	return rb.urlStr
 }
 
@@ -36,7 +36,7 @@ func (rb *FakeRequestBuilder) BuildBody(r RequestType, obj IBObject) []byte {
 	return []byte{}
 }
 
-func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string, forcedProxy bool) (*http.Request, error) {
+func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string, queryParams QueryParams) (*http.Request, error) {
 	Expect(r).To(Equal(rb.r))
 	if rb.obj == nil {
 		Expect(obj).To(BeNil())
@@ -92,22 +92,36 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
-				forcedProxy := false
+				queryParams := QueryParams{forceProxy: false}
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, objType)
-				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, forcedProxy)
+			FORCED_PROXY:
+				urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, queryParams)
 				Expect(urlStr).To(Equal(expectedURLStr))
+				if queryParams.forceProxy == false {
+					queryParams.forceProxy = true // proxy enabled
+					goto FORCED_PROXY
+				}
+
 			})
 
 			It("should return expected url string for GET for the return fields", func() {
 				objType := "network"
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
-				forcedProxy := false
+
+				queryParams := QueryParams{forceProxy: false} // disable proxy
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
 					host, port, version, objType, returnFieldsStr)
-				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, forcedProxy)
+				urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, queryParams)
+				Expect(urlStr).To(Equal(expectedURLStr))
+
+				queryParams.forceProxy = true // proxy enabled
+				qry := "_proxy_search=GM"
+				expectedURLStr = fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s&%s",
+					host, port, version, objType, qry, returnFieldsStr)
+				urlStr = wrb.BuildUrl(GET, objType, ref, returnFields, queryParams)
 				Expect(urlStr).To(Equal(expectedURLStr))
 			})
 
@@ -115,11 +129,16 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
-				forcedProxy := false
+				queryParams := QueryParams{forceProxy: false} //disable the proxy
 				expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, ref)
-				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, forcedProxy)
+			FORCED_PROXY:
+				urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, queryParams)
 				Expect(urlStr).To(Equal(expectedURLStr))
+				if queryParams.forceProxy == false {
+					queryParams.forceProxy = true // proxy enabled
+					goto FORCED_PROXY
+				}
 			})
 		})
 
@@ -170,14 +189,15 @@ var _ = Describe("Connector", func() {
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
 				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr, Ea: ea})
-				forcedProxy := false
+				queryParams := QueryParams{forceProxy: false} //disable the proxy
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr}, ",") + "}"
 
 				hostStr := fmt.Sprintf("%s:%s", host, port)
-				req, err := wrb.BuildRequest(CREATE, nw, "", forcedProxy)
+			FORCED_PROXY:
+				req, err := wrb.BuildRequest(CREATE, nw, "", queryParams)
 				Expect(err).To(BeNil())
 				Expect(req.Method).To(Equal("POST"))
 				Expect(req.URL.Host).To(Equal(hostStr))
@@ -199,6 +219,10 @@ var _ = Describe("Connector", func() {
 
 				actualBodyStr := string(actualBody[:n])
 				Expect(actualBodyStr).To(Equal(expectedBodyStr))
+				if queryParams.forceProxy == false {
+					queryParams.forceProxy = true // proxy enabled
+					goto FORCED_PROXY
+				}
 			})
 		})
 	})
@@ -316,6 +340,7 @@ var _ = Describe("Connector", func() {
 				Expect(err).To(BeNil())
 				Expect(actualRef).To(Equal(expectRef))
 			})
+
 		})
 
 		Describe("GetObject", func() {
@@ -372,10 +397,76 @@ var _ = Describe("Connector", func() {
 			It("should return expected object", func() {
 				actual := &NetworkView{}
 				err := conn.GetObject(netViewObj, "", actual)
-
 				Expect(err).To(BeNil())
 				Expect(NewNetworkView(*actual)).To(Equal(expectObj))
 			})
+		})
+		Describe("makeRequest", func() {
+			netviewName := "private-view"
+			eaKey := "CMP Type"
+			eaVal := "OpenStack"
+			ref := ""
+			queryParams := QueryParams{forceProxy: false} //disable the proxy
+			netViewObj := NewNetworkView(NetworkView{
+				Name: netviewName,
+				Ea:   EA{eaKey: eaVal},
+			})
+
+			requestType := RequestType(GET)
+			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
+			netviewStr := `"network_view":"` + netviewName + `"`
+			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
+				host, port, version, netViewObj.ObjectType())
+
+			bodyStr := []byte("{" + strings.Join([]string{netviewStr, eaStr}, ",") + "}")
+			httpReq, _ := http.NewRequest(requestType.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+			frb := &FakeRequestBuilder{
+				r:   requestType,
+				obj: netViewObj,
+				ref: "",
+
+				urlStr:  urlStr,
+				bodyStr: bodyStr,
+				req:     httpReq,
+			}
+
+			expectRef := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
+			expectObj := NewNetworkView(NetworkView{
+				Ref:  expectRef,
+				Name: netviewName,
+				Ea:   EA{eaKey: eaVal},
+			})
+			expectRes, _ := json.Marshal(expectObj)
+
+			fhr := &FakeHttpRequestor{
+				config: transportConfig,
+
+				req: httpReq,
+				res: expectRes,
+			}
+
+			OrigValidateConnector := ValidateConnector
+			ValidateConnector = MockValidateConnector
+			defer func() { ValidateConnector = OrigValidateConnector }()
+
+			conn, err := NewConnector(hostConfig, transportConfig,
+				frb, fhr)
+
+			if err != nil {
+				Fail("Error creating Connector")
+			}
+		FORCED_PROXY:
+			It("should return expected object", func() {
+				actual := &NetworkView{}
+				res, err := conn.makeRequest(GET, netViewObj, ref, queryParams)
+				err = json.Unmarshal(res, &actual)
+				Expect(err).To(BeNil())
+				Expect(NewNetworkView(*actual)).To(Equal(expectObj))
+			})
+			if queryParams.forceProxy == false {
+				queryParams.forceProxy = true // proxy enabled
+				goto FORCED_PROXY
+			}
 		})
 
 	})
