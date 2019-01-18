@@ -386,6 +386,7 @@ func NewRecordPTR(rptr RecordPTR) *RecordPTR {
 
 	return &res
 }
+
 type RecordCNAME struct {
 	IBBase    `json:"-"`
 	Ref       string `json:"_ref,omitempty"`

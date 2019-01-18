@@ -281,7 +281,7 @@ var _ = Describe("Object Manager", func() {
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr,name, vmID, vmName)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr, name, vmID, vmName)
 		})
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(asiFakeConnector.resultObject))
@@ -362,7 +362,7 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -370,7 +370,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -378,7 +378,7 @@ var _ = Describe("Object Manager", func() {
 			}),
 			resultObject: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -404,7 +404,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns,recordName, netviewName,dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -432,7 +432,7 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -440,7 +440,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -448,7 +448,7 @@ var _ = Describe("Object Manager", func() {
 			}),
 			resultObject: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -474,7 +474,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns,recordName, netviewName,dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -502,7 +502,7 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -511,7 +511,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
 				EnableDns:   enableDNS,
-				View:	     dnsView,
+				View:        dnsView,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
 				Ref:         fakeRefReturn,
@@ -519,7 +519,7 @@ var _ = Describe("Object Manager", func() {
 			resultObject: NewHostRecord(HostRecord{
 				Name:        recordName,
 				EnableDns:   enableDNS,
-				View:	     dnsView,
+				View:        dnsView,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
 				Ref:         fakeRefReturn,
@@ -544,7 +544,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID,vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -572,7 +572,7 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
-				View:	     dnsView,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -581,7 +581,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
 				EnableDns:   enableDNS,
-				View:	     dnsView,
+				View:        dnsView,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
 				Ref:         fakeRefReturn,
@@ -589,7 +589,7 @@ var _ = Describe("Object Manager", func() {
 			resultObject: NewHostRecord(HostRecord{
 				Name:        recordName,
 				EnableDns:   enableDNS,
-				View:	     dnsView,
+				View:        dnsView,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
 				Ref:         fakeRefReturn,
@@ -614,7 +614,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID,vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -636,22 +636,22 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordA(RecordA{
-				Name:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordA(RecordA{
-				Name:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			resultObject: NewRecordA(RecordA{
-				Name:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -673,7 +673,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *RecordA
 		var err error
 		It("should pass expected A record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID,vmName)
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
 		})
 		It("should return expected A record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -695,22 +695,22 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordA(RecordA{
-				Name:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordA(RecordA{
-				Name:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			resultObject: NewRecordA(RecordA{
-				Name:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -732,7 +732,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *RecordA
 		var err error
 		It("should pass expected A record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID,vmName)
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
 		})
 		It("should return expected A record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -754,22 +754,22 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			resultObject: NewRecordPTR(RecordPTR{
-				PtrdName:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -791,7 +791,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID,vmName)
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
 		})
 		It("should return expected PTR record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -813,22 +813,22 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			resultObject: NewRecordPTR(RecordPTR{
-				PtrdName:        recordName,
-				View:	     dnsView,
-				Ipv4Addr:   ipAddr,
-				Ref:         fakeRefReturn,
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -850,7 +850,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID,vmName)
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
 		})
 		It("should return expected PTR record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -869,21 +869,21 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordCNAME(RecordCNAME{
 				Name:      recordName,
-				View:	   dnsView,
+				View:      dnsView,
 				Canonical: canonical,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordCNAME(RecordCNAME{
-				Name:        recordName,
-				View:	     dnsView,
-				Canonical:   canonical,
-				Ref:         fakeRefReturn,
+				Name:      recordName,
+				View:      dnsView,
+				Canonical: canonical,
+				Ref:       fakeRefReturn,
 			}),
 			resultObject: NewRecordCNAME(RecordCNAME{
-				Name:    recordName,
-				View:	     dnsView,
-				Canonical:   canonical,
-				Ref:         fakeRefReturn,
+				Name:      recordName,
+				View:      dnsView,
+				Canonical: canonical,
+				Ref:       fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -1108,7 +1108,7 @@ var _ = Describe("Object Manager", func() {
 		var actualhostRecord *HostRecord
 		var err error
 		It("should pass expected Host record Object to GetObject", func() {
-			actualhostRecord, err = objMgr.GetHostRecordWithoutref(hostName, netviewName, cidr, ipAddr)
+			actualhostRecord, err = objMgr.GetHostRecord(hostName, netviewName, cidr, ipAddr)
 		})
 		It("should return expected Host record Object", func() {
 			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]HostRecord)[0]))

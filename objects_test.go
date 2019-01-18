@@ -228,17 +228,20 @@ var _ = Describe("Objects", func() {
 			cidr := "25.0.7.0/24"
 			ipAddress := "25.0.7.59/24"
 			mac := "11:22:33:44:55:66"
+			matchClient := "MAC_ADDRESS"
 			fixedAddr := NewFixedAddress(FixedAddress{
 				NetviewName: netviewName,
 				Cidr:        cidr,
 				IPAddress:   ipAddress,
-				Mac:         mac})
+				Mac:         mac,
+				MatchClient: matchClient})
 
 			It("should set fields correctly", func() {
 				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
 				Expect(fixedAddr.Cidr).To(Equal(cidr))
 				Expect(fixedAddr.IPAddress).To(Equal(ipAddress))
 				Expect(fixedAddr.Mac).To(Equal(mac))
+				Expect(fixedAddr.MatchClient).To(Equal(matchClient))
 			})
 
 			It("should set base fields correctly", func() {
@@ -319,7 +322,7 @@ var _ = Describe("Objects", func() {
 
 			rptr := NewRecordPTR(RecordPTR{
 				Ipv4Addr: ipv4addr,
-				PtrdName:    ptrdname,
+				PtrdName: ptrdname,
 				View:     view,
 				Zone:     zone})
 
