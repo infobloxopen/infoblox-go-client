@@ -245,6 +245,7 @@ var _ = Describe("Object Manager", func() {
 		ipAddr := "53.0.0.21"
 		macAddr := "01:23:45:67:80:ab"
 		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
 		name := "testvm"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", ipAddr)
 
@@ -271,14 +272,16 @@ var _ = Describe("Object Manager", func() {
 
 		asiFakeConnector.createObjectObj.(*FixedAddress).Ea = objMgr.getBasicEA(true)
 		asiFakeConnector.createObjectObj.(*FixedAddress).Ea["VM ID"] = vmID
+		asiFakeConnector.createObjectObj.(*FixedAddress).Ea["VM Name"] = vmName
 
 		asiFakeConnector.resultObject.(*FixedAddress).Ea = objMgr.getBasicEA(true)
 		asiFakeConnector.resultObject.(*FixedAddress).Ea["VM ID"] = vmID
+		asiFakeConnector.resultObject.(*FixedAddress).Ea["VM Name"] = vmName
 
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr,name, vmID)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr, name, vmID, vmName)
 		})
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(asiFakeConnector.resultObject))
@@ -295,6 +298,7 @@ var _ = Describe("Object Manager", func() {
 		macAddr := "01:23:45:67:80:ab"
 		vmID := "93f9249abc039284"
 		name := "testvm"
+		vmName := "dummyvm"
 		resultIP := "53.0.0.32"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", resultIP)
 
@@ -321,14 +325,16 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector.createObjectObj.(*FixedAddress).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*FixedAddress).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*FixedAddress).Ea["VM Name"] = vmName
 
 		aniFakeConnector.resultObject.(*FixedAddress).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.resultObject.(*FixedAddress).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*FixedAddress).Ea["VM Name"] = vmName
 
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", macAddr, name, vmID)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", macAddr, name, vmID, vmName)
 		})
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(aniFakeConnector.resultObject))
@@ -336,7 +342,7 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Allocate next available host Record", func() {
+	Describe("Allocate next available host Record without dns", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "private"
@@ -344,15 +350,19 @@ var _ = Describe("Object Manager", func() {
 		macAddr := "01:23:45:67:80:ab"
 		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
 		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
 		recordName := "test"
+		enabledns := false
+		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 		resultIPV4Addrs := NewHostRecordIpv4Addr(HostRecordIpv4Addr{Ipv4Addr: ipAddr, Mac: macAddr})
 		enableDNS := new(bool)
-		*enableDNS = false
+		*enableDNS = enabledns
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -360,6 +370,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -367,6 +378,7 @@ var _ = Describe("Object Manager", func() {
 			}),
 			resultObject: NewHostRecord(HostRecord{
 				Name:        recordName,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -379,17 +391,20 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
 
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecordWithoutDNS(recordName, netviewName, cidr, ipAddr, macAddr, vmID)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -397,7 +412,77 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Allocate specific host Record", func() {
+	Describe("Allocate next available host Record with dns", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		macAddr := "01:23:45:67:80:ab"
+		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		recordName := "test"
+		enabledns := true
+		dnsView := "default"
+		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		resultIPV4Addrs := NewHostRecordIpv4Addr(HostRecordIpv4Addr{Ipv4Addr: ipAddr, Mac: macAddr})
+		enableDNS := new(bool)
+		*enableDNS = enabledns
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewHostRecord(HostRecord{
+				Name:        recordName,
+				View:        dnsView,
+				EnableDns:   enableDNS,
+				NetworkView: netviewName,
+				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewHostRecord(HostRecord{
+				Name:        recordName,
+				View:        dnsView,
+				EnableDns:   enableDNS,
+				NetworkView: netviewName,
+				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
+				Ref:         fakeRefReturn,
+			}),
+			resultObject: NewHostRecord(HostRecord{
+				Name:        recordName,
+				View:        dnsView,
+				EnableDns:   enableDNS,
+				NetworkView: netviewName,
+				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
+				Ref:         fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+
+		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+
+		var actualRecord *HostRecord
+		var err error
+		It("should pass expected host record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+		})
+		It("should return expected host record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate specific host Record without dns", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "private"
@@ -405,15 +490,19 @@ var _ = Describe("Object Manager", func() {
 		macAddr := "01:23:45:67:80:ab"
 		ipAddr := "53.0.0.1"
 		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		enabledns := false
+		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 		resultIPV4Addrs := NewHostRecordIpv4Addr(HostRecordIpv4Addr{Ipv4Addr: ipAddr, Mac: macAddr})
 		enableDNS := new(bool)
-		*enableDNS = false
+		*enableDNS = enabledns
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
+				View:        dnsView,
 				EnableDns:   enableDNS,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
@@ -422,6 +511,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectObj: NewHostRecord(HostRecord{
 				Name:        recordName,
 				EnableDns:   enableDNS,
+				View:        dnsView,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
 				Ref:         fakeRefReturn,
@@ -429,6 +519,7 @@ var _ = Describe("Object Manager", func() {
 			resultObject: NewHostRecord(HostRecord{
 				Name:        recordName,
 				EnableDns:   enableDNS,
+				View:        dnsView,
 				NetworkView: netviewName,
 				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
 				Ref:         fakeRefReturn,
@@ -440,17 +531,20 @@ var _ = Describe("Object Manager", func() {
 
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
 
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecordWithoutDNS(recordName, netviewName, cidr, ipAddr, macAddr, vmID)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -458,6 +552,354 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Allocate specific host Record with dns", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		macAddr := "01:23:45:67:80:ab"
+		ipAddr := "53.0.0.1"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		enabledns := true
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		resultIPV4Addrs := NewHostRecordIpv4Addr(HostRecordIpv4Addr{Ipv4Addr: ipAddr, Mac: macAddr})
+		enableDNS := new(bool)
+		*enableDNS = enabledns
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewHostRecord(HostRecord{
+				Name:        recordName,
+				View:        dnsView,
+				EnableDns:   enableDNS,
+				NetworkView: netviewName,
+				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewHostRecord(HostRecord{
+				Name:        recordName,
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				NetworkView: netviewName,
+				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
+				Ref:         fakeRefReturn,
+			}),
+			resultObject: NewHostRecord(HostRecord{
+				Name:        recordName,
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				NetworkView: netviewName,
+				Ipv4Addrs:   []HostRecordIpv4Addr{*resultIPV4Addrs},
+				Ref:         fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+
+		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+
+		var actualRecord *HostRecord
+		var err error
+		It("should pass expected host record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+		})
+		It("should return expected host record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate specific A Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		ipAddr := "53.0.0.1"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewRecordA(RecordA{
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewRecordA(RecordA{
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			resultObject: NewRecordA(RecordA{
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		aniFakeConnector.createObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM Name"] = vmName
+
+		aniFakeConnector.resultObject.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordA).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*RecordA).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM Name"] = vmName
+
+		var actualRecord *RecordA
+		var err error
+		It("should pass expected A record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+		})
+		It("should return expected A record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate next available A Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewRecordA(RecordA{
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewRecordA(RecordA{
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			resultObject: NewRecordA(RecordA{
+				Name:     recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		aniFakeConnector.createObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM Name"] = vmName
+
+		aniFakeConnector.resultObject.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordA).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*RecordA).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM Name"] = vmName
+
+		var actualRecord *RecordA
+		var err error
+		It("should pass expected A record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+		})
+		It("should return expected A record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate specific PTR Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		ipAddr := "53.0.0.1"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewRecordPTR(RecordPTR{
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewRecordPTR(RecordPTR{
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			resultObject: NewRecordPTR(RecordPTR{
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
+
+		aniFakeConnector.resultObject.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
+
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+		})
+		It("should return expected PTR record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate next available PTR Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewRecordPTR(RecordPTR{
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewRecordPTR(RecordPTR{
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			resultObject: NewRecordPTR(RecordPTR{
+				PtrdName: recordName,
+				View:     dnsView,
+				Ipv4Addr: ipAddr,
+				Ref:      fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
+
+		aniFakeConnector.resultObject.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
+
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+		})
+		It("should return expected PTR record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate CNAME Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		canonical := "test-canonical"
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewRecordCNAME(RecordCNAME{
+				Name:      recordName,
+				View:      dnsView,
+				Canonical: canonical,
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewRecordCNAME(RecordCNAME{
+				Name:      recordName,
+				View:      dnsView,
+				Canonical: canonical,
+				Ref:       fakeRefReturn,
+			}),
+			resultObject: NewRecordCNAME(RecordCNAME{
+				Name:      recordName,
+				View:      dnsView,
+				Canonical: canonical,
+				Ref:       fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		var actualRecord *RecordCNAME
+		var err error
+		It("should pass expected CNAME record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView)
+		})
+		It("should return expected CNAME record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
 	Describe("Create EA Definition", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
@@ -666,7 +1108,7 @@ var _ = Describe("Object Manager", func() {
 		var actualhostRecord *HostRecord
 		var err error
 		It("should pass expected Host record Object to GetObject", func() {
-			actualhostRecord, err = objMgr.GetHostRecordWithoutDNS(hostName, netviewName, cidr, ipAddr)
+			actualhostRecord, err = objMgr.GetHostRecord(hostName, netviewName, cidr, ipAddr)
 		})
 		It("should return expected Host record Object", func() {
 			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]HostRecord)[0]))
@@ -803,6 +1245,78 @@ var _ = Describe("Object Manager", func() {
 			actualRef, err = objMgr.DeleteHostRecord(deleteRef)
 		})
 		It("should return expected Host record Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Delete A Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test"
+		deleteRef := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		fakeRefReturn := deleteRef
+		nwFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected A record Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteARecord(deleteRef)
+		})
+		It("should return expected A record Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Delete PTR Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test"
+		deleteRef := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		fakeRefReturn := deleteRef
+		nwFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected PTR record Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeletePTRRecord(deleteRef)
+		})
+		It("should return expected PTR record Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Delete CNAME Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test"
+		deleteRef := fmt.Sprintf("record:CNAME/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		fakeRefReturn := deleteRef
+		nwFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected CNAME record Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteCNAMERecord(deleteRef)
+		})
+		It("should return expected CNAME record Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
