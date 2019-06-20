@@ -2,11 +2,10 @@ package ibclient
 
 import (
 	"errors"
+	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"fmt"
 )
 
 type fakeConnector struct {
