@@ -47,6 +47,8 @@ type ObjectManager struct {
 	connector IBConnector
 	cmpType   string
 	tenantID  string
+	// If OmitCloudAttrs is true no extra attributes for cloud are set
+	OmitCloudAttrs bool
 }
 
 func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
@@ -59,11 +61,34 @@ func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *O
 	return objMgr
 }
 
+func NewLocalObjectManager(connector IBConnector) *ObjectManager {
+	return &ObjectManager{
+		connector:      connector,
+		OmitCloudAttrs: true,
+	}
+}
+
 func (objMgr *ObjectManager) getBasicEA(cloudAPIOwned Bool) EA {
 	ea := make(EA)
-	ea["Cloud API Owned"] = cloudAPIOwned
-	ea["CMP Type"] = objMgr.cmpType
-	ea["Tenant ID"] = objMgr.tenantID
+	if !objMgr.OmitCloudAttrs {
+		ea["Cloud API Owned"] = cloudAPIOwned
+		ea["CMP Type"] = objMgr.cmpType
+		ea["Tenant ID"] = objMgr.tenantID
+	}
+	return ea
+}
+
+func (objMgr *ObjectManager) getBasicVMEA(cloudAPIOwned Bool, vmID, vmName string) EA {
+	ea := objMgr.getBasicEA(cloudAPIOwned)
+	if !objMgr.OmitCloudAttrs {
+		if vmID != "" {
+			ea["VM ID"] = vmID
+		}
+
+		if vmName != "" {
+			ea["VM Name"] = vmName
+		}
+	}
 	return ea
 }
 
@@ -268,14 +293,7 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr stri
 		macAddress = MACADDR_ZERO
 	}
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
-
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
+	ea := objMgr.getBasicVMEA(true, vmID, vmName)
 	fixedAddr := NewFixedAddress(FixedAddress{
 		NetviewName: netview,
 		Cidr:        cidr,
@@ -365,15 +383,10 @@ func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, matchClient
 		updateFixedAddr.Mac = macAddress
 	}
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-		updateFixedAddr.Ea = ea
-	}
-	if vmName != "" {
-		ea["VM Name"] = vmName
-		updateFixedAddr.Ea = ea
-	}
+	ea := objMgr.getBasicVMEA(true, vmID, vmName)
+
+	updateFixedAddr.Ea = ea
+
 	if matchClient != "" {
 		if validateMatchClient(matchClient) {
 			updateFixedAddr.MatchClient = matchClient
@@ -429,14 +442,8 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 
 func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, vmID string, vmName string) (*HostRecord, error) {
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
+	ea := objMgr.getBasicVMEA(true, vmID, vmName)
 
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
 	recordHostIpAddr := NewHostRecordIpv4Addr(HostRecordIpv4Addr{Mac: macAddress})
 
 	if ipAddr == "" {
@@ -495,16 +502,10 @@ func (objMgr *ObjectManager) UpdateHostRecord(hostRref string, ipAddr string, ma
 	recordHostIpAddrSlice := []HostRecordIpv4Addr{*recordHostIpAddr}
 	updateHostRecord := NewHostRecord(HostRecord{Ipv4Addrs: recordHostIpAddrSlice})
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-		updateHostRecord.Ea = ea
-	}
+	ea := objMgr.getBasicVMEA(true, vmID, vmName)
 
-	if vmName != "" {
-		ea["VM Name"] = vmName
-		updateHostRecord.Ea = ea
-	}
+	updateHostRecord.Ea = ea
+
 	ref, err := objMgr.connector.UpdateObject(updateHostRecord, hostRref)
 	return ref, err
 }
@@ -515,14 +516,7 @@ func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
 
 func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, vmID string, vmName string) (*RecordA, error) {
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
-
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
+	ea := objMgr.getBasicVMEA(true, vmID, vmName)
 
 	recordA := NewRecordA(RecordA{
 		View: dnsview,
@@ -573,13 +567,7 @@ func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
 
 func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, vmID string, vmName string) (*RecordPTR, error) {
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
+	ea := objMgr.getBasicVMEA(true, vmID, vmName)
 
 	recordPTR := NewRecordPTR(RecordPTR{
 		View:     dnsview,
