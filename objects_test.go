@@ -1,10 +1,10 @@
 package ibclient
 
 import (
+	"encoding/json"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-
-	"encoding/json"
 )
 
 var _ = Describe("Objects", func() {
