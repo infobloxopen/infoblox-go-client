@@ -15,7 +15,7 @@ type IBObjectManager interface {
 	GetNetworkView(name string) (*NetworkView, error)
 	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
-	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, vmID string, vmName string) (*FixedAddress, error)
+	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
@@ -26,20 +26,31 @@ type IBObjectManager interface {
 	GetEADefinition(name string) (*EADefinition, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
-	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, vmID string, vmName string) (*HostRecord, error)
+}
+
+type IBOjectManager1 interface{
+
+	IBObjectManager
+	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error)
 	GetHostRecordByRef(ref string) (*HostRecord, error)
-	GetHostRecord(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error)
 	GetIpAddressFromHostRecord(host HostRecord) (string, error)
+	GetHostRecord(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
-	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, vmID string, vmName string) (*RecordA, error)
+	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 	GetARecordByRef(ref string) (*RecordA, error)
+	GetARecord( name string, ipaddr string) ([]RecordA,error)
+	UpdateARecord(ref string,name string, ipaddr string) (string,error)
 	DeleteARecord(ref string) (string, error)
-	CreateCNAMERecord(canonical string, recordname string, dnsview string) (*RecordCNAME, error)
+	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 	GetCNAMERecordByRef(ref string) (*RecordA, error)
+	GetCNAMERecord(recordName string,  canonical string) ([]RecordCNAME,error)
+	UpdateCNAMERecord(ref string,name string, canonical string) (string,error)
 	DeleteCNAMERecord(ref string) (string, error)
-	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, vmID string, vmName string) (*RecordPTR, error)
+	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	GetPTRRecord(recordName string,  ipAddr string) ([]RecordPTR,error)
+	UpdatePTRRecord(ref string,name string, ipaddr string) 
 	DeletePTRRecord(ref string) (string, error)
 }
 
@@ -48,6 +59,7 @@ type ObjectManager struct {
 	cmpType   string
 	tenantID  string
 }
+
 
 func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
 	objMgr := new(ObjectManager)
@@ -263,25 +275,22 @@ func GetIPAddressFromRef(ref string) string {
 	return ""
 }
 
-func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, vmID string, vmName string) (*FixedAddress, error) {
+func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error) {
 	if len(macAddress) == 0 {
 		macAddress = MACADDR_ZERO
 	}
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
+	basic_ea := objMgr.getBasicEA(true)
 
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
+	for k,v :=range ea{
+        basic_ea[k]=v
+        }
 	fixedAddr := NewFixedAddress(FixedAddress{
 		NetviewName: netview,
 		Cidr:        cidr,
 		Mac:         macAddress,
 		Name:        name,
-		Ea:          ea})
+		Ea:          basic_ea})
 
 	if ipAddr == "" {
 		fixedAddr.IPAddress = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
@@ -378,7 +387,7 @@ func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, matchClient
 		if validateMatchClient(matchClient) {
 			updateFixedAddr.MatchClient = matchClient
 		} else {
-			return nil, fmt.Errorf("wrong value for match_client passed %s \n ", matchClient)
+			return nil , fmt.Errorf("wrong value for match_client passed %s \n ", matchClient)
 		}
 	}
 
@@ -427,16 +436,13 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 	return newEadef, err
 }
 
-func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, vmID string, vmName string) (*HostRecord, error) {
+func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error) {
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
+	basic_ea := objMgr.getBasicEA(true)
 
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
+	for k,v :=range ea{
+        basic_ea[k]=v
+        }
 	recordHostIpAddr := NewHostRecordIpv4Addr(HostRecordIpv4Addr{Mac: macAddress})
 
 	if ipAddr == "" {
@@ -453,7 +459,7 @@ func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string,
 		NetworkView: netview,
 		View:        dnsview,
 		Ipv4Addrs:   recordHostIpAddrSlice,
-		Ea:          ea})
+		Ea:          basic_ea})
 
 	ref, err := objMgr.connector.CreateObject(recordHost)
 	recordHost.Ref = ref
@@ -513,21 +519,18 @@ func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, vmID string, vmName string) (*RecordA, error) {
+func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error) {
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
+	basic_ea := objMgr.getBasicEA(true)
 
-	if vmName != "" {
-		ea["VM Name"] = vmName
-	}
+	for k,v :=range ea{
+        basic_ea[k]=v
+        }
 
 	recordA := NewRecordA(RecordA{
 		View: dnsview,
 		Name: recordname,
-		Ea:   ea})
+		Ea:   basic_ea})
 
 	if ipAddr == "" {
 		recordA.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
@@ -544,17 +547,64 @@ func (objMgr *ObjectManager) GetARecordByRef(ref string) (*RecordA, error) {
 	err := objMgr.connector.GetObject(recordA, ref, &recordA)
 	return recordA, err
 }
+func (objMgr *ObjectManager) GetARecord(recordName string,  ipAddr string) ([]RecordA,error){
+	//This function would allow the user to get record by Ip address or vice versa
+	//This function returns the details of the particular record, for example if we 
+	// query a.b.com and is associated to multiple IP's the function will return multiple
+	//IP's if it has one IP it returns only once and vice versa. one of the two parms are 
+	// required
+	var res[] RecordA
 
+        recordA := NewRecordA(RecordA{Ipv4Addr:ipAddr})
+
+        if recordName != "" {
+                recordA.Name = recordName
+        }
+
+        err := objMgr.connector.GetObject(recordA, "", &res)
+
+        if err != nil  {
+                return nil, err
+        }
+        return res, err
+
+}
+
+func (objMgr *ObjectManager) UpdateARecord(ref string,name string, ipaddr string) (string,error){
+        recordA := NewRecordA(RecordA{})
+	if name ==""{
+		recordA.Ipv4Addr = ipaddr
+	}
+	if ipaddr ==""{
+		recordA.Name = name
+	}
+	if name !="" &&ipaddr !=""{
+		recordA.Name = name
+		recordA.Ipv4Addr = ipaddr
+	}
+	
+        res,err := objMgr.connector.UpdateObject(recordA,ref)
+
+        return res, err
+
+}
 func (objMgr *ObjectManager) DeleteARecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) CreateCNAMERecord(canonical string, recordname string, dnsview string) (*RecordCNAME, error) {
+func (objMgr *ObjectManager) CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA)(*RecordCNAME, error) {
+
+	basic_ea := objMgr.getBasicEA(true)
+
+	for k,v :=range ea{
+        basic_ea[k]=v
+        }
 
 	recordCNAME := NewRecordCNAME(RecordCNAME{
 		View:      dnsview,
 		Name:      recordname,
-		Canonical: canonical})
+		Canonical: canonical,
+		Ea: basic_ea})
 
 	ref, err := objMgr.connector.CreateObject(recordCNAME)
 	recordCNAME.Ref = ref
@@ -567,24 +617,64 @@ func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, erro
 	return recordCNAME, err
 }
 
+func (objMgr *ObjectManager) GetCNAMERecord(recordName string,  canonical string) ([]RecordCNAME,error){
+	//This function would allow the user to get record by Ip address or vice versa
+	//This function returns the details of the particular record, for example if we 
+	// query a.b.com and is associated to multiple IP's the function will return multiple
+	//IP's if it has one IP it returns only once and vice versa. one of the two parms are 
+	// required
+	var res[] RecordCNAME
+
+        recordCNAME := NewRecordCNAME(RecordCNAME{Canonical:canonical})
+
+        if recordName != "" {
+                recordCNAME.Name = recordName
+        }
+
+        err := objMgr.connector.GetObject(recordCNAME, "", &res)
+
+        if err != nil  {
+                return nil, err
+        }
+        return res, err
+
+}
+
+func (objMgr *ObjectManager) UpdateCNAMERecord(ref string,name string, canonical string) (string,error){
+        recordCNAME := NewRecordCNAME(RecordCNAME{})
+	if name ==""{
+		recordCNAME.Canonical = canonical
+	}
+	if canonical ==""{
+		recordCNAME.Name = name
+	}
+	if name !="" &&canonical !=""{
+		recordCNAME.Canonical = canonical
+		recordCNAME.Name = name
+	}
+	
+        res,err := objMgr.connector.UpdateObject(recordCNAME,ref)
+
+        return res, err
+
+}
 func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, vmID string, vmName string) (*RecordPTR, error) {
+func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error) {
 
-	ea := objMgr.getBasicEA(true)
-	if vmID != "" {
-		ea["VM ID"] = vmID
-	}
-	if vmName != "" {
-		ea["VM Name"] = vmName
+
+	basic_ea := objMgr.getBasicEA(true)
+
+	for k,v := range ea{
+	basic_ea[k] = v
 	}
 
 	recordPTR := NewRecordPTR(RecordPTR{
 		View:     dnsview,
 		PtrdName: recordname,
-		Ea:       ea})
+		Ea:       basic_ea})
 
 	if ipAddr == "" {
 		recordPTR.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
@@ -602,6 +692,47 @@ func (objMgr *ObjectManager) GetPTRRecordByRef(ref string) (*RecordPTR, error) {
 	return recordPTR, err
 }
 
+func (objMgr *ObjectManager) GetPTRRecord(recordName string,  ipAddr string) ([]RecordPTR,error){
+	//This function would allow the user to get record by Ip address or vice versa
+	//This function returns the details of the particular record, for example if we 
+	// query a.b.com and is associated to multiple IP's the function will return multiple
+	//IP's if it has one IP it returns only once and vice versa. one of the two parms are 
+	// required
+	var res[] RecordPTR
+
+        recordPTR := NewRecordPTR(RecordPTR{Ipv4Addr:ipAddr})
+
+        if recordName != "" {
+                recordPTR.PtrdName = recordName
+        }
+
+        err := objMgr.connector.GetObject(recordPTR, "", &res)
+
+        if err != nil  {
+                return nil, err
+        }
+        return res, err
+
+}
+
+func (objMgr *ObjectManager) UpdatePTRRecord(ref string,name string, ipaddr string) (string,error){
+        recordPTR := NewRecordPTR(RecordPTR{})
+	if name ==""{
+		recordPTR.Ipv4Addr = ipaddr
+	}
+	if ipaddr ==""{
+		recordPTR.PtrdName = name
+	}
+	if name !="" &&ipaddr !=""{
+		recordPTR.PtrdName = name
+		recordPTR.Ipv4Addr = ipaddr
+	}
+	
+        res,err := objMgr.connector.UpdateObject(recordPTR,ref)
+
+        return res, err
+
+}
 func (objMgr *ObjectManager) DeletePTRRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }

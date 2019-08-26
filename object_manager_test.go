@@ -2,10 +2,11 @@ package ibclient
 
 import (
 	"errors"
-	"fmt"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+
+	"fmt"
 )
 
 type fakeConnector struct {
@@ -269,18 +270,19 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(asiFakeConnector, cmpType, tenantID)
 
-		asiFakeConnector.createObjectObj.(*FixedAddress).Ea = objMgr.getBasicEA(true)
+		ea := objMgr.getBasicEA(true)
+		asiFakeConnector.createObjectObj.(*FixedAddress).Ea = ea
 		asiFakeConnector.createObjectObj.(*FixedAddress).Ea["VM ID"] = vmID
 		asiFakeConnector.createObjectObj.(*FixedAddress).Ea["VM Name"] = vmName
 
-		asiFakeConnector.resultObject.(*FixedAddress).Ea = objMgr.getBasicEA(true)
+		asiFakeConnector.resultObject.(*FixedAddress).Ea = ea
 		asiFakeConnector.resultObject.(*FixedAddress).Ea["VM ID"] = vmID
 		asiFakeConnector.resultObject.(*FixedAddress).Ea["VM Name"] = vmName
 
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr, name, vmID, vmName)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr, name, ea)
 		})
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(asiFakeConnector.resultObject))
@@ -321,20 +323,22 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		aniFakeConnector.createObjectObj.(*FixedAddress).Ea = objMgr.getBasicEA(true)
+		
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*FixedAddress).Ea = ea
 		aniFakeConnector.createObjectObj.(*FixedAddress).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*FixedAddress).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*FixedAddress).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*FixedAddress).Ea = ea
 		aniFakeConnector.resultObject.(*FixedAddress).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*FixedAddress).Ea["VM Name"] = vmName
 
 		var actualIP *FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
-			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", macAddr, name, vmID, vmName)
+			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, macAddr, name, ea)
 		})
+
 		It("should return expected Fixed Address Object", func() {
 			Expect(actualIP).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
@@ -387,23 +391,24 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, ea)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -458,22 +463,23 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, ea)
 		})
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -528,23 +534,25 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, ea)
 		})
+
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
@@ -598,23 +606,25 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
 
 		var actualRecord *HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateHostRecord(enabledns, recordName, netviewName, dnsView, cidr, ipAddr, macAddr, ea)
 		})
+
 		It("should return expected host record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
@@ -632,7 +642,6 @@ var _ = Describe("Object Manager", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordA(RecordA{
 				Name:     recordName,
@@ -656,23 +665,24 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		aniFakeConnector.createObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordA).Ea = ea
 		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordA).Ea = ea
 		aniFakeConnector.resultObject.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordA).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordA).Ea = ea
 		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM Name"] = vmName
 
 		var actualRecord *RecordA
 		var err error
 		It("should pass expected A record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
 		})
 		It("should return expected A record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -716,22 +726,23 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		aniFakeConnector.createObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordA).Ea = ea
 		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordA).Ea = ea
 		aniFakeConnector.resultObject.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordA).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordA).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordA).Ea = ea
 		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM Name"] = vmName
 
 		var actualRecord *RecordA
 		var err error
 		It("should pass expected A record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
 		})
 		It("should return expected A record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -774,23 +785,24 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
 		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordPTR).Ea = ea
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea =  ea
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
 
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
 		})
 		It("should return expected PTR record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -834,22 +846,23 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
 		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.resultObject.(*RecordPTR).Ea = ea
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = objMgr.getBasicEA(true)
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea =  ea
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
 
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, vmID, vmName)
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
 		})
 		It("should return expected PTR record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -862,6 +875,8 @@ var _ = Describe("Object Manager", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		canonical := "test-canonical"
 		dnsView := "default"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
@@ -888,11 +903,22 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		ea := objMgr.getBasicEA(true)
+		aniFakeConnector.createObjectObj.(*RecordCNAME).Ea = ea
+		aniFakeConnector.createObjectObj.(*RecordCNAME).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*RecordCNAME).Ea["VM Name"] = vmName
 
+		aniFakeConnector.resultObject.(*RecordCNAME).Ea = ea
+		aniFakeConnector.resultObject.(*RecordCNAME).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*RecordCNAME).Ea["VM Name"] = vmName
+
+		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea =  ea
+		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea["VM Name"] = vmName
 		var actualRecord *RecordCNAME
 		var err error
 		It("should pass expected CNAME record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView)
+			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView,ea)
 		})
 		It("should return expected CNAME record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
