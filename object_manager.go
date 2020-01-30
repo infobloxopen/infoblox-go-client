@@ -684,14 +684,19 @@ func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 	return res, err
 }
 
-// GetZoneDelegated returns the delegated zones
-func (objMgr *ObjectManager) GetZoneDelegated() ([]ZoneDelegated, error) {
+// GetZoneDelegated returns the delegated zone
+func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, error) {
 	var res []ZoneDelegated
 
-	zoneDelegated := NewZoneDelegated(ZoneDelegated{})
+	zoneDelegated := NewZoneDelegated(ZoneDelegated{Fqdn: fqdn})
+
 	err := objMgr.connector.GetObject(zoneDelegated, "", &res)
 
-	return res, err
+	if err != nil || res == nil || len(res) == 0 {
+		return nil, err
+	}
+
+	return &res[0], nil
 }
 
 // CreateZoneDelegated creates delegated zone
