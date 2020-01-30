@@ -475,6 +475,28 @@ func NewZoneAuth(za ZoneAuth) *ZoneAuth {
 	return &res
 }
 
+type NameServer struct {
+	Address string `json:"address,omitempty"`
+	Name    string `json:"name,omitempty"`
+}
+
+type ZoneDelegated struct {
+	IBBase     `json:"-"`
+	Ref        string       `json:"_ref,omitempty"`
+	Fqdn       string       `json:"fqdn,omitempty"`
+	DelegateTo []NameServer `json:"delegate_to,omitempty"`
+	View       string       `json:"view,omitempty"`
+	Ea         EA           `json:"extattrs,omitempty"`
+}
+
+func NewZoneDelegated(za ZoneDelegated) *ZoneDelegated {
+	res := za
+	res.objectType = "zone_delegated"
+	res.returnFields = []string{"extattrs", "fqdn", "view"}
+
+	return &res
+}
+
 func (ea EA) MarshalJSON() ([]byte, error) {
 	m := make(map[string]interface{})
 	for k, v := range ea {
