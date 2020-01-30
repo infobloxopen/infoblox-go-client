@@ -694,6 +694,7 @@ func (objMgr *ObjectManager) GetZoneDelegated() ([]ZoneDelegated, error) {
 	return res, err
 }
 
+// CreateZoneDelegated creates delegated zone
 func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{
 		Fqdn:       fqdn,
@@ -702,5 +703,16 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []Name
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref
 
+	return zoneDelegated, err
+}
+
+// UpdateZoneDelegated updates delegated zone
+func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
+	zoneDelegated := NewZoneDelegated(ZoneDelegated{
+		Ref:        ref,
+		DelegateTo: delegate_to})
+
+	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
+	zoneDelegated.Ref = refResp
 	return zoneDelegated, err
 }
