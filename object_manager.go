@@ -716,3 +716,8 @@ func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameS
 	zoneDelegated.Ref = refResp
 	return zoneDelegated, err
 }
+
+// DeleteZoneDelegated deletes delegated zone
+func (objMgr *ObjectManager) DeleteZoneDelegated(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
+}
