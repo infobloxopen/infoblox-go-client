@@ -706,8 +706,7 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{
 		Fqdn:       fqdn,
-		DelegateTo: delegate_to,
-		Ea:         objMgr.getBasicEA(true)})
+		DelegateTo: delegate_to})
 
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref

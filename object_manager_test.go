@@ -1550,8 +1550,6 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
-		zdFakeConnector.createObjectObj.(*ZoneDelegated).Ea = objMgr.getBasicEA(true)
-		zdFakeConnector.resultObject.(*ZoneDelegated).Ea = objMgr.getBasicEA(true)
 
 		var actualZoneDelegated *ZoneDelegated
 		var err error
