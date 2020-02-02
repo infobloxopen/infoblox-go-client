@@ -59,6 +59,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]License) = c.resultObject.([]License)
 		case *HostRecord:
 			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
+		case *ZoneDelegated:
+			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
 		}
 	} else {
 		switch obj.(type) {
@@ -323,7 +325,7 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-		
+
 		ea := objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*FixedAddress).Ea = ea
 		aniFakeConnector.createObjectObj.(*FixedAddress).Ea["VM ID"] = vmID
@@ -391,7 +393,7 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-		
+
 		ea := objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
 		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
@@ -665,7 +667,7 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-		
+
 		ea := objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*RecordA).Ea = ea
 		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM ID"] = vmID
@@ -785,7 +787,7 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-		
+
 		ea := objMgr.getBasicEA(true)
 		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
 		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
@@ -795,7 +797,7 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea =  ea
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = ea
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
 
@@ -855,7 +857,7 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea =  ea
+		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = ea
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
 
@@ -912,13 +914,13 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector.resultObject.(*RecordCNAME).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordCNAME).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea =  ea
+		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea = ea
 		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea["VM ID"] = vmID
 		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea["VM Name"] = vmName
 		var actualRecord *RecordCNAME
 		var err error
 		It("should pass expected CNAME record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView,ea)
+			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView, ea)
 		})
 		It("should return expected CNAME record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -1532,4 +1534,58 @@ var _ = Describe("Object Manager", func() {
 			Expect(err).To(BeNil())
 		})
 	})
+
+	Describe("Create Zone Delegated", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "dzone.example.com"
+		delegate_to := []NameServer{
+			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
+			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
+		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		zdFakeConnector := &fakeConnector{
+			createObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegate_to}),
+			resultObject:    NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegate_to, Ref: fakeRefReturn}),
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+		zdFakeConnector.createObjectObj.(*ZoneDelegated).Ea = objMgr.getBasicEA(true)
+		zdFakeConnector.resultObject.(*ZoneDelegated).Ea = objMgr.getBasicEA(true)
+
+		var actualZoneDelegated *ZoneDelegated
+		var err error
+		It("should pass expected ZoneDelegated Object to CreateObject", func() {
+			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegate_to)
+		})
+		It("should return expected ZoneDelegated Object", func() {
+			Expect(actualZoneDelegated).To(Equal(zdFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get Zone Delegated", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "dzone.example.com"
+		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		zdFakeConnector := &fakeConnector{
+			getObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn}),
+			getObjectRef: "",
+			resultObject: []ZoneDelegated{*NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, Ref: fakeRefReturn})},
+		}
+
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+
+		var actualZoneDelegated *ZoneDelegated
+		var err error
+		It("should pass expected ZoneDelegated Object to GetObject", func() {
+			actualZoneDelegated, err = objMgr.GetZoneDelegated(fqdn)
+		})
+		It("should return expected ZoneDelegated Object", func() {
+			Expect(*actualZoneDelegated).To(Equal(zdFakeConnector.resultObject.([]ZoneDelegated)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
 })
