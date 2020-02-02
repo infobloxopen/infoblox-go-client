@@ -686,6 +686,9 @@ func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 
 // GetZoneDelegated returns the delegated zone
 func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, error) {
+	if len(fqdn) == 0 {
+		return nil, nil
+	}
 	var res []ZoneDelegated
 
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{Fqdn: fqdn})
@@ -703,7 +706,8 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{
 		Fqdn:       fqdn,
-		DelegateTo: delegate_to})
+		DelegateTo: delegate_to,
+		Ea:         objMgr.getBasicEA(true)})
 
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref

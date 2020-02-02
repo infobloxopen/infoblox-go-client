@@ -1586,6 +1586,12 @@ var _ = Describe("Object Manager", func() {
 			Expect(*actualZoneDelegated).To(Equal(zdFakeConnector.resultObject.([]ZoneDelegated)[0]))
 			Expect(err).To(BeNil())
 		})
+		It("should return nil if fqdn is empty", func() {
+			zdFakeConnector.getObjectObj.(*ZoneDelegated).Fqdn = ""
+			actualZoneDelegated, err = objMgr.GetZoneDelegated("")
+			Expect(actualZoneDelegated).To(BeNil())
+			Expect(err).To(BeNil())
+		})
 	})
 
 })
