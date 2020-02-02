@@ -1535,33 +1535,6 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Create Zone Delegated", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		fqdn := "dzone.example.com"
-		delegate_to := []NameServer{
-			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
-			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
-		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
-		zdFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegate_to}),
-			resultObject:    NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegate_to, Ref: fakeRefReturn}),
-			fakeRefReturn:   fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
-
-		var actualZoneDelegated *ZoneDelegated
-		var err error
-		It("should pass expected ZoneDelegated Object to CreateObject", func() {
-			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegate_to)
-		})
-		It("should return expected ZoneDelegated Object", func() {
-			Expect(actualZoneDelegated).To(Equal(zdFakeConnector.resultObject))
-			Expect(err).To(BeNil())
-		})
-	})
-
 	Describe("Get Zone Delegated", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
@@ -1588,6 +1561,63 @@ var _ = Describe("Object Manager", func() {
 			zdFakeConnector.getObjectObj.(*ZoneDelegated).Fqdn = ""
 			actualZoneDelegated, err = objMgr.GetZoneDelegated("")
 			Expect(actualZoneDelegated).To(BeNil())
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Create Zone Delegated", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "dzone.example.com"
+		delegateTo := []NameServer{
+			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
+			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
+		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		zdFakeConnector := &fakeConnector{
+			createObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo}),
+			resultObject:    NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn}),
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+
+		var actualZoneDelegated *ZoneDelegated
+		var err error
+		It("should pass expected ZoneDelegated Object to CreateObject", func() {
+			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegateTo)
+		})
+		It("should return expected ZoneDelegated Object", func() {
+			Expect(actualZoneDelegated).To(Equal(zdFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Update Zone Delegated", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		delegateTo := []NameServer{
+			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
+			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
+
+		receiveUpdateObject := NewZoneDelegated(ZoneDelegated{Ref: fakeRefReturn, DelegateTo: delegateTo})
+		returnUpdateObject := NewZoneDelegated(ZoneDelegated{DelegateTo: delegateTo, Ref: fakeRefReturn})
+		zdFakeConnector := &fakeConnector{
+			fakeRefReturn:   fakeRefReturn,
+			resultObject:    returnUpdateObject,
+			updateObjectObj: receiveUpdateObject,
+			updateObjectRef: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+
+		var updatedObject *ZoneDelegated
+		var err error
+		It("should pass expected updated object to UpdateObject", func() {
+			updatedObject, err = objMgr.UpdateZoneDelegated(fakeRefReturn, delegateTo)
+		})
+		It("should update zone with new delegation server list with no error", func() {
+			Expect(updatedObject).To(Equal(returnUpdateObject))
 			Expect(err).To(BeNil())
 		})
 	})
