@@ -1622,4 +1622,27 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Delete ZoneDelegated", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		deleteRef := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		fakeRefReturn := deleteRef
+		zdFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected ZoneDelegated Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteZoneDelegated(deleteRef)
+		})
+		It("should return expected ZoneDelegated Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
 })
