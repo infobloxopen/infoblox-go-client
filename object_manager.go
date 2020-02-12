@@ -49,7 +49,6 @@ type ObjectManager struct {
 	tenantID  string
 }
 
-
 func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
 	objMgr := new(ObjectManager)
 
@@ -68,10 +67,10 @@ func (objMgr *ObjectManager) getBasicEA(cloudAPIOwned Bool) EA {
 	return ea
 }
 
-func (objMgr *ObjectManager) extendEA(ea EA) EA{
+func (objMgr *ObjectManager) extendEA(ea EA) EA {
 	eas := objMgr.getBasicEA(true)
-	for k,v :=range ea{
-	eas[k]=v
+	for k, v := range ea {
+		eas[k] = v
 	}
 	return eas
 }
@@ -284,7 +283,7 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr stri
 		Cidr:        cidr,
 		Mac:         macAddress,
 		Name:        name,
-		Ea:         eas})
+		Ea:          eas})
 
 	if ipAddr == "" {
 		fixedAddr.IPAddress = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
@@ -381,7 +380,7 @@ func (objMgr *ObjectManager) UpdateFixedAddress(fixedAddrRef string, matchClient
 		if validateMatchClient(matchClient) {
 			updateFixedAddr.MatchClient = matchClient
 		} else {
-			return nil , fmt.Errorf("wrong value for match_client passed %s \n ", matchClient)
+			return nil, fmt.Errorf("wrong value for match_client passed %s \n ", matchClient)
 		}
 	}
 
@@ -514,7 +513,6 @@ func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recor
 
 	eas := objMgr.extendEA(ea)
 
-
 	recordA := NewRecordA(RecordA{
 		View: dnsview,
 		Name: recordname,
@@ -539,7 +537,7 @@ func (objMgr *ObjectManager) DeleteARecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA)(*RecordCNAME, error) {
+func (objMgr *ObjectManager) CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error) {
 
 	eas := objMgr.extendEA(ea)
 
@@ -547,7 +545,7 @@ func (objMgr *ObjectManager) CreateCNAMERecord(canonical string, recordname stri
 		View:      dnsview,
 		Name:      recordname,
 		Canonical: canonical,
-		Ea: eas})
+		Ea:        eas})
 
 	ref, err := objMgr.connector.CreateObject(recordCNAME)
 	recordCNAME.Ref = ref
@@ -566,9 +564,7 @@ func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
 
 func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error) {
 
-
 	eas := objMgr.extendEA(ea)
-
 
 	recordPTR := NewRecordPTR(RecordPTR{
 		View:     dnsview,
@@ -676,4 +672,60 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(gridObj, "", &res)
 	return res, err
+}
+
+// GetZoneAuth returns the authoritatives zones
+func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
+	var res []ZoneAuth
+
+	zoneAuth := NewZoneAuth(ZoneAuth{})
+	err := objMgr.connector.GetObject(zoneAuth, "", &res)
+
+	return res, err
+}
+
+// GetZoneDelegated returns the delegated zone
+func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, error) {
+	if len(fqdn) == 0 {
+		return nil, nil
+	}
+	var res []ZoneDelegated
+
+	zoneDelegated := NewZoneDelegated(ZoneDelegated{Fqdn: fqdn})
+
+	err := objMgr.connector.GetObject(zoneDelegated, "", &res)
+
+	if err != nil || res == nil || len(res) == 0 {
+		return nil, err
+	}
+
+	return &res[0], nil
+}
+
+// CreateZoneDelegated creates delegated zone
+func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
+	zoneDelegated := NewZoneDelegated(ZoneDelegated{
+		Fqdn:       fqdn,
+		DelegateTo: delegate_to})
+
+	ref, err := objMgr.connector.CreateObject(zoneDelegated)
+	zoneDelegated.Ref = ref
+
+	return zoneDelegated, err
+}
+
+// UpdateZoneDelegated updates delegated zone
+func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
+	zoneDelegated := NewZoneDelegated(ZoneDelegated{
+		Ref:        ref,
+		DelegateTo: delegate_to})
+
+	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
+	zoneDelegated.Ref = refResp
+	return zoneDelegated, err
+}
+
+// DeleteZoneDelegated deletes delegated zone
+func (objMgr *ObjectManager) DeleteZoneDelegated(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
 }

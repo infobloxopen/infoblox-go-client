@@ -477,6 +477,25 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("ZoneDelegated object", func() {
+			fqdn := "delegated_zone.domain.com"
+			view := "default"
+
+			za := NewZoneDelegated(ZoneDelegated{
+				Fqdn: fqdn,
+				View: view})
+
+			It("should set fields correctly", func() {
+				Expect(za.Fqdn).To(Equal(fqdn))
+				Expect(za.View).To(Equal(view))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(za.ObjectType()).To(Equal("zone_delegated"))
+				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view"))
+			})
+		})
+
 	})
 
 	Context("Unmarshalling malformed JSON", func() {
