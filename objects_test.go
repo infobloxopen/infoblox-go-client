@@ -77,11 +77,13 @@ var _ = Describe("Objects", func() {
 			"Tenant Name":       "Engineering01",
 			"Maximum Wait Time": 120,
 			"DNS Support":       Bool(false),
+			"Routers":           []string{"10.1.2.234", "10.1.2.235"},
 		}
 		eaJSON := `{"Cloud API Owned":{"value":"True"},` +
 			`"Tenant Name":{"value":"Engineering01"},` +
 			`"Maximum Wait Time":{"value":120},` +
-			`"DNS Support":{"value":"False"}}`
+			`"DNS Support":{"value":"False"},` +
+			`"Routers":{"value":["10.1.2.234", "10.1.2.235"]}}`
 
 		Context("Marshalling", func() {
 			Context("expected JSON is returned", func() {

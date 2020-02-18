@@ -3,6 +3,7 @@ package ibclient
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"reflect"
 )
 
@@ -545,14 +546,26 @@ func (ea *EA) UnmarshalJSON(b []byte) (err error) {
 	*ea = make(EA)
 	for k, v := range m {
 		val := v["value"]
-		if reflect.TypeOf(val).String() == "json.Number" {
+		switch valType := reflect.TypeOf(val).String(); valType {
+		case "json.Number":
 			var i64 int64
 			i64, err = val.(json.Number).Int64()
 			val = int(i64)
-		} else if val.(string) == "True" {
-			val = Bool(true)
-		} else if val.(string) == "False" {
-			val = Bool(false)
+		case "string":
+			if val.(string) == "True" {
+				val = Bool(true)
+			} else if val.(string) == "False" {
+				val = Bool(false)
+			}
+		case "[]interface {}":
+			nval := val.([]interface{})
+			nVals := make([]string, len(nval))
+			for i, v := range nval {
+				nVals[i] = fmt.Sprintf("%v", v)
+			}
+			val = nVals
+		default:
+			val = fmt.Sprintf("%v", val)
 		}
 
 		(*ea)[k] = val
