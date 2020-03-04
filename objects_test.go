@@ -492,7 +492,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(za.ObjectType()).To(Equal("zone_delegated"))
-				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view"))
+				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view", "delegate_to"))
 			})
 		})
 
