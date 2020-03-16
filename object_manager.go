@@ -587,7 +587,7 @@ func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name can not be empty")
 	}
-	var res *RecordTXT
+	var res []*RecordTXT
 
 	recordTXT := NewRecordTXT(RecordTXT{Name: name})
 
@@ -597,7 +597,7 @@ func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
 		return nil, err
 	}
 
-	return res, nil
+	return res[0], nil
 }
 
 func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*RecordTXT, error) {
