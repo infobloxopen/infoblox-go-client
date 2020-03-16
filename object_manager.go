@@ -607,6 +607,10 @@ func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*R
 
 	err := objMgr.connector.GetObject(recordTXT, "", &res)
 
+	if len(res) == 0 {
+		return nil, nil
+	}
+
 	res[0].Text = text
 
 	res[0].Zone = "" //  set the Zone value to "" as its a non writable field
