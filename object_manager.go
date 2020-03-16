@@ -587,17 +587,17 @@ func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name can not be empty")
 	}
-	var res []*RecordTXT
+	var res []RecordTXT
 
 	recordTXT := NewRecordTXT(RecordTXT{Name: name})
 
 	err := objMgr.connector.GetObject(recordTXT, "", &res)
 
-	if err != nil || res == nil {
+	if err != nil || res == nil || len(res) == 0 {
 		return nil, err
 	}
 
-	return res[0], nil
+	return &res[0], nil
 }
 
 func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*RecordTXT, error) {
