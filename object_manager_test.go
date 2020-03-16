@@ -934,12 +934,14 @@ var _ = Describe("Object Manager", func() {
 		text := "test-text"
 		dnsView := "default"
 		recordName := "test"
+		ttl := 30
 		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordTXT(RecordTXT{
 				Name: recordName,
 				Text: text,
+				TTL:  ttl,
 				View: dnsView,
 			}),
 			getObjectRef: fakeRefReturn,
@@ -953,6 +955,7 @@ var _ = Describe("Object Manager", func() {
 				Name: recordName,
 				Text: text,
 				View: dnsView,
+				TTL:  ttl,
 				Ref:  fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
@@ -963,7 +966,7 @@ var _ = Describe("Object Manager", func() {
 		var actualRecord *RecordTXT
 		var err error
 		It("should pass expected TXT record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateTXTRecord(recordName, text, dnsView)
+			actualRecord, err = objMgr.CreateTXTRecord(recordName, text, 30, dnsView)
 		})
 		It("should return expected TXT record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
