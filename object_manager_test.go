@@ -927,6 +927,53 @@ var _ = Describe("Object Manager", func() {
 			Expect(err).To(BeNil())
 		})
 	})
+
+	Describe("Allocate TXT Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		text := "test-text"
+		dnsView := "default"
+		recordName := "test"
+		ttl := 30
+		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj: NewRecordTXT(RecordTXT{
+				Name: recordName,
+				Text: text,
+				TTL:  ttl,
+				View: dnsView,
+			}),
+			getObjectRef: fakeRefReturn,
+			getObjectObj: NewRecordTXT(RecordTXT{
+				Name: recordName,
+				Text: text,
+				View: dnsView,
+				Ref:  fakeRefReturn,
+			}),
+			resultObject: NewRecordTXT(RecordTXT{
+				Name: recordName,
+				Text: text,
+				View: dnsView,
+				TTL:  ttl,
+				Ref:  fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		var actualRecord *RecordTXT
+		var err error
+		It("should pass expected TXT record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateTXTRecord(recordName, text, 30, dnsView)
+		})
+		It("should return expected TXT record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Create EA Definition", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
@@ -1344,6 +1391,30 @@ var _ = Describe("Object Manager", func() {
 			actualRef, err = objMgr.DeleteCNAMERecord(deleteRef)
 		})
 		It("should return expected CNAME record Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Delete TXT Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test"
+		deleteRef := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		fakeRefReturn := deleteRef
+		nwFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected TXT record Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteTXTRecord(deleteRef)
+		})
+		It("should return expected TXT record Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
