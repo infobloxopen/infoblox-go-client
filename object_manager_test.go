@@ -1259,6 +1259,29 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Delete Network View", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
+		deleteRef := fakeRefReturn
+		nwFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected Network View Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteNetworkView(deleteRef)
+		})
+		It("should return expected Network View Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Delete Fixed Address", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
