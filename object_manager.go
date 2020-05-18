@@ -655,7 +655,7 @@ func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, rec
 
 func (objMgr *ObjectManager) GetPTRRecordByRef(ref string) (*RecordPTR, error) {
 	recordPTR := NewRecordPTR(RecordPTR{})
-	_,err := objMgr.connector.GetObject(recordPTR, ref, &recordPTR)
+	err := objMgr.connector.GetObject(recordPTR, ref, &recordPTR)
 	return recordPTR, err
 }
 
