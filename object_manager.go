@@ -9,41 +9,40 @@ import (
 
 type IBObjectManager interface {
 	RecordAOperations
-	CreateNetworkView(name string) (*NetworkView, error)
-	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
-	CreateNetwork(netview string, cidr string, name string) (*Network, error)
-	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
-	GetNetworkView(name string) (*NetworkView, error)
-	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
-	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
-	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
-	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
-	GetFixedAddressByRef(ref string) (*FixedAddress, error)
+	//CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
+	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
+	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
+	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
+	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error)
+	CreateNetwork(netview string, cidr string, name string) (*Network, error)
+	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
+	CreateNetworkView(name string) (*NetworkView, error)
+	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
+	//DeleteARecord(ref string) (string, error)
+	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
-	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
+	DeleteHostRecord(ref string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
-	GetEADefinition(name string) (*EADefinition, error)
-	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
-	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
-	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error)
-	GetHostRecordByRef(ref string) (*HostRecord, error)
-	GetHostRecord(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error)
-	GetIpAddressFromHostRecord(host HostRecord) (string, error)
-	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
-	DeleteHostRecord(ref string) (string, error)
-	//CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
-	//GetARecordByRef(ref string) (*RecordA, error)
-	//DeleteARecord(ref string) (string, error)
-	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
-	GetCNAMERecordByRef(ref string) (*RecordA, error)
-	DeleteCNAMERecord(ref string) (string, error)
-	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
-	GetPTRRecordByRef(ref string) (*RecordPTR, error)
 	DeletePTRRecord(ref string) (string, error)
-	GetLicense() ([]License, error)
+	//GetARecordByRef(ref string) (*RecordA, error)
+	GetCNAMERecordByRef(ref string) (*RecordA, error)
+	GetEADefinition(name string) (*EADefinition, error)
+	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
+	GetFixedAddressByRef(ref string) (*FixedAddress, error)
+	GetHostRecord(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error)
+	GetHostRecordByRef(ref string) (*HostRecord, error)
+	GetIpAddressFromHostRecord(host HostRecord) (string, error)
+	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
+	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
+	GetNetworkView(name string) (*NetworkView, error)
+	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
+	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
+	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
+	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
 }
 
 type ObjectManager struct {
@@ -151,9 +150,9 @@ func (objMgr *ObjectManager) GetNetworkView(name string) (*NetworkView, error) {
 	var res []NetworkView
 
 	netview := NewNetworkView(NetworkView{Name: name})
-fmt.Println("NETVIEW",netview)
+
 	err := objMgr.connector.GetObject(netview, "", &res)
-fmt.Println("NETVIEW",res)
+
 	if err != nil || res == nil || len(res) == 0 {
 		return nil, err
 	}
@@ -634,6 +633,7 @@ func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*R
 func (objMgr *ObjectManager) DeleteTXTRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
+
 func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error) {
 
 	eas := objMgr.extendEA(ea)
