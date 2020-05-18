@@ -312,7 +312,7 @@ var _ = Describe("Objects", func() {
 				Expect(ra.ObjectType()).To(Equal("record:a"))
 				Expect(ra.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "name", "view", "zone"))
 			})
-		})
+		})*/
 
 		Context("RecordPtr object", func() {
 			ipv4addr := "1.1.1.1"
@@ -337,7 +337,7 @@ var _ = Describe("Objects", func() {
 				Expect(rptr.ObjectType()).To(Equal("record:ptr"))
 				Expect(rptr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "ptrdname", "view", "zone"))
 			})
-		})*/
+		})
 
 		Context("RecordCNAME object", func() {
 			canonical := "cname.domain.com"
