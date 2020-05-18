@@ -51,6 +51,7 @@ type RecordA struct {
 	//CloudInfo       Cloud_info `json:"cloud_info,omitempty"`
 }
 
+// Define objectType and returnFields for A Record 
 func NewRecordA(ra RecordA) *RecordA {
 	res := ra
 	res.objectType = "record:a"
@@ -63,7 +64,7 @@ func NewRecordA(ra RecordA) *RecordA {
 
 // CreateARecord takes Name, Ipv4Addr and View of the record to create A Record
 // Optional fields: NetView, Ea, Cidr
-// Before creating, it checks if the Name and IP passed already exists in the network
+// Allocates the next available IPv4Addr is IPv4Addr is not passed
 func (objMgr *ObjectManager) CreateARecord(recA RecordA) (*RecordA, error) {
 	recA.Ea = objMgr.extendEA(recA.Ea)
 	recordA := NewRecordA(recA)
@@ -100,6 +101,8 @@ func (objMgr *ObjectManager) GetARecord(recA RecordA) (*[]RecordA, error) {
 }
 
 // DeleteARecord by passing either Reference or Name or IPv4Addr
+// If a record with same Ipv4Addr and different name exists, then name and Ipv4Addr has to be passed 
+// to avoid multiple record deletions
 func (objMgr *ObjectManager) DeleteARecord(recA RecordA) (string, error) {
 	var res []RecordA
 	recordName := NewRecordA(recA)
