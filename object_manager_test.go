@@ -61,6 +61,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
 		case *ZoneDelegated:
 			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
+		case *RecordA:
+			*res.(*[]RecordA) = c.resultObject.([]RecordA)
 		}
 	} else {
 		switch obj.(type) {
@@ -750,7 +752,7 @@ var _ = Describe("Object Manager", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
-	})
+	})*/
 
 	Describe("Allocate specific PTR Record ", func() {
 		cmpType := "Docker"
@@ -870,7 +872,7 @@ var _ = Describe("Object Manager", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
-	})*/
+	})
 
 	Describe("Allocate CNAME Record ", func() {
 		cmpType := "Docker"
@@ -1299,7 +1301,7 @@ var _ = Describe("Object Manager", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
-	})
+	})*/
 
 	Describe("Delete PTR Record", func() {
 		cmpType := "Docker"
@@ -1323,7 +1325,7 @@ var _ = Describe("Object Manager", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
-	})*/
+	})
 
 	Describe("Delete CNAME Record", func() {
 		cmpType := "Docker"
