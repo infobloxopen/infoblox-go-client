@@ -11,4 +11,3 @@ func TestInfobloxGoClient(t *testing.T) {
 	RegisterFailHandler(Fail)
 	RunSpecs(t, "InfobloxGoClient Suite")
 }
-
