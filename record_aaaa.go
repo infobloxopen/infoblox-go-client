@@ -47,7 +47,7 @@ func NewRecordAAAA(ra RecordAAAA) *RecordAAAA {
 
 // CreateAAAARecord takes Name, Ipv6Addr and View of the record to create AAAA Record
 // Optional fields: NetView, Ea, Cidr
-// Allocates the next available IPv4Addr is IPv4Addr is not passed
+// Allocates the next available IPv6Addr if IPv6Addr is not passed
 func (objMgr *ObjectManager) CreateAAAARecord(recA4 RecordAAAA) (*RecordAAAA, error) {
 
 	recA4.Ea = objMgr.extendEA(recA4.Ea)
