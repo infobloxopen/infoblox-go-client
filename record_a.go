@@ -51,7 +51,7 @@ type RecordA struct {
 	//CloudInfo       Cloud_info `json:"cloud_info,omitempty"`
 }
 
-// Define objectType and returnFields for A Record 
+// NewRecordA creates a new A Record type with objectType and returnFields 
 func NewRecordA(ra RecordA) *RecordA {
 	res := ra
 	res.objectType = "record:a"
