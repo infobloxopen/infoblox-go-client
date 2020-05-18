@@ -35,6 +35,7 @@ type RecordAAAA struct {
 	Use_ttl          bool     `json:"use_ttl,omitempty"`
 }
 
+// Define objectType and returnFields for AAAA Record 
 func NewRecordAAAA(ra RecordAAAA) *RecordAAAA {
 	res := ra
 	res.objectType = "record:aaaa"
@@ -46,7 +47,7 @@ func NewRecordAAAA(ra RecordAAAA) *RecordAAAA {
 
 // CreateAAAARecord takes Name, Ipv6Addr and View of the record to create AAAA Record
 // Optional fields: NetView, Ea, Cidr
-// Before creating, it checks if the Name and IP passed already exists in the network
+// Allocates the next available IPv4Addr is IPv4Addr is not passed
 func (objMgr *ObjectManager) CreateAAAARecord(recA4 RecordAAAA) (*RecordAAAA, error) {
 
 	recA4.Ea = objMgr.extendEA(recA4.Ea)
@@ -85,6 +86,8 @@ func (objMgr *ObjectManager) GetAAAARecord(recA4 RecordAAAA) (*[]RecordAAAA, err
 }
 
 // DeleteAAAARecord by passing either Reference or Name or IPv6Addr
+// If a record with same Ipv4Addr and different name exists, then name and Ipv4Addr has to be passed 
+// to avoid multiple record deletions
 func (objMgr *ObjectManager) DeleteAAAARecord(recA4 RecordAAAA) (string, error) {
 	var res []RecordAAAA
 	recordName := NewRecordAAAA(recA4)
