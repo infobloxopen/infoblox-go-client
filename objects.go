@@ -368,7 +368,7 @@ func NewRecordA(ra RecordA) *RecordA {
 	return &res
 }*/
 
-/*type RecordPTR struct {
+type RecordPTR struct {
 	IBBase   `json:"-"`
 	Ref      string `json:"_ref,omitempty"`
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
@@ -385,7 +385,7 @@ func NewRecordPTR(rptr RecordPTR) *RecordPTR {
 	res.returnFields = []string{"extattrs", "ipv4addr", "ptrdname", "view", "zone"}
 
 	return &res
-}*/
+}
 
 type RecordCNAME struct {
 	IBBase    `json:"-"`
