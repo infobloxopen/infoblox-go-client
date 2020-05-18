@@ -9,8 +9,6 @@ import (
 
 type IBObjectManager interface {
 	RecordAOperations
-	RecordAAAAOperations
-	RecordPTROperations
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateNetwork(netview string, cidr string, name string) (*Network, error)
@@ -42,9 +40,9 @@ type IBObjectManager interface {
 	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 	GetCNAMERecordByRef(ref string) (*RecordA, error)
 	DeleteCNAMERecord(ref string) (string, error)
-	//CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
-	//GetPTRRecordByRef(ref string) (*RecordPTR, error)
-	//DeletePTRRecord(ref string) (string, error)
+	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
+	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	DeletePTRRecord(ref string) (string, error)
 	GetLicense() ([]License, error)
 }
 
@@ -636,7 +634,7 @@ func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*R
 func (objMgr *ObjectManager) DeleteTXTRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
-/*func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error) {
+func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error) {
 
 	eas := objMgr.extendEA(ea)
 
@@ -663,7 +661,7 @@ func (objMgr *ObjectManager) GetPTRRecordByRef(ref string) (*RecordPTR, error) {
 
 func (objMgr *ObjectManager) DeletePTRRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
-}*/
+}
 
 // CreateMultiObject unmarshals the result into slice of maps
 func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]interface{}, error) {
