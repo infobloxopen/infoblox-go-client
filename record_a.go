@@ -27,6 +27,7 @@ type Cloud_info struct {
 	Usage               string       `json:"usage,omitempty"`
 }
 
+// RecordA represents NIOS DNS A Record Object
 type RecordA struct {
 	IBBase   `json:"-"`
 	Ref              string `json:"_ref,omitempty"`
