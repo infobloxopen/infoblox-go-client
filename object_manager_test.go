@@ -1349,7 +1349,7 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Delete A Record", func() {
+	/*Describe("Delete A Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		recordName := "test"
@@ -1371,7 +1371,7 @@ var _ = Describe("Object Manager", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
-	})
+	})*/
 
 	Describe("Delete PTR Record", func() {
 		cmpType := "Docker"
