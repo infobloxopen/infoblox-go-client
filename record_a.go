@@ -11,21 +11,6 @@ type RecordAOperations interface {
 	DeleteARecord(recA RecordA) (string, error)
 	UpdateARecord(recA RecordA) (*RecordA, error)
 }
-type DHCPMember struct {
-	Ipv4addr string    `json:"ipv4addr,omitempty"`
-	Ipv6addr string    `json:"ipv6addr,omitempty"`
-	Name     string    `json:"name,omitempty"`
-}
-type CloudInfo struct {
-	Authority_type      string       `json:"authority_type,omitempty"`
-	Delegated_member    DhcpMember   `json:"delegated_member,omitempty"`
-	Delegated_root      string       `json:"delegated_root,omitempty"`
-	Delegated_scope     string       `json:"delegated_scope,omitempty"`
-	Mgmt_platform        string       `json:"msmt_platform,omitempty"`
-	Owned_by_adaptor      bool         `json:"owned_by_adaptor,omitempty"`
-	Tenant              string       `json:"tenant,omitempty"`
-	Usage               string       `json:"usage,omitempty"`
-}
 
 // RecordA represents NIOS DNS A Record Object
 type RecordA struct {
@@ -49,7 +34,6 @@ type RecordA struct {
 	Reclaimable      bool     `json:"reclaimable,omitempty"`
  	Ttl              uint     `json:"ttl,omitempty"`
 	Use_ttl          bool     `json:"use_ttl,omitempty"`
-	//CloudInfo      CloudInfo `json:"cloud_info,omitempty"`
 }
 
 // NewRecordA creates a new A Record type with objectType and returnFields 
