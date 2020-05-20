@@ -11,18 +11,18 @@ type RecordAOperations interface {
 	DeleteARecord(recA RecordA) (string, error)
 	UpdateARecord(recA RecordA) (*RecordA, error)
 }
-type DhcpMember struct {
+type Dhcpmember struct {
 	Ipv4addr string    `json:"ipv4addr,omitempty"`
 	Ipv6addr string    `json:"ipv6addr,omitempty"`
 	Name     string    `json:"name,omitempty"`
 }
 type CloudInfo struct {
 	Authority_type      string       `json:"authority_type,omitempty"`
-	DelegatedMember    Dhcpmember   `json:"delegated_member,omitempty"`
-	DelegatedRoot      string       `json:"delegated_root,omitempty"`
-	DelegatedScope     string       `json:"delegated_scope,omitempty"`
-	MgmtPlatform        string       `json:"msmt_platform,omitempty"`
-	OwnedByAdaptor      bool         `json:"owned_by_adaptor,omitempty"`
+	Delegated_member    Dhcpmember   `json:"delegated_member,omitempty"`
+	Delegated_root      string       `json:"delegated_root,omitempty"`
+	Delegated_scope     string       `json:"delegated_scope,omitempty"`
+	Mgmt_platform        string       `json:"msmt_platform,omitempty"`
+	Owned_by_adaptor      bool         `json:"owned_by_adaptor,omitempty"`
 	Tenant              string       `json:"tenant,omitempty"`
 	Usage               string       `json:"usage,omitempty"`
 }
