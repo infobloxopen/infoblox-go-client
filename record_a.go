@@ -18,7 +18,7 @@ type DHCPMember struct {
 }
 type CloudInfo struct {
 	Authority_type      string       `json:"authority_type,omitempty"`
-	Delegated_member    Dhcpmember   `json:"delegated_member,omitempty"`
+	Delegated_member    DhcpMember   `json:"delegated_member,omitempty"`
 	Delegated_root      string       `json:"delegated_root,omitempty"`
 	Delegated_scope     string       `json:"delegated_scope,omitempty"`
 	Mgmt_platform        string       `json:"msmt_platform,omitempty"`
