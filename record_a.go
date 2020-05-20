@@ -11,7 +11,7 @@ type RecordAOperations interface {
 	DeleteARecord(recA RecordA) (string, error)
 	UpdateARecord(recA RecordA) (*RecordA, error)
 }
-type Dhcpmember struct {
+type DHCPMember struct {
 	Ipv4addr string    `json:"ipv4addr,omitempty"`
 	Ipv6addr string    `json:"ipv6addr,omitempty"`
 	Name     string    `json:"name,omitempty"`
