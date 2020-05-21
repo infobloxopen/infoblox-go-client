@@ -15,25 +15,25 @@ type RecordAOperations interface {
 // RecordA represents NIOS DNS A Record Object
 type RecordA struct {
 	IBBase   `json:"-"`
-	Ref              string `json:"_ref,omitempty"`
-	Ipv4Addr         string `json:"ipv4addr,omitempty"`
-	Name             string `json:"name,omitempty"`
-	View             string `json:"view,omitempty"`
-	Zone             string `json:"zone,omitempty"`
-	Ea               EA     `json:"extattrs,omitempty"`
-	NetView          string `json:"omitempty"`
-	Cidr             string `json:"omitempty"`
-	AddEA            EA     `json:"omitempty"`
-	RemoveEA         EA     `json:"omitempty"`
-	Creation_time    int    `json:"creation_time,omitempty"`
-	Comment          string `json:"comment,omitempty"`
-	Creator          string  `json:"creator,omitempty"`
-	Ddns_protected   bool    `json:"ddns_protected,omitempty"`
-	Dns_name         string  `json:"dns_name,omitempty"`
-	Forbid_reclamation bool  `json:"forbid_reclamation,omitempty"`
-	Reclaimable      bool     `json:"reclaimable,omitempty"`
- 	Ttl              uint     `json:"ttl,omitempty"`
-	Use_ttl          bool     `json:"use_ttl,omitempty"`
+	Ref               string `json:"_ref,omitempty"`
+	Ipv4Addr          string `json:"ipv4addr,omitempty"`
+	Name              string `json:"name,omitempty"`
+	View              string `json:"view,omitempty"`
+	Zone              string `json:"zone,omitempty"`
+	Ea                EA     `json:"extattrs,omitempty"`
+	NetView           string `json:"omitempty"`
+	Cidr              string `json:"omitempty"`
+	AddEA             EA     `json:"omitempty"`
+	RemoveEA          EA     `json:"omitempty"`
+	CreationTime      int    `json:"creation_time,omitempty"`
+	Comment           string `json:"comment,omitempty"`
+	Creator           string  `json:"creator,omitempty"`
+	DdnsProtected     bool    `json:"ddns_protected,omitempty"`
+	DnsName           string  `json:"dns_name,omitempty"`
+	ForbidReclamation bool  `json:"forbid_reclamation,omitempty"`
+	Reclaimable       bool     `json:"reclaimable,omitempty"`
+ 	Ttl               uint     `json:"ttl,omitempty"`
+	UseTtl            bool     `json:"use_ttl,omitempty"`
 }
 
 // NewRecordA creates a new A Record type with objectType and returnFields 
