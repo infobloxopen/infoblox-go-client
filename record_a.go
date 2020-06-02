@@ -75,7 +75,6 @@ func (objMgr *ObjectManager) GetARecord(recA RecordA) (*[]RecordA, error) {
 		res = append(res,*recordA)
 
 	} else {
-		recordA = NewRecordA(recA)
 		err = objMgr.connector.GetObject(recordA, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -95,7 +94,6 @@ func (objMgr *ObjectManager) DeleteARecord(recA RecordA) (string, error) {
 		return  objMgr.connector.DeleteObject(recA.Ref)
 
 	} else {
-		recordName = NewRecordA(recA)
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return "Record doesn't exist", err
