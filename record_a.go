@@ -2,7 +2,6 @@ package ibclient
 
 import (
 	"fmt"
-	_ "time"
 )
 
 type RecordAOperations interface {
@@ -12,9 +11,8 @@ type RecordAOperations interface {
 	UpdateARecord(recA RecordA) (*RecordA, error)
 }
 
-// RecordA represents NIOS DNS A Record Object
 type RecordA struct {
-	IBBase   `json:"-"`
+	IBBase            `json:"-"`
 	Ref               string `json:"_ref,omitempty"`
 	Ipv4Addr          string `json:"ipv4addr,omitempty"`
 	Name              string `json:"name,omitempty"`
@@ -27,23 +25,22 @@ type RecordA struct {
 	RemoveEA          EA     `json:"omitempty"`
 	CreationTime      int    `json:"creation_time,omitempty"`
 	Comment           string `json:"comment,omitempty"`
-	Creator           string  `json:"creator,omitempty"`
-	DdnsProtected     bool    `json:"ddns_protected,omitempty"`
-	DnsName           string  `json:"dns_name,omitempty"`
-	ForbidReclamation bool  `json:"forbid_reclamation,omitempty"`
-	Reclaimable       bool     `json:"reclaimable,omitempty"`
- 	Ttl               uint     `json:"ttl,omitempty"`
-	UseTtl            bool     `json:"use_ttl,omitempty"`
+	Creator           string `json:"creator,omitempty"`
+	DdnsProtected     bool   `json:"ddns_protected,omitempty"`
+	DnsName           string `json:"dns_name,omitempty"`
+	ForbidReclamation bool   `json:"forbid_reclamation,omitempty"`
+	Reclaimable       bool   `json:"reclaimable,omitempty"`
+	Ttl               uint   `json:"ttl,omitempty"`
+	UseTtl            bool   `json:"use_ttl,omitempty"`
 }
 
-// NewRecordA creates a new A Record type with objectType and returnFields 
+// NewRecordA creates a new A Record type with objectType and returnFields
 func NewRecordA(ra RecordA) *RecordA {
 	res := ra
 	res.objectType = "record:a"
 
-	res.returnFields = []string{ "ipv4addr", "name", "view", "zone","extattrs","comment","creation_time",
-				     "creator","ddns_protected","dns_name","cloud_info","forbid_reclamation","last_queried",
-				      "reclaimable","ttl","use_ttl","aws_rte53_record_info","ddns_principal","disable","discovered_data","ms_ad_user_data"}
+	res.returnFields = []string{"ipv4addr", "name", "view", "zone", "extattrs", "comment", "creation_time",
+		"creator", "ddns_protected", "dns_name", "forbid_reclamation", "reclaimable", "ttl", "use_ttl"}
 	return &res
 }
 
@@ -70,9 +67,9 @@ func (objMgr *ObjectManager) GetARecord(recA RecordA) (*[]RecordA, error) {
 	var res []RecordA
 	recordA := NewRecordA(recA)
 	var err error
-	if len(recA.Ref)>0 {
+	if len(recA.Ref) > 0 {
 		err = objMgr.connector.GetObject(recordA, recA.Ref, &recordA)
-		res = append(res,*recordA)
+		res = append(res, *recordA)
 
 	} else {
 		err = objMgr.connector.GetObject(recordA, "", &res)
@@ -85,18 +82,19 @@ func (objMgr *ObjectManager) GetARecord(recA RecordA) (*[]RecordA, error) {
 }
 
 // DeleteARecord by passing either Reference or Name or IPv4Addr
-// If a record with same Ipv4Addr and different name exists, then name and Ipv4Addr has to be passed 
+// If a record with same Ipv4Addr and different name exists, then name and Ipv4Addr has to be passed
 // to avoid multiple record deletions
 func (objMgr *ObjectManager) DeleteARecord(recA RecordA) (string, error) {
 	var res []RecordA
 	recordName := NewRecordA(recA)
 	if len(recA.Ref) > 0 {
-		return  objMgr.connector.DeleteObject(recA.Ref)
+		return objMgr.connector.DeleteObject(recA.Ref)
 
 	} else {
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
-			return "Record doesn't exist", err
+			return "", err
+
 		}
 		return objMgr.connector.DeleteObject(res[0].Ref)
 	}
@@ -109,7 +107,7 @@ func (objMgr *ObjectManager) DeleteARecord(recA RecordA) (string, error) {
 func (objMgr *ObjectManager) UpdateARecord(recA RecordA) (*RecordA, error) {
 	var res RecordA
 	recordA := RecordA{}
-	recordA.returnFields = []string{"name","extattrs"}
+	recordA.returnFields = []string{"name", "ipv4addr", "extattrs"}
 	err := objMgr.connector.GetObject(&recordA, recA.Ref, &res)
 	if err != nil {
 		return nil, err
@@ -127,6 +125,6 @@ func (objMgr *ObjectManager) UpdateARecord(recA RecordA) (*RecordA, error) {
 		}
 	}
 	reference, err := objMgr.connector.UpdateObject(&res, recA.Ref)
-	res.Ref= reference
+	res.Ref = reference
 	return &res, err
 }
