@@ -28,9 +28,8 @@ var _ = Describe("Testing RecordAOperations", func() {
 
 		It("should set base fields correctly", func() {
 			Expect(ra.ObjectType()).To(Equal("record:a"))
-			Expect(ra.ReturnFields()).To(ConsistOf("ipv4addr", "name", "view", "zone","extattrs","comment","creation_time",
-				"creator","ddns_protected","dns_name","cloud_info","forbid_reclamation","last_queried",
-				"reclaimable","ttl","use_ttl","aws_rte53_record_info","ddns_principal","disable","discovered_data","ms_ad_user_data"))
+			Expect(ra.ReturnFields()).To(ConsistOf("ipv4addr", "name", "view", "zone", "extattrs", "comment", "creation_time",
+				"creator", "ddns_protected", "dns_name", "forbid_reclamation", "reclaimable", "ttl", "use_ttl"))
 		})
 	})
 
@@ -45,7 +44,7 @@ var _ = Describe("Testing RecordAOperations", func() {
 			View:     "default",
 			Name:     "test",
 			Ea:       ea1,
-			}
+		}
 		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recA.Name)
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordA(recA),
@@ -57,8 +56,8 @@ var _ = Describe("Testing RecordAOperations", func() {
 				Ref:      fakeRefReturn,
 				Ea:       ea1,
 			}),
-			resultObject:  NewRecordA(RecordA{
-				NetView: "private",
+			resultObject: NewRecordA(RecordA{
+				NetView:  "private",
 				Cidr:     "53.0.0.0/24",
 				Ipv4Addr: "53.0.0.1",
 				View:     "default",
@@ -114,7 +113,7 @@ var _ = Describe("Testing RecordAOperations", func() {
 				Ref:      fakeRefReturn,
 				Ea:       ea1,
 			}),
-			resultObject:  NewRecordA(RecordA{
+			resultObject: NewRecordA(RecordA{
 				Ipv4Addr: "1.1.1.1",
 				View:     "default",
 				Name:     "test",
@@ -153,10 +152,10 @@ var _ = Describe("Testing RecordAOperations", func() {
 		ea1 := EA{"VM ID": vmID, "VM Name": vmName}
 
 		recA := RecordA{NetView: "private",
-			Cidr:     "53.0.0.0/24",
-			View:     "default",
-			Name:     "test",
-			Ea:       ea1,
+			Cidr: "53.0.0.0/24",
+			View: "default",
+			Name: "test",
+			Ea:   ea1,
 		}
 		recA.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", recA.Cidr, recA.NetView)
 		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recA.Name)
@@ -170,8 +169,8 @@ var _ = Describe("Testing RecordAOperations", func() {
 				Ref:      fakeRefReturn,
 				Ea:       ea1,
 			}),
-			resultObject:  NewRecordA(RecordA{
-				NetView: "private",
+			resultObject: NewRecordA(RecordA{
+				NetView:  "private",
 				Cidr:     "53.0.0.0/24",
 				Ipv4Addr: fmt.Sprintf("func:nextavailableip:%s,%s", recA.Cidr, recA.NetView),
 				View:     "default",
@@ -313,9 +312,9 @@ var _ = Describe("Testing RecordAOperations", func() {
 		recA := RecordA{Name: "delete_test"}
 		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recA.Name)
 		aniFakeConnector := &fakeConnector{
-			getObjectObj: NewRecordA(recA),
-			getObjectRef: "",
-			resultObject: []RecordA{*NewRecordA(RecordA{Name: recA.Name, Ref: fakeRefReturn})},
+			getObjectObj:    NewRecordA(recA),
+			getObjectRef:    "",
+			resultObject:    []RecordA{*NewRecordA(RecordA{Name: recA.Name, Ref: fakeRefReturn})},
 			deleteObjectRef: fakeRefReturn,
 			fakeRefReturn:   fakeRefReturn,
 		}
@@ -339,9 +338,9 @@ var _ = Describe("Testing RecordAOperations", func() {
 		name := "delete_test"
 		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", name)
 		aniFakeConnector := &fakeConnector{
-			getObjectObj: NewRecordA(recA),
-			getObjectRef: "",
-			resultObject: []RecordA{*NewRecordA(RecordA{Name: name, Ref: fakeRefReturn, Ipv4Addr: recA.Ipv4Addr})},
+			getObjectObj:    NewRecordA(recA),
+			getObjectRef:    "",
+			resultObject:    []RecordA{*NewRecordA(RecordA{Name: name, Ref: fakeRefReturn, Ipv4Addr: recA.Ipv4Addr})},
 			deleteObjectRef: fakeRefReturn,
 			fakeRefReturn:   fakeRefReturn,
 		}
