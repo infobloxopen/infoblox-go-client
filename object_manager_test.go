@@ -61,6 +61,18 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
 		case *ZoneDelegated:
 			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
+		case *RecordAAAA:
+			*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
+		case *RecordPTR:
+			*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
+		case *RecordTXT:
+			*res.(*[]RecordTXT) = c.resultObject.([]RecordTXT)
+		case *RecordMX:
+			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
+		case *RecordSRV:
+			*res.(*[]RecordSRV) = c.resultObject.([]RecordSRV)
+		case *RecordAlias:
+			*res.(*[]RecordAlias) = c.resultObject.([]RecordAlias)
 		}
 	} else {
 		switch obj.(type) {
@@ -752,126 +764,6 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Allocate specific PTR Record ", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		netviewName := "private"
-		cidr := "53.0.0.0/24"
-		ipAddr := "53.0.0.1"
-		vmID := "93f9249abc039284"
-		vmName := "dummyvm"
-		dnsView := "default"
-		recordName := "test"
-		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			resultObject: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		ea := objMgr.getBasicEA(true)
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
-
-		aniFakeConnector.resultObject.(*RecordPTR).Ea = ea
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
-
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
-
-		var actualRecord *RecordPTR
-		var err error
-		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
-		})
-		It("should return expected PTR record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
-			Expect(err).To(BeNil())
-		})
-	})
-
-	Describe("Allocate next available PTR Record ", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		netviewName := "private"
-		cidr := "53.0.0.0/24"
-		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
-		vmID := "93f9249abc039284"
-		vmName := "dummyvm"
-		dnsView := "default"
-		recordName := "test"
-		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			resultObject: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		ea := objMgr.getBasicEA(true)
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
-
-		aniFakeConnector.resultObject.(*RecordPTR).Ea = ea
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
-
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
-
-		var actualRecord *RecordPTR
-		var err error
-		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
-		})
-		It("should return expected PTR record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
-			Expect(err).To(BeNil())
-		})
-	})
-
 	Describe("Allocate CNAME Record ", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
@@ -923,52 +815,6 @@ var _ = Describe("Object Manager", func() {
 			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView, ea)
 		})
 		It("should return expected CNAME record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
-			Expect(err).To(BeNil())
-		})
-	})
-
-	Describe("Allocate TXT Record ", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		text := "test-text"
-		dnsView := "default"
-		recordName := "test"
-		ttl := 30
-		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordTXT(RecordTXT{
-				Name: recordName,
-				Text: text,
-				TTL:  ttl,
-				View: dnsView,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordTXT(RecordTXT{
-				Name: recordName,
-				Text: text,
-				View: dnsView,
-				Ref:  fakeRefReturn,
-			}),
-			resultObject: NewRecordTXT(RecordTXT{
-				Name: recordName,
-				Text: text,
-				View: dnsView,
-				TTL:  ttl,
-				Ref:  fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		var actualRecord *RecordTXT
-		var err error
-		It("should pass expected TXT record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateTXTRecord(recordName, text, 30, dnsView)
-		})
-		It("should return expected TXT record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -1371,30 +1217,6 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Delete PTR Record", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		recordName := "test"
-		deleteRef := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		fakeRefReturn := deleteRef
-		nwFakeConnector := &fakeConnector{
-			deleteObjectRef: deleteRef,
-			fakeRefReturn:   fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
-
-		var actualRef string
-		var err error
-		It("should pass expected PTR record Ref to DeleteObject", func() {
-			actualRef, err = objMgr.DeletePTRRecord(deleteRef)
-		})
-		It("should return expected PTR record Ref", func() {
-			Expect(actualRef).To(Equal(fakeRefReturn))
-			Expect(err).To(BeNil())
-		})
-	})
-
 	Describe("Delete CNAME Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
@@ -1414,30 +1236,6 @@ var _ = Describe("Object Manager", func() {
 			actualRef, err = objMgr.DeleteCNAMERecord(deleteRef)
 		})
 		It("should return expected CNAME record Ref", func() {
-			Expect(actualRef).To(Equal(fakeRefReturn))
-			Expect(err).To(BeNil())
-		})
-	})
-
-	Describe("Delete TXT Record", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		recordName := "test"
-		deleteRef := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		fakeRefReturn := deleteRef
-		nwFakeConnector := &fakeConnector{
-			deleteObjectRef: deleteRef,
-			fakeRefReturn:   fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
-
-		var actualRef string
-		var err error
-		It("should pass expected TXT record Ref to DeleteObject", func() {
-			actualRef, err = objMgr.DeleteTXTRecord(deleteRef)
-		})
-		It("should return expected TXT record Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})

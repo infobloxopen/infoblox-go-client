@@ -8,6 +8,12 @@ import (
 )
 
 type IBObjectManager interface {
+	RecordAAAAOperations
+	RecordPTROperations
+	RecordTXTOperations
+	RecordMXOperations
+	RecordAliasOperations
+	RecordSRVOperations
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
 	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
@@ -18,14 +24,12 @@ type IBObjectManager interface {
 	CreateNetwork(netview string, cidr string, name string) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
-	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
-	DeletePTRRecord(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetCNAMERecordByRef(ref string) (*RecordA, error)
 	GetEADefinition(name string) (*EADefinition, error)
@@ -37,7 +41,6 @@ type IBObjectManager interface {
 	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	GetNetworkView(name string) (*NetworkView, error)
-	GetPTRRecordByRef(ref string) (*RecordPTR, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
@@ -564,101 +567,6 @@ func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, erro
 }
 
 func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
-	return objMgr.connector.DeleteObject(ref)
-}
-
-// Creates TXT Record. Use TTL of 0 to inherit TTL from the Zone
-func (objMgr *ObjectManager) CreateTXTRecord(recordname string, text string, ttl int, dnsview string) (*RecordTXT, error) {
-
-	recordTXT := NewRecordTXT(RecordTXT{
-		View: dnsview,
-		Name: recordname,
-		Text: text,
-		TTL:  ttl,
-	})
-
-	ref, err := objMgr.connector.CreateObject(recordTXT)
-	recordTXT.Ref = ref
-	return recordTXT, err
-}
-
-func (objMgr *ObjectManager) GetTXTRecordByRef(ref string) (*RecordTXT, error) {
-	recordTXT := NewRecordTXT(RecordTXT{})
-	err := objMgr.connector.GetObject(recordTXT, ref, &recordTXT)
-	return recordTXT, err
-}
-
-func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
-	if name == "" {
-		return nil, fmt.Errorf("name can not be empty")
-	}
-	var res []RecordTXT
-
-	recordTXT := NewRecordTXT(RecordTXT{Name: name})
-
-	err := objMgr.connector.GetObject(recordTXT, "", &res)
-
-	if err != nil || res == nil || len(res) == 0 {
-		return nil, err
-	}
-
-	return &res[0], nil
-}
-
-func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*RecordTXT, error) {
-	var res []RecordTXT
-
-	recordTXT := NewRecordTXT(RecordTXT{Name: recordname})
-
-	err := objMgr.connector.GetObject(recordTXT, "", &res)
-
-	if len(res) == 0 {
-		return nil, nil
-	}
-
-	res[0].Text = text
-
-	res[0].Zone = "" //  set the Zone value to "" as its a non writable field
-
-	_, err = objMgr.connector.UpdateObject(&res[0], res[0].Ref)
-
-	if err != nil || res == nil || len(res) == 0 {
-		return nil, err
-	}
-
-	return &res[0], nil
-}
-
-func (objMgr *ObjectManager) DeleteTXTRecord(ref string) (string, error) {
-	return objMgr.connector.DeleteObject(ref)
-}
-
-func (objMgr *ObjectManager) CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error) {
-
-	eas := objMgr.extendEA(ea)
-
-	recordPTR := NewRecordPTR(RecordPTR{
-		View:     dnsview,
-		PtrdName: recordname,
-		Ea:       eas})
-
-	if ipAddr == "" {
-		recordPTR.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
-	} else {
-		recordPTR.Ipv4Addr = ipAddr
-	}
-	ref, err := objMgr.connector.CreateObject(recordPTR)
-	recordPTR.Ref = ref
-	return recordPTR, err
-}
-
-func (objMgr *ObjectManager) GetPTRRecordByRef(ref string) (*RecordPTR, error) {
-	recordPTR := NewRecordPTR(RecordPTR{})
-	err := objMgr.connector.GetObject(recordPTR, ref, &recordPTR)
-	return recordPTR, err
-}
-
-func (objMgr *ObjectManager) DeletePTRRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 

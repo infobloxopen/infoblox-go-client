@@ -316,31 +316,6 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
-		Context("RecordPtr object", func() {
-			ipv4addr := "1.1.1.1"
-			ptrdname := "bind_a.domain.com"
-			view := "default"
-			zone := "domain.com"
-
-			rptr := NewRecordPTR(RecordPTR{
-				Ipv4Addr: ipv4addr,
-				PtrdName: ptrdname,
-				View:     view,
-				Zone:     zone})
-
-			It("should set fields correctly", func() {
-				Expect(rptr.Ipv4Addr).To(Equal(ipv4addr))
-				Expect(rptr.PtrdName).To(Equal(ptrdname))
-				Expect(rptr.View).To(Equal(view))
-				Expect(rptr.Zone).To(Equal(zone))
-			})
-
-			It("should set base fields correctly", func() {
-				Expect(rptr.ObjectType()).To(Equal("record:ptr"))
-				Expect(rptr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "ptrdname", "view", "zone"))
-			})
-		})
-
 		Context("RecordCNAME object", func() {
 			canonical := "cname.domain.com"
 			name := "bind_cname.domain.com"
@@ -432,31 +407,6 @@ var _ = Describe("Objects", func() {
 			It("should set base fields correctly", func() {
 				Expect(rh.ObjectType()).To(Equal("record:host"))
 				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "name", "view", "zone"))
-			})
-		})
-
-		Context("RecordTXT object", func() {
-			name := "txt.domain.com"
-			text := "this is text string"
-			view := "default"
-			zone := "domain.com"
-
-			rt := NewRecordTXT(RecordTXT{
-				Name: name,
-				Text: text,
-				View: view,
-				Zone: zone})
-
-			It("should set fields correctly", func() {
-				Expect(rt.Name).To(Equal(name))
-				Expect(rt.Text).To(Equal(text))
-				Expect(rt.View).To(Equal(view))
-				Expect(rt.Zone).To(Equal(zone))
-			})
-
-			It("should set base fields correctly", func() {
-				Expect(rt.ObjectType()).To(Equal("record:txt"))
-				Expect(rt.ReturnFields()).To(ConsistOf("extattrs", "name", "text", "view", "zone"))
 			})
 		})
 
