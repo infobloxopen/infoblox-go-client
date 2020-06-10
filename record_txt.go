@@ -61,7 +61,6 @@ func (objMgr *ObjectManager) GetTXTRecord(recTXT RecordTXT) (*[]RecordTXT, error
 		res = append(res, *recordTXT)
 
 	} else {
-		recordTXT = NewRecordTXT(recTXT)
 		err = objMgr.connector.GetObject(recordTXT, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -84,7 +83,7 @@ func (objMgr *ObjectManager) DeleteTXTRecord(recTXT RecordTXT) (string, error) {
 		recordName = NewRecordTXT(recTXT)
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
-			return "Record doesn't exist", err
+			return "", err
 		}
 		return objMgr.connector.DeleteObject(res[0].Ref)
 	}

@@ -44,7 +44,7 @@ var _ = Describe("Testing RecordTXTOperations", func() {
 			Text: "test-text",
 			TTL:  30,
 			View: "default",
-			Ea: ea,
+			Ea:   ea,
 		}
 		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recTXT.Name)
 		aniFakeConnector := &fakeConnector{

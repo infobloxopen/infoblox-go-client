@@ -34,6 +34,7 @@ type RecordAAAA struct {
 	UseTtl            bool   `json:"use_ttl,omitempty"`
 }
 
+// NewRecordAAAA creates a new AAAA Record type with objectType and returnFields
 func NewRecordAAAA(ra RecordAAAA) *RecordAAAA {
 	res := ra
 	res.objectType = "record:aaaa"
@@ -72,7 +73,6 @@ func (objMgr *ObjectManager) GetAAAARecord(recA4 RecordAAAA) (*[]RecordAAAA, err
 		res = append(res, *recordA4)
 
 	} else {
-		recordA4 = NewRecordAAAA(recA4)
 		err = objMgr.connector.GetObject(recordA4, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -90,10 +90,9 @@ func (objMgr *ObjectManager) DeleteAAAARecord(recA4 RecordAAAA) (string, error) 
 		return objMgr.connector.DeleteObject(recA4.Ref)
 
 	} else {
-		recordName = NewRecordAAAA(recA4)
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
-			return "Record doesn't exist", err
+			return "", err
 		}
 		return objMgr.connector.DeleteObject(res[0].Ref)
 	}
@@ -104,7 +103,7 @@ func (objMgr *ObjectManager) DeleteAAAARecord(recA4 RecordAAAA) (string, error) 
 func (objMgr *ObjectManager) UpdateAAAARecord(recA4 RecordAAAA) (*RecordAAAA, error) {
 	var res RecordAAAA
 	recordA4 := RecordAAAA{Name: recA4.Name}
-	recordA4.returnFields = []string{"name", "extattrs"}
+	recordA4.returnFields = []string{"name", "ipv6addr", "extattrs"}
 	err := objMgr.connector.GetObject(&recordA4, recA4.Ref, &res)
 	if err != nil {
 		return nil, err

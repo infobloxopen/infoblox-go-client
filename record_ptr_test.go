@@ -91,7 +91,7 @@ var _ = Describe("Testing RecordPTROperations", func() {
 		})
 	})
 
-	Describe("Allocate A Record in default network view when Cidr and network view is not passed", func() {
+	Describe("Allocate PTR Record in default network view when Cidr and network view is not passed", func() {
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		ea1 := EA{"VM ID": vmID, "VM Name": vmName}

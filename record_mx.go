@@ -60,7 +60,6 @@ func (objMgr *ObjectManager) GetMXRecord(recMX RecordMX) (*[]RecordMX, error) {
 		res = append(res, *recordMX)
 
 	} else {
-		recordMX = NewRecordMX(recMX)
 		err = objMgr.connector.GetObject(recordMX, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -80,10 +79,9 @@ func (objMgr *ObjectManager) DeleteMXRecord(recMX RecordMX) (string, error) {
 		return objMgr.connector.DeleteObject(recMX.Ref)
 
 	} else {
-		recordName = NewRecordMX(recMX)
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
-			return "Record doesn't exist", err
+			return "", err
 		}
 		return objMgr.connector.DeleteObject(res[0].Ref)
 	}

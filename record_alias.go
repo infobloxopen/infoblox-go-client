@@ -8,21 +8,21 @@ type RecordAliasOperations interface {
 }
 
 type RecordAlias struct {
-	IBBase       `json:"-"`
-	Ref          string `json:"_ref,omitempty"`
-	TargetName   string `json:"target_name,omitempty"`
-	TargetType   string `json:"target_type,omitempty"`
-	Name         string `json:"name,omitempty"`
-	View         string `json:"view,omitempty"`
-	Zone         string `json:"zone,omitempty"`
-	Ea           EA     `json:"extattrs,omitempty"`
-	AddEA        EA     `json:"omitempty"`
-	RemoveEA     EA     `json:"omitempty"`
-	Comment      string `json:"comment,omitempty"`
-	Creator      string `json:"creator,omitempty"`
-	DnsName      string `json:"dns_name,omitempty"`
-	Ttl          uint   `json:"ttl,omitempty"`
-	UseTtl       bool   `json:"use_ttl,omitempty"`
+	IBBase     `json:"-"`
+	Ref        string `json:"_ref,omitempty"`
+	TargetName string `json:"target_name,omitempty"`
+	TargetType string `json:"target_type,omitempty"`
+	Name       string `json:"name,omitempty"`
+	View       string `json:"view,omitempty"`
+	Zone       string `json:"zone,omitempty"`
+	Ea         EA     `json:"extattrs,omitempty"`
+	AddEA      EA     `json:"omitempty"`
+	RemoveEA   EA     `json:"omitempty"`
+	Comment    string `json:"comment,omitempty"`
+	Creator    string `json:"creator,omitempty"`
+	DnsName    string `json:"dns_name,omitempty"`
+	Ttl        uint   `json:"ttl,omitempty"`
+	UseTtl     bool   `json:"use_ttl,omitempty"`
 }
 
 // NewRecordAlias creates a new Alias Record type with objectType and returnFields
@@ -56,7 +56,6 @@ func (objMgr *ObjectManager) GetAliasRecord(recAlias RecordAlias) (*[]RecordAlia
 		res = append(res, *recordAlias)
 
 	} else {
-		recordAlias = NewRecordAlias(recAlias)
 		err = objMgr.connector.GetObject(recordAlias, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -76,7 +75,6 @@ func (objMgr *ObjectManager) DeleteAliasRecord(recAlias RecordAlias) (string, er
 		return objMgr.connector.DeleteObject(recAlias.Ref)
 
 	} else {
-		recordName = NewRecordAlias(recAlias)
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return "", err

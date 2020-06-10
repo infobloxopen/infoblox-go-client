@@ -36,6 +36,7 @@ type RecordPTR struct {
 	Use_ttl            bool   `json:"use_ttl,omitempty"`
 }
 
+// NewRecordPTR creates a new PTR Record type with objectType and returnFields
 func NewRecordPTR(rptr RecordPTR) *RecordPTR {
 	res := rptr
 	res.objectType = "record:ptr"
@@ -45,7 +46,7 @@ func NewRecordPTR(rptr RecordPTR) *RecordPTR {
 	return &res
 }
 
-// CreatePTRRecord takes Name, PtrdName, Ipv4Addr or Ipv6Addr and View of the record to create A Record
+// CreatePTRRecord takes Name, PtrdName, Ipv4Addr or Ipv6Addr and View of the record to create PTR Record
 // Optional fields: NetView, Ea, Cidr
 // Before creating, it checks if the PtrdName passed already exists in the network
 func (objMgr *ObjectManager) CreatePTRRecord(recPTR RecordPTR) (*RecordPTR, error) {
@@ -81,7 +82,6 @@ func (objMgr *ObjectManager) GetPTRRecord(recPTR RecordPTR) (*[]RecordPTR, error
 		res = append(res, *recordPTR)
 
 	} else {
-		recordPTR = NewRecordPTR(recPTR)
 		err = objMgr.connector.GetObject(recordPTR, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -94,14 +94,13 @@ func (objMgr *ObjectManager) GetPTRRecord(recPTR RecordPTR) (*[]RecordPTR, error
 // DeletePTRRecord by passing either Reference or Name or IPv4Addr
 func (objMgr *ObjectManager) DeletePTRRecord(recPTR RecordPTR) (string, error) {
 	var res []RecordPTR
-	recordName := NewRecordPTR(RecordPTR{Name: recPTR.Name})
+	recordName := NewRecordPTR(recPTR)
 	if len(recPTR.Ref) > 0 {
 		return objMgr.connector.DeleteObject(recPTR.Ref)
 	} else {
-		recordName = NewRecordPTR(recPTR)
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
-			return "Record doesn't exist", err
+			return "", err
 		}
 		return objMgr.connector.DeleteObject(res[0].Ref)
 	}

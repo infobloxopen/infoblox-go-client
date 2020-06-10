@@ -246,12 +246,12 @@ var _ = Describe("Testing RecordAAAAOperations", func() {
 
 		var actualRecord *[]RecordAAAA
 		var err error
-		It("should pass expected A record Object to GetObject", func() {
+		It("should pass expected AAAA record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetAAAARecord(recA4)
 
 		})
 
-		It("should return expected A record Object", func() {
+		It("should return expected AAAA record Object", func() {
 			Expect(*actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -273,12 +273,12 @@ var _ = Describe("Testing RecordAAAAOperations", func() {
 
 		var actualRecord *[]RecordAAAA
 		var err error
-		It("should pass expected A record Object to GetObject", func() {
+		It("should pass expected AAAA record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetAAAARecord(recA4)
 
 		})
 
-		It("should return expected A record Object", func() {
+		It("should return expected AAAA record Object", func() {
 			Expect(*actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -299,10 +299,10 @@ var _ = Describe("Testing RecordAAAAOperations", func() {
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 		var actualRef string
 		var err error
-		It("should pass expected A record Ref to DeleteObject", func() {
+		It("should pass expected AAAA record Ref to DeleteObject", func() {
 			actualRef, err = objMgr.DeleteAAAARecord(recA4)
 		})
-		It("should return expected A record Ref", func() {
+		It("should return expected AAAA record Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
@@ -324,10 +324,10 @@ var _ = Describe("Testing RecordAAAAOperations", func() {
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 		var actualRef string
 		var err error
-		It("should pass expected A record Ref to DeleteObject", func() {
+		It("should pass expected AAAA record Ref to DeleteObject", func() {
 			actualRef, err = objMgr.DeleteAAAARecord(recA4)
 		})
-		It("should return expected A record Ref", func() {
+		It("should return expected AAAA record Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
@@ -350,10 +350,10 @@ var _ = Describe("Testing RecordAAAAOperations", func() {
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 		var actualRef string
 		var err error
-		It("should pass expected A record Ref to DeleteObject", func() {
+		It("should pass expected AAAA record Ref to DeleteObject", func() {
 			actualRef, err = objMgr.DeleteAAAARecord(recA4)
 		})
-		It("should return expected A record Ref", func() {
+		It("should return expected AAAA record Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})

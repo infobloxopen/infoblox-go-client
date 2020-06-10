@@ -84,7 +84,7 @@ func (objMgr *ObjectManager) DeleteSRVRecord(recSRV RecordSRV) (string, error) {
 	} else {
 		err := objMgr.connector.GetObject(recordName, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
-			return "Record doesn't exist", err
+			return "", err
 		}
 		return objMgr.connector.DeleteObject(res[0].Ref)
 	}
