@@ -291,31 +291,6 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
-		Context("RecordA object", func() {
-			ipv4addr := "1.1.1.1"
-			name := "bind_a.domain.com"
-			view := "default"
-			zone := "domain.com"
-
-			ra := NewRecordA(RecordA{
-				Ipv4Addr: ipv4addr,
-				Name:     name,
-				View:     view,
-				Zone:     zone})
-
-			It("should set fields correctly", func() {
-				Expect(ra.Ipv4Addr).To(Equal(ipv4addr))
-				Expect(ra.Name).To(Equal(name))
-				Expect(ra.View).To(Equal(view))
-				Expect(ra.Zone).To(Equal(zone))
-			})
-
-			It("should set base fields correctly", func() {
-				Expect(ra.ObjectType()).To(Equal("record:a"))
-				Expect(ra.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "name", "view", "zone"))
-			})
-		})
-
 		Context("RecordCNAME object", func() {
 			canonical := "cname.domain.com"
 			name := "bind_cname.domain.com"
