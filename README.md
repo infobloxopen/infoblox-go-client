@@ -45,7 +45,30 @@ This library is compatible with Go 1.2+
    	    //Fetches grid information
    	    fmt.Println(objMgr.GetLicense())
        }
+       
+## Example of CRUD Operations on A Record:
+CREATE
+	
+	fmt.Println(objMgr.CreateARecord(ibclient.RecordA{Name:"myRecord.myZone.com", View: "myDNSView", Ipv4Addr: "192.168.2.7"}))
+	
+GET A Record by passing Reference, Name or IPv4Addr
 
+	fmt.Println(objMgr.GetARecord(ibclient.RecordA{Name: "myRecord.myZone.com"}))
+	fmt.Println(objMgr.GetARecord(ibclient.RecordA{IPv4Addr: "192.168.2.7"}))
+	fmt.Println(objMgr.GetARecord(ibclient.RecordA{Ref: "record:a/ZG5zLmJpbmRfYSQuMTguY29tLnRlc3QsaW5mbzEsMTkyLjE2OS4yLjU:myRecord.myZone.com/myDNSView"}))
+	
+UPDATE IP Address or Name or Extensible Attributes
+	
+	fmt.Println(objMgr.UpdateARecord(ibclient.RecordA{Ref: "record:a/ZG5zLmJpbmRfYSQuMTguY29tLnRlc3QsaW5mbzEsMTkyLjE2OS4yLjU:myRecord.myZone.com/myDNSView", Ipv4Addr: "192.168.2.3"})
+	fmt.Println(objMgr.UpdateARecord(ibclient.RecordA{Ref: "record:a/ZG5zLmJpbmRfYSQuMTguY29tLnRlc3QsaW5mbzEsMTkyLjE2OS4yLjU:myRecord.myZone.com/myDNSView", Name: "updatedName.myZone.com"})
+	ea := ibclient.EA{"Cloud API Owned": ibclient.Bool(false)}
+	fmt.Println(objMgr.UpdateARecord(ibclient.RecordA{Ref: "record:a/ZG5zLmJpbmRfYSQuMTguY29tLnRlc3QsaW5mbzEsMTkyLjE2OS4yLjU:myRecord.myZone.com/myDNSView", Ea: ea})
+DELETE A record by passing Reference or Name or Ipv4Addr
+ 
+ 	fmt.Println(objMgr.DeleteARecord(ibclient.RecordA{Name: "myRecord.myZone.com"}))
+	fmt.Println(objMgr.DeleteARecord(ibclient.RecordA{IPv4Addr: "192.168.2.7"}))
+	fmt.Println(objMgr.DeleteARecord(ibclient.RecordA{Ref: "record:a/ZG5zLmJpbmRfYSQuMTguY29tLnRlc3QsaW5mbzEsMTkyLjE2OS4yLjU:myRecord.myZone.com/myDNSView"}))
+  
 ## Supported NIOS operations
 
    * CreateNetworkView
@@ -66,3 +89,7 @@ This library is compatible with Go 1.2+
    * GetCapacityReport
    * GetAllMembers
    * GetUpgradeStatus (2.7 or above)
+### New Methods
+   * GET by Name or Ipv4Address or view
+   * DELETE by Name or Ipv4Address
+   * UPDATE Name, Ipv4Address or Extensible Attributes of A Record

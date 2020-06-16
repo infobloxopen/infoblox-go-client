@@ -8,9 +8,9 @@ import (
 )
 
 type IBObjectManager interface {
+	RecordAOperations
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
-	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
@@ -19,14 +19,12 @@ type IBObjectManager interface {
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
-	DeleteARecord(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
-	GetARecordByRef(ref string) (*RecordA, error)
 	GetCNAMERecordByRef(ref string) (*RecordA, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
@@ -511,34 +509,6 @@ func (objMgr *ObjectManager) UpdateHostRecord(hostRref string, ipAddr string, ma
 }
 
 func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
-	return objMgr.connector.DeleteObject(ref)
-}
-
-func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error) {
-
-	eas := objMgr.extendEA(ea)
-
-	recordA := NewRecordA(RecordA{
-		View: dnsview,
-		Name: recordname,
-		Ea:   eas})
-
-	if ipAddr == "" {
-		recordA.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
-	} else {
-		recordA.Ipv4Addr = ipAddr
-	}
-	ref, err := objMgr.connector.CreateObject(recordA)
-	recordA.Ref = ref
-	return recordA, err
-}
-
-func (objMgr *ObjectManager) GetARecordByRef(ref string) (*RecordA, error) {
-	recordA := NewRecordA(RecordA{})
-	err := objMgr.connector.GetObject(recordA, ref, &recordA)
-	return recordA, err
-}
-func (objMgr *ObjectManager) DeleteARecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 

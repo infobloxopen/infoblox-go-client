@@ -351,24 +351,6 @@ func NewUserProfile(userprofile UserProfile) *UserProfile {
 	return &res
 }
 
-type RecordA struct {
-	IBBase   `json:"-"`
-	Ref      string `json:"_ref,omitempty"`
-	Ipv4Addr string `json:"ipv4addr,omitempty"`
-	Name     string `json:"name,omitempty"`
-	View     string `json:"view,omitempty"`
-	Zone     string `json:"zone,omitempty"`
-	Ea       EA     `json:"extattrs,omitempty"`
-}
-
-func NewRecordA(ra RecordA) *RecordA {
-	res := ra
-	res.objectType = "record:a"
-	res.returnFields = []string{"extattrs", "ipv4addr", "name", "view", "zone"}
-
-	return &res
-}
-
 type RecordPTR struct {
 	IBBase   `json:"-"`
 	Ref      string `json:"_ref,omitempty"`
