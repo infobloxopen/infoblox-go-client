@@ -1,4 +1,5 @@
 package main
+
 import (
 	"fmt"
 	ibclient "github.com/infobloxopen/infoblox-go-client"
@@ -27,7 +28,6 @@ func main() {
 	fmt.Println(objMgr.CreateAliasRecord(ibclient.RecordAlias{Name: "alias.test.com", View: "default.test_netview",
 		TargetName: "record3.test.com", TargetType: "A", Ea: ea}))
 
-
 	// Get Alias Record by Name
 	fmt.Println(objMgr.GetAliasRecord(ibclient.RecordAlias{Name: "alias.test.com"}))
 
@@ -37,7 +37,6 @@ func main() {
 	// Get Alias Record by TargetName or TargetType
 	fmt.Println(objMgr.GetAliasRecord(ibclient.RecordAlias{TargetName: "record3.test.com"}))
 	fmt.Println(objMgr.GetAliasRecord(ibclient.RecordAlias{TargetType: "A"}))
-
 
 	// Get all Alias Records in a specific view
 	fmt.Println(objMgr.GetAliasRecord(ibclient.RecordAlias{View: "default.test_netview"}))

@@ -1,16 +1,17 @@
 package main
+
 import (
 	"fmt"
-	ibclient "github8.com/infobloxopen/infoblox-go-client"
+	ibclient "github.com/infobloxopen/infoblox-go-client"
 )
 
 func main() {
 	hostConfig := ibclient.HostConfig{
-		Host:     "10.120.20.208",
-		Version:  "2.7",
-		Port:     "443",
-		Username: "admin",
-		Password: "infoblox",
+		Host:     "<NIOS grid IP>",
+		Version:  "<WAPI version>",
+		Port:     "PORT",
+		Username: "username",
+		Password: "password",
 	}
 	transportConfig := ibclient.NewTransportConfig("false", 20, 10)
 	requestBuilder := &ibclient.WapiRequestBuilder{}
@@ -25,7 +26,6 @@ func main() {
 	// Create TXT Record
 	fmt.Println(objMgr.CreateTXTRecord(ibclient.RecordTXT{Name: "server.test.com", View: "default.test_netview",
 		Text: "This is a host server", TTL: 5}))
-
 
 	// Get Txt Record by Name
 	fmt.Println(objMgr.GetTXTRecord(ibclient.RecordTXT{Name: "server.test.com"}))

@@ -1,7 +1,8 @@
 package main
+
 import (
 	"fmt"
-	ibclient "github8.com/infobloxopen/infoblox-go-client"
+	ibclient "github.com/infobloxopen/infoblox-go-client"
 )
 
 func main() {
@@ -35,7 +36,6 @@ func main() {
 	// Get SRV Record by MailExchanger or Preference
 	fmt.Println(objMgr.GetSRVRecord(ibclient.RecordSRV{Target: "xmpp-server.example.com"}))
 	fmt.Println(objMgr.GetSRVRecord(ibclient.RecordSRV{Priority: 1}))
-
 
 	// Get all SRV Records in a specific view
 	fmt.Println(objMgr.GetSRVRecord(ibclient.RecordSRV{View: "default.test_netview"}))

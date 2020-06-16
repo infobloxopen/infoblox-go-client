@@ -97,7 +97,7 @@ func (objMgr *ObjectManager) DeleteSRVRecord(recSRV RecordSRV) (string, error) {
 func (objMgr *ObjectManager) UpdateSRVRecord(recSRV RecordSRV) (*RecordSRV, error) {
 	var res RecordSRV
 	recordSRV := RecordSRV{}
-	recordSRV.returnFields = []string{"name", "extattrs"}
+	recordSRV.returnFields = []string{"name", "extattrs", "port", "priority", "target", "weight"}
 	err := objMgr.connector.GetObject(&recordSRV, recSRV.Ref, &res)
 	if err != nil {
 		return nil, err

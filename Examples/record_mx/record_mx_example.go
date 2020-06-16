@@ -1,4 +1,5 @@
 package main
+
 import (
 	"fmt"
 	ibclient "github.com/infobloxopen/infoblox-go-client"
@@ -27,7 +28,6 @@ func main() {
 	fmt.Println(objMgr.CreateMXRecord(ibclient.RecordMX{Name: "mx.test.com", View: "default.test_netview",
 		MailExchanger: "example.test.com", Preference: 10, Ea: ea}))
 
-
 	// Get MX Record by Name
 	fmt.Println(objMgr.GetMXRecord(ibclient.RecordMX{Name: "mx.test.com"}))
 
@@ -37,7 +37,6 @@ func main() {
 	// Get MX Record by MailExchanger or Preference
 	fmt.Println(objMgr.GetMXRecord(ibclient.RecordMX{MailExchanger: "example.test.com"}))
 	fmt.Println(objMgr.GetMXRecord(ibclient.RecordMX{Preference: 10}))
-
 
 	// Get all MX Records in a specific view
 	fmt.Println(objMgr.GetMXRecord(ibclient.RecordMX{View: "default.test_netview"}))
