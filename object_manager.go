@@ -8,6 +8,7 @@ import (
 )
 
 type IBObjectManager interface {
+  RecordAOperations
 	RecordAAAAOperations
 	RecordPTROperations
 	RecordTXTOperations

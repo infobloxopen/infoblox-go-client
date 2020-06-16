@@ -68,7 +68,7 @@ DELETE A record by passing Reference or Name or Ipv4Addr
  	fmt.Println(objMgr.DeleteARecord(ibclient.RecordA{Name: "myRecord.myZone.com"}))
 	fmt.Println(objMgr.DeleteARecord(ibclient.RecordA{IPv4Addr: "192.168.2.7"}))
 	fmt.Println(objMgr.DeleteARecord(ibclient.RecordA{Ref: "record:a/ZG5zLmJpbmRfYSQuMTguY29tLnRlc3QsaW5mbzEsMTkyLjE2OS4yLjU:myRecord.myZone.com/myDNSView"}))
-
+  
 ## Supported NIOS operations
 
    * CreateNetworkView

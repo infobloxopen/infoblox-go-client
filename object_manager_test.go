@@ -61,6 +61,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
 		case *ZoneDelegated:
 			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
+     case *RecordA:
+			*res.(*[]RecordA) = c.resultObject.([]RecordA)
 		case *RecordAAAA:
 			*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
 		case *RecordPTR:
