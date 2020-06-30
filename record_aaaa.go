@@ -45,7 +45,7 @@ func NewRecordAAAA(ra RecordAAAA) *RecordAAAA {
 
 // CreateAAAARecord takes Name, Ipv6Addr and View of the record to create AAAA Record
 // Optional fields: NetView, Ea, Cidr
-// Before creating, it checks if the Name and IP passed already exists in the network
+// Before creating, CreateAAAARecord checks if the Name and IP passed already exists in the network
 func (objMgr *ObjectManager) CreateAAAARecord(recA4 RecordAAAA) (*RecordAAAA, error) {
 
 	recA4.Ea = objMgr.extendEA(recA4.Ea)
