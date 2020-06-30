@@ -48,7 +48,7 @@ func NewRecordPTR(rptr RecordPTR) *RecordPTR {
 
 // CreatePTRRecord takes Name, PtrdName, Ipv4Addr or Ipv6Addr and View of the record to create PTR Record
 // Optional fields: NetView, Ea, Cidr
-// Before creating, it checks if the PtrdName passed already exists in the network
+// Before creating, CreatePTRRecord checks if the PtrdName passed already exists in the network
 func (objMgr *ObjectManager) CreatePTRRecord(recPTR RecordPTR) (*RecordPTR, error) {
 
 	recPTR.Ea = objMgr.extendEA(recPTR.Ea)
