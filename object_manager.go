@@ -457,6 +457,9 @@ func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string,
 		Ea:          eas})
 
 	ref, err := objMgr.connector.CreateObject(recordHost)
+	if err != nil {
+		return nil,err
+	}
 	recordHost.Ref = ref
 	err = objMgr.connector.GetObject(recordHost, ref, &recordHost)
 	return recordHost, err
