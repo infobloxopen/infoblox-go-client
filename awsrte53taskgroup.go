@@ -1,10 +1,10 @@
 package ibclient
 
-type AWSRte53TaskOperations interface {
-	CreateAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*AWSRte53TaskGroup, error)
-	GetAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*[]AWSRte53TaskGroup, error)
-	DeleteAWSRte53TaskGroup(aws AWSRte53TaskGroup) (string, error)
-	UpdateAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*AWSRte53TaskGroup, error)
+type AWSRoute53TaskOperations interface {
+	CreateAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (*AWSRoute53TaskGroup, error)
+	GetAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (*[]AWSRoute53TaskGroup, error)
+	DeleteAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (string, error)
+	UpdateAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (*AWSRoute53TaskGroup, error)
 }
 
 type AWSUser struct {
@@ -39,7 +39,7 @@ func (objMgr *ObjectManager) GetAWSUser(aws AWSUser) (*AWSUser, error) {
 	return &res[0], err
 }
 
-type AWSRte53TaskGroup struct {
+type AWSRoute53TaskGroup struct {
 	IBBase                   `json:"-"`
 	Ref                      string `json:"_ref,omitempty"`
 	AccountId                string `json:"account_id,omitempty"`
@@ -54,8 +54,8 @@ type AWSRte53TaskGroup struct {
 	SyncStatus               string `json:"sync_status,omitempty"`
 }
 
-// NewAWSRte53TaskGroup creates a new AWSRte53TaskGroup type with objectType and returnFields
-func NewAWSRte53TaskGroup(aws AWSRte53TaskGroup) *AWSRte53TaskGroup {
+// NewAWSRoute53TaskGroup creates a new AWSRoute53TaskGroup type with objectType and returnFields
+func NewAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) *AWSRoute53TaskGroup {
 	res := aws
 	res.objectType = "awsrte53taskgroup"
 
@@ -64,31 +64,31 @@ func NewAWSRte53TaskGroup(aws AWSRte53TaskGroup) *AWSRte53TaskGroup {
 	return &res
 }
 
-// CreateAWSRte53Task takes Name, View, GridMember as arguments to create AWSRte53Task
-func (objMgr *ObjectManager) CreateAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*AWSRte53TaskGroup, error) {
+// CreateAWSRoute53Task takes Name, View, GridMember as arguments to create AWSRoute53Task
+func (objMgr *ObjectManager) CreateAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (*AWSRoute53TaskGroup, error) {
 
 	if aws.NetworkView != "" {
 		aws.NetworkViewMappingPolicy = "DIRECT"
 	}
-	awsRte53 := NewAWSRte53TaskGroup(aws)
+	awsRte53 := NewAWSRoute53TaskGroup(aws)
 	ref, err := objMgr.connector.CreateObject(awsRte53)
 	awsRte53.Ref = ref
 	return awsRte53, err
 }
 
-// GetAWSRte53TaskGroup by passing Name, reference ID or NetworkView
+// GetAWSRoute53TaskGroup by passing Name, reference ID or NetworkView
 // If no arguments are passed then, all the tasks are returned
-func (objMgr *ObjectManager) GetAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*[]AWSRte53TaskGroup, error) {
+func (objMgr *ObjectManager) GetAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (*[]AWSRoute53TaskGroup, error) {
 
-	var res []AWSRte53TaskGroup
-	awsRte53 := NewAWSRte53TaskGroup(aws)
+	var res []AWSRoute53TaskGroup
+	awsRte53 := NewAWSRoute53TaskGroup(aws)
 	var err error
 	if len(aws.Ref) > 0 {
 		err = objMgr.connector.GetObject(awsRte53, aws.Ref, &awsRte53)
 		res = append(res, *awsRte53)
 
 	} else {
-		awsRte53 = NewAWSRte53TaskGroup(aws)
+		awsRte53 = NewAWSRoute53TaskGroup(aws)
 		err = objMgr.connector.GetObject(awsRte53, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return nil, err
@@ -98,15 +98,15 @@ func (objMgr *ObjectManager) GetAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*[]AWS
 	return &res, err
 }
 
-// DeleteAWSRte53TaskGroup by passing either Reference or Name
-func (objMgr *ObjectManager) DeleteAWSRte53TaskGroup(aws AWSRte53TaskGroup) (string, error) {
-	var res []AWSRte53TaskGroup
-	awsRte53 := NewAWSRte53TaskGroup(aws)
+// DeleteAWSRoute53TaskGroup by passing either Reference or Name
+func (objMgr *ObjectManager) DeleteAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (string, error) {
+	var res []AWSRoute53TaskGroup
+	awsRte53 := NewAWSRoute53TaskGroup(aws)
 	if len(aws.Ref) > 0 {
 		return objMgr.connector.DeleteObject(aws.Ref)
 
 	} else {
-		awsRte53 = NewAWSRte53TaskGroup(aws)
+		awsRte53 = NewAWSRoute53TaskGroup(aws)
 		err := objMgr.connector.GetObject(awsRte53, "", &res)
 		if err != nil || res == nil || len(res) == 0 {
 			return "Task doesn't exist", err
@@ -116,12 +116,12 @@ func (objMgr *ObjectManager) DeleteAWSRte53TaskGroup(aws AWSRte53TaskGroup) (str
 
 }
 
-// UpdateAWSRte53GroupTask takes Reference ID of the task as an argument
+// UpdateAWSRoute53GroupTask takes Reference ID of the task as an argument
 // to update Name
 // returns updated Refernce ID
-func (objMgr *ObjectManager) UpdateAWSRte53TaskGroup(aws AWSRte53TaskGroup) (*AWSRte53TaskGroup, error) {
-	var res AWSRte53TaskGroup
-	awsRte53 := AWSRte53TaskGroup{}
+func (objMgr *ObjectManager) UpdateAWSRoute53TaskGroup(aws AWSRoute53TaskGroup) (*AWSRoute53TaskGroup, error) {
+	var res AWSRoute53TaskGroup
+	awsRte53 := AWSRoute53TaskGroup{}
 	awsRte53.returnFields = []string{"name"}
 	err := objMgr.connector.GetObject(&awsRte53, aws.Ref, &res)
 	if err != nil {
