@@ -11,7 +11,7 @@ var _ = Describe("Testing AWSRoute53TaskGroupOperations", func() {
 		name := "task3"
 		networkView := "test_netview"
 		gridMember :="test.localdomain"
-		ra := NewAWSRte53TaskGroup(AWSRte53TaskGroup{
+		ra := NewAWSRoute53TaskGroup(AWSRoute53TaskGroup{
 			Name: name,
 			NetworkView: networkView,
 			GridMember: gridMember,
@@ -34,7 +34,7 @@ var _ = Describe("Testing AWSRoute53TaskGroupOperations", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 
-		aws := AWSRte53TaskGroup{
+		aws := AWSRoute53TaskGroup{
 			Name: "test_sync",
 			NetworkView: "test_netview",
 			GridMember: "test.localdomain",
@@ -42,8 +42,8 @@ var _ = Describe("Testing AWSRoute53TaskGroupOperations", func() {
 		}
 		fakeRefReturn := fmt.Sprintf("awsrte53taskgroup/ZG5zLmJpbmRfY25h:%s/%20%20", aws.Name)
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewAWSRte53TaskGroup(aws),
-			resultObject: NewAWSRte53TaskGroup(AWSRte53TaskGroup{
+			createObjectObj: NewAWSRoute53TaskGroup(aws),
+			resultObject: NewAWSRoute53TaskGroup(AWSRoute53TaskGroup{
 				Ref: fakeRefReturn,
 				NetworkView: aws.NetworkView,
 				Name: aws.Name,
@@ -56,50 +56,50 @@ var _ = Describe("Testing AWSRoute53TaskGroupOperations", func() {
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		var actualTask *AWSRte53TaskGroup
+		var actualTask *AWSRoute53TaskGroup
 		var err error
-		It("should pass expected AWSRte53Group Task Object to CreateObject", func() {
-			actualTask, err = objMgr.CreateAWSRte53TaskGroup(aws)
+		It("should pass expected AWSRoute53Group Task Object to CreateObject", func() {
+			actualTask, err = objMgr.CreateAWSRoute53TaskGroup(aws)
 		})
 
-		It("should return expected AWSRte53Group Task Object", func() {
+		It("should return expected AWSRoute53Group Task Object", func() {
 			Expect(actualTask).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
 	})
 
-	Describe("Get AWSRte53Group Task by Reference", func() {
+	Describe("Get AWSRoute53Group Task by Reference", func() {
 		name := "test"
 		fakeRefReturn := fmt.Sprintf("awsrte53taskgroup/ZG5zLmJpbmRfY25h:%s/%20%20", name)
-		aws := AWSRte53TaskGroup{Ref: fakeRefReturn}
+		aws := AWSRoute53TaskGroup{Ref: fakeRefReturn}
 		aniFakeConnector := &fakeConnector{
-			getObjectObj: NewAWSRte53TaskGroup(aws),
+			getObjectObj: NewAWSRoute53TaskGroup(aws),
 			getObjectRef: fakeRefReturn,
-			resultObject: []AWSRte53TaskGroup{*NewAWSRte53TaskGroup(AWSRte53TaskGroup{Name: aws.Name, Ref: fakeRefReturn})},
+			resultObject: []AWSRoute53TaskGroup{*NewAWSRoute53TaskGroup(AWSRoute53TaskGroup{Name: aws.Name, Ref: fakeRefReturn})},
 		}
 
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		var actualTask *[]AWSRte53TaskGroup
+		var actualTask *[]AWSRoute53TaskGroup
 		var err error
-		It("should pass expected AWSRte53Group Task Object to GetObject", func() {
-			actualTask, err = objMgr.GetAWSRte53TaskGroup(aws)
+		It("should pass expected AWSRoute53Group Task Object to GetObject", func() {
+			actualTask, err = objMgr.GetAWSRoute53TaskGroup(aws)
 
 		})
 
-		It("should return expected AWSRte53Group Task Object", func() {
+		It("should return expected AWSRoute53Group Task Object", func() {
 			Expect(*actualTask).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
 	})
 
-	Describe("Delete AWSRte53Group Task by Reference", func() {
+	Describe("Delete AWSRoute53Group Task by Reference", func() {
 
 		name := "delete_test"
 		fakeRefReturn := fmt.Sprintf("awsrte53taskgroup/ZG5zLmJpbmRfY25h:%s/%20%20", name)
-		aws := AWSRte53TaskGroup{Ref: fakeRefReturn}
+		aws := AWSRoute53TaskGroup{Ref: fakeRefReturn}
 		aniFakeConnector := &fakeConnector{
 			deleteObjectRef: aws.Ref,
 			fakeRefReturn:   fakeRefReturn,
@@ -110,10 +110,10 @@ var _ = Describe("Testing AWSRoute53TaskGroupOperations", func() {
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 		var actualRef string
 		var err error
-		It("should pass expected AWSRte53Group Task Ref to DeleteObject", func() {
-			actualRef, err = objMgr.DeleteAWSRte53TaskGroup(aws)
+		It("should pass expected AWSRoute53Group Task Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteAWSRoute53TaskGroup(aws)
 		})
-		It("should return expected AWSRte53Group Task Ref", func() {
+		It("should return expected AWSRoute53Group Task Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
