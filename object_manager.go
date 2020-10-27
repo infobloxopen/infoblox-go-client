@@ -31,7 +31,7 @@ type IBObjectManager interface {
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
-	GetHostRecord(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error)
+	GetHostRecord(recordName string) (*HostRecord, error)
 	GetHostRecordByRef(ref string) (*HostRecord, error)
 	GetIpAddressFromHostRecord(host HostRecord) (string, error)
 	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
@@ -458,7 +458,7 @@ func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string,
 
 	ref, err := objMgr.connector.CreateObject(recordHost)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	recordHost.Ref = ref
 	err = objMgr.connector.GetObject(recordHost, ref, &recordHost)
@@ -471,7 +471,7 @@ func (objMgr *ObjectManager) GetHostRecordByRef(ref string) (*HostRecord, error)
 	return recordHost, err
 }
 
-func (objMgr *ObjectManager) GetHostRecord(recordName string, netview string, cidr string, ipAddr string) (*HostRecord, error) {
+func (objMgr *ObjectManager) GetHostRecord(recordName string) (*HostRecord, error) {
 	var res []HostRecord
 
 	recordHost := NewHostRecord(HostRecord{})

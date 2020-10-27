@@ -1160,9 +1160,6 @@ var _ = Describe("Object Manager", func() {
 	Describe("Get Host Record Without DNS", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		netviewName := "private"
-		cidr := "53.0.0.0/24"
-		ipAddr := "53.0.0.21"
 		hostName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", hostName)
 		fipFakeConnector := &fakeConnector{
@@ -1182,7 +1179,7 @@ var _ = Describe("Object Manager", func() {
 		var actualhostRecord *HostRecord
 		var err error
 		It("should pass expected Host record Object to GetObject", func() {
-			actualhostRecord, err = objMgr.GetHostRecord(hostName, netviewName, cidr, ipAddr)
+			actualhostRecord, err = objMgr.GetHostRecord(hostName)
 		})
 		It("should return expected Host record Object", func() {
 			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]HostRecord)[0]))
