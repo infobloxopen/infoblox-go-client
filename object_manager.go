@@ -10,13 +10,14 @@ import (
 type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
+	AllocateNetworkContainer(netview string, cidr string, prefixLen uint) (network *NetworkContainer, err error)
 	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error)
 	CreateNetwork(netview string, cidr string, name string) (*Network, error)
-	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
+	CreateNetworkContainer(netview string, cidr string, name string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
@@ -24,6 +25,7 @@ type IBObjectManager interface {
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
+	DeleteNetworkContainer(ref string, netview string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
@@ -133,12 +135,15 @@ func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name str
 	return network, err
 }
 
-func (objMgr *ObjectManager) CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error) {
+func (objMgr *ObjectManager) CreateNetworkContainer(netview string, cidr string, name string) (*NetworkContainer, error) {
 	container := NewNetworkContainer(NetworkContainer{
 		NetviewName: netview,
 		Cidr:        cidr,
 		Ea:          objMgr.getBasicEA(true)})
 
+	if name != "" {
+		container.Ea["Network Name"] = name
+	}
 	ref, err := objMgr.connector.CreateObject(container)
 	container.Ref = ref
 
@@ -216,6 +221,22 @@ func BuildNetworkFromRef(ref string) *Network {
 	}
 }
 
+func BuildNetworkContainerFromRef(ref string) *NetworkContainer {
+	// networkcontainer/ZG5zLm5ldHdvcmtfY29udGFpbmVyJDEwLjAuMS4wLzI0LzA:10.0.1.0/24/default
+	r := regexp.MustCompile(`networkcontainer/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(.+)`)
+	m := r.FindStringSubmatch(ref)
+
+	if m == nil {
+		return nil
+	}
+
+	return &NetworkContainer{
+		Ref:         ref,
+		NetviewName: m[2],
+		Cidr:        m[1],
+	}
+}
+
 func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Network, error) {
 	var res []Network
 
@@ -259,6 +280,12 @@ func (objMgr *ObjectManager) GetNetworkContainer(netview string, cidr string) (*
 	}
 
 	return &res[0], nil
+}
+
+func (objMgr *ObjectManager) GetNetworkContainerwithref(ref string) (*NetworkContainer, error) {
+	networkContainer := NewNetworkContainer(NetworkContainer{})
+	err := objMgr.connector.GetObject(networkContainer, ref, &networkContainer)
+	return networkContainer, err
 }
 
 func GetIPAddressFromRef(ref string) string {
@@ -313,6 +340,27 @@ func (objMgr *ObjectManager) AllocateNetwork(netview string, cidr string, prefix
 	ref, err := objMgr.connector.CreateObject(networkReq)
 	if err == nil && len(ref) > 0 {
 		network = BuildNetworkFromRef(ref)
+	}
+
+	return
+}
+
+func (objMgr *ObjectManager) AllocateNetworkContainer(netview string, cidr string, prefixLen uint, name string) (container *NetworkContainer, err error) {
+
+	container = nil
+
+	containerReq := NewNetworkContainer(NetworkContainer{
+		NetviewName: netview,
+		Cidr:        fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen),
+		Ea:          objMgr.getBasicEA(true),
+	})
+	if name != "" {
+		containerReq.Ea["Network Name"] = name
+	}
+
+	ref, err := objMgr.connector.CreateObject(containerReq)
+	if err == nil && len(ref) > 0 {
+		container = BuildNetworkContainerFromRef(ref)
 	}
 
 	return
@@ -407,6 +455,16 @@ func (objMgr *ObjectManager) DeleteNetwork(ref string, netview string) (string, 
 	return "", nil
 }
 
+func (objMgr *ObjectManager) DeleteNetworkContainer(ref string, netview string) (string, error) {
+	container := BuildNetworkContainerFromRef(ref)
+	if container != nil && container.NetviewName == netview {
+		params := map[string]string{"remove_subnets": "false"}
+		return objMgr.connector.DeleteObjectWithParams(ref, params)
+	}
+
+	return "", nil
+}
+
 func (objMgr *ObjectManager) DeleteNetworkView(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
@@ -458,7 +516,7 @@ func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string,
 
 	ref, err := objMgr.connector.CreateObject(recordHost)
 	if err != nil {
-		return nil,err
+		return nil, err
 	}
 	recordHost.Ref = ref
 	err = objMgr.connector.GetObject(recordHost, ref, &recordHost)

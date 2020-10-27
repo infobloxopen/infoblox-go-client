@@ -307,7 +307,8 @@ type FixedAddress struct {
 
 /*This is a general struct to add query params used in makeRequest*/
 type QueryParams struct {
-	forceProxy bool
+	forceProxy   bool
+	deleteParams map[string]string
 }
 
 func NewFixedAddress(fixedAddr FixedAddress) *FixedAddress {

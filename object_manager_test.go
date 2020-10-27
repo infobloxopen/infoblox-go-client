@@ -73,6 +73,12 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 	return
 }
 
+func (c *fakeConnector) DeleteObjectWithParams(ref string, params map[string]string) (string, error) {
+	Expect(ref).To(Equal(c.deleteObjectRef))
+
+	return c.fakeRefReturn, nil
+}
+
 func (c *fakeConnector) DeleteObject(ref string) (string, error) {
 	Expect(ref).To(Equal(c.deleteObjectRef))
 
@@ -152,6 +158,7 @@ var _ = Describe("Object Manager", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "Default View"
 		cidr := "43.0.11.0/24"
+		networkName := "private-net"
 		fakeRefReturn := "networkcontainer/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
 		ncFakeConnector := &fakeConnector{
 			createObjectObj: NewNetworkContainer(NetworkContainer{NetviewName: netviewName, Cidr: cidr}),
@@ -161,12 +168,14 @@ var _ = Describe("Object Manager", func() {
 
 		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
 		ncFakeConnector.createObjectObj.(*NetworkContainer).Ea = objMgr.getBasicEA(true)
+		ncFakeConnector.createObjectObj.(*NetworkContainer).Ea["Network Name"] = networkName
 		ncFakeConnector.resultObject.(*NetworkContainer).Ea = objMgr.getBasicEA(true)
+		ncFakeConnector.resultObject.(*NetworkContainer).Ea["Network Name"] = networkName
 
 		var actualNetworkContainer *NetworkContainer
 		var err error
 		It("should pass expected NetworkContainer Object to CreateObject", func() {
-			actualNetworkContainer, err = objMgr.CreateNetworkContainer(netviewName, cidr)
+			actualNetworkContainer, err = objMgr.CreateNetworkContainer(netviewName, cidr, networkName)
 		})
 		It("should return expected NetworkContainer Object", func() {
 			Expect(actualNetworkContainer).To(Equal(ncFakeConnector.resultObject))
@@ -202,6 +211,39 @@ var _ = Describe("Object Manager", func() {
 		})
 		It("should return expected Network Object", func() {
 			Expect(actualNetwork).To(Equal(nwFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate Network Container", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default_view"
+		cidr := "142.0.22.0/24"
+		prefixLen := uint(24)
+		networkName := "private-net"
+		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		ancFakeConnector := &fakeConnector{
+			createObjectObj: NewNetworkContainer(NetworkContainer{
+				NetviewName: netviewName,
+				Cidr:        fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen),
+			}),
+			resultObject:  BuildNetworkContainerFromRef(fakeRefReturn),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(ancFakeConnector, cmpType, tenantID)
+
+		ancFakeConnector.createObjectObj.(*NetworkContainer).Ea = objMgr.getBasicEA(true)
+		ancFakeConnector.createObjectObj.(*NetworkContainer).Ea["Network Name"] = networkName
+
+		var actualNetworkContainer *NetworkContainer
+		var err error
+		It("should pass expected Network Container Object to CreateObject", func() {
+			actualNetworkContainer, err = objMgr.AllocateNetworkContainer(netviewName, cidr, prefixLen, networkName)
+		})
+		It("should return expected Network Container Object", func() {
+			Expect(actualNetworkContainer).To(Equal(ancFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
 	})

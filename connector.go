@@ -84,6 +84,7 @@ type IBConnector interface {
 	CreateObject(obj IBObject) (ref string, err error)
 	GetObject(obj IBObject, ref string, res interface{}) error
 	DeleteObject(ref string) (refRes string, err error)
+	DeleteObjectWithParams(ref string, params map[string]string) (refRes string, err error)
 	UpdateObject(obj IBObject, ref string) (refRes string, err error)
 }
 
@@ -184,6 +185,13 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 		// TODO need to get this from individual objects in future
 		if queryParams.forceProxy {
 			vals.Set("_proxy_search", "GM")
+		}
+		qry = vals.Encode()
+	}
+
+	if t == DELETE {
+		for key, value := range queryParams.deleteParams {
+			vals.Set(key, value)
 		}
 		qry = vals.Encode()
 	}
@@ -309,9 +317,9 @@ func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err er
 	return
 }
 
-func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
+func (c *Connector) DeleteObjectWithParams(ref string, params map[string]string) (refRes string, err error) {
 	refRes = ""
-	queryParams := QueryParams{forceProxy: false}
+	queryParams := QueryParams{forceProxy: false, deleteParams: params}
 	resp, err := c.makeRequest(DELETE, nil, ref, queryParams)
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
@@ -325,6 +333,11 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	}
 
 	return
+}
+
+func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
+	params := map[string]string{}
+	return c.DeleteObjectWithParams(ref, params)
 }
 
 func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {

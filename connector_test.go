@@ -19,9 +19,10 @@ type FakeRequestBuilder struct {
 	obj IBObject
 	ref string
 
-	urlStr  string
-	bodyStr []byte
-	req     *http.Request
+	urlStr      string
+	bodyStr     []byte
+	req         *http.Request
+	queryParams QueryParams
 }
 
 func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
@@ -44,6 +45,8 @@ func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref stri
 		Expect(obj).To(Equal(rb.obj))
 	}
 	Expect(ref).To(Equal(rb.ref))
+
+	rb.queryParams = queryParams
 
 	return rb.req, nil
 }
@@ -147,6 +150,15 @@ var _ = Describe("Connector", func() {
 					queryParams.forceProxy = true //proxy enabled
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 						host, port, version, ref)
+					urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, queryParams)
+					Expect(urlStr).To(Equal(expectedURLStr))
+				})
+				It("should return expected url string for DELETE request when deleteParams not empty", func() {
+					key := "key"
+					value := "value"
+					queryParams.deleteParams = map[string]string{key: value}
+					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s=%s",
+						host, port, version, ref, key, value)
 					urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 				})
@@ -326,6 +338,54 @@ var _ = Describe("Connector", func() {
 				Expect(err).To(BeNil())
 				Expect(actualRef).To(Equal(expectRef))
 			})
+		})
+
+		Describe("DeleteObjectWithParams", func() {
+			ref := "network/ZG5zLmJpbmRfY25h:12.0.0.0/16/default"
+
+			requestType := RequestType(DELETE)
+			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s=%s",
+				host, port, version, ref, "remove_subnets", "false")
+			bodyStr := []byte{}
+			httpReq, _ := http.NewRequest(requestType.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+			frb := &FakeRequestBuilder{
+				r:   requestType,
+				obj: nil,
+				ref: ref,
+
+				urlStr:  urlStr,
+				bodyStr: bodyStr,
+				req:     httpReq,
+			}
+
+			expectRef := ref
+			fakeref := `"` + expectRef + `"`
+			fhr := &FakeHttpRequestor{
+				config: transportConfig,
+
+				req: httpReq,
+				res: []byte(fakeref),
+			}
+
+			params := map[string]string{"remove_subnets": "false"}
+
+			OrigValidateConnector := ValidateConnector
+			ValidateConnector = MockValidateConnector
+			defer func() { ValidateConnector = OrigValidateConnector }()
+			conn, err := NewConnector(hostConfig, transportConfig,
+				frb, fhr)
+
+			if err != nil {
+				Fail("Error creating Connector")
+			}
+			It("should return expected object ref", func() {
+				actualRef, err := conn.DeleteObjectWithParams(ref, params)
+
+				Expect(err).To(BeNil())
+				Expect(actualRef).To(Equal(expectRef))
+				Expect(frb.queryParams.deleteParams).To(Equal(params))
+			})
+
 		})
 
 		Describe("DeleteObject", func() {

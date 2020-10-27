@@ -213,6 +213,8 @@ var _ = Describe("Objects", func() {
 			cidr := "74.0.8.0/24"
 			netviewName := "globalview"
 			nwc := NewNetworkContainer(NetworkContainer{Cidr: cidr, NetviewName: netviewName})
+			searchEAs := EASearch{"Network Name": "shared-net"}
+			nwc.eaSearch = searchEAs
 
 			It("should set fields correctly", func() {
 				Expect(nwc.Cidr).To(Equal(cidr))
@@ -222,6 +224,7 @@ var _ = Describe("Objects", func() {
 			It("should set base fields correctly", func() {
 				Expect(nwc.ObjectType()).To(Equal("networkcontainer"))
 				Expect(nwc.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view"))
+				Expect(nwc.EaSearch()).To(Equal(searchEAs))
 			})
 		})
 
