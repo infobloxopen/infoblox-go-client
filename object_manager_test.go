@@ -1736,4 +1736,14 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Omit cloud attributes", func() {
+		connector := &fakeConnector{}
+		objMgr := NewObjectManager(connector, "", "")
+		objMgr.OmitCloudAttrs = true
+
+		ea := objMgr.getBasicEA(true)
+		It("should return empty EA", func() {
+			Expect(len(ea)).To(Equal(0))
+		})
+	})
 })

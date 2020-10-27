@@ -48,6 +48,8 @@ type ObjectManager struct {
 	connector IBConnector
 	cmpType   string
 	tenantID  string
+	// If OmitCloudAttrs is true no extra attributes for cloud are set
+	OmitCloudAttrs bool
 }
 
 func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *ObjectManager {
@@ -62,9 +64,11 @@ func NewObjectManager(connector IBConnector, cmpType string, tenantID string) *O
 
 func (objMgr *ObjectManager) getBasicEA(cloudAPIOwned Bool) EA {
 	ea := make(EA)
-	ea["Cloud API Owned"] = cloudAPIOwned
-	ea["CMP Type"] = objMgr.cmpType
-	ea["Tenant ID"] = objMgr.tenantID
+	if !objMgr.OmitCloudAttrs {
+		ea["Cloud API Owned"] = cloudAPIOwned
+		ea["CMP Type"] = objMgr.cmpType
+		ea["Tenant ID"] = objMgr.tenantID
+	}
 	return ea
 }
 
