@@ -752,6 +752,50 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	return res, err
 }
 
+// CreateZoneAuth creates zones and subs by passing fqdn
+func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error) {
+
+	eas := objMgr.extendEA(ea)
+
+	zoneAuth := NewZoneAuth(ZoneAuth{
+		Fqdn:     fqdn,
+		Ea:       eas})
+
+
+	ref, err := objMgr.connector.CreateObject(zoneAuth)
+	zoneAuth.Ref = ref
+	return zoneAuth, err
+}
+
+// Retreive a authortative zone by ref 
+func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (*ZoneAuth, error) {
+	zoneAuth := NewZoneAuth(ZoneAuth{})
+	err := objMgr.connector.GetObject(zoneAuth, ref, &zoneAuth)
+	return zoneAuth, err
+}
+
+func (objMgr *ObjectManager) GetZoneAuthByFQDN(fqdn string) (*ZoneAuth, error) {
+	if fqdn == "" {
+		return nil, fmt.Errorf("name can not be empty")
+	}
+	var res []ZoneAuth
+
+	zoneAuth := NewZoneAuth(ZoneAuth{Fqdn: fqdn})
+
+	err := objMgr.connector.GetObject(zoneAuth, "", &res)
+
+	if err != nil || res == nil || len(res) == 0 {
+		return nil, err
+	}
+
+	return &res[0], nil
+}
+
+// DeleteZoneAuth deletes an auth zone
+func (objMgr *ObjectManager) DeleteZoneAuth(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
+}
+
 // GetZoneAuth returns the authoritatives zones
 func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 	var res []ZoneAuth
