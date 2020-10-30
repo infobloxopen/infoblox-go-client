@@ -1626,6 +1626,40 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Create Zone Auth", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "dzone.example.com"
+		fakeRefReturn := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		zaFakeConnector := &fakeConnector{
+			createObjectObj: NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
+			resultObject:    NewZoneAuth(ZoneAuth{Fqdn: fqdn, Ref: fakeRefReturn}),
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zaFakeConnector, cmpType, tenantID)
+		
+		ea := objMgr.getBasicEA(true)
+
+		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea = ea
+		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea["Tenant ID"] = tenantID
+		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea["CMP Type"] = cmpType
+
+		zaFakeConnector.resultObject.(*ZoneAuth).Ea = ea
+		zaFakeConnector.resultObject.(*ZoneAuth).Ea["Tenant ID"] = tenantID
+		zaFakeConnector.resultObject.(*ZoneAuth).Ea["CMP Type"] = cmpType
+
+		var actualZoneAuth *ZoneAuth
+		var err error
+		It("should pass expected ZoneAuth Object to CreateObject", func() {
+			actualZoneAuth, err = objMgr.CreateZoneAuth(fqdn, ea)
+		})
+		It("should return expected ZoneAuth Object", func() {
+			Expect(actualZoneAuth).To(Equal(zaFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Get Zone Delegated", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
