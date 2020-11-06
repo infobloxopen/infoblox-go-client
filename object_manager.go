@@ -38,6 +38,7 @@ type IBObjectManager interface {
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	GetNetworkView(name string) (*NetworkView, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
@@ -768,27 +769,16 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 }
 
 // Retreive a authortative zone by ref 
-func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (*ZoneAuth, error) {
+func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
+	var res ZoneAuth
+
+	if ref == "" {
+		return res, nil
+	}
 	zoneAuth := NewZoneAuth(ZoneAuth{})
-	err := objMgr.connector.GetObject(zoneAuth, ref, &zoneAuth)
-	return zoneAuth, err
-}
 
-func (objMgr *ObjectManager) GetZoneAuthByFQDN(fqdn string) (*ZoneAuth, error) {
-	if fqdn == "" {
-		return nil, fmt.Errorf("name can not be empty")
-	}
-	var res []ZoneAuth
-
-	zoneAuth := NewZoneAuth(ZoneAuth{Fqdn: fqdn})
-
-	err := objMgr.connector.GetObject(zoneAuth, "", &res)
-
-	if err != nil || res == nil || len(res) == 0 {
-		return nil, err
-	}
-
-	return &res[0], nil
+	err := objMgr.connector.GetObject(zoneAuth, ref, &res)
+	return res, err
 }
 
 // DeleteZoneAuth deletes an auth zone
