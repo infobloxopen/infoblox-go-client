@@ -1694,8 +1694,6 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-
-
 	Describe("Delete ZoneAuth", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
