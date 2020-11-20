@@ -64,6 +64,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 		}
 	} else {
 		switch obj.(type) {
+		case *ZoneAuth:
+		 	*res.(*ZoneAuth) = c.resultObject.(ZoneAuth)
 		case *NetworkView:
 			*res.(*NetworkView) = c.resultObject.(NetworkView)
 		}
@@ -1622,6 +1624,95 @@ var _ = Describe("Object Manager", func() {
 			actualGridLicense, err = objMgr.GetGridLicense()
 			Expect(actualGridLicense[0]).To(Equal(LicFakeConnector.resultObject.([]License)[0]))
 			Expect(actualGridLicense[0].returnFields).To(Equal(returnFields))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Create Zone Auth", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "azone.example.com"
+		fakeRefReturn := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		zaFakeConnector := &fakeConnector{
+			createObjectObj: NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
+			resultObject:    NewZoneAuth(ZoneAuth{Fqdn: fqdn, Ref: fakeRefReturn}),
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zaFakeConnector, cmpType, tenantID)
+		
+		ea := objMgr.getBasicEA(true)
+
+		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea = ea
+		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea["Tenant ID"] = tenantID
+		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea["CMP Type"] = cmpType
+
+		zaFakeConnector.resultObject.(*ZoneAuth).Ea = ea
+		zaFakeConnector.resultObject.(*ZoneAuth).Ea["Tenant ID"] = tenantID
+		zaFakeConnector.resultObject.(*ZoneAuth).Ea["CMP Type"] = cmpType
+
+		var actualZoneAuth *ZoneAuth
+		var err error
+		It("should pass expected ZoneAuth Object to CreateObject", func() {
+			actualZoneAuth, err = objMgr.CreateZoneAuth(fqdn, ea)
+		})
+		It("should return expected ZoneAuth Object", func() {
+			Expect(actualZoneAuth).To(Equal(zaFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get AuthZone by ref", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "azone.example.com"
+		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:azone.example.com/default"
+		zdFakeConnector := &fakeConnector{
+			getObjectObj: NewZoneAuth(ZoneAuth{}),
+			getObjectRef: fakeRefReturn,
+			resultObject: *NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
+	    }
+
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+
+		var actualZoneAuth ZoneAuth
+		var err error
+		It("should pass expected ZoneAuth Object to GetObject", func() {
+			actualZoneAuth, err = objMgr.GetZoneAuthByRef(fakeRefReturn)
+		})
+		fmt.Printf("doodo  %s",actualZoneAuth)
+		It("should return expected ZoneAuth Object", func() {
+			Expect(actualZoneAuth).To(Equal(zdFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+		It("should return empty ZoneAuth and nil error if ref is empty", func() {
+			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.objectType = ""
+			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.returnFields = nil
+			actualZoneAuth, err = objMgr.GetZoneAuthByRef("")
+			Expect(actualZoneAuth).To(Equal(*zdFakeConnector.getObjectObj.(*ZoneAuth)))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Delete ZoneAuth", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		deleteRef := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+		fakeRefReturn := deleteRef
+		zaFakeConnector := &fakeConnector{
+			deleteObjectRef: deleteRef,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zaFakeConnector, cmpType, tenantID)
+
+		var actualRef string
+		var err error
+		It("should pass expected ZoneAuth Ref to DeleteObject", func() {
+			actualRef, err = objMgr.DeleteZoneAuth(deleteRef)
+		})
+		It("should return expected ZoneAuth Ref", func() {
+			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
 		})
 	})

@@ -11,6 +11,7 @@ type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
 	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
+	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
@@ -20,6 +21,7 @@ type IBObjectManager interface {
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
+	DeleteZoneAuth(ref string) (string, error) 
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
@@ -38,6 +40,7 @@ type IBObjectManager interface {
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	GetNetworkView(name string) (*NetworkView, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
@@ -750,6 +753,39 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(gridObj, "", &res)
 	return res, err
+}
+
+// CreateZoneAuth creates zones and subs by passing fqdn
+func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error) {
+
+	eas := objMgr.extendEA(ea)
+
+	zoneAuth := NewZoneAuth(ZoneAuth{
+		Fqdn:     fqdn,
+		Ea:       eas})
+
+
+	ref, err := objMgr.connector.CreateObject(zoneAuth)
+	zoneAuth.Ref = ref
+	return zoneAuth, err
+}
+
+// Retreive a authortative zone by ref 
+func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
+	var res ZoneAuth
+
+	if ref == "" {
+		return res, nil
+	}
+	zoneAuth := NewZoneAuth(ZoneAuth{})
+
+	err := objMgr.connector.GetObject(zoneAuth, ref, &res)
+	return res, err
+}
+
+// DeleteZoneAuth deletes an auth zone
+func (objMgr *ObjectManager) DeleteZoneAuth(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
 }
 
 // GetZoneAuth returns the authoritatives zones
