@@ -1394,6 +1394,35 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Update CNAME Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test"
+		newRecordName := "updated"
+		updateRef := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		nwFakeConnector := &fakeConnector{
+			updateObjectRef: updateRef,
+			resultObject: NewRecordCNAME(RecordCNAME{
+				Name:      newRecordName,
+				View:      dnsView,
+				Canonical: canonical,
+				Ref:       updateRef,
+			}),
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRecord *RecordCNAME
+		var err error
+		It("should pass expected CNAME record Ref to UpdateObject", func() {
+			actualRecord, err = objMgr.UpdateCNAMERecord(updateRef, newRecordName)
+		})
+		It("should return expected CNAME record Object", func() {
+			Expect(actualRecord).To(Equal(nwFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Delete CNAME Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"

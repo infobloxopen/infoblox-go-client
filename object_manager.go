@@ -42,6 +42,7 @@ type IBObjectManager interface {
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
 	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
+	UpdateCNAMERecord(ref string) (*RecordCNAME, error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
@@ -570,6 +571,14 @@ func (objMgr *ObjectManager) CreateCNAMERecord(canonical string, recordname stri
 func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, error) {
 	recordCNAME := NewRecordCNAME(RecordCNAME{})
 	err := objMgr.connector.GetObject(recordCNAME, ref, &recordCNAME)
+	return recordCNAME, err
+}
+
+func (objMgr *ObjectManager) UpdateCNAMERecord(ref string, recordname string) (*RecordCNAME, error) {
+	recordCNAME := GetCNAMERecordByRef(ref)
+	
+	refResp, err := objMgr.connector.UpdateObject(recordCNAME, recordname)
+	recordCNAME.Ref = refResp
 	return recordCNAME, err
 }
 
