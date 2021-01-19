@@ -575,7 +575,7 @@ func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, erro
 }
 
 func (objMgr *ObjectManager) UpdateCNAMERecord(ref string, recordname string) (*RecordCNAME, error) {
-	recordCNAME := GetCNAMERecordByRef(ref)
+	recordCNAME := objMgr.GetCNAMERecordByRef(ref)
 	
 	refResp, err := objMgr.connector.UpdateObject(recordCNAME, recordname)
 	recordCNAME.Ref = refResp
