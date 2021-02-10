@@ -21,7 +21,7 @@ type IBObjectManager interface {
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
-	DeleteZoneAuth(ref string) (string, error) 
+	DeleteZoneAuth(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
@@ -615,7 +615,7 @@ func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
 	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*RecordTXT, error) {
+func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (string, error) {
 	var res []RecordTXT
 
 	recordTXT := NewRecordTXT(RecordTXT{Name: recordname})
@@ -623,20 +623,20 @@ func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*R
 	err := objMgr.connector.GetObject(recordTXT, "", &res)
 
 	if len(res) == 0 {
-		return nil, nil
+		return "", nil
 	}
 
 	res[0].Text = text
 
 	res[0].Zone = "" //  set the Zone value to "" as its a non writable field
 
-	_, err = objMgr.connector.UpdateObject(&res[0], res[0].Ref)
+	ref, err := objMgr.connector.UpdateObject(&res[0], res[0].Ref)
 
 	if err != nil || res == nil || len(res) == 0 {
-		return nil, err
+		return "", err
 	}
 
-	return &res[0], nil
+	return ref, nil
 }
 
 func (objMgr *ObjectManager) DeleteTXTRecord(ref string) (string, error) {
@@ -761,16 +761,15 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 	eas := objMgr.extendEA(ea)
 
 	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn:     fqdn,
-		Ea:       eas})
-
+		Fqdn: fqdn,
+		Ea:   eas})
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
 	return zoneAuth, err
 }
 
-// Retreive a authortative zone by ref 
+// Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
 	var res ZoneAuth
 
