@@ -225,6 +225,25 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("IPv6 Network object", func() {
+			cidr := "2001:db8:abcd:0012::0/64"
+			netviewName := "localview"
+			nw := NewIPv6Network(IPv6Network{Cidr: cidr, NetviewName: netviewName})
+			searchEAs := EASearch{"Network Name": "shared-net"}
+			nw.eaSearch = searchEAs
+
+			It("should set fields correctly", func() {
+				Expect(nw.Cidr).To(Equal(cidr))
+				Expect(nw.NetviewName).To(Equal(netviewName))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(nw.ObjectType()).To(Equal("ipv6network"))
+				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view"))
+				Expect(nw.EaSearch()).To(Equal(searchEAs))
+			})
+		})
+
 		Context("FixedAddress object", func() {
 			netviewName := "globalview"
 			cidr := "25.0.7.0/24"
