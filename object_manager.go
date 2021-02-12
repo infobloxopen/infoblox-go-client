@@ -19,9 +19,10 @@ type IBObjectManager interface {
 	CreateNetwork(netview string, cidr string, name string) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
+	CreateIPv6Network(netview string, cidr string, name string) (*Network, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
-	DeleteZoneAuth(ref string) (string, error) 
+	DeleteZoneAuth(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
@@ -208,7 +209,7 @@ func BuildNetworkViewFromRef(ref string) *NetworkView {
 }
 
 func BuildNetworkFromRef(ref string) *Network {
-	// network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:89.0.0.0/24/global_view
+	// network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:2001%3Adb8%3Aabcd%3A0012%3A%3A0/64/24/global_view
 	r := regexp.MustCompile(`network/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(.+)`)
 	m := r.FindStringSubmatch(ref)
 
@@ -407,6 +408,7 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr strin
 
 func (objMgr *ObjectManager) DeleteNetwork(ref string, netview string) (string, error) {
 	network := BuildNetworkFromRef(ref)
+
 	if network != nil && network.NetviewName == netview {
 		return objMgr.connector.DeleteObject(ref)
 	}
@@ -439,6 +441,126 @@ func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefiniti
 	newEadef.Ref = ref
 
 	return newEadef, err
+}
+
+func (objMgr *ObjectManager) CreateIPv6Network(netview string, cidr string, name string) (*IPv6Network, error) {
+	ipv6network := NewIPv6Network(IPv6Network{
+		NetviewName: netview,
+		Cidr:        cidr,
+		Ea:          objMgr.getBasicEA(true)})
+
+	if name != "" {
+		ipv6network.Ea["Network Name"] = name
+	}
+	ref, err := objMgr.connector.CreateObject(ipv6network)
+	if err != nil {
+		return nil, err
+	}
+	ipv6network.Ref = ref
+
+	return ipv6network, err
+}
+
+func (objMgr *ObjectManager) GetIPv6Network(netview string, cidr string, ea EA) (*IPv6Network, error) {
+	var res []IPv6Network
+
+	ipv6Network := NewIPv6Network(IPv6Network{
+		NetviewName: netview})
+
+	if cidr != "" {
+		ipv6Network.Cidr = cidr
+	}
+
+	if ea != nil && len(ea) > 0 {
+		ipv6Network.eaSearch = EASearch(ea)
+	}
+
+	err := objMgr.connector.GetObject(ipv6Network, "", &res)
+
+	if err != nil || res == nil || len(res) == 0 {
+		return nil, err
+	}
+
+	return &res[0], nil
+}
+
+func (objMgr *ObjectManager) GetIPv6NetworkWithRef(ref string) (*IPv6Network, error) {
+	ipv6Network := NewIPv6Network(IPv6Network{})
+	err := objMgr.connector.GetObject(ipv6Network, ref, &ipv6Network)
+	return ipv6Network, err
+}
+
+func BuildIPv6NetworkFromRef(ref string) *IPv6Network {
+	// network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU%3A2001%3Adb8%3Aabcd%3A0012%3A%3A0/24/global_view
+	r := regexp.MustCompile(`ipv6network/\w+:((([0-9a-fA-F]{1,4}%3A){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}%3A){1,7}%3A|([0-9a-fA-F]{1,4}%3A){1,6}%3A[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}%3A){1,5}(%3A[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}%3A){1,4}(%3A[0-9a-fA-F]{1,4}){1,3}([0-9a-fA-F]{1,4}%3A){1,3}(%3A[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}%3A){1,2}(%3A[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}%3A((%3A[0-9a-fA-F]{1,4}){1,6})|%3A((%3A[0-9a-fA-F]{1,4}){1,7}|%3A)|fe80%3A(%3A[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|%3A%3A(ffff(%3A0{1,4}){0,1}%3A){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}%3A){1,4}%3A((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/\d+/(.+))`)
+
+	m := r.FindStringSubmatch(ref)
+
+	if m == nil {
+		return nil
+	}
+
+	return &IPv6Network{
+		Ref:         ref,
+		NetviewName: m[32],
+		Cidr:        m[1],
+	}
+}
+
+func (objMgr *ObjectManager) DeleteIPv6Network(ref string, netview string) (string, error) {
+
+	network := BuildIPv6NetworkFromRef(ref)
+	if network != nil && network.NetviewName == netview {
+		return objMgr.connector.DeleteObject(ref)
+	}
+
+	return "", nil
+}
+
+func (objMgr *ObjectManager) UpdateIPv6NetworkEA(ref string, addEA EA, removeEA EA) (*IPv6Network, error) {
+	var res IPv6Network
+
+	nv := IPv6Network{}
+	nv.returnFields = []string{"extattrs"}
+	err := objMgr.connector.GetObject(&nv, ref, &res)
+
+	if err != nil {
+		return nil, err
+	}
+
+	for k, v := range addEA {
+		res.Ea[k] = v
+	}
+
+	for k := range removeEA {
+		_, ok := res.Ea[k]
+		if ok {
+			delete(res.Ea, k)
+		}
+	}
+
+	reference, err := objMgr.connector.UpdateObject(&res, ref)
+	res.Ref = reference
+	return &res, err
+}
+
+func (objMgr *ObjectManager) AllocateIPv6Network(netview string, cidr string, prefixLen uint, name string) (network *IPv6Network, err error) {
+	network = nil
+
+	networkReq := NewIPv6Network(IPv6Network{
+		NetviewName: netview,
+		Cidr:        fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen),
+		Ea:          objMgr.getBasicEA(true)})
+	if name != "" {
+		networkReq.Ea["Network Name"] = name
+	}
+
+	ref, err := objMgr.connector.CreateObject(networkReq)
+	if err == nil && len(ref) > 0 {
+		network = BuildIPv6NetworkFromRef(ref)
+	}
+
+	return
 }
 
 func (objMgr *ObjectManager) CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error) {
@@ -761,16 +883,15 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 	eas := objMgr.extendEA(ea)
 
 	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn:     fqdn,
-		Ea:       eas})
-
+		Fqdn: fqdn,
+		Ea:   eas})
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
 	return zoneAuth, err
 }
 
-// Retreive a authortative zone by ref 
+// Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
 	var res ZoneAuth
 
