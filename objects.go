@@ -104,22 +104,6 @@ func NewNetwork(nw Network) *Network {
 	return &res
 }
 
-type IPv6Network struct {
-	IBBase
-	Ref         string `json:"_ref,omitempty"`
-	NetviewName string `json:"network_view,omitempty"`
-	Cidr        string `json:"network,omitempty"`
-	Ea          EA     `json:"extattrs,omitempty"`
-}
-
-func NewIPv6Network(nw IPv6Network) *IPv6Network {
-	res := nw
-	res.objectType = "ipv6network"
-	res.returnFields = []string{"extattrs", "network", "network_view"}
-
-	return &res
-}
-
 type ServiceStatus struct {
 	Desciption string `json:"description,omitempty"`
 	Service    string `json:"service,omitempty"`
