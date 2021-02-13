@@ -228,7 +228,7 @@ var _ = Describe("Objects", func() {
 		Context("IPv6 Network object", func() {
 			cidr := "2001:db8:abcd:0012::0/64"
 			netviewName := "localview"
-			nw := NewIPv6Network(IPv6Network{Cidr: cidr, NetviewName: netviewName})
+			nw := NewIPv6Network(netviewName, cidr, nil)
 			searchEAs := EASearch{"Network Name": "shared-net"}
 			nw.eaSearch = searchEAs
 

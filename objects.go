@@ -112,8 +112,11 @@ type IPv6Network struct {
 	Ea          EA     `json:"extattrs,omitempty"`
 }
 
-func NewIPv6Network(nw IPv6Network) *IPv6Network {
-	res := nw
+func NewIPv6Network(netview string, cidr string, ea EA) *IPv6Network {
+	var res IPv6Network
+	res.NetviewName = netview
+	res.Cidr = cidr
+	res.Ea = ea
 	res.objectType = "ipv6network"
 	res.returnFields = []string{"extattrs", "network", "network_view"}
 
