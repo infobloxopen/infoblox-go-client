@@ -10,6 +10,7 @@ import (
 type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
+	AllocateIPv6Network(netview string, cidr string, prefixLen uint, name string) (network *IPv6Network, err error)
 	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
@@ -28,6 +29,7 @@ type IBObjectManager interface {
 	DeleteHostRecord(ref string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
+	DeleteIPv6Network(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetCNAMERecordByRef(ref string) (*RecordA, error)
@@ -40,12 +42,15 @@ type IBObjectManager interface {
 	GetNetwork(netview string, cidr string, ea EA) (*Network, error)
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	GetNetworkView(name string) (*NetworkView, error)
+	GetIPv6Network(netview string, cidr string, ea EA) (*IPv6Network, error)
+	GetIPv6NetworkWithRef(ref string) (*IPv6Network, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
 	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
+	UpdateIPv6NetworkEA(ref string, updateEA EA, removeEA EA) (*IPv6Network, error)
 }
 
 type ObjectManager struct {
