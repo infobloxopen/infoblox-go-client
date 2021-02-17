@@ -462,7 +462,7 @@ func (objMgr *ObjectManager) CreateIPv6Network(netview string, cidr string, name
 	}
 	ipv6network.Ref = ref
 
-	return ipv6network, err
+	return ipv6network, nil
 }
 
 func (objMgr *ObjectManager) GetIPv6Network(netview string, cidr string, ea EA) (*IPv6Network, error) {
@@ -537,15 +537,18 @@ func (objMgr *ObjectManager) UpdateIPv6NetworkEA(ref string, updateEA EA, remove
 	}
 
 	for k := range removeEA {
-		_, ok := res.Ea[k]
-		if ok {
+		_, found := res.Ea[k]
+		if found {
 			delete(res.Ea, k)
 		}
 	}
 
 	reference, err := objMgr.connector.UpdateObject(&res, ref)
 	res.Ref = reference
-	return &res, err
+	if err != nil {
+		return nil, err
+	}
+	return &res, nil
 }
 
 func (objMgr *ObjectManager) AllocateIPv6Network(netview string, cidr string, prefixLen uint, name string) (network *IPv6Network, err error) {
