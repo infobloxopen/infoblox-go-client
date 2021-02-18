@@ -356,8 +356,11 @@ var _ = Describe("Object Manager", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "default_view"
 		cidr := "2001:db8:abcd:0012::0/64"
+		cidrRef := "2001%3Adb8%3Aabcd%3A0012%3A%3A0/64"
 		networkName := "private-net"
-		fakeRefReturn := "ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:2001:db8:abcd:0012::0/64/default_view"
+		// Format of reference ID of an ipv6 network object:
+		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
+		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
 		nwFakeConnector := &fakeConnector{
 			createObjectObj: NewIPv6Network(netviewName, cidr, nil),
 			resultObject:    NewIPv6Network(netviewName, cidr, nil),
@@ -387,10 +390,13 @@ var _ = Describe("Object Manager", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "default_view"
 		cidr := "2001:db8:abcd:0012::0/64"
+		cidrRef := "2001%3Adb8%3Aabcd%3A0012%3A%3A0/65"
 		prefixLen := uint(65)
 		networkName := "private-net"
 		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
-		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		// Format of reference ID of an ipv6 network object:
+		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
+		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
 		anFakeConnector := &fakeConnector{
 			createObjectObj: NewIPv6Network(netviewName, cidr1, nil),
 			resultObject:    BuildIPv6NetworkFromRef(fakeRefReturn),
@@ -413,14 +419,48 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Does not allocate IPv6 Network if an invalid cidr is passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default_view"
+		cidr := "10.0.0.0/24"
+		prefixLen := uint(25)
+		networkName := "private-net"
+		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
+		// Format of reference ID of an ipv6 network object:
+		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
+		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		anFakeConnector := &fakeConnector{
+			createObjectObj: NewIPv6Network(netviewName, cidr1, nil),
+			resultObject:    BuildIPv6NetworkFromRef(fakeRefReturn),
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(anFakeConnector, cmpType, tenantID)
+
+		anFakeConnector.createObjectObj.(*IPv6Network).Ea = objMgr.getBasicEA(true)
+		anFakeConnector.createObjectObj.(*IPv6Network).Ea["Network Name"] = networkName
+
+		var actualNetwork *IPv6Network
+		var err error
+		It("should pass expected IPv6 Network Object to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateIPv6Network(netviewName, cidr, prefixLen, networkName)
+		})
+		It("should return nil", func() {
+			Expect(actualNetwork).To(Equal(anFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Get IPv6 Network", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "default_view"
 		cidr := "2001:db8:abcd:0012::0/64"
+		cidrRef := "2001%3Adb8%3Aabcd%3A0012%3A%3A0/64"
 		networkName := "private-net"
 		ea := EA{"Network Name": networkName}
-		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
 		nwFakeConnector := &fakeConnector{
 			getObjectObj: NewIPv6Network(netviewName, cidr, ea),
 			getObjectRef: "",
@@ -444,17 +484,46 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Does not fetch IPv6 Network if required arguments are not passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := ""
+		cidr := "2001:db8:abcd:0012::0/64"
+		networkName := "private-net"
+		ea := EA{"Network Name": networkName}
+		nwFakeConnector := &fakeConnector{
+			getObjectObj: NewIPv6Network(netviewName, cidr, ea),
+			getObjectRef: "",
+		}
+
+		nwFakeConnector.getObjectObj.(*IPv6Network).eaSearch = EASearch(ea)
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualNetwork, resultObj *IPv6Network
+		resultObj = nil
+		var err error
+		It("should pass expected IPv6 Network Object to GetObject", func() {
+			actualNetwork, err = objMgr.GetIPv6Network(netviewName, cidr, ea)
+		})
+		It("should return nil and an error message", func() {
+			Expect(actualNetwork).To(Equal(resultObj))
+			Expect(err).To(Equal(fmt.Errorf("Both network view and cidr values are required")))
+		})
+	})
+
 	Describe("Get IPv6 Network with Reference", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		cidr := "2001:db8:abcd:0012::0/64"
+		cidrRef := "2001%3Adb8%3Aabcd%3A0012%%33A%3A0/64444"
 		netviewName := "default_view"
-		getRef := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		// Format of reference ID of an ipv6 network object:
+		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
+		getRef := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
 		fakeRefReturn := getRef
 		nwFakeConnector := &fakeConnector{
 			getObjectObj:  NewIPv6Network("", "", nil),
 			getObjectRef:  getRef,
-			resultObject:  []IPv6Network{*NewIPv6Network("", "", nil)},
+			resultObject:  NewIPv6Network("", "", nil),
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -466,7 +535,7 @@ var _ = Describe("Object Manager", func() {
 			actualRef, err = objMgr.GetIPv6NetworkWithRef(fakeRefReturn)
 		})
 		It("should return expected IPv6 Network record Ref", func() {
-			Expect(*actualRef).To(Equal(nwFakeConnector.resultObject.([]IPv6Network)[0]))
+			Expect(actualRef).To(Equal(nwFakeConnector.resultObject.(*IPv6Network)))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -475,8 +544,8 @@ var _ = Describe("Object Manager", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "default_view"
-		cidr := "2001%3Adb8%3Aabcd%3A0012%3A%3A0/64"
-		deleteRef := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		cidrRef := "2001%3Adb8%3Aabcd%3A0012%3A%3A0/64"
+		deleteRef := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
 		fakeRefReturn := deleteRef
 		nwFakeConnector := &fakeConnector{
 			deleteObjectRef: deleteRef,
