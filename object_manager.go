@@ -20,7 +20,7 @@ type IBObjectManager interface {
 	CreateNetwork(netview string, cidr string, name string) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
-	CreateIPv6Network(netview string, cidr string, name string) (*Network, error)
+	CreateIPv6Network(netview string, cidr string, name string) (*IPv6Network, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
@@ -481,8 +481,10 @@ func (objMgr *ObjectManager) GetIPv6Network(netview string, cidr string, ea EA) 
 
 		err := objMgr.connector.GetObject(ipv6Network, "", &res)
 
-		if err != nil || res == nil || len(res) == 0 {
+		if err != nil {
 			return nil, err
+		} else if res == nil || len(res) == 0 {
+			return nil, fmt.Errorf("Network with cidr: %s in network view: %s is not found.", cidr, netview)
 		}
 
 		return &res[0], nil
@@ -498,21 +500,21 @@ func (objMgr *ObjectManager) GetIPv6NetworkWithRef(ref string) (*IPv6Network, er
 	return ipv6Network, err
 }
 
-func BuildIPv6NetworkFromRef(ref string) *IPv6Network {
+func BuildIPv6NetworkFromRef(ref string) (*IPv6Network, error) {
 	// ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU%3A2001%3Adb8%3Aabcd%3A0012%3A%3A0/64/global_view
 	r := regexp.MustCompile(`ipv6network/\w+:((([0-9a-fA-F]{1,4}%3A){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}%3A){1,7}%3A|([0-9a-fA-F]{1,4}%3A){1,6}%3A[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}%3A){1,5}(%3A[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}%3A){1,4}(%3A[0-9a-fA-F]{1,4}){1,3}([0-9a-fA-F]{1,4}%3A){1,3}(%3A[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}%3A){1,2}(%3A[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}%3A((%3A[0-9a-fA-F]{1,4}){1,6})|%3A((%3A[0-9a-fA-F]{1,4}){1,7}|%3A)|fe80%3A(%3A[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|%3A%3A(ffff(%3A0{1,4}){0,1}%3A){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}%3A){1,4}%3A((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))/\d+/(.+))`)
 
 	m := r.FindStringSubmatch(ref)
 
 	if m == nil {
-		return nil
+		return nil, fmt.Errorf("Format not matched")
 	}
 
 	return &IPv6Network{
 		Ref:         ref,
 		NetviewName: m[32],
 		Cidr:        m[1],
-	}
+	}, nil
 }
 
 func (objMgr *ObjectManager) DeleteIPv6Network(ref string) (string, error) {
@@ -563,7 +565,7 @@ func (objMgr *ObjectManager) AllocateIPv6Network(netview string, cidr string, pr
 
 	ref, err := objMgr.connector.CreateObject(networkReq)
 	if err == nil && len(ref) > 0 {
-		network = BuildIPv6NetworkFromRef(ref)
+		network, err = BuildIPv6NetworkFromRef(ref)
 	}
 
 	return

@@ -397,9 +397,10 @@ var _ = Describe("Object Manager", func() {
 		// Format of reference ID of an ipv6 network object:
 		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
 		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
+		resObj, err := BuildIPv6NetworkFromRef(fakeRefReturn)
 		anFakeConnector := &fakeConnector{
 			createObjectObj: NewIPv6Network(netviewName, cidr1, nil),
-			resultObject:    BuildIPv6NetworkFromRef(fakeRefReturn),
+			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
@@ -409,7 +410,6 @@ var _ = Describe("Object Manager", func() {
 		anFakeConnector.createObjectObj.(*IPv6Network).Ea["Network Name"] = networkName
 
 		var actualNetwork *IPv6Network
-		var err error
 		It("should pass expected IPv6 Network Object to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateIPv6Network(netviewName, cidr, prefixLen, networkName)
 		})
@@ -430,9 +430,10 @@ var _ = Describe("Object Manager", func() {
 		// Format of reference ID of an ipv6 network object:
 		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
 		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		resObj, err := BuildIPv6NetworkFromRef(fakeRefReturn)
 		anFakeConnector := &fakeConnector{
 			createObjectObj: NewIPv6Network(netviewName, cidr1, nil),
-			resultObject:    BuildIPv6NetworkFromRef(fakeRefReturn),
+			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
@@ -442,13 +443,12 @@ var _ = Describe("Object Manager", func() {
 		anFakeConnector.createObjectObj.(*IPv6Network).Ea["Network Name"] = networkName
 
 		var actualNetwork *IPv6Network
-		var err error
 		It("should pass expected IPv6 Network Object to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateIPv6Network(netviewName, cidr, prefixLen, networkName)
 		})
 		It("should return nil", func() {
 			Expect(actualNetwork).To(Equal(anFakeConnector.resultObject))
-			Expect(err).To(BeNil())
+			Expect(err).To(Equal(fmt.Errorf("Format not matched")))
 		})
 	})
 
@@ -514,7 +514,7 @@ var _ = Describe("Object Manager", func() {
 	Describe("Get IPv6 Network with Reference", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		cidrRef := "2001%3Adb8%3Aabcd%3A0012%%33A%3A0/64444"
+		cidrRef := "2001%3Adb8%3Aabcd%3A0012%%33A%3A0/64"
 		netviewName := "default_view"
 		// Format of reference ID of an ipv6 network object:
 		// "ipv6network/ZG5zLm5ldHdvcmskMjAwMTpkYjg6YWJjZDoxMjo6LzY1LzA:2001%3Adb8%3Aabcd%3A12%3A%3A/64/global_view"
