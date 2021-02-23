@@ -16,12 +16,12 @@ type IBObjectManager interface {
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error)
-	CreateNetwork(netview string, cidr string, name string) (*Network, error)
+	CreateNetwork(netview string, cidr string, name string, ea EA) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
-	DeleteZoneAuth(ref string) (string, error) 
+	DeleteZoneAuth(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
@@ -122,7 +122,7 @@ func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNe
 	return
 }
 
-func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name string) (*Network, error) {
+func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name string, ea EA) (*Network, error) {
 	network := NewNetwork(Network{
 		NetviewName: netview,
 		Cidr:        cidr,
@@ -130,6 +130,11 @@ func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name str
 
 	if name != "" {
 		network.Ea["Network Name"] = name
+	}
+	if ea != nil && len(ea) != 0 {
+		for key, value := range ea {
+			network.Ea[key] = value
+		}
 	}
 	ref, err := objMgr.connector.CreateObject(network)
 	if err != nil {
@@ -761,16 +766,15 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 	eas := objMgr.extendEA(ea)
 
 	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn:     fqdn,
-		Ea:       eas})
-
+		Fqdn: fqdn,
+		Ea:   eas})
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
 	return zoneAuth, err
 }
 
-// Retreive a authortative zone by ref 
+// Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
 	var res ZoneAuth
 
