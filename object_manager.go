@@ -45,6 +45,7 @@ type IBObjectManager interface {
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
+	UpdateARecord(aRecordRef string, netview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 }
 
 type ObjectManager struct {
