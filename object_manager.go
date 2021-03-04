@@ -771,16 +771,16 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 }
 
 // Retreive a authortative zone by ref 
-func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
+func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (*ZoneAuth, error) {
 	var res ZoneAuth
 
 	if ref == "" {
-		return res, nil
+		return &res, nil
 	}
 	zoneAuth := NewZoneAuth(ZoneAuth{})
 
 	err := objMgr.connector.GetObject(zoneAuth, ref, &res)
-	return res, err
+	return &res, err
 }
 
 // DeleteZoneAuth deletes an auth zone
