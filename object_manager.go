@@ -29,7 +29,7 @@ type IBObjectManager interface {
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
-	GetCNAMERecordByRef(ref string) (*RecordA, error)
+	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
