@@ -193,7 +193,7 @@ var _ = Describe("Objects", func() {
 		Context("Network object", func() {
 			cidr := "123.0.0.0/24"
 			netviewName := "localview"
-			nw := NewNetwork(Network{Cidr: cidr, NetviewName: netviewName})
+			nw := NewNetwork(netviewName, cidr, "", nil)
 			searchEAs := EASearch{"Network Name": "shared-net"}
 			nw.eaSearch = searchEAs
 
@@ -204,7 +204,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(nw.ObjectType()).To(Equal("network"))
-				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view"))
+				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view", "comment"))
 				Expect(nw.EaSearch()).To(Equal(searchEAs))
 			})
 		})

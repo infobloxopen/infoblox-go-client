@@ -161,7 +161,7 @@ var _ = Describe("Connector", func() {
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
-				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr, Ea: ea})
+				nw := NewNetwork(networkView, cidr, "", ea)
 
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
@@ -180,7 +180,7 @@ var _ = Describe("Connector", func() {
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
 				eaSearch := EASearch{eaKey: eaVal}
-				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr})
+				nw := NewNetwork(networkView, cidr, "", nil)
 				nw.eaSearch = eaSearch
 
 				netviewStr := `"network_view":"` + networkView + `"`
@@ -200,7 +200,7 @@ var _ = Describe("Connector", func() {
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
-				nw := NewNetwork(Network{NetviewName: networkView, Cidr: cidr, Ea: ea})
+				nw := NewNetwork(networkView, cidr, "", ea)
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`

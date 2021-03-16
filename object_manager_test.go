@@ -65,7 +65,7 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, res interface{}) (er
 	} else {
 		switch obj.(type) {
 		case *ZoneAuth:
-		 	*res.(*ZoneAuth) = c.resultObject.(ZoneAuth)
+			*res.(*ZoneAuth) = c.resultObject.(ZoneAuth)
 		case *NetworkView:
 			*res.(*NetworkView) = c.resultObject.(NetworkView)
 		}
@@ -183,27 +183,30 @@ var _ = Describe("Object Manager", func() {
 		cidr := "43.0.11.0/24"
 		networkName := "private-net"
 		fakeRefReturn := "network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:43.0.11.0/24/default_view"
-		nwFakeConnector := &fakeConnector{
-			createObjectObj: NewNetwork(Network{NetviewName: netviewName, Cidr: cidr}),
-			resultObject:    NewNetwork(Network{NetviewName: netviewName, Cidr: cidr, Ref: fakeRefReturn}),
+		ea := EA{"Lock": "added", "Region": "East"}
+		comment := "Test network view"
+		connector := &fakeConnector{
+			createObjectObj: NewNetwork(netviewName, cidr, comment, ea),
+			resultObject:    NewNetwork(netviewName, cidr, comment, ea),
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
-		nwFakeConnector.createObjectObj.(*Network).Ea = objMgr.getBasicEA(true)
-		nwFakeConnector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*Network).Ea = objMgr.extendEA(ea)
+		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
 
-		nwFakeConnector.resultObject.(*Network).Ea = objMgr.getBasicEA(true)
-		nwFakeConnector.resultObject.(*Network).Ea["Network Name"] = networkName
+		connector.resultObject.(*Network).Ref = fakeRefReturn
+		connector.resultObject.(*Network).Ea = objMgr.extendEA(ea)
+		connector.resultObject.(*Network).Ea["Network Name"] = networkName
 
 		var actualNetwork *Network
 		var err error
 		It("should pass expected Network Object to CreateObject", func() {
-			actualNetwork, err = objMgr.CreateNetwork(netviewName, cidr, networkName)
+			actualNetwork, err = objMgr.CreateNetwork(netviewName, cidr, networkName, comment, ea)
 		})
 		It("should return expected Network Object", func() {
-			Expect(actualNetwork).To(Equal(nwFakeConnector.resultObject))
+			Expect(actualNetwork).To(Equal(connector.resultObject))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -213,31 +216,64 @@ var _ = Describe("Object Manager", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "default_view"
 		cidr := "142.0.22.0/24"
-		prefixLen := uint(24)
+		prefixLen := uint(28)
 		networkName := "private-net"
+		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		anFakeConnector := &fakeConnector{
-			createObjectObj: NewNetwork(Network{
-				NetviewName: netviewName,
-				Cidr:        fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen),
-			}),
-			resultObject:  BuildNetworkFromRef(fakeRefReturn),
-			fakeRefReturn: fakeRefReturn,
+		ea := EA{"Lock": "added", "Region": "East"}
+		comment := "Test network view"
+		resObj, err := BuildNetworkFromRef(fakeRefReturn)
+		connector := &fakeConnector{
+			createObjectObj: NewNetwork(netviewName, cidr1, comment, ea),
+			resultObject:    resObj,
+			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(anFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
-		anFakeConnector.createObjectObj.(*Network).Ea = objMgr.getBasicEA(true)
-		anFakeConnector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*Network).Ea = objMgr.extendEA(ea)
+		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
 
 		var actualNetwork *Network
-		var err error
 		It("should pass expected Network Object to CreateObject", func() {
-			actualNetwork, err = objMgr.AllocateNetwork(netviewName, cidr, prefixLen, networkName)
+			actualNetwork, err = objMgr.AllocateNetwork(netviewName, cidr, prefixLen, networkName, comment, ea)
 		})
 		It("should return expected Network Object", func() {
-			Expect(actualNetwork).To(Equal(anFakeConnector.resultObject))
+			Expect(actualNetwork).To(Equal(connector.resultObject))
 			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Does not allocate Network if an invalid cidr is passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default_view"
+		cidr := "10.0.1.0./64"
+		prefixLen := uint(65)
+		networkName := "private-net"
+		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
+		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		ea := EA{"Lock": "added", "Region": "East"}
+		comment := "Test network view"
+		resObj, err := BuildNetworkFromRef(fakeRefReturn)
+		connector := &fakeConnector{
+			createObjectObj: NewNetwork(netviewName, cidr1, comment, ea),
+			resultObject:    resObj,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		connector.createObjectObj.(*Network).Ea = objMgr.extendEA(ea)
+		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+
+		var actualNetwork *Network
+		It("should pass expected Network Object with invalid Cidr value to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetwork(netviewName, cidr, prefixLen, networkName, comment, ea)
+		})
+		It("should return nil and an error message", func() {
+			Expect(actualNetwork).To(Equal(connector.resultObject))
+			Expect(err).To(Equal(fmt.Errorf("Format not matched")))
 		})
 	})
 
@@ -1070,16 +1106,17 @@ var _ = Describe("Object Manager", func() {
 		networkName := "private-net"
 		ea := EA{"Network Name": networkName}
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		nwFakeConnector := &fakeConnector{
-			getObjectObj: NewNetwork(Network{NetviewName: netviewName, Cidr: cidr}),
+		connector := &fakeConnector{
+			getObjectObj: NewNetwork(netviewName, cidr, "", ea),
 			getObjectRef: "",
-			resultObject: []Network{*NewNetwork(Network{NetviewName: netviewName, Cidr: cidr, Ref: fakeRefReturn})},
+			resultObject: []Network{*NewNetwork(netviewName, cidr, "", ea)},
 		}
 
-		nwFakeConnector.getObjectObj.(*Network).eaSearch = EASearch(ea)
-		nwFakeConnector.resultObject.([]Network)[0].eaSearch = EASearch(ea)
+		connector.resultObject.([]Network)[0].Ref = fakeRefReturn
+		connector.getObjectObj.(*Network).eaSearch = EASearch(ea)
+		connector.resultObject.([]Network)[0].eaSearch = EASearch(ea)
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
 		var actualNetwork *Network
 		var err error
@@ -1087,8 +1124,36 @@ var _ = Describe("Object Manager", func() {
 			actualNetwork, err = objMgr.GetNetwork(netviewName, cidr, ea)
 		})
 		It("should return expected Network Object", func() {
-			Expect(*actualNetwork).To(Equal(nwFakeConnector.resultObject.([]Network)[0]))
+			Expect(*actualNetwork).To(Equal(connector.resultObject.([]Network)[0]))
 			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Does not fetch the Network if required arguments are not passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := ""
+		cidr := "10.0.0.0/24"
+		networkName := "private-net"
+		ea := EA{"Network Name": networkName}
+		comment := "Test network view"
+		connector := &fakeConnector{
+			getObjectObj: NewNetwork(netviewName, cidr, comment, ea),
+			getObjectRef: "",
+		}
+
+		connector.getObjectObj.(*Network).eaSearch = EASearch(ea)
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		var actualNetwork, resultObj *Network
+		resultObj = nil
+		var err error
+		It("should pass expected Network Object to GetObject", func() {
+			actualNetwork, err = objMgr.GetNetwork(netviewName, cidr, ea)
+		})
+		It("should return nil and an error message", func() {
+			Expect(actualNetwork).To(Equal(resultObj))
+			Expect(err).To(Equal(fmt.Errorf("Both network view and cidr values are required")))
 		})
 	})
 
@@ -1099,22 +1164,22 @@ var _ = Describe("Object Manager", func() {
 		netviewName := "default_view"
 		getRef := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		fakeRefReturn := getRef
-		nwFakeConnector := &fakeConnector{
-			getObjectObj:  NewNetwork(Network{}),
+		connector := &fakeConnector{
+			getObjectObj:  NewNetwork("", "", "", nil),
 			getObjectRef:  getRef,
-			resultObject:  []Network{*NewNetwork(Network{})},
+			resultObject:  NewNetwork("", "", "", nil),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
 		var actualRef *Network
 		var err error
 		It("should pass expected Network Ref to getObject", func() {
-			actualRef, err = objMgr.GetNetworkwithref(fakeRefReturn)
+			actualRef, err = objMgr.GetNetworkWithRef(fakeRefReturn)
 		})
 		It("should return expected Network record Ref", func() {
-			Expect(*actualRef).To(Equal(nwFakeConnector.resultObject.([]Network)[0]))
+			Expect(actualRef).To(Equal(connector.resultObject.(*Network)))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -1240,17 +1305,17 @@ var _ = Describe("Object Manager", func() {
 		cidr := "28.0.42.0/24"
 		deleteRef := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		fakeRefReturn := deleteRef
-		nwFakeConnector := &fakeConnector{
+		connector := &fakeConnector{
 			deleteObjectRef: deleteRef,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
 		var actualRef string
 		var err error
 		It("should pass expected Network Ref to DeleteObject", func() {
-			actualRef, err = objMgr.DeleteNetwork(deleteRef, netviewName)
+			actualRef, err = objMgr.DeleteNetwork(deleteRef)
 		})
 		It("should return expected Network Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
@@ -1461,11 +1526,15 @@ var _ = Describe("Object Manager", func() {
 		networkRef := fmt.Sprintf("network/ZG5zLm5ldHdvcmtfdmlldyQyMw:%s/%s", cidr, netviewName)
 
 		expectedNetwork := Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
+		resObj, err := BuildNetworkFromRef(networkRef)
+		resObj1, err1 := BuildNetworkFromRef("network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
 		It("should return expected Network Object", func() {
-			Expect(*BuildNetworkFromRef(networkRef)).To(Equal(expectedNetwork))
+			Expect(*resObj).To(Equal(expectedNetwork))
+			Expect(err).To(BeNil())
 		})
-		It("should failed if bad Network Ref is provided", func() {
-			Expect(BuildNetworkFromRef("network/ZG5zLm5ldHdvcmtfdmlldyQyMw")).To(BeNil())
+		It("should fail if bad Network Ref is provided", func() {
+			Expect(resObj1).To(BeNil())
+			Expect(err1).To(Equal(fmt.Errorf("Format not matched")))
 		})
 	})
 
@@ -1640,7 +1709,7 @@ var _ = Describe("Object Manager", func() {
 		}
 
 		objMgr := NewObjectManager(zaFakeConnector, cmpType, tenantID)
-		
+
 		ea := objMgr.getBasicEA(true)
 
 		zaFakeConnector.createObjectObj.(*ZoneAuth).Ea = ea
@@ -1671,7 +1740,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectObj: NewZoneAuth(ZoneAuth{}),
 			getObjectRef: fakeRefReturn,
 			resultObject: *NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
-	    }
+		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
 
@@ -1680,7 +1749,7 @@ var _ = Describe("Object Manager", func() {
 		It("should pass expected ZoneAuth Object to GetObject", func() {
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef(fakeRefReturn)
 		})
-		fmt.Printf("doodo  %s",actualZoneAuth)
+		fmt.Printf("doodo  %s", actualZoneAuth)
 		It("should return expected ZoneAuth Object", func() {
 			Expect(actualZoneAuth).To(Equal(zdFakeConnector.resultObject))
 			Expect(err).To(BeNil())
