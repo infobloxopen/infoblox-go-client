@@ -9,19 +9,19 @@ import (
 
 type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
-	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
+	AllocateNetwork(netview string, cidr string, prefixLen uint, name string, comment string, ea EA) (network *Network, err error)
 	CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, recordName string, netview string, dnsview string, cidr string, ipAddr string, macAddress string, ea EA) (*HostRecord, error)
-	CreateNetwork(netview string, cidr string, name string) (*Network, error)
+	CreateNetwork(netview string, cidr string, name string, comment string, ea EA) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
-	DeleteZoneAuth(ref string) (string, error) 
+	DeleteZoneAuth(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
@@ -122,11 +122,10 @@ func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNe
 	return
 }
 
-func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name string) (*Network, error) {
-	network := NewNetwork(Network{
-		NetviewName: netview,
-		Cidr:        cidr,
-		Ea:          objMgr.getBasicEA(true)})
+func (objMgr *ObjectManager) CreateNetwork(netview string, cidr string, name string, comment string, ea EA) (*Network, error) {
+
+	eas := objMgr.extendEA(ea)
+	network := NewNetwork(netview, cidr, comment, eas)
 
 	if name != "" {
 		network.Ea["Network Name"] = name
@@ -207,47 +206,53 @@ func BuildNetworkViewFromRef(ref string) *NetworkView {
 	}
 }
 
-func BuildNetworkFromRef(ref string) *Network {
+func BuildNetworkFromRef(ref string) (*Network, error) {
 	// network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:89.0.0.0/24/global_view
 	r := regexp.MustCompile(`network/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(.+)`)
 	m := r.FindStringSubmatch(ref)
 
 	if m == nil {
-		return nil
+		return nil, fmt.Errorf("Format not matched")
 	}
 
 	return &Network{
 		Ref:         ref,
 		NetviewName: m[2],
 		Cidr:        m[1],
-	}
+	}, nil
 }
 
 func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, ea EA) (*Network, error) {
-	var res []Network
+	if netview != "" && cidr != "" {
+		var res []Network
 
-	network := NewNetwork(Network{
-		NetviewName: netview})
+		network := NewNetwork(netview, cidr, "", ea)
 
-	if cidr != "" {
-		network.Cidr = cidr
-	}
+		if cidr != "" {
+			network.Cidr = cidr
+		}
 
-	if ea != nil && len(ea) > 0 {
-		network.eaSearch = EASearch(ea)
-	}
+		if ea != nil && len(ea) > 0 {
+			network.eaSearch = EASearch(ea)
+		}
 
-	err := objMgr.connector.GetObject(network, "", &res)
+		err := objMgr.connector.GetObject(network, "", &res)
 
-	if err != nil || res == nil || len(res) == 0 {
+		if err != nil {
+			return nil, err
+		} else if res == nil || len(res) == 0 {
+			return nil, fmt.Errorf("Network with cidr: %s in network view: %s is not found.", cidr, netview)
+		}
+
+		return &res[0], nil
+	} else {
+		err := fmt.Errorf("Both network view and cidr values are required")
 		return nil, err
 	}
-
-	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) GetNetworkwithref(ref string) (*Network, error) {
-	network := NewNetwork(Network{})
+func (objMgr *ObjectManager) GetNetworkWithRef(ref string) (*Network, error) {
+	network := NewNetwork("", "", "", nil)
 	err := objMgr.connector.GetObject(network, ref, &network)
 	return network, err
 }
@@ -306,20 +311,19 @@ func (objMgr *ObjectManager) AllocateIP(netview string, cidr string, ipAddr stri
 	return fixedAddr, err
 }
 
-func (objMgr *ObjectManager) AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error) {
-	network = nil
+func (objMgr *ObjectManager) AllocateNetwork(netview string, cidr string, prefixLen uint, name string, comment string, ea EA) (network *Network, err error) {
 
-	networkReq := NewNetwork(Network{
-		NetviewName: netview,
-		Cidr:        fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen),
-		Ea:          objMgr.getBasicEA(true)})
+	network = nil
+	cidr = fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen)
+	eas := objMgr.extendEA(ea)
+	networkReq := NewNetwork(netview, cidr, comment, eas)
 	if name != "" {
 		networkReq.Ea["Network Name"] = name
 	}
 
 	ref, err := objMgr.connector.CreateObject(networkReq)
 	if err == nil && len(ref) > 0 {
-		network = BuildNetworkFromRef(ref)
+		network, err = BuildNetworkFromRef(ref)
 	}
 
 	return
@@ -405,13 +409,8 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr strin
 	return objMgr.connector.DeleteObject(fixAddress.Ref)
 }
 
-func (objMgr *ObjectManager) DeleteNetwork(ref string, netview string) (string, error) {
-	network := BuildNetworkFromRef(ref)
-	if network != nil && network.NetviewName == netview {
-		return objMgr.connector.DeleteObject(ref)
-	}
-
-	return "", nil
+func (objMgr *ObjectManager) DeleteNetwork(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
 }
 
 func (objMgr *ObjectManager) DeleteNetworkView(ref string) (string, error) {
@@ -761,16 +760,15 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 	eas := objMgr.extendEA(ea)
 
 	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn:     fqdn,
-		Ea:       eas})
-
+		Fqdn: fqdn,
+		Ea:   eas})
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
 	return zoneAuth, err
 }
 
-// Retreive a authortative zone by ref 
+// Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
 	var res ZoneAuth
 
