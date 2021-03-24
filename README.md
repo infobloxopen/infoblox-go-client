@@ -1,7 +1,7 @@
 # Infoblox Go Client
 | Master                                                                                                                                          | Develop                                                                                                                                                           |
 | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Build Status](https://travis-ci.org/somashekhar/infoblox-go-client.svg?branch=master)](https://travis-ci.org/somashekhar/infoblox-go-client) | [![Build Status](https://travis-ci.org/somashekhar/infoblox-go-client.svg?branch=develop)](https://travis-ci.org/somashekhar/infoblox-go-client) |
+| [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) | [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=develop)](https://travis-ci.org/infobloxopen/infoblox-go-client) |
 
 
 An Infoblox Client library for Go.
