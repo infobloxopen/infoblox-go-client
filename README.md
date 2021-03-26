@@ -8,6 +8,13 @@ This library is compatible with Go 1.2+
 - [Installation](#Installation)
 - [Usage](#Usage)
 
+## Build Status
+
+| Master                                                                                                                                          | Develop                                                                                                                                                           |
+| ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) | [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=develop)](https://travis-ci.org/infobloxopen/infoblox-go-client) |
+
+
 ## Prerequisites
    * Infoblox GRID with 2.5 or above WAPI support
    * Go 1.2 or above
