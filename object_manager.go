@@ -524,8 +524,15 @@ func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error) {
+func (objMgr *ObjectManager) ListARecords(netview string, dnsview string) (*[]RecordA, error) {
+	var result []RecordA
 
+	err := objMgr.connector.ListObjects(&RecordA{}, &result)
+
+	return &result, err
+}
+
+func (objMgr *ObjectManager) CreateARecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error) {
 	eas := objMgr.extendEA(ea)
 
 	recordA := NewRecordA(RecordA{

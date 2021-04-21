@@ -81,6 +81,7 @@ type WapiHttpRequestor struct {
 }
 
 type IBConnector interface {
+	ListObjects(obj IBObject, res interface{}) error
 	CreateObject(obj IBObject) (ref string, err error)
 	GetObject(obj IBObject, ref string, res interface{}) error
 	DeleteObject(ref string) (refRes string, err error)
@@ -263,6 +264,27 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryPa
 	return
 }
 
+func (c *Connector) ListObjects(obj IBObject, res interface{}) (err error) {
+	resp, err := c.makeRequest(GET, obj, "", QueryParams{})
+
+	var result interface{}
+	err = json.Unmarshal(resp, &result)
+	if err != nil {
+		log.Printf("Cannot unmarshall to check empty value '%s', err: '%s'\n", string(resp), err)
+	}
+
+	if len(resp) == 0 {
+		return
+	}
+
+	err = json.Unmarshal(resp, res)
+	if err != nil {
+		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
+		return
+	}
+	return
+}
+
 func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 	ref = ""
 	queryParams := QueryParams{forceProxy: false}
@@ -277,7 +299,6 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
 		return
 	}
-
 	return
 }
 
