@@ -31,7 +31,7 @@ type IBObjectManager interface {
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
 
-	GetARecords(netview string, dnsview string) (*[]RecordA, error)
+	GetARecords() (*[]RecordA, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetEADefinition(name string) (*EADefinition, error)
@@ -538,10 +538,10 @@ func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) GetARecords(netview string, dnsview string) (*[]RecordA, error) {
+func (objMgr *ObjectManager) GetARecords() (*[]RecordA, error) {
 	var result []RecordA
 
-	err := objMgr.connector.ListObjects(&RecordA{}, &result)
+	err := objMgr.connector.ListObjects(&RecordA{}, QueryParams{}, &result)
 
 	return &result, err
 }
