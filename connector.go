@@ -19,6 +19,7 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
+// HostConfig Configuration used to know where to find the InfoBlox host and how to authenticate to it
 type HostConfig struct {
 	Host     string
 	Version  string
@@ -27,6 +28,7 @@ type HostConfig struct {
 	Password string
 }
 
+// TransportConfig Extra configuration
 type TransportConfig struct {
 	SslVerify           bool
 	certPool            *x509.CertPool
@@ -34,7 +36,9 @@ type TransportConfig struct {
 	HttpPoolConnections int
 }
 
-func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnections int) (cfg TransportConfig) {
+func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnections int) TransportConfig {
+	cfg := TransportConfig{}
+
 	switch {
 	case "false" == strings.ToLower(sslVerify):
 		cfg.SslVerify = false
@@ -42,14 +46,17 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 		cfg.SslVerify = true
 	default:
 		caPool := x509.NewCertPool()
+
 		cert, err := ioutil.ReadFile(sslVerify)
+
 		if err != nil {
 			log.Printf("Cannot load certificate file '%s'", sslVerify)
-			return
+			return cfg
 		}
+
 		if !caPool.AppendCertsFromPEM(cert) {
 			err = fmt.Errorf("Cannot append certificate from file '%s'", sslVerify)
-			return
+			return cfg
 		}
 		cfg.certPool = caPool
 		cfg.SslVerify = true
@@ -57,7 +64,7 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 
 	cfg.HttpPoolConnections = httpPoolConnections
 	cfg.HttpRequestTimeout = time.Duration(httpRequestTimeout)
-	return
+	return cfg
 }
 
 type HttpRequestBuilder interface {
@@ -121,9 +128,13 @@ func (r RequestType) toMethod() string {
 
 func getHTTPResponseError(resp *http.Response) error {
 	defer resp.Body.Close()
+
 	content, _ := ioutil.ReadAll(resp.Body)
+
 	msg := fmt.Sprintf("WAPI request error: %d('%s')\nContents:\n%s\n", resp.StatusCode, resp.Status, content)
+
 	log.Printf(msg)
+
 	return errors.New(msg)
 }
 
@@ -144,32 +155,37 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 	whr.client = http.Client{Jar: jar, Transport: tr, Timeout: cfg.HttpRequestTimeout * time.Second}
 }
 
-func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err error) {
+func (whr *WapiHttpRequestor) SendRequest(req *http.Request) ([]byte, error) {
 	var resp *http.Response
-	resp, err = whr.client.Do(req)
+
+	resp, err := whr.client.Do(req)
+
 	if err != nil {
-		return
+		return nil, err
 	} else if !(resp.StatusCode == http.StatusOK ||
 		(resp.StatusCode == http.StatusCreated &&
-			req.Method == RequestType(CREATE).toMethod())) {
+			req.Method == CREATE.toMethod())) {
 		err := getHTTPResponseError(resp)
 		return nil, err
 	}
+
 	defer resp.Body.Close()
-	res, err = ioutil.ReadAll(resp.Body)
+
+	res, err := ioutil.ReadAll(resp.Body)
+
 	if err != nil {
 		log.Printf("Http Reponse ioutil.ReadAll() Error: '%s'", err)
-		return
+		return nil, err
 	}
 
-	return
+	return res, nil
 }
 
 func (wrb *WapiRequestBuilder) Init(cfg HostConfig) {
 	wrb.HostConfig = cfg
 }
 
-func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, queryParams QueryParams) (urlStr string) {
+func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, queryParams QueryParams) string {
 	path := []string{"wapi", "v" + wrb.HostConfig.Version}
 	if len(ref) > 0 {
 		path = append(path, ref)
@@ -223,15 +239,17 @@ func (wrb *WapiRequestBuilder) BuildBody(t RequestType, obj IBObject) []byte {
 	return objJSON
 }
 
-func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string, queryParams QueryParams) (req *http.Request, err error) {
+func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref string, queryParams QueryParams) (*http.Request, error) {
 	var (
 		objType      string
 		returnFields []string
 	)
+
 	if obj != nil {
 		objType = obj.ObjectType()
 		returnFields = obj.ReturnFields()
 	}
+
 	urlStr := wrb.BuildUrl(t, objType, ref, returnFields, queryParams)
 
 	var bodyStr []byte
@@ -239,21 +257,25 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 		bodyStr = wrb.BuildBody(t, obj)
 	}
 
-	req, err = http.NewRequest(t.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+	req, err := http.NewRequest(t.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+
 	if err != nil {
 		log.Printf("err1: '%s'", err)
-		return
+		return nil, err
 	}
+
 	req.Header.Set("Content-Type", "application/json")
 	req.SetBasicAuth(wrb.HostConfig.Username, wrb.HostConfig.Password)
 
-	return
+	return req, nil
 }
 
-func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryParams QueryParams) (res []byte, err error) {
+func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryParams QueryParams) ([]byte, error) {
 	var req *http.Request
-	req, err = c.RequestBuilder.BuildRequest(t, obj, ref, queryParams)
-	res, err = c.Requestor.SendRequest(req)
+
+	req, err := c.RequestBuilder.BuildRequest(t, obj, ref, queryParams)
+	res, err := c.Requestor.SendRequest(req)
+
 	if err != nil {
 		/* Forcing the request to redirect to Grid Master by making forcedProxy=true */
 		queryParams.forceProxy = true
@@ -261,147 +283,171 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryPa
 		res, err = c.Requestor.SendRequest(req)
 	}
 
-	return
+	return res, err
 }
 
-func (c *Connector) ListObjects(obj IBObject, res interface{}) (err error) {
+func (c *Connector) ListObjects(obj IBObject, res interface{}) error {
 	resp, err := c.makeRequest(GET, obj, "", QueryParams{})
 
-	var result interface{}
-	err = json.Unmarshal(resp, &result)
+	err = json.Unmarshal(resp, &res)
+
 	if err != nil {
 		log.Printf("Cannot unmarshall to check empty value '%s', err: '%s'\n", string(resp), err)
 	}
 
 	if len(resp) == 0 {
-		return
+		return err
 	}
 
 	err = json.Unmarshal(resp, res)
+
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return
+		return err
 	}
-	return
+
+	return nil
 }
 
-func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
-	ref = ""
+func (c *Connector) CreateObject(obj IBObject) (string, error) {
+	ref := ""
+
 	queryParams := QueryParams{forceProxy: false}
+
 	resp, err := c.makeRequest(CREATE, obj, "", queryParams)
+
 	if err != nil || len(resp) == 0 {
 		log.Printf("CreateObject request error: '%s'\n", err)
-		return
+		return "", err
 	}
 
 	err = json.Unmarshal(resp, &ref)
+
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return
+		return "", err
 	}
-	return
+
+	return ref, nil
 }
 
-func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) (err error) {
+func (c *Connector) GetObject(obj IBObject, ref string, res interface{}) error {
 	queryParams := QueryParams{forceProxy: false}
+
 	resp, err := c.makeRequest(GET, obj, ref, queryParams)
+
 	//to check empty underlying value of interface
-	var result interface{}
-	err = json.Unmarshal(resp, &result)
+	err = json.Unmarshal(resp, &res)
+
 	if err != nil {
 		log.Printf("Cannot unmarshall to check empty value '%s', err: '%s'\n", string(resp), err)
 	}
 
 	var data []interface{}
-	if resp == nil || (reflect.TypeOf(result) == reflect.TypeOf(data) && len(result.([]interface{})) == 0) {
+	if resp == nil || (reflect.TypeOf(res) == reflect.TypeOf(data) && len(res.([]interface{})) == 0) {
 		queryParams.forceProxy = true
 		resp, err = c.makeRequest(GET, obj, ref, queryParams)
 	}
+
 	if err != nil {
 		log.Printf("GetObject request error: '%s'\n", err)
 	}
+
 	if len(resp) == 0 {
-		return
+		return err
 	}
+
 	err = json.Unmarshal(resp, res)
+
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return
+		return err
 	}
-	return
+
+	return nil
 }
 
-func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
-	refRes = ""
+func (c *Connector) DeleteObject(ref string) (string, error) {
+	refRes := ""
+
 	queryParams := QueryParams{forceProxy: false}
+
 	resp, err := c.makeRequest(DELETE, nil, ref, queryParams)
+
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
-		return
+		return "", err
 	}
 
 	err = json.Unmarshal(resp, &refRes)
 	if err != nil {
 		log.Printf("Cannot unmarshall '%s', err: '%s'\n", string(resp), err)
-		return
+		return "", err
 	}
 
-	return
+	return refRes, nil
 }
 
-func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {
+func (c *Connector) UpdateObject(obj IBObject, ref string) (string, error) {
 	queryParams := QueryParams{forceProxy: false}
-	refRes = ""
+	refRes := ""
+
 	resp, err := c.makeRequest(UPDATE, obj, ref, queryParams)
+
 	if err != nil {
 		log.Printf("Failed to update object %s: %s", obj.ObjectType(), err)
-		return
+		return "", err
 	}
 
 	err = json.Unmarshal(resp, &refRes)
+
 	if err != nil {
 		log.Printf("Cannot unmarshall update object response'%s', err: '%s'\n", string(resp), err)
-		return
+		return "", err
 	}
-	return
+
+	return refRes, nil
 }
 
 // Logout sends a request to invalidate the ibapauth cookie and should
 // be used in a defer statement after the Connector has been successfully
 // initialized.
-func (c *Connector) Logout() (err error) {
+func (c *Connector) Logout() error {
 	queryParams := QueryParams{forceProxy: false}
-	_, err = c.makeRequest(CREATE, nil, "logout", queryParams)
+
+	_, err := c.makeRequest(CREATE, nil, "logout", queryParams)
+
 	if err != nil {
 		log.Printf("Logout request error: '%s'\n", err)
 	}
 
-	return
+	return err
 }
 
 var ValidateConnector = validateConnector
 
-func validateConnector(c *Connector) (err error) {
-	// GET UserProfile request is used here to validate connector's basic auth and reachability.
+func validateConnector(c *Connector) error {
 	var response []UserProfile
+
 	userprofile := NewUserProfile(UserProfile{})
-	err = c.GetObject(userprofile, "", &response)
+
+	err := c.GetObject(userprofile, "", &response)
+
 	if err != nil {
 		log.Printf("Failed to connect to the Grid, err: %s \n", err)
 	}
-	return
+	return err
 }
 
 func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
-	requestBuilder HttpRequestBuilder, requestor HttpRequestor) (res *Connector, err error) {
-	res = nil
+	requestBuilder HttpRequestBuilder, requestor HttpRequestor) (*Connector, error) {
+	var res *Connector
 
 	connector := &Connector{
 		HostConfig:      hostConfig,
 		TransportConfig: transportConfig,
 	}
 
-	//connector.RequestBuilder = WapiRequestBuilder{WaipHostConfig: connector.HostConfig}
 	connector.RequestBuilder = requestBuilder
 	connector.RequestBuilder.Init(connector.HostConfig)
 
@@ -409,6 +455,6 @@ func NewConnector(hostConfig HostConfig, transportConfig TransportConfig,
 	connector.Requestor.Init(connector.TransportConfig)
 
 	res = connector
-	err = ValidateConnector(connector)
-	return
+	err := ValidateConnector(connector)
+	return res, err
 }

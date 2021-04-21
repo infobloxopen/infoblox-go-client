@@ -26,11 +26,10 @@ type NetworkViewLock struct {
 }
 
 func (l *NetworkViewLock) createLockRequest() *MultiRequest {
-
 	req := NewMultiRequest(
 		[]*RequestBody{
 			{
-				Method: "GET",
+				Method: GET.toMethod(),
 				Object: "networkview",
 				Data: map[string]interface{}{
 					"name":         l.Name,
@@ -45,7 +44,7 @@ func (l *NetworkViewLock) createLockRequest() *MultiRequest {
 							Discard: true,
 						},
 			{
-				Method: "PUT",
+				Method: UPDATE.toMethod(),
 				Object: "##STATE:NET_VIEW_REF:##",
 				Data: map[string]interface{}{
 					"extattrs+": map[string]interface{}{
@@ -61,7 +60,7 @@ func (l *NetworkViewLock) createLockRequest() *MultiRequest {
 							Discard:            true,
 						},
 			{
-				Method: "GET",
+				Method: GET.toMethod(),
 				Object: "##STATE:NET_VIEW_REF:##",
 				Args: map[string]string{
 					"_return_fields": "extattrs",
@@ -184,7 +183,6 @@ func (l *NetworkViewLock) getLock() bool {
 }
 
 func (l *NetworkViewLock) Lock() error {
-
 	// verify if network view exists and has EA for the lock
 	nw, err := l.ObjMgr.GetNetworkView(l.Name)
 	if err != nil {

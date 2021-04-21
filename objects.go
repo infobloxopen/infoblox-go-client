@@ -535,14 +535,14 @@ func (b Bool) MarshalJSON() ([]byte, error) {
 	return json.Marshal("False")
 }
 
-func (ea *EA) UnmarshalJSON(b []byte) (err error) {
+func (ea *EA) UnmarshalJSON(b []byte) error {
 	var m map[string]map[string]interface{}
 
 	decoder := json.NewDecoder(bytes.NewBuffer(b))
 	decoder.UseNumber()
-	err = decoder.Decode(&m)
+	err := decoder.Decode(&m)
 	if err != nil {
-		return
+		return err
 	}
 
 	*ea = make(EA)
@@ -573,18 +573,18 @@ func (ea *EA) UnmarshalJSON(b []byte) (err error) {
 		(*ea)[k] = val
 	}
 
-	return
+	return nil
 }
 
-func (v *EADefListValue) UnmarshalJSON(b []byte) (err error) {
+func (v *EADefListValue) UnmarshalJSON(b []byte) error {
 	var m map[string]string
-	err = json.Unmarshal(b, &m)
+	err := json.Unmarshal(b, &m)
 	if err != nil {
-		return
+		return err
 	}
 
 	*v = EADefListValue(m["value"])
-	return
+	return nil
 }
 
 type RequestBody struct {
