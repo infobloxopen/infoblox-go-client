@@ -21,13 +21,14 @@ type IBObjectManager interface {
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
-	DeleteZoneAuth(ref string) (string, error) 
+	DeleteZoneAuth(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
 	DeleteNetwork(ref string, netview string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
+	GetARecords(netview string, dnsview string) (*[]RecordA, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetEADefinition(name string) (*EADefinition, error)
@@ -524,7 +525,7 @@ func (objMgr *ObjectManager) DeleteHostRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) ListARecords(netview string, dnsview string) (*[]RecordA, error) {
+func (objMgr *ObjectManager) GetARecords(netview string, dnsview string) (*[]RecordA, error) {
 	var result []RecordA
 
 	err := objMgr.connector.ListObjects(&RecordA{}, &result)
@@ -768,16 +769,15 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 	eas := objMgr.extendEA(ea)
 
 	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn:     fqdn,
-		Ea:       eas})
-
+		Fqdn: fqdn,
+		Ea:   eas})
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
 	return zoneAuth, err
 }
 
-// Retreive a authortative zone by ref 
+// Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
 	var res ZoneAuth
 

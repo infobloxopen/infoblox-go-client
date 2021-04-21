@@ -7,7 +7,9 @@ import (
 	"reflect"
 )
 
-const MACADDR_ZERO = "00:00:00:00:00:00"
+const (
+	MACADDR_ZERO = "00:00:00:00:00:00"
+)
 
 type Bool bool
 
@@ -27,7 +29,6 @@ type IBObject interface {
 	ObjectType() string
 	ReturnFields() []string
 	EaSearch() EASearch
-	//SetReturnFields([]string)
 }
 
 func (obj *IBBase) ObjectType() string {
@@ -612,12 +613,6 @@ func (r *MultiRequest) MarshalJSON() ([]byte, error) {
 
 func NewMultiRequest(body []*RequestBody) *MultiRequest {
 	req := &MultiRequest{Body: body}
-	req.objectType = "request"
-	return req
-}
-
-func NewRequest(body *RequestBody) *SingleRequest {
-	req := &SingleRequest{Body: body}
 	req.objectType = "request"
 	return req
 }
