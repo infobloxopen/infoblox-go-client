@@ -21,7 +21,7 @@ type IBObjectManager interface {
 	CreateNetworkView(name string) (*NetworkView, error)
 	CreatePTRRecord(netview string, dnsview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordPTR, error)
 	DeleteARecord(ref string) (string, error)
-	DeleteZoneAuth(ref string) (string, error) 
+	DeleteZoneAuth(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
 	DeleteFixedAddress(ref string) (string, error)
 	DeleteHostRecord(ref string) (string, error)
@@ -45,6 +45,7 @@ type IBObjectManager interface {
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
+	UpdateARecord(aRecordRef string, netview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
 }
 
 type ObjectManager struct {
@@ -548,6 +549,21 @@ func (objMgr *ObjectManager) GetARecordByRef(ref string) (*RecordA, error) {
 	err := objMgr.connector.GetObject(recordA, ref, &recordA)
 	return recordA, err
 }
+
+func (objMgr *ObjectManager) UpdateARecord(aRecordRef string, netview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error) {
+	updateRecordA := NewRecordA(RecordA{Ref: aRecordRef})
+	updateRecordA.Name = recordname
+	if ipAddr != "" {
+		updateRecordA.Ipv4Addr = ipAddr
+	} else {
+		updateRecordA.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
+	}
+	updateRecordA.Ea = ea
+	refResp, err := objMgr.connector.UpdateObject(updateRecordA, aRecordRef)
+	updateRecordA.Ref = refResp
+	return updateRecordA, err
+}
+
 func (objMgr *ObjectManager) DeleteARecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
@@ -571,6 +587,16 @@ func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, erro
 	recordCNAME := NewRecordCNAME(RecordCNAME{})
 	err := objMgr.connector.GetObject(recordCNAME, ref, &recordCNAME)
 	return recordCNAME, err
+}
+
+func (objMgr *ObjectManager) UpdateCNAMERecord(cnameRef string, canonical string, recordname, string, dnsview string, ea EA) (*RecordCNAME, error) {
+	updateRecordCNAME := NewRecordCNAME(RecordCNAME{Ref: cnameRef})
+	updateRecordCNAME.Canonical = canonical
+	updateRecordCNAME.Name = recordname
+	updateRecordCNAME.Ea = ea
+	refResp, err := objMgr.connector.UpdateObject(updateRecordCNAME, cnameRef)
+	updateRecordCNAME.Ref = refResp
+	return updateRecordCNAME, err
 }
 
 func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
@@ -761,16 +787,15 @@ func (objMgr *ObjectManager) CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, erro
 	eas := objMgr.extendEA(ea)
 
 	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn:     fqdn,
-		Ea:       eas})
-
+		Fqdn: fqdn,
+		Ea:   eas})
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
 	return zoneAuth, err
 }
 
-// Retreive a authortative zone by ref 
+// Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (ZoneAuth, error) {
 	var res ZoneAuth
 
