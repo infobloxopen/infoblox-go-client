@@ -46,6 +46,7 @@ type IBObjectManager interface {
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
 	UpdateNetworkViewEA(ref string, addEA EA, removeEA EA) error
 	UpdateARecord(aRecordRef string, netview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error)
+	UpdateCNAMERecord(cnameRef string, canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error)
 }
 
 type ObjectManager struct {
@@ -589,7 +590,7 @@ func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, erro
 	return recordCNAME, err
 }
 
-func (objMgr *ObjectManager) UpdateCNAMERecord(cnameRef string, canonical string, recordname, string, dnsview string, ea EA) (*RecordCNAME, error) {
+func (objMgr *ObjectManager) UpdateCNAMERecord(cnameRef string, canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error) {
 	updateRecordCNAME := NewRecordCNAME(RecordCNAME{Ref: cnameRef})
 	updateRecordCNAME.Canonical = canonical
 	updateRecordCNAME.Name = recordname
