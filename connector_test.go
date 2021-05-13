@@ -28,7 +28,7 @@ func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
 	rb.hostConfig = cfg
 }
 
-func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, queryParams QueryParams) string {
+func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, queryParams *QueryParams) string {
 	return rb.urlStr
 }
 
@@ -36,7 +36,7 @@ func (rb *FakeRequestBuilder) BuildBody(r RequestType, obj IBObject) []byte {
 	return []byte{}
 }
 
-func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string, queryParams QueryParams) (*http.Request, error) {
+func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string, queryParams *QueryParams) (*http.Request, error) {
 	Expect(r).To(Equal(rb.r))
 	if rb.obj == nil {
 		Expect(obj).To(BeNil())
@@ -92,7 +92,7 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
-				var queryParams QueryParams
+				queryParams := NewQueryParams(false, nil)
 				It("should return expected url string for CREATE request when forceProxy is false", func() {
 					queryParams.forceProxy = false //disable proxy
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
@@ -114,7 +114,7 @@ var _ = Describe("Connector", func() {
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
-				var queryParams QueryParams
+				queryParams := NewQueryParams(false, nil)
 				It("should return expected url string for GET for the return fields when forceProxy is false", func() {
 					queryParams.forceProxy = false // disable proxy
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
@@ -135,7 +135,7 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
-				var queryParams QueryParams
+				queryParams := NewQueryParams(false, nil)
 				It("should return expected url string for DELETE request when forceProxy is false", func() {
 					queryParams.forceProxy = false //disable proxy
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
@@ -161,12 +161,13 @@ var _ = Describe("Connector", func() {
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
-				nw := NewNetwork(networkView, cidr, "", ea)
+				nw := NewNetwork(networkView, cidr, false, "", ea)
 
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
-				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr}, ",") + "}"
+				commentStr := `"comment":` + "" + `""`
+				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr, commentStr}, ",") + "}"
 
 				bodyStr := wrb.BuildBody(CREATE, nw)
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
@@ -180,13 +181,20 @@ var _ = Describe("Connector", func() {
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
 				eaSearch := EASearch{eaKey: eaVal}
-				nw := NewNetwork(networkView, cidr, "", nil)
+				nw := NewNetwork(networkView, cidr, false, "", nil)
 				nw.eaSearch = eaSearch
 
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaSearchStr := `"*` + eaKey + `":"` + eaVal + `"`
-				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaSearchStr}, ",") + "}"
+				eaStr := `"extattrs":{}`
+				commentStr := `"comment":` + "" + `""`
+				expectedBodyStr := "{" + strings.Join([]string{
+					netviewStr,
+					networkStr,
+					eaStr,
+					commentStr,
+					eaSearchStr}, ",") + "}"
 				bodyStr := wrb.BuildBody(GET, nw)
 
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
@@ -200,12 +208,13 @@ var _ = Describe("Connector", func() {
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
 				ea := EA{eaKey: eaVal}
-				nw := NewNetwork(networkView, cidr, "", ea)
+				nw := NewNetwork(networkView, cidr, false, "", ea)
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
-				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr}, ",") + "}"
-				var queryParams QueryParams
+				commentStr := `"comment":` + "" + `""`
+				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr, commentStr}, ",") + "}"
+				queryParams := NewQueryParams(false, nil)
 				It("should return expected Http Request for CREATE request when forceProxy is false", func() {
 					queryParams.forceProxy = false //disable proxy
 					hostStr := fmt.Sprintf("%s:%s", host, port)
@@ -426,7 +435,8 @@ var _ = Describe("Connector", func() {
 			}
 			It("should return expected object", func() {
 				actual := &NetworkView{}
-				err := conn.GetObject(netViewObj, "", actual)
+				err := conn.GetObject(
+					netViewObj, "", NewQueryParams(false, nil), actual)
 				Expect(err).To(BeNil())
 				Expect(NewNetworkView(*actual)).To(Equal(expectObj))
 			})
@@ -437,7 +447,7 @@ var _ = Describe("Connector", func() {
 				eaKey := "CMP Type"
 				eaVal := "OpenStack"
 				ref := ""
-				var queryParams QueryParams
+				queryParams := NewQueryParams(false, nil)
 				netViewObj := NewNetworkView(NetworkView{
 					Name: netviewName,
 					Ea:   EA{eaKey: eaVal},
@@ -495,7 +505,7 @@ var _ = Describe("Connector", func() {
 					Expect(NewNetworkView(*actual)).To(Equal(expectObj))
 				})
 				It("should return expected object when forceProxy is true", func() {
-					queryParams.forceProxy = true //disable proxy
+					queryParams.forceProxy = true //enable proxy
 					res, err := conn.makeRequest(GET, netViewObj, ref, queryParams)
 					err = json.Unmarshal(res, &actual)
 					Expect(err).To(BeNil())

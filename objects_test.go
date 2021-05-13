@@ -193,35 +193,89 @@ var _ = Describe("Objects", func() {
 		Context("Network object", func() {
 			cidr := "123.0.0.0/24"
 			netviewName := "localview"
-			nw := NewNetwork(netviewName, cidr, "", nil)
+			comment := "test"
+			ea := EA{"Tenant Name": "Engineering"}
+			nw := NewNetwork(netviewName, cidr, false, comment, ea)
 			searchEAs := EASearch{"Network Name": "shared-net"}
 			nw.eaSearch = searchEAs
 
 			It("should set fields correctly", func() {
 				Expect(nw.Cidr).To(Equal(cidr))
 				Expect(nw.NetviewName).To(Equal(netviewName))
+				Expect(nw.Comment).To(Equal(comment))
+				Expect(nw.Ea).To(Equal(ea))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(nw.ObjectType()).To(Equal("network"))
-				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view", "comment"))
+				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "comment"))
 				Expect(nw.EaSearch()).To(Equal(searchEAs))
 			})
 		})
 
-		Context("NetworkContainer object", func() {
+		Context("IPv6 Network object", func() {
+			cidr := "fc00::0100/56"
+			netviewName := "localview"
+			comment := "test"
+			ea := EA{"Tenant Name": "Engineering"}
+			nw := NewNetwork(netviewName, cidr, true, comment, ea)
+			searchEAs := EASearch{"Network Name": "shared-net"}
+			nw.eaSearch = searchEAs
+
+			It("should set fields correctly", func() {
+				Expect(nw.Cidr).To(Equal(cidr))
+				Expect(nw.NetviewName).To(Equal(netviewName))
+				Expect(nw.Comment).To(Equal(comment))
+				Expect(nw.Ea).To(Equal(ea))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(nw.ObjectType()).To(Equal("ipv6network"))
+				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "comment"))
+				Expect(nw.EaSearch()).To(Equal(searchEAs))
+			})
+		})
+
+		Context("IPv4 NetworkContainer object", func() {
 			cidr := "74.0.8.0/24"
 			netviewName := "globalview"
-			nwc := NewNetworkContainer(NetworkContainer{Cidr: cidr, NetviewName: netviewName})
+			comment := "some comment"
+			nwc := NewNetworkContainer(netviewName, cidr, false, comment, nil)
 
 			It("should set fields correctly", func() {
 				Expect(nwc.Cidr).To(Equal(cidr))
 				Expect(nwc.NetviewName).To(Equal(netviewName))
+				Expect(nwc.Comment).To(Equal(comment))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(nwc.ObjectType()).To(Equal("networkcontainer"))
-				Expect(nwc.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view"))
+				Expect(nwc.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view", "comment"))
+			})
+		})
+
+		Context("IPv6 NetworkContainer object, with EAs", func() {
+			cidr := "fc00::0100/56"
+			netviewName := "default"
+			eas := EA{
+				"ea1": "ea1 value",
+				"ea2": "ea2 value",
+				"ea3 list": []string{
+					"ea3 text1",
+					"ea3 text2"}}
+			comment := "some comment"
+			nwc := NewNetworkContainer(netviewName, cidr, true, comment, eas)
+
+			It("should set fields correctly", func() {
+				Expect(nwc.Cidr).To(Equal(cidr))
+				Expect(nwc.NetviewName).To(Equal(netviewName))
+				Expect(nwc.Ea).To(Equal(eas))
+				Expect(nwc.Comment).To(Equal(comment))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(nwc.ObjectType()).To(Equal("ipv6networkcontainer"))
+				Expect(nwc.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view", "comment"))
 			})
 		})
 
@@ -231,24 +285,51 @@ var _ = Describe("Objects", func() {
 			ipAddress := "25.0.7.59/24"
 			mac := "11:22:33:44:55:66"
 			matchClient := "MAC_ADDRESS"
-			fixedAddr := NewFixedAddress(FixedAddress{
-				NetviewName: netviewName,
-				Cidr:        cidr,
-				IPAddress:   ipAddress,
-				Mac:         mac,
-				MatchClient: matchClient})
+			comment := "test"
+			ea := EA{"Tenant Name": "Engineering"}
+			fixedAddr := NewFixedAddress(
+				netviewName, "",
+				ipAddress, cidr, mac,
+				matchClient, ea, "", false, comment)
 
 			It("should set fields correctly", func() {
 				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
 				Expect(fixedAddr.Cidr).To(Equal(cidr))
-				Expect(fixedAddr.IPAddress).To(Equal(ipAddress))
+				Expect(fixedAddr.IPv4Address).To(Equal(ipAddress))
 				Expect(fixedAddr.Mac).To(Equal(mac))
 				Expect(fixedAddr.MatchClient).To(Equal(matchClient))
+				Expect(fixedAddr.Ea).To(Equal(ea))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(fixedAddr.ObjectType()).To(Equal("fixedaddress"))
-				Expect(fixedAddr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "mac", "name", "network", "network_view"))
+				Expect(fixedAddr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "mac", "name", "network", "network_view", "comment"))
+			})
+		})
+
+		Context("IPv6 FixedAddress object", func() {
+			netviewName := "globalview"
+			cidr := "fc00::0100/56"
+			ipAddress := "fc00::0100"
+			duid := "11:22:33:44:55:66"
+			comment := "test"
+			ea := EA{"Tenant Name": "Engineering"}
+			fixedAddr := NewFixedAddress(
+				netviewName, "",
+				ipAddress, cidr, duid,
+				"", ea, "", true, comment)
+
+			It("should set fields correctly", func() {
+				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
+				Expect(fixedAddr.Cidr).To(Equal(cidr))
+				Expect(fixedAddr.IPv6Address).To(Equal(ipAddress))
+				Expect(fixedAddr.Duid).To(Equal(duid))
+				Expect(fixedAddr.Ea).To(Equal(ea))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(fixedAddr.ObjectType()).To(Equal("ipv6fixedaddress"))
+				Expect(fixedAddr.ReturnFields()).To(ConsistOf("extattrs", "ipv6addr", "duid", "name", "network", "network_view", "comment"))
 			})
 		})
 
@@ -297,11 +378,7 @@ var _ = Describe("Objects", func() {
 			view := "default"
 			zone := "domain.com"
 
-			ra := NewRecordA(RecordA{
-				Ipv4Addr: ipv4addr,
-				Name:     name,
-				View:     view,
-				Zone:     zone})
+			ra := NewRecordA(view, zone, name, ipv4addr, nil, "")
 
 			It("should set fields correctly", func() {
 				Expect(ra.Ipv4Addr).To(Equal(ipv4addr))
@@ -367,19 +444,12 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordHostIpv4Addr object", func() {
-			netviewName := "globalview"
-			cidr := "25.0.7.0/24"
 			ipAddress := "25.0.7.59/24"
 			mac := "11:22:33:44:55:66"
-			hostAddr := NewHostRecordIpv4Addr(HostRecordIpv4Addr{
-				View:     netviewName,
-				Cidr:     cidr,
-				Ipv4Addr: ipAddress,
-				Mac:      mac})
+			enableDHCP := false
+			hostAddr := NewHostRecordIpv4Addr(ipAddress, mac, &enableDHCP, "")
 
 			It("should set fields correctly", func() {
-				Expect(hostAddr.View).To(Equal(netviewName))
-				Expect(hostAddr.Cidr).To(Equal(cidr))
 				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
 				Expect(hostAddr.Mac).To(Equal(mac))
 			})
@@ -391,17 +461,11 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordHostIpv4Addr macaddress empty", func() {
-			netviewName := "globalview"
-			cidr := "25.0.7.0/24"
-			ipAddress := "25.0.7.59/24"
-			hostAddr := NewHostRecordIpv4Addr(HostRecordIpv4Addr{
-				View:     netviewName,
-				Cidr:     cidr,
-				Ipv4Addr: ipAddress})
+			ipAddress := "25.0.7.59"
+			enableDHCP := false
+			hostAddr := NewHostRecordIpv4Addr(ipAddress, "", &enableDHCP, "")
 
 			It("should set fields correctly", func() {
-				Expect(hostAddr.View).To(Equal(netviewName))
-				Expect(hostAddr.Cidr).To(Equal(cidr))
 				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
 			})
 
@@ -410,28 +474,63 @@ var _ = Describe("Objects", func() {
 				//Expect(hostAddr.ReturnFields()).To(ConsistOf("configure_for_dhcp", "host", "ipv4addr", "mac"))
 			})
 		})
+
+		Context("RecordHostIpv6Addr object", func() {
+			ipAddress := "fc00::0100"
+			duid := "11:22:33:44:55:66"
+			enableDHCP := false
+			hostAddr := NewHostRecordIpv6Addr(ipAddress, duid, &enableDHCP, "")
+
+			It("should set fields correctly", func() {
+				Expect(hostAddr.Ipv6Addr).To(Equal(ipAddress))
+				Expect(hostAddr.Duid).To(Equal(duid))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(hostAddr.ObjectType()).To(Equal("record:host_ipv6addr"))
+			})
+		})
+
+		Context("RecordHostIpv6Addr duid empty", func() {
+			ipAddress := "fc00::0100"
+			enableDHCP := false
+			hostAddr := NewHostRecordIpv6Addr(ipAddress, "", &enableDHCP, "")
+
+			It("should set fields correctly", func() {
+				Expect(hostAddr.Ipv6Addr).To(Equal(ipAddress))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(hostAddr.ObjectType()).To(Equal("record:host_ipv6addr"))
+			})
+		})
+
 		Context("RecordHost object", func() {
 			ipv4addrs := []HostRecordIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
+			ipv6addrs := []HostRecordIpv6Addr{{Ipv6Addr: "fc00::0100"}, {Ipv6Addr: "fc00::0101"}}
 			name := "bind_host.domain.com"
 			view := "default"
 			zone := "domain.com"
+			comment := "test"
+			aliases := []string{"bind_host1.domain.com"}
 
-			rh := NewHostRecord(HostRecord{
-				Ipv4Addrs: ipv4addrs,
-				Name:      name,
-				View:      view,
-				Zone:      zone})
+			rh := NewHostRecord(
+				"", name, "", "", ipv4addrs, ipv6addrs,
+				nil, nil, view, zone, "", comment, aliases)
 
 			It("should set fields correctly", func() {
 				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))
+				Expect(rh.Ipv6Addrs).To(Equal(ipv6addrs))
 				Expect(rh.Name).To(Equal(name))
 				Expect(rh.View).To(Equal(view))
 				Expect(rh.Zone).To(Equal(zone))
+				Expect(rh.Comment).To(Equal(comment))
+				Expect(rh.Aliases).To(Equal(aliases))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(rh.ObjectType()).To(Equal("record:host"))
-				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "name", "view", "zone"))
+				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "ipv6addrs", "name", "view", "zone", "comment", "network_view", "aliases"))
 			})
 		})
 
