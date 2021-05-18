@@ -1,6 +1,7 @@
 # Infoblox Go Client
 
-An Infoblox Client library for Go.
+An Infoblox NIOS WAPI client library in Golang.
+The library enables us to do a CRUD oprations on NIOS Objects.
 
 This library is compatible with Go 1.2+
 
@@ -55,22 +56,47 @@ This library is compatible with Go 1.2+
 
 ## Supported NIOS operations
 
+   * AllocateIP
    * AllocateNetwork
+   * CreateARecord
+   * CreateZoneAuth
+   * CreateCNAMERecord
    * CreateDefaultNetviews
    * CreateEADefinition
+   * CreateHostRecord
    * CreateNetwork
    * CreateNetworkContainer
    * CreateNetworkView
+   * CreatePTRRecord
+   * DeleteARecord
+   * DeleteZoneAuth
+   * DeleteCNAMERecord
+   * DeleteFixedAddress
+   * DeleteHostRecord
    * DeleteNetwork
    * DeleteNetworkView
+   * DeletePTRRecord
    * GetAllMembers
+   * GetARecordByRef
    * GetCapacityReport
+   * GetCNAMERecordByRef
    * GetEADefinition
    * GetFixedAddress
+   * GetFixedAddressByRef
+   * GetHostRecord
+   * GetHostRecordByRef
+   * GetIpAddressFromHostRecord
    * GetNetwork
    * GetNetworkContainer
    * GetNetworkView
+   * GetPTRRecordByRef
    * GetUpgradeStatus (2.7 or above)
+   * GetZoneAuthByRef
    * ReleaseIP
    * UpdateFixedAddress
+   * UpdateHostRecord
    * UpdateNetworkViewEA
+   * UpdateARecord
+   * UpdateCNAMERecord
+
+The newly developed features will be available under `develop` branch. After validation they would be merged to `master`.
