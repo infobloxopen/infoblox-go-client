@@ -605,13 +605,13 @@ func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
 }
 
 // Creates TXT Record. Use TTL of 0 to inherit TTL from the Zone
-func (objMgr *ObjectManager) CreateTXTRecord(recordname string, text string, ttl int, dnsview string) (*RecordTXT, error) {
+func (objMgr *ObjectManager) CreateTXTRecord(recordname string, text string, ttl uint, dnsview string) (*RecordTXT, error) {
 
 	recordTXT := NewRecordTXT(RecordTXT{
 		View: dnsview,
 		Name: recordname,
 		Text: text,
-		TTL:  ttl,
+		Ttl:  ttl,
 	})
 
 	ref, err := objMgr.connector.CreateObject(recordTXT)
