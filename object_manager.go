@@ -7,6 +7,9 @@ import (
 	"regexp"
 )
 
+// Compile time interface checks
+var _ IBObjectManager = new(ObjectManager)
+
 type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, macAddress string, name string, ea EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, prefixLen uint, name string) (network *Network, err error)
@@ -29,7 +32,7 @@ type IBObjectManager interface {
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
-	GetCNAMERecordByRef(ref string) (*RecordA, error)
+	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, macAddr string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
@@ -40,7 +43,7 @@ type IBObjectManager interface {
 	GetNetworkContainer(netview string, cidr string) (*NetworkContainer, error)
 	GetNetworkView(name string) (*NetworkView, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
-	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
+	GetZoneAuthByRef(ref string) (ZoneAuth, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, macAddr string) (string, error)
 	UpdateFixedAddress(fixedAddrRef string, matchclient string, macAddress string, vmID string, vmName string) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, ipAddr string, macAddress string, vmID string, vmName string) (string, error)
