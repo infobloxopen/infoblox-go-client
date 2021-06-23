@@ -72,8 +72,16 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]License) = c.resultObject.([]License)
 		case *HostRecord:
 			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
+		case *RecordAAAA:
+			*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
+		case *RecordPTR:
+			*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
 		case *ZoneDelegated:
 			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
+		case *RecordCNAME:
+			*res.(*[]RecordCNAME) = c.resultObject.([]RecordCNAME)
+		case *RecordA:
+			*res.(*[]RecordA) = c.resultObject.([]RecordA)
 		}
 	} else {
 		switch obj.(type) {
@@ -89,6 +97,14 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			**res.(**FixedAddress) = *c.resultObject.(*FixedAddress)
 		case *HostRecord:
 			**res.(**HostRecord) = *c.resultObject.(*HostRecord)
+		case *RecordPTR:
+			**res.(**RecordPTR) = *c.resultObject.(*RecordPTR)
+		case *RecordCNAME:
+			**res.(**RecordCNAME) = *c.resultObject.(*RecordCNAME)
+		case *RecordA:
+			**res.(**RecordA) = *c.resultObject.(*RecordA)
+		case *RecordAAAA:
+			**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
 		}
 	}
 
@@ -643,6 +659,242 @@ var _ = Describe("Object Manager", func() {
 			actualObj, err = objMgr.UpdateNetworkContainer(ref, setEas, comment)
 			Expect(err).To(BeNil())
 			Expect(actualObj).To(BeEquivalentTo(expectedObj))
+		})
+	})
+
+	Describe("Update A-record, literal value", func() {
+		var (
+			err    error
+			objMgr IBObjectManager
+			conn   *fakeConnector
+			//actualObj       *RecordA
+		)
+
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+
+		//netView := "default"
+		//netView2 := "notdefault"
+		dnsView := "default"
+		dnsZone := "test.loc"
+		dnsName := "arec1.test.loc"
+		refBase := "ZG5zLm5ldHdvcmtfdmlldyQyMw"
+		initIPAddr := "10.2.1.56"
+		initTTL := uint32(7)
+		initUseTTL := true
+		newIPAddr := "10.2.1.57"
+		newTTL := uint32(70)
+		newUseTTL := false
+		//cidr := "10.2.1.0/24"
+		//nextAvailableIPRequest := fmt.Sprintf(
+		//	"func:nextavailableip:%s,%s", cidr, netView)
+		//nextAvailableIPRequest2 := fmt.Sprintf(
+		//	"func:nextavailableip:%s,%s", cidr, netView2)
+
+		//It("updating IP address (with a literal value), comment, TTL, EAs", func() {
+		//	initRef := fmt.Sprintf(
+		//		"record:a/%s:%s/%s/%s",
+		//		refBase, initIPAddr, dnsName, dnsView)
+		//	newRef := fmt.Sprintf(
+		//		"record:a/%s:%s/%s/%s",
+		//		refBase, newIPAddr, dnsName, dnsView)
+		//	initialEas := EA{
+		//		"ea0": "ea0_old_value",
+		//		"ea1": "ea1_old_value",
+		//		"ea3": "ea3_value",
+		//		"ea4": "ea4_value",
+		//		"ea5": "ea5_old_value"}
+		//	initComment := "initial comment"
+		//	initObj := NewRecordA(dnsView, dnsZone, dnsName, initIPAddr, initTTL, initUseTTL, initComment, initialEas, initRef)
+		//
+		//	newEas := EA{
+		//		"ea0": "ea0_old_value",
+		//		"ea1": "ea1_new_value",
+		//		"ea2": "ea2_new_value",
+		//		"ea5": "ea5_old_value"}
+		//
+		//	getObjIn := NewEmptyRecordA()
+		//
+		//	newComment := "test comment 1"
+		//	updateObjIn := NewRecordA(dnsView, dnsZone, dnsName, newIPAddr, newTTL, newUseTTL, newComment, newEas, initRef)
+		//	expectedObj := NewRecordA(dnsView, dnsZone, dnsName, newIPAddr, newTTL, newUseTTL, newComment, newEas, newRef)
+		//
+		//	conn = &fakeConnector{
+		//		getObjectObj:         getObjIn,
+		//		getObjectQueryParams: NewQueryParams(false, nil),
+		//		getObjectRef:         initRef,
+		//		getObjectError:       nil,
+		//		resultObject:         initObj,
+		//
+		//		updateObjectObj:   updateObjIn,
+		//		updateObjectRef:   initRef,
+		//		updateObjectError: nil,
+		//
+		//		fakeRefReturn: newRef,
+		//	}
+		//	objMgr = NewObjectManager(conn, cmpType, tenantID)
+		//
+		//	actualObj, err = objMgr.UpdateARecord(initRef, newIPAddr, "", "", newTTL, newUseTTL, newComment, newEas)
+		//	Expect(err).To(BeNil())
+		//	Expect(actualObj).To(BeEquivalentTo(expectedObj))
+		//})
+
+		//It("updating IP address (with 'nextavailableip' function), comment, TTL, EAs", func() {
+		//	initRef := fmt.Sprintf(
+		//		"record:a/%s:%s/%s/%s",
+		//		refBase, initIPAddr, dnsName, dnsView)
+		//	newRef := fmt.Sprintf(
+		//		"record:a/%s:%s/%s/%s",
+		//		refBase, newIPAddr, dnsName, dnsView)
+		//	initialEas := EA{
+		//		"ea0": "ea0_old_value",
+		//		"ea1": "ea1_old_value",
+		//		"ea3": "ea3_value",
+		//		"ea4": "ea4_value",
+		//		"ea5": "ea5_old_value"}
+		//	initComment := "initial comment"
+		//	initObj := NewRecordA(dnsView, dnsZone, dnsName, initIPAddr, initTTL, initUseTTL, initComment, initialEas, initRef)
+		//
+		//	newEas := EA{
+		//		"ea0": "ea0_old_value",
+		//		"ea1": "ea1_new_value",
+		//		"ea2": "ea2_new_value",
+		//		"ea5": "ea5_old_value"}
+		//
+		//	getObjIn := NewEmptyRecordA()
+		//
+		//	newComment := "test comment 1"
+		//	updateObjIn := NewRecordA(dnsView, dnsZone, dnsName, nextAvailableIPRequest, newTTL, newUseTTL, newComment, newEas, initRef)
+		//	expectedObj := NewRecordA(dnsView, dnsZone, dnsName, newIPAddr, newTTL, newUseTTL, newComment, newEas, newRef)
+		//
+		//	conn = &fakeConnector{
+		//		getObjectObj:         getObjIn,
+		//		getObjectQueryParams: NewQueryParams(false, nil),
+		//		getObjectRef:         initRef,
+		//		getObjectError:       nil,
+		//		resultObject:         initObj,
+		//
+		//		updateObjectObj:   updateObjIn,
+		//		updateObjectRef:   initRef,
+		//		updateObjectError: nil,
+		//
+		//		fakeRefReturn: newRef,
+		//	}
+		//	objMgr = NewObjectManager(conn, cmpType, tenantID)
+		//
+		//	actualObj, err = objMgr.UpdateARecord(initRef, "", cidr, "", newTTL, newUseTTL, newComment, newEas)
+		//	Expect(err).To(BeNil())
+		//	Expect(actualObj).To(BeEquivalentTo(expectedObj))
+		//})
+
+		//It("updating IP address (with 'nextavailableip' function, non-default netview), comment, TTL, EAs", func() {
+		//	initRef := fmt.Sprintf(
+		//		"record:a/%s:%s/%s/%s",
+		//		refBase, initIPAddr, dnsName, dnsView)
+		//	newRef := fmt.Sprintf(
+		//		"record:a/%s:%s/%s/%s",
+		//		refBase, newIPAddr, dnsName, dnsView)
+		//	initialEas := EA{
+		//		"ea0": "ea0_old_value",
+		//		"ea1": "ea1_old_value",
+		//		"ea3": "ea3_value",
+		//		"ea4": "ea4_value",
+		//		"ea5": "ea5_old_value"}
+		//	initComment := "initial comment"
+		//	initObj := NewRecordA(dnsView, dnsZone, dnsName, initIPAddr, initTTL, initUseTTL, initComment, initialEas, initRef)
+		//
+		//	newEas := EA{
+		//		"ea0": "ea0_old_value",
+		//		"ea1": "ea1_new_value",
+		//		"ea2": "ea2_new_value",
+		//		"ea5": "ea5_old_value"}
+		//
+		//	getObjIn := NewEmptyRecordA()
+		//
+		//	newComment := "test comment 1"
+		//	updateObjIn := NewRecordA(dnsView, dnsZone, dnsName, nextAvailableIPRequest2, newTTL, newUseTTL, newComment, newEas, initRef)
+		//	expectedObj := NewRecordA(dnsView, dnsZone, dnsName, newIPAddr, newTTL, newUseTTL, newComment, newEas, newRef)
+		//
+		//	conn = &fakeConnector{
+		//		getObjectObj:         getObjIn,
+		//		getObjectQueryParams: NewQueryParams(false, nil),
+		//		getObjectRef:         initRef,
+		//		getObjectError:       nil,
+		//		resultObject:         initObj,
+		//
+		//		updateObjectObj:   updateObjIn,
+		//		updateObjectRef:   initRef,
+		//		updateObjectError: nil,
+		//
+		//		fakeRefReturn: newRef,
+		//	}
+		//	objMgr = NewObjectManager(conn, cmpType, tenantID)
+		//
+		//	actualObj, err = objMgr.UpdateARecord(initRef, "", cidr, netView2, newTTL, newUseTTL, newComment, newEas)
+		//	Expect(err).To(BeNil())
+		//	Expect(actualObj).To(BeEquivalentTo(expectedObj))
+		//})
+
+		It("Negative case: updating an A-record which does not exist", func() {
+			initRef := fmt.Sprintf(
+				"record:a/%s:%s/%s/%s",
+				refBase, initIPAddr, dnsName, dnsView)
+			getObjIn := NewEmptyRecordA()
+
+			conn = &fakeConnector{
+				getObjectObj:         getObjIn,
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         initRef,
+				getObjectError:       fmt.Errorf("test error"),
+				resultObject:         NewEmptyRecordA(),
+				fakeRefReturn:        "",
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			_, err = objMgr.UpdateARecord(initRef, dnsName, newIPAddr, "", "", newTTL, newUseTTL, "some comment", nil)
+			Expect(err).ToNot(BeNil())
+		})
+
+		It("Negative case: updating an A-record with no update access", func() {
+			initRef := fmt.Sprintf(
+				"record:a/%s:%s/%s/%s",
+				refBase, initIPAddr, dnsName, dnsView)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initComment := "initial comment"
+			initObj := NewRecordA(dnsView, dnsZone, dnsName, initIPAddr, initTTL, initUseTTL, initComment, initialEas, initRef)
+
+			getObjIn := NewEmptyRecordA()
+
+			newEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+
+			newComment := "test comment 1"
+			updateObjIn := NewRecordA("", "", dnsName, newIPAddr, newTTL, newUseTTL, newComment, newEas, initRef)
+
+			conn = &fakeConnector{
+				getObjectObj:         getObjIn,
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         initRef,
+				getObjectError:       nil,
+				resultObject:         initObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   initRef,
+				updateObjectError: fmt.Errorf("test error"),
+				fakeRefReturn:     "",
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			_, err = objMgr.UpdateARecord(initRef, dnsName, newIPAddr, "", "", newTTL, newUseTTL, newComment, newEas)
+			Expect(err).ToNot(BeNil())
 		})
 	})
 
@@ -1537,7 +1789,7 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
-	Describe("Allocate specific A Record ", func() {
+	Describe("Create a specific A-Record ", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "private"
@@ -1547,16 +1799,66 @@ var _ = Describe("Object Manager", func() {
 		vmName := "dummyvm"
 		dnsView := "default"
 		recordName := "test"
-		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		zone := "example.com"
+		comment := "test comment"
+		fakeRefReturn := fmt.Sprintf(
+			"record:a/ZG5zLmJpbmRfY25h:%s/%s",
+			recordName,
+			netviewName)
+
+		eas := make(EA)
+		eas["VM ID"] = vmID
+		eas["VM Name"] = vmName
+		objectForCreation := NewRecordA(
+			dnsView, "", recordName, ipAddr, 5, true, comment, eas, "")
+		objectAsResult := NewRecordA(
+			dnsView, zone, recordName, ipAddr, 5, true, comment, eas, fakeRefReturn)
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj:      objectForCreation,
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordA(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         objectAsResult,
+			fakeRefReturn:        fakeRefReturn,
+		}
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		var actualRecord *RecordA
+		var err error
+		It("should pass expected A record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, 5, true, comment, eas)
+		})
+		It("should return expected A record Object", func() {
+			Expect(err).To(BeNil())
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+		})
+	})
+
+	Describe("Create an A-record by allocating next available IP address", func() {
+		return
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "53.0.0.0/24"
+		ipAddrReq := ""
+		ipAddrRes := "53.0.0.1"
+		ipAddrFunc := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test"
+		fakeRefReturn := fmt.Sprintf(
+			"record:a/ZG5zLmJpbmRfY25h:%s/%s/%s",
+			recordName,
+			ipAddrRes,
+			netviewName)
+
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordA(
-				dnsView, "", recordName, ipAddr, nil, ""),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordA(
-				dnsView, "", recordName, ipAddr, nil, fakeRefReturn),
-			getObjectQueryParams: NewQueryParams(false, nil),
+				dnsView, "", recordName, ipAddrFunc, 0, false, "", nil, ""),
 			resultObject: NewRecordA(
-				dnsView, "", recordName, ipAddr, nil, fakeRefReturn),
+				dnsView, "", recordName, ipAddrRes, 0, false, "", nil, fakeRefReturn),
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -1571,247 +1873,1050 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector.resultObject.(*RecordA).Ea["VM ID"] = vmID
 		aniFakeConnector.resultObject.(*RecordA).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*RecordA).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM Name"] = vmName
-
 		var actualRecord *RecordA
 		var err error
 		It("should pass expected A record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
+			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddrReq, 0, false, "", ea)
 		})
 		It("should return expected A record Object", func() {
+			Expect(err).To(BeNil())
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+		})
+	})
+
+	Describe("Allocate specific AAAA Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		ipAddr := "2001:db8:abcd:14::1"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test.domain.com"
+		comment := "Test creation"
+		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		ea := EA{"VM Name": vmName, "VM ID": vmID}
+		conn := &fakeConnector{
+			createObjectObj: NewRecordAAAA(
+				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject: NewRecordAAAA(
+				dnsView, recordName, ipAddr, false, 0, comment, ea, fakeRefReturn),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+
+		var actualRecord *RecordAAAA
+		var err error
+		It("should pass expected AAAA record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateAAAARecord("", dnsView, recordName, "", ipAddr, false, uint32(0), comment, ea)
+		})
+		It("should return expected AAAA record Object", func() {
+			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 	})
 
-	Describe("Allocate next available A Record ", func() {
+	Describe("Allocate next available AAAA Record ", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "private"
-		cidr := "53.0.0.0/24"
+		cidr := "2001:db8:abcd:14::/64"
 		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		dnsView := "default"
-		recordName := "test"
-		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordA(
-				dnsView, "", recordName, ipAddr, nil, ""),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordA(
-				dnsView, "", recordName, ipAddr, nil, fakeRefReturn),
+		recordName := "test.domain.com"
+		comment := "Test creation"
+		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		ea := EA{"VM Name": vmName, "VM ID": vmID}
+		conn := &fakeConnector{
+			createObjectObj: NewRecordAAAA(
+				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordAAAA(),
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordA(
-				dnsView, "", recordName, ipAddr, nil, fakeRefReturn),
+			resultObject: NewRecordAAAA(
+				dnsView, recordName, ipAddr, false, 0, comment, ea, fakeRefReturn),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
 
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*RecordA).Ea = ea
-		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*RecordA).Ea["VM Name"] = vmName
-
-		aniFakeConnector.resultObject.(*RecordA).Ea = ea
-		aniFakeConnector.resultObject.(*RecordA).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*RecordA).Ea["VM Name"] = vmName
-
-		aniFakeConnector.getObjectObj.(*RecordA).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordA).Ea["VM Name"] = vmName
-
-		var actualRecord *RecordA
+		var actualRecord *RecordAAAA
 		var err error
-		It("should pass expected A record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateARecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
+		It("should pass expected AAAA record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateAAAARecord(netviewName, dnsView, recordName, cidr, "", false, uint32(0), comment, ea)
 		})
-		It("should return expected A record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+		It("should return expected AAAA record Object", func() {
+			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 	})
 
-	Describe("Allocate specific PTR Record ", func() {
+	Describe("Negative case: returns an error message when an IPv4 address is passed", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "private"
-		cidr := "53.0.0.0/24"
-		ipAddr := "53.0.0.1"
-		vmID := "93f9249abc039284"
-		vmName := "dummyvm"
-		dnsView := "default"
-		recordName := "test"
-		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
-
-		aniFakeConnector.resultObject.(*RecordPTR).Ea = ea
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
-
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
-
-		var actualRecord *RecordPTR
-		var err error
-		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
-		})
-		It("should return expected PTR record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
-			Expect(err).To(BeNil())
-		})
-	})
-
-	Describe("Allocate next available PTR Record ", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		netviewName := "private"
-		cidr := "53.0.0.0/24"
+		cidr := "10.0.0./24"
 		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		dnsView := "default"
-		recordName := "test"
-		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordPTR(RecordPTR{
-				PtrdName: recordName,
-				View:     dnsView,
-				Ipv4Addr: ipAddr,
-				Ref:      fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
+		recordName := "test.domain.com"
+		comment := "Test creation"
+		ea := EA{"VM Name": vmName, "VM ID": vmID}
+		conn := &fakeConnector{
+			createObjectObj: NewRecordAAAA(
+				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
+			createObjectError: fmt.Errorf("cannot parse CIDR value: invalid CIDR address: 10.0.0./24"),
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
 
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
+		var actualRecord, expectedObj *RecordAAAA
+		var err error
+		It("should pass expected AAAA record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateAAAARecord(netviewName, dnsView, recordName, cidr, "", false, uint32(0), comment, ea)
+		})
+		It("should return expected AAAA record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.createObjectError))
+		})
+	})
 
-		aniFakeConnector.resultObject.(*RecordPTR).Ea = ea
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*RecordPTR).Ea["VM Name"] = vmName
+	Describe("Get AAAA record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		recordName := "test.domain.com"
+		ipAddr := "2001:db8:abcd:14::1"
+		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/default", recordName)
 
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordPTR).Ea["VM Name"] = vmName
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"view":     dnsView,
+				"name":     recordName,
+				"ipv6addr": ipAddr,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectQueryParams: queryParams,
+			resultObject:         []RecordAAAA{*NewRecordAAAA(dnsView, recordName, ipAddr, false, 0, "", nil, fakeRefReturn)},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.resultObject.([]RecordAAAA)[0].Ipv6Addr = ipAddr
+		var actualRecord *RecordAAAA
+		var err error
+		It("should pass expected AAAA record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetAAAARecord(dnsView, recordName, ipAddr)
+		})
+
+		It("should return expected AAAA record Object", func() {
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordAAAA)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Negative case: returns an error when all the required fields are not passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test.domain.com"
+		ipAddr := "2001:db8:abcd:14::1"
+		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/default", recordName)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"name":     recordName,
+				"ipv6addr": ipAddr,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectQueryParams: queryParams,
+			fakeRefReturn:        fakeRefReturn,
+			getObjectError:       fmt.Errorf("DNS view, IPv6 address and record name of the record are required to retreive a unique AAAA record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *RecordAAAA
+		var err error
+		It("should pass expected AAAA record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetAAAARecord("", recordName, ipAddr)
+		})
+
+		It("should return expected AAAA record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.getObjectError))
+		})
+	})
+
+	Describe("Update AAAA-record, literal value", func() {
+		var (
+			err    error
+			objMgr IBObjectManager
+			conn   *fakeConnector
+		)
+
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		recordName := "test.domain.com"
+		refBase := "ZG5zLm5ldHdvcmtfdmlldyQyMw"
+		initIpAddr := "2001:db8:abcd:12::1"
+		initUseTtl := true
+		newRecordName := "test1.domain.com"
+		newIpAddr := "2001:db8:abcd:12::2"
+		newTtl := uint32(0)
+		newUseTtl := false
+
+		It("Negative case: updating an AAAA-record which does not exist", func() {
+			initRef := fmt.Sprintf(
+				"record:aaaa/%s:%s/%s",
+				refBase, recordName, dnsView)
+			getObjIn := NewEmptyRecordAAAA()
+
+			conn = &fakeConnector{
+				getObjectObj:         getObjIn,
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         initRef,
+				getObjectError:       fmt.Errorf("test error"),
+				resultObject:         NewEmptyRecordAAAA(),
+				fakeRefReturn:        "",
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			_, err = objMgr.UpdateAAAARecord(initRef, "", newRecordName, "", newIpAddr, newUseTtl, newTtl, "some comment", nil)
+			Expect(err).ToNot(BeNil())
+		})
+
+		It("Negative case: updating an AAAA-record with no update access", func() {
+			initRef := fmt.Sprintf(
+				"record:aaaa/%s:%s/%s",
+				refBase, recordName, dnsView)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initComment := "initial comment"
+			initObj := NewRecordAAAA(dnsView, recordName, initIpAddr, initUseTtl, newTtl, initComment, initialEas, initRef)
+
+			getObjIn := NewEmptyRecordAAAA()
+
+			newEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+
+			newComment := "test comment 1"
+			updateObjIn := NewRecordAAAA("", newRecordName, newIpAddr, newUseTtl, newTtl, newComment, newEas, initRef)
+
+			conn = &fakeConnector{
+				getObjectObj:         getObjIn,
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         initRef,
+				getObjectError:       nil,
+				resultObject:         initObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   initRef,
+				updateObjectError: fmt.Errorf("test error"),
+				fakeRefReturn:     "",
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			_, err = objMgr.UpdateAAAARecord(initRef, "", newRecordName, newIpAddr, "", newUseTtl, newTtl, newComment, newEas)
+			Expect(err).ToNot(BeNil())
+		})
+	})
+
+	Describe("Allocate specific PTR Record with IPv6 Address", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		ipAddr := "2001:db8:abcd:14::1"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		ptrdname := "test"
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
+
+		conn := &fakeConnector{
+			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Ipv6Addr = ipAddr
 
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, recordName, cidr, ipAddr, ea)
+			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, "", "", ipAddr, useTtl, 0, comment, eas)
 		})
 		It("should return expected PTR record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate specific PTR Record with IPv4 Address", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		ipAddr := "10.0.0.1"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		ptrdname := "test"
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.10.in-addr.arpa/default")
+
+		conn := &fakeConnector{
+			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Ipv4Addr = ipAddr
+
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, "", "", ipAddr, useTtl, 0, comment, eas)
+		})
+		It("should return expected PTR record Object", func() {
+			Expect(actualRecord).To(Equal(conn.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate next available PTR Record-IPv4", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "10.0.0.0/24"
+		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		ptrdname := "test"
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.10.in-addr.arpa/default")
+
+		conn := &fakeConnector{
+			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Ipv4Addr = ipAddr
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, ptrdname, "", cidr, "", useTtl, 0, comment, eas)
+		})
+		It("should return expected PTR record Object", func() {
+			Expect(actualRecord).To(Equal(conn.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate next available PTR Record-IPv6", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		cidr := "2001:db8:abcd:14::/64"
+		ipAddr := fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netviewName)
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		ptrdname := "test"
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
+
+		conn := &fakeConnector{
+			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Ipv6Addr = ipAddr
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, ptrdname, "", cidr, "", useTtl, 0, comment, eas)
+		})
+		It("should return expected PTR record Object", func() {
+			Expect(actualRecord).To(Equal(conn.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate a PTR Record in forward mapping zone", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test-ptr-record.test.com"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		ptrdname := "test"
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%s", recordName, dnsView)
+
+		conn := &fakeConnector{
+			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, comment, eas),
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Name = recordName
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, recordName, "", "", useTtl, 0, comment, eas)
+		})
+		It("should return expected PTR record Object", func() {
+			Expect(actualRecord).To(Equal(conn.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Negative case: returns an error message if ptrdname is not entered", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test-ptr-record.test.com"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+
+		conn := &fakeConnector{
+			createObjectObj:   NewRecordPTR(dnsView, "", useTtlPtr, 0, comment, eas),
+			createObjectError: fmt.Errorf("ptrdname is a required field to create a PTR record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Name = recordName
+		var actualRecord, expectedObj *RecordPTR
+		var err error
+		expectedObj = nil
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, "", recordName, "", "", useTtl, 0, comment, eas)
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Not(BeNil()))
+		})
+	})
+
+	Describe("Negative case: returns an error message if an invalid IP address is passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		ipAddr := "10.0.0.300"
+		ptrdname := "ptr-test.infoblox.com"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		comment := "creation test"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+
+		conn := &fakeConnector{
+			createObjectObj:   NewRecordPTR(dnsView, "", useTtlPtr, 0, comment, eas),
+			createObjectError: fmt.Errorf("%s is an invalid IP address", ipAddr),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*RecordPTR).Ipv4Addr = ipAddr
+		var actualRecord, expectedObj *RecordPTR
+		var err error
+		expectedObj = nil
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, "", "", ipAddr, useTtl, 0, comment, eas)
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.createObjectError))
+		})
+	})
+
+	Describe("Negative case: returns an error message if the required fields for creation of record is empty", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		comment := "creation test"
+		ptrdname := "ptr-test.infoblox.com"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+
+		conn := &fakeConnector{
+			createObjectObj: NewRecordPTR(dnsView, "", useTtlPtr, 0, comment, eas),
+			createObjectError: fmt.Errorf("CIDR and network view are required to allocate a next available IP address\n" +
+				"IP address is required to create PTR record in reverse mapping zone\n" +
+				"record name is required to create a record in forwarrd mapping zone"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *RecordPTR
+		var err error
+		expectedObj = nil
+		It("should pass expected PTR record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, "", "", "", useTtl, 0, comment, eas)
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.createObjectError))
+		})
+	})
+
+	Describe("Get PTR record-IPv4", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		ptrdname := "test"
+		ipAddr := "10.0.0.1"
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.10.in-addr.arpa/default")
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"view":     dnsView,
+				"ptrdname": ptrdname,
+				"ipv4addr": ipAddr,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: queryParams,
+			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, "", nil)},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.resultObject.([]RecordPTR)[0].Ipv4Addr = ipAddr
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetPTRRecord(dnsView, ptrdname, "", ipAddr)
+		})
+
+		It("should return expected PTR record Object", func() {
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordPTR)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get PTR record-IPv6", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		ptrdname := "test"
+		ipAddr := "2001:db8:abcd:14::1"
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"view":     dnsView,
+				"ptrdname": ptrdname,
+				"ipv6addr": ipAddr,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: queryParams,
+			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, "", nil)},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetPTRRecord(dnsView, ptrdname, "", ipAddr)
+		})
+
+		It("should return expected PTR record Object", func() {
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordPTR)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get PTR record-name(forward mapping zone)", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		ptrdname := "test"
+		recordName := "test-ptr-record.test.com"
+		useTtl := false
+		useTtlPtr := new(bool)
+		*useTtlPtr = useTtl
+		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%s", recordName, dnsView)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"view":     dnsView,
+				"ptrdname": ptrdname,
+				"name":     recordName,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectQueryParams: queryParams,
+			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtlPtr, 0, "", nil)},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+
+		var actualRecord *RecordPTR
+		var err error
+		It("should pass expected PTR record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetPTRRecord(dnsView, ptrdname, recordName, "")
+		})
+
+		It("should return expected PTR record Object", func() {
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordPTR)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Update PTR record", func() {
+		var (
+			err       error
+			objMgr    IBObjectManager
+			conn      *fakeConnector
+			ref       string
+			actualObj *RecordPTR
+		)
+
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		refBase := "ZG5zLm5ldHdvcmtfdmlldyQyMw"
+		ptrdname := "test"
+		ipv4Addr := "10.0.0.1"
+		ipv6Addr := "2001:db8:abcd:14::1"
+		recordName := "test-ptr-record.test.com"
+		useTtl := false
+		ttl := uint32(0)
+
+		It("IPv4, updating ptrdname, IPv4 address, comment and EAs", func() {
+			ref = fmt.Sprintf("record:ptr/%s:1.0.0.10.in-addr.arpa/default", refBase)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initObj := NewRecordPTR("", ptrdname, &useTtl, ttl, "old comment", initialEas)
+			initObj.Ref = ref
+			initObj.Ipv4Addr = ipv4Addr
+
+			setEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+			expectedEas := setEas
+
+			comment := "test comment 1"
+			updateUseTtl := true
+			updateTtl := uint32(10)
+			newPtrdname := "test-update-ptr.test.com"
+			updateIpAddr := "10.0.0.2"
+			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
+			updateObjIn := NewRecordPTR("", newPtrdname, &updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn.Ref = ref
+			updateObjIn.Ipv4Addr = updateIpAddr
+
+			expectedObj := NewRecordPTR("", newPtrdname, &updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj.Ref = updatedRef
+			expectedObj.Ipv4Addr = updateIpAddr
+
+			conn = &fakeConnector{
+				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         updatedRef,
+				getObjectError:       nil,
+				resultObject:         expectedObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   ref,
+				updateObjectError: nil,
+
+				fakeRefReturn: updatedRef,
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			actualObj, err = objMgr.UpdatePTRRecord(ref, newPtrdname, "", updateIpAddr, updateUseTtl, updateTtl, comment, setEas)
+			Expect(err).To(BeNil())
+			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
+		})
+
+		It("IPv6: updating ptrdname, TTl fields, IPv6 address, comment and EAs", func() {
+			ref = fmt.Sprintf("record:ptr/%s:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initObj := NewRecordPTR("", ptrdname, &useTtl, ttl, "old comment", initialEas)
+			initObj.Ref = ref
+			initObj.Ipv4Addr = ipv6Addr
+
+			setEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+			expectedEas := setEas
+
+			comment := "test comment 1"
+			updateUseTtl := true
+			updateTtl := uint32(10)
+			newPtrdname := "test-update"
+			updateIpAddr := "2001:db8:abcd:14::2"
+			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
+			updateObjIn := NewRecordPTR("", newPtrdname, &updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn.Ref = ref
+			updateObjIn.Ipv6Addr = updateIpAddr
+
+			expectedObj := NewRecordPTR("", newPtrdname, &updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj.Ref = updatedRef
+			expectedObj.Ipv6Addr = updateIpAddr
+
+			conn = &fakeConnector{
+				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         updatedRef,
+				getObjectError:       nil,
+				resultObject:         expectedObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   ref,
+				updateObjectError: nil,
+
+				fakeRefReturn: updatedRef,
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			actualObj, err = objMgr.UpdatePTRRecord(ref, newPtrdname, "", updateIpAddr, updateUseTtl, updateTtl, comment, setEas)
+			Expect(err).To(BeNil())
+			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
+		})
+
+		It("Updating ptrdname, TTl fields, record name, comment and EAs", func() {
+			ref = fmt.Sprintf("record:ptr/%s:%s/default", refBase, recordName)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initObj := NewRecordPTR("", ptrdname, &useTtl, ttl, "old comment", initialEas)
+			initObj.Ref = ref
+			initObj.Name = recordName
+
+			setEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+			expectedEas := setEas
+
+			comment := "test comment 1"
+			updateUseTtl := true
+			updateTtl := uint32(10)
+			newPtrdname := "test-update"
+			updateName := "test-ptr-update"
+			updatedRef := fmt.Sprintf("record:ptr/%s:%s/20", refBase, newPtrdname)
+			updateObjIn := NewRecordPTR("", newPtrdname, &updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn.Ref = ref
+			updateObjIn.Name = updateName
+
+			expectedObj := NewRecordPTR("", newPtrdname, &updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj.Ref = updatedRef
+			expectedObj.Name = updateName
+
+			conn = &fakeConnector{
+				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         updatedRef,
+				getObjectError:       nil,
+				resultObject:         expectedObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   ref,
+				updateObjectError: nil,
+
+				fakeRefReturn: updatedRef,
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			actualObj, err = objMgr.UpdatePTRRecord(ref, newPtrdname, updateName, "", updateUseTtl, updateTtl, comment, setEas)
+			Expect(err).To(BeNil())
+			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})
 	})
 
 	Describe("Allocate CNAME Record ", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		canonical := "test-canonical"
+		canonical := "test-canonical.domain.com"
 		dnsView := "default"
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
-		recordName := "test"
+		recordName := "test.domain.com"
+		useTtl := false
+		ttl := uint32(0)
+		comment := "test CNAME record creation"
 		fakeRefReturn := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
 
-		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordCNAME(RecordCNAME{
-				Name:      recordName,
-				View:      dnsView,
-				Canonical: canonical,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordCNAME(RecordCNAME{
-				Name:      recordName,
-				View:      dnsView,
-				Canonical: canonical,
-				Ref:       fakeRefReturn,
-			}),
+		conn := &fakeConnector{
+			createObjectObj:      NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, ""),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordCNAME(),
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordCNAME(RecordCNAME{
-				Name:      recordName,
-				View:      dnsView,
-				Canonical: canonical,
-				Ref:       fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
+			resultObject:         NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, fakeRefReturn),
+			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*RecordCNAME).Ea = ea
-		aniFakeConnector.createObjectObj.(*RecordCNAME).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*RecordCNAME).Ea["VM Name"] = vmName
-
-		aniFakeConnector.resultObject.(*RecordCNAME).Ea = ea
-		aniFakeConnector.resultObject.(*RecordCNAME).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*RecordCNAME).Ea["VM Name"] = vmName
-
-		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea = ea
-		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*RecordCNAME).Ea["VM Name"] = vmName
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		var actualRecord *RecordCNAME
 		var err error
 		It("should pass expected CNAME record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateCNAMERecord(canonical, recordName, dnsView, ea)
+			actualRecord, err = objMgr.CreateCNAMERecord(dnsView, canonical, recordName, useTtl, ttl, comment, eas)
 		})
 		It("should return expected CNAME record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Negative case: returns an error message if required fields are not passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		useTtl := false
+		ttl := uint32(0)
+		comment := "test CNAME record creation"
+		eas := EA{"VM Name": vmName, "VM ID": vmID}
+
+		conn := &fakeConnector{
+			createObjectObj:   NewRecordCNAME(dnsView, "", "", useTtl, ttl, comment, eas, ""),
+			createObjectError: fmt.Errorf("canonical name and record name fields are required to create a CNAME record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *RecordCNAME
+		var err error
+		It("should pass expected CNAME record Object to CreateObject", func() {
+			actualRecord, err = objMgr.CreateCNAMERecord(dnsView, "", "", useTtl, ttl, comment, eas)
+		})
+		It("should return expected CNAME record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.createObjectError))
+		})
+	})
+
+	Describe("Get CNAME Record ", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		canonical := "test-canonical.domain.com"
+		dnsView := "default"
+		recordName := "test.domain.com"
+		useTtl := false
+		ttl := uint32(0)
+		fakeRefReturn := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"view":      dnsView,
+				"canonical": canonical,
+				"name":      recordName,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectQueryParams: queryParams,
+			resultObject:         []RecordCNAME{*NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, "", nil, fakeRefReturn)},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord *RecordCNAME
+		var err error
+		It("should pass expected CNAME record Object to CreateObject", func() {
+			actualRecord, err = objMgr.GetCNAMERecord(dnsView, canonical, recordName)
+		})
+		It("should return expected CNAME record Object", func() {
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordCNAME)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Negative case: return an error mesage when the required fields to get a unique record are not passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		canonical := "test-canonical.domain.com"
+		recordName := "test.domain.com"
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"canonical": canonical,
+				"name":      recordName,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectQueryParams: queryParams,
+			getObjectError:       fmt.Errorf("DNS view, canonical name and record name of the record are required to retreive a unique CNAME record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *RecordCNAME
+		var err error
+		expectedObj = nil
+		It("should pass expected CNAME record Object to CreateObject", func() {
+			actualRecord, err = objMgr.GetCNAMERecord("", canonical, recordName)
+		})
+		It("should return expected CNAME record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.getObjectError))
+		})
+	})
+
+	Describe("Update PTR record", func() {
+		var (
+			err       error
+			objMgr    IBObjectManager
+			conn      *fakeConnector
+			ref       string
+			actualObj *RecordCNAME
+		)
+
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		refBase := "ZG5zLm5ldHdvcmtfdmlldyQyMw"
+		canonical := "test-canonical.domain.com"
+		recordName := "test.domain.com"
+		useTtl := false
+		ttl := uint32(0)
+
+		It("IPv4, updating ptrdname, IPv4 address, comment and EAs", func() {
+			ref = fmt.Sprintf("record:cname/%s:%s", refBase, recordName)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initObj := NewRecordCNAME("", canonical, recordName, useTtl, ttl, "old comment", initialEas, ref)
+			initObj.Ref = ref
+
+			setEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+			expectedEas := setEas
+
+			comment := "test comment 1"
+			updateUseTtl := true
+			updateTtl := uint32(10)
+			newCanonical := "test-canonical-update.domain.com"
+			newRecordName := "test-update.domain.com"
+			updatedRef := fmt.Sprintf("record:cname/%s:%s", refBase, newRecordName)
+			updateObjIn := NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, ref)
+
+			expectedObj := NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, updatedRef)
+
+			conn = &fakeConnector{
+				getObjectObj:         NewEmptyRecordCNAME(),
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         updatedRef,
+				getObjectError:       nil,
+				resultObject:         expectedObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   ref,
+				updateObjectError: nil,
+
+				fakeRefReturn: updatedRef,
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			actualObj, err = objMgr.UpdateCNAMERecord(ref, newCanonical, newRecordName, updateUseTtl, updateTtl, comment, setEas)
+			Expect(err).To(BeNil())
+			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})
 	})
 

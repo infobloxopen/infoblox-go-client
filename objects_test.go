@@ -2,7 +2,6 @@ package ibclient
 
 import (
 	"encoding/json"
-
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -377,69 +376,118 @@ var _ = Describe("Objects", func() {
 			name := "bind_a.domain.com"
 			view := "default"
 			zone := "domain.com"
+			ttl := uint32(500)
+			useTTL := true
+			comment := "testcomment"
+			eas := EA{
+				"TestEA1":  "testea1 value",
+				"Location": "east coast",
+			}
 
-			ra := NewRecordA(view, zone, name, ipv4addr, nil, "")
+			ra := NewRecordA(view, zone, name, ipv4addr, ttl, useTTL, comment, eas, "")
 
 			It("should set fields correctly", func() {
 				Expect(ra.Ipv4Addr).To(Equal(ipv4addr))
 				Expect(ra.Name).To(Equal(name))
 				Expect(ra.View).To(Equal(view))
 				Expect(ra.Zone).To(Equal(zone))
+
+				Expect(ra.TTL).To(Equal(ttl))
+				Expect(ra.UseTTL).To(Equal(useTTL))
+				Expect(ra.Comment).To(Equal(comment))
+				Expect(ra.Ea).To(Equal(eas))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(ra.ObjectType()).To(Equal("record:a"))
-				Expect(ra.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "name", "view", "zone"))
+				Expect(ra.ReturnFields()).To(ConsistOf(
+					"extattrs", "ipv4addr", "name", "view", "zone", "comment", "ttl", "use_ttl"))
+			})
+		})
+
+		Context("RecordAAAA object", func() {
+			ipv6addr := "2001:db8:abcd:14::1"
+			name := "bind_a.domain.com"
+			view := "default"
+			useTtl := true
+			ttl := uint32(10)
+			comment := "test comment"
+			ea := EA{"VM Name": "test-vm"}
+
+			ra := NewRecordAAAA(view, name, ipv6addr, useTtl, ttl, comment, ea, "")
+
+			It("should set fields correctly", func() {
+				Expect(ra.Ipv6Addr).To(Equal(ipv6addr))
+				Expect(ra.Name).To(Equal(name))
+				Expect(ra.View).To(Equal(view))
+				Expect(ra.UseTtl).To(Equal(useTtl))
+				Expect(ra.Ttl).To(Equal(ttl))
+				Expect(ra.Comment).To(Equal(comment))
+				Expect(ra.Ea).To(Equal(ea))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(ra.ObjectType()).To(Equal("record:aaaa"))
+				Expect(ra.ReturnFields()).To(ConsistOf("extattrs", "ipv6addr", "name", "view", "zone", "use_ttl", "ttl", "comment"))
 			})
 		})
 
 		Context("RecordPtr object", func() {
 			ipv4addr := "1.1.1.1"
+			ipv6addr := "2001::/64"
 			ptrdname := "bind_a.domain.com"
 			view := "default"
 			zone := "domain.com"
+			useTtl := false
+			comment := "test client"
+			eas := EA{"VM Name": "test"}
 
-			rptr := NewRecordPTR(RecordPTR{
-				Ipv4Addr: ipv4addr,
-				PtrdName: ptrdname,
-				View:     view,
-				Zone:     zone})
+			rptr := NewRecordPTR(view, ptrdname, &useTtl, 0, comment, eas)
+			rptr.Zone = zone
+			rptr.Ipv4Addr = ipv4addr
+			rptr.Ipv6Addr = ipv6addr
 
 			It("should set fields correctly", func() {
 				Expect(rptr.Ipv4Addr).To(Equal(ipv4addr))
+				Expect(rptr.Ipv6Addr).To(Equal(ipv6addr))
 				Expect(rptr.PtrdName).To(Equal(ptrdname))
 				Expect(rptr.View).To(Equal(view))
 				Expect(rptr.Zone).To(Equal(zone))
+				Expect(rptr.UseTtl).To(Equal(&useTtl))
+				Expect(rptr.Comment).To(Equal(comment))
+				Expect(rptr.Ea).To(Equal(eas))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(rptr.ObjectType()).To(Equal("record:ptr"))
-				Expect(rptr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "ptrdname", "view", "zone"))
+				Expect(rptr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "ipv6addr", "ptrdname", "view", "zone", "comment", "use_ttl", "ttl"))
 			})
 		})
 
 		Context("RecordCNAME object", func() {
 			canonical := "cname.domain.com"
 			name := "bind_cname.domain.com"
+			useTtl := false
+			ttl := uint32(0)
 			view := "default"
-			zone := "domain.com"
+			comment := "test CNAME"
+			eas := EA{"VM Name": "test"}
 
-			rc := NewRecordCNAME(RecordCNAME{
-				Canonical: canonical,
-				Name:      name,
-				View:      view,
-				Zone:      zone})
+			rc := NewRecordCNAME(view, canonical, name, useTtl, ttl, comment, eas, "")
 
 			It("should set fields correctly", func() {
 				Expect(rc.Canonical).To(Equal(canonical))
 				Expect(rc.Name).To(Equal(name))
+				Expect(rc.UseTtl).To(Equal(useTtl))
+				Expect(rc.Ttl).To(Equal(ttl))
 				Expect(rc.View).To(Equal(view))
-				Expect(rc.Zone).To(Equal(zone))
+				Expect(rc.Comment).To(Equal(comment))
+				Expect(rc.Ea).To(Equal(eas))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(rc.ObjectType()).To(Equal("record:cname"))
-				Expect(rc.ReturnFields()).To(ConsistOf("extattrs", "canonical", "name", "view", "zone"))
+				Expect(rc.ReturnFields()).To(ConsistOf("extattrs", "canonical", "name", "view", "zone", "comment", "ttl", "use_ttl"))
 			})
 		})
 
