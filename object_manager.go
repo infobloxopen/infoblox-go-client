@@ -10,6 +10,9 @@ import (
 	"strings"
 )
 
+// Compile-time interface checks
+var _ IBObjectManager = new(ObjectManager)
+
 type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macAddress string, name string, comment string, eas EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (network *Network, err error)
