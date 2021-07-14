@@ -392,8 +392,8 @@ var _ = Describe("Objects", func() {
 				Expect(ra.View).To(Equal(view))
 				Expect(ra.Zone).To(Equal(zone))
 
-				Expect(ra.TTL).To(Equal(ttl))
-				Expect(ra.UseTTL).To(Equal(useTTL))
+				Expect(ra.Ttl).To(Equal(ttl))
+				Expect(ra.UseTtl).To(Equal(useTTL))
 				Expect(ra.Comment).To(Equal(comment))
 				Expect(ra.Ea).To(Equal(eas))
 			})
@@ -438,11 +438,12 @@ var _ = Describe("Objects", func() {
 			ptrdname := "bind_a.domain.com"
 			view := "default"
 			zone := "domain.com"
-			useTtl := false
+			useTtl := true
+			ttl := uint32(70)
 			comment := "test client"
 			eas := EA{"VM Name": "test"}
 
-			rptr := NewRecordPTR(view, ptrdname, &useTtl, 0, comment, eas)
+			rptr := NewRecordPTR(view, ptrdname, useTtl, ttl, comment, eas)
 			rptr.Zone = zone
 			rptr.Ipv4Addr = ipv4addr
 			rptr.Ipv6Addr = ipv6addr
@@ -453,7 +454,8 @@ var _ = Describe("Objects", func() {
 				Expect(rptr.PtrdName).To(Equal(ptrdname))
 				Expect(rptr.View).To(Equal(view))
 				Expect(rptr.Zone).To(Equal(zone))
-				Expect(rptr.UseTtl).To(Equal(&useTtl))
+				Expect(rptr.UseTtl).To(Equal(useTtl))
+				Expect(rptr.Ttl).To(Equal(ttl))
 				Expect(rptr.Comment).To(Equal(comment))
 				Expect(rptr.Ea).To(Equal(eas))
 			})
@@ -495,7 +497,7 @@ var _ = Describe("Objects", func() {
 			ipAddress := "25.0.7.59/24"
 			mac := "11:22:33:44:55:66"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv4Addr(ipAddress, mac, &enableDHCP, "")
+			hostAddr := NewHostRecordIpv4Addr(ipAddress, mac, enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
@@ -511,7 +513,7 @@ var _ = Describe("Objects", func() {
 		Context("RecordHostIpv4Addr macaddress empty", func() {
 			ipAddress := "25.0.7.59"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv4Addr(ipAddress, "", &enableDHCP, "")
+			hostAddr := NewHostRecordIpv4Addr(ipAddress, "", enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
@@ -527,7 +529,7 @@ var _ = Describe("Objects", func() {
 			ipAddress := "fc00::0100"
 			duid := "11:22:33:44:55:66"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv6Addr(ipAddress, duid, &enableDHCP, "")
+			hostAddr := NewHostRecordIpv6Addr(ipAddress, duid, enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(hostAddr.Ipv6Addr).To(Equal(ipAddress))
@@ -542,7 +544,7 @@ var _ = Describe("Objects", func() {
 		Context("RecordHostIpv6Addr duid empty", func() {
 			ipAddress := "fc00::0100"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv6Addr(ipAddress, "", &enableDHCP, "")
+			hostAddr := NewHostRecordIpv6Addr(ipAddress, "", enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(hostAddr.Ipv6Addr).To(Equal(ipAddress))
@@ -559,12 +561,14 @@ var _ = Describe("Objects", func() {
 			name := "bind_host.domain.com"
 			view := "default"
 			zone := "domain.com"
+			useTtl := true
+			ttl := uint32(70)
 			comment := "test"
 			aliases := []string{"bind_host1.domain.com"}
 
 			rh := NewHostRecord(
 				"", name, "", "", ipv4addrs, ipv6addrs,
-				nil, nil, view, zone, "", comment, aliases)
+				nil, true, view, zone, "", useTtl, ttl, comment, aliases)
 
 			It("should set fields correctly", func() {
 				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))
@@ -578,7 +582,8 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(rh.ObjectType()).To(Equal("record:host"))
-				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "ipv6addrs", "name", "view", "zone", "comment", "network_view", "aliases"))
+				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "ipv6addrs", "name", "view", "zone",
+					"comment", "network_view", "aliases", "use_ttl", "ttl"))
 			})
 		})
 
