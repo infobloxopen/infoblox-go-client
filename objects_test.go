@@ -177,15 +177,21 @@ var _ = Describe("Objects", func() {
 	Context("Instantiation of", func() {
 		Context("NetworkView object", func() {
 			name := "myview"
-			nv := NewNetworkView(NetworkView{Name: name})
+			comment := "test client"
+			setEas := EA{"Tenant ID": "client"}
+			ref := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
+			nv := NewNetworkView(name, comment, setEas, ref)
 
 			It("should set fields correctly", func() {
 				Expect(nv.Name).To(Equal(name))
+				Expect(nv.Comment).To(Equal(comment))
+				Expect(nv.Ea).To(Equal(setEas))
+				Expect(nv.Ref).To(Equal(ref))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(nv.ObjectType()).To(Equal("networkview"))
-				Expect(nv.ReturnFields()).To(ConsistOf("extattrs", "name"))
+				Expect(nv.ReturnFields()).To(ConsistOf("extattrs", "name", "comment"))
 			})
 		})
 

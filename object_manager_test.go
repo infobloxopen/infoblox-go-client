@@ -88,7 +88,7 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 		case *ZoneAuth:
 			*res.(*ZoneAuth) = *c.resultObject.(*ZoneAuth)
 		case *NetworkView:
-			*res.(*NetworkView) = c.resultObject.(NetworkView)
+			*res.(*NetworkView) = *c.resultObject.(*NetworkView)
 		case *NetworkContainer:
 			*res.(*NetworkContainer) = *c.resultObject.(*NetworkContainer)
 		case *Network:
@@ -131,21 +131,21 @@ var _ = Describe("Object Manager", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "Default View"
+		comment := "test client"
+		setEas := EA{"Cloud API Owned": true}
 		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
 		nvFakeConnector := &fakeConnector{
-			createObjectObj: NewNetworkView(NetworkView{Name: netviewName}),
-			resultObject:    NewNetworkView(NetworkView{Name: netviewName, Ref: fakeRefReturn}),
+			createObjectObj: NewNetworkView(netviewName, comment, setEas, ""),
+			resultObject:    NewNetworkView(netviewName, comment, setEas, fakeRefReturn),
 			fakeRefReturn:   fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
-		nvFakeConnector.createObjectObj.(*NetworkView).Ea = make(EA)
-		nvFakeConnector.resultObject.(*NetworkView).Ea = make(EA)
 
 		var actualNetworkView *NetworkView
 		var err error
 		It("should pass expected NetworkView Object to CreateObject", func() {
-			actualNetworkView, err = objMgr.CreateNetworkView(netviewName)
+			actualNetworkView, err = objMgr.CreateNetworkView(netviewName, comment, setEas)
 		})
 		It("should return expected NetworkView Object", func() {
 			Expect(actualNetworkView).To(Equal(nvFakeConnector.resultObject))
@@ -154,40 +154,63 @@ var _ = Describe("Object Manager", func() {
 	})
 
 	Describe("Update Network View", func() {
+		var (
+			err       error
+			objMgr    IBObjectManager
+			conn      *fakeConnector
+			ref       string
+			actualObj *NetworkView
+		)
+
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		netviewName := "Global View"
-		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
+		netviewName := "default"
+		refBase := "ZG5zLm5ldHdvcmtfdmlldyQyMw"
 
-		returnGetObject := NetworkView{
-			Name: netviewName,
-			Ref:  fakeRefReturn,
-			Ea:   EA{"network-name": "net1", "Lock": "Removed"}}
-		returnUpdateObject := NetworkView{
-			Name: netviewName,
-			Ref:  fakeRefReturn,
-			Ea:   EA{"network-name": "net2", "New": "Added"}}
-		getObjectObj := &NetworkView{}
-		getObjectObj.returnFields = []string{"extattrs"}
-		nvFakeConnector := &fakeConnector{
-			getObjectObj:         getObjectObj,
-			getObjectQueryParams: NewQueryParams(false, nil),
-			getObjectRef:         fakeRefReturn,
-			fakeRefReturn:        fakeRefReturn,
-			resultObject:         returnGetObject,
-			updateObjectObj:      &returnUpdateObject,
-			updateObjectRef:      fakeRefReturn,
-		}
+		It("Updating comment and EAs", func() {
+			ref = fmt.Sprintf("networkview/%s:%s", refBase, netviewName)
+			initialEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_old_value",
+				"ea3": "ea3_value",
+				"ea4": "ea4_value",
+				"ea5": "ea5_old_value"}
+			initObj := NewNetworkView(netviewName, "old comment", initialEas, ref)
 
-		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
+			setEas := EA{
+				"ea0": "ea0_old_value",
+				"ea1": "ea1_new_value",
+				"ea2": "ea2_new_value",
+				"ea5": "ea5_old_value"}
+			expectedEas := setEas
 
-		var err error
-		It("should pass expected updated object to UpdateObject", func() {
-			setEas := EA{"network-name": "net2", "New": "Added"}
-			err = objMgr.UpdateNetworkViewEA(fakeRefReturn, setEas)
-		})
-		It("should updated the GetObject with new EA and with no error", func() {
+			getObjIn := NewEmptyNetworkView()
+
+			comment := "test comment 1"
+			updateNetviewName := "default_view"
+			updatedRef := fmt.Sprintf("networkview/%s:%s", refBase, updateNetviewName)
+			updateObjIn := NewNetworkView(updateNetviewName,  comment, expectedEas, ref)
+
+			expectedObj := NewNetworkView(updateNetviewName, comment, expectedEas, updatedRef)
+
+			conn = &fakeConnector{
+				getObjectObj:         getObjIn,
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         ref,
+				getObjectError:       nil,
+				resultObject:         initObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   ref,
+				updateObjectError: nil,
+
+				fakeRefReturn: updatedRef,
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			actualObj, err = objMgr.UpdateNetworkView(ref, updateNetviewName, comment, setEas)
 			Expect(err).To(BeNil())
+			Expect(actualObj).To(BeEquivalentTo(expectedObj))
 		})
 	})
 
@@ -1829,6 +1852,77 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Get A record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsView := "default"
+		recordName := "test.domain.com"
+		ipAddr := "10.0.0.2"
+		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/default", recordName)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"view":     dnsView,
+				"name":     recordName,
+				"ipv4addr": ipAddr,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordA(),
+			getObjectQueryParams: queryParams,
+			resultObject:         []RecordA{*NewRecordA(dnsView, "", recordName, ipAddr, 0,false, "", nil, fakeRefReturn)},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		conn.resultObject.([]RecordA)[0].Ipv4Addr = ipAddr
+		var actualRecord *RecordA
+		var err error
+		It("should pass expected A record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetARecord(dnsView, recordName, ipAddr)
+		})
+
+		It("should return expected A record Object", func() {
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordA)[0]))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Negative case: returns an error when all the required fields are not passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test.domain.com"
+		ipAddr := "10.0.0.2"
+		fakeRefReturn := fmt.Sprintf("record:a/ZG5zLmJpbmRfY25h:%s/default", recordName)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"name":     recordName,
+				"ipv4addr": ipAddr,
+			})
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyRecordA(),
+			getObjectQueryParams: queryParams,
+			fakeRefReturn:        fakeRefReturn,
+			getObjectError:       fmt.Errorf("DNS view, IPv4 address and record name of the record are required to retreive a unique A record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *RecordA
+		var err error
+		It("should pass expected A record Object to GetObject", func() {
+			actualRecord, err = objMgr.GetARecord("", recordName, ipAddr)
+		})
+
+		It("should return expected A record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.getObjectError))
+		})
+	})
+
 	Describe("Create an A-record by allocating next available IP address", func() {
 		return
 		cmpType := "Docker"
@@ -3109,10 +3203,10 @@ var _ = Describe("Object Manager", func() {
 			})
 
 		nvFakeConnector := &fakeConnector{
-			getObjectObj:         NewNetworkView(NetworkView{}),
+			getObjectObj:         NewEmptyNetworkView(),
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject:         []NetworkView{*NewNetworkView(NetworkView{Name: netviewName, Ref: fakeRefReturn})},
+			resultObject:         []NetworkView{*NewNetworkView(netviewName, "", nil, fakeRefReturn)},
 		}
 
 		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
