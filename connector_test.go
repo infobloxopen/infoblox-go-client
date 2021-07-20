@@ -289,10 +289,8 @@ var _ = Describe("Connector", func() {
 			netviewName := "private-view"
 			eaKey := "CMP Type"
 			eaVal := "OpenStack"
-			netViewObj := NewNetworkView(NetworkView{
-				Name: netviewName,
-				Ea:   EA{eaKey: eaVal},
-			})
+			eas := EA{eaKey: eaVal}
+			netViewObj := NewNetworkView(netviewName, "", eas, "")
 
 			requestType := RequestType(CREATE)
 			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
@@ -386,10 +384,8 @@ var _ = Describe("Connector", func() {
 			netviewName := "private-view"
 			eaKey := "CMP Type"
 			eaVal := "OpenStack"
-			netViewObj := NewNetworkView(NetworkView{
-				Name: netviewName,
-				Ea:   EA{eaKey: eaVal},
-			})
+			eas := EA{eaKey: eaVal}
+			netViewObj := NewNetworkView(netviewName, "", eas, "")
 
 			requestType := RequestType(GET)
 			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
@@ -409,11 +405,8 @@ var _ = Describe("Connector", func() {
 			}
 
 			expectRef := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-			expectObj := NewNetworkView(NetworkView{
-				Ref:  expectRef,
-				Name: netviewName,
-				Ea:   EA{eaKey: eaVal},
-			})
+			eas = EA{eaKey: eaVal}
+			expectObj := NewNetworkView(netviewName, "", eas, expectRef)
 			expectRes, _ := json.Marshal(expectObj)
 
 			fhr := &FakeHttpRequestor{
@@ -434,11 +427,11 @@ var _ = Describe("Connector", func() {
 				Fail("Error creating Connector")
 			}
 			It("should return expected object", func() {
-				actual := &NetworkView{}
+				actual := NewEmptyNetworkView()
 				err := conn.GetObject(
 					netViewObj, "", NewQueryParams(false, nil), actual)
 				Expect(err).To(BeNil())
-				Expect(NewNetworkView(*actual)).To(Equal(expectObj))
+				Expect(actual).To(Equal(expectObj))
 			})
 		})
 		Describe("makeRequest", func() {
@@ -448,10 +441,8 @@ var _ = Describe("Connector", func() {
 				eaVal := "OpenStack"
 				ref := ""
 				queryParams := NewQueryParams(false, nil)
-				netViewObj := NewNetworkView(NetworkView{
-					Name: netviewName,
-					Ea:   EA{eaKey: eaVal},
-				})
+				eas := EA{eaKey: eaVal}
+				netViewObj := NewNetworkView(netviewName, "", eas, "")
 
 				requestType := RequestType(GET)
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
@@ -472,11 +463,8 @@ var _ = Describe("Connector", func() {
 				}
 
 				expectRef := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-				expectObj := NewNetworkView(NetworkView{
-					Ref:  expectRef,
-					Name: netviewName,
-					Ea:   EA{eaKey: eaVal},
-				})
+				eas = EA{eaKey: eaVal}
+				expectObj := NewNetworkView(netviewName, "", eas, expectRef)
 				expectRes, _ := json.Marshal(expectObj)
 
 				fhr := &FakeHttpRequestor{
@@ -496,20 +484,20 @@ var _ = Describe("Connector", func() {
 				if err != nil {
 					Fail("Error creating Connector")
 				}
-				actual := &NetworkView{}
+				actual := NewEmptyNetworkView()
 				It("should return expected object when forceProxy is false", func() {
 					queryParams.forceProxy = false //disable proxy
 					res, err := conn.makeRequest(GET, netViewObj, ref, queryParams)
 					err = json.Unmarshal(res, &actual)
 					Expect(err).To(BeNil())
-					Expect(NewNetworkView(*actual)).To(Equal(expectObj))
+					Expect(actual).To(Equal(expectObj))
 				})
 				It("should return expected object when forceProxy is true", func() {
 					queryParams.forceProxy = true //enable proxy
 					res, err := conn.makeRequest(GET, netViewObj, ref, queryParams)
 					err = json.Unmarshal(res, &actual)
 					Expect(err).To(BeNil())
-					Expect(NewNetworkView(*actual)).To(Equal(expectObj))
+					Expect(actual).To(Equal(expectObj))
 				})
 			})
 
