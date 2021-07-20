@@ -614,7 +614,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(rt.ObjectType()).To(Equal("record:txt"))
-				Expect(rt.ReturnFields()).To(ConsistOf("extattrs", "name", "text", "view", "zone"))
+				Expect(rt.ReturnFields()).To(ConsistOf("extattrs", "name", "text", "view", "zone", "ttl", "use_ttl"))
 			})
 		})
 
