@@ -21,7 +21,13 @@ This library is compatible with Go 1.2+
    * Go 1.2 or above
 
 ## Installation
+   To get the latest released version[v2.0.0](https://github.com/infobloxopen/infoblox-go-client/releases/tag/v2.0.0) of Go Client use below command.
+   go get github.com/infobloxopen/infoblox-go-client/v2
+
+   To get the previous latest version[v1.1.1](https://github.com/infobloxopen/infoblox-go-client/releases/tag/v1.1.1) use below command.
    go get github.com/infobloxopen/infoblox-go-client
+
+   Note: Go client version v2.0.0 has breaking changes and it is not backward compatible.
 
 ## Usage
 
