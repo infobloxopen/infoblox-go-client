@@ -15,6 +15,7 @@ This library is compatible with Go 1.2+
 | ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) | [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=develop)](https://travis-ci.org/infobloxopen/infoblox-go-client) |
 
+The newly developed features will be available under `develop` branch. After validation they would be merged to `master`.
 
 ## Prerequisites
    * Infoblox GRID with 2.5 or above WAPI support
@@ -59,6 +60,7 @@ This library is compatible with Go 1.2+
    * AllocateIP
    * AllocateNetwork
    * CreateARecord
+   * CreateAAAARecord
    * CreateZoneAuth
    * CreateCNAMERecord
    * CreateDefaultNetviews
@@ -68,7 +70,10 @@ This library is compatible with Go 1.2+
    * CreateNetworkContainer
    * CreateNetworkView
    * CreatePTRRecord
+   * CreateTXTRecord
+   * CreateZoneDelegated
    * DeleteARecord
+   * DeleteAAAARecord
    * DeleteZoneAuth
    * DeleteCNAMERecord
    * DeleteFixedAddress
@@ -76,10 +81,16 @@ This library is compatible with Go 1.2+
    * DeleteNetwork
    * DeleteNetworkView
    * DeletePTRRecord
+   * DeleteTXTRecord
+   * DeleteZoneDelegated
    * GetAllMembers
    * GetARecordByRef
+   * GetARecord
+   * GetAAAARecordByRef
+   * GetAAAARecord
    * GetCapacityReport
    * GetCNAMERecordByRef
+   * GetCNAMERecord
    * GetEADefinition
    * GetFixedAddress
    * GetFixedAddressByRef
@@ -87,16 +98,29 @@ This library is compatible with Go 1.2+
    * GetHostRecordByRef
    * GetIpAddressFromHostRecord
    * GetNetwork
+   * GetNetworkByRef
    * GetNetworkContainer
+   * GetNetworkContainerByRef
    * GetNetworkView
+   * GetNetworkViewByRef
    * GetPTRRecordByRef
-   * GetUpgradeStatus (2.7 or above)
+   * GetPTRRecord
    * GetZoneAuthByRef
+   * GetZoneDelegated
+   * GetUpgradeStatus (2.7 or above)
+   * GetAllMembers
+   * GetGridInfo
+   * GetGridLicense
    * ReleaseIP
+   * UpdateAAAARecord
+   * UpdateCNAMERecord
    * UpdateFixedAddress
    * UpdateHostRecord
-   * UpdateNetworkViewEA
+   * UpdateNetwork
+   * UpdateNetworkContainer
+   * UpdateNetworkView
+   * UpdatePTRRecord
    * UpdateARecord
-   * UpdateCNAMERecord
+   * UpdateZoneDelegated
 
-The newly developed features will be available under `develop` branch. After validation they would be merged to `master`.
+
