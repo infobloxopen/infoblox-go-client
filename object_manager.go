@@ -27,7 +27,7 @@ type IBObjectManager interface {
 	CreateNetworkContainer(netview string, cidr string, isIPv6 bool, comment string, eas EA) (*NetworkContainer, error)
 	CreateNetworkView(name string, comment string, setEas EA) (*NetworkView, error)
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
-	CreateTXTRecord(recordname string, text string, ttl int, dnsview string) (*RecordTXT, error)
+	CreateTXTRecord(recordname string, text string, ttl uint, dnsview string) (*RecordTXT, error)
 	CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
@@ -1012,20 +1012,6 @@ func (objMgr *ObjectManager) GetARecordByRef(ref string) (*RecordA, error) {
 	return recordA, err
 }
 
-func (objMgr *ObjectManager) UpdateARecord(aRecordRef string, netview string, recordname string, cidr string, ipAddr string, ea EA) (*RecordA, error) {
-	updateRecordA := NewRecordA(RecordA{Ref: aRecordRef})
-	updateRecordA.Name = recordname
-	if ipAddr != "" {
-		updateRecordA.Ipv4Addr = ipAddr
-	} else {
-		updateRecordA.Ipv4Addr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
-	}
-	updateRecordA.Ea = ea
-	refResp, err := objMgr.connector.UpdateObject(updateRecordA, aRecordRef)
-	updateRecordA.Ref = refResp
-	return updateRecordA, err
-}
-
 func (objMgr *ObjectManager) DeleteARecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
@@ -1229,16 +1215,6 @@ func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, erro
 	err := objMgr.connector.GetObject(
 		recordCNAME, ref, NewQueryParams(false, nil), &recordCNAME)
 	return recordCNAME, err
-}
-
-func (objMgr *ObjectManager) UpdateCNAMERecord(cnameRef string, canonical string, recordname string, dnsview string, ea EA) (*RecordCNAME, error) {
-	updateRecordCNAME := NewRecordCNAME(RecordCNAME{Ref: cnameRef})
-	updateRecordCNAME.Canonical = canonical
-	updateRecordCNAME.Name = recordname
-	updateRecordCNAME.Ea = ea
-	refResp, err := objMgr.connector.UpdateObject(updateRecordCNAME, cnameRef)
-	updateRecordCNAME.Ref = refResp
-	return updateRecordCNAME, err
 }
 
 func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
