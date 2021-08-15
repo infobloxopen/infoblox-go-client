@@ -189,7 +189,7 @@ var _ = Describe("Object Manager", func() {
 			comment := "test comment 1"
 			updateNetviewName := "default_view"
 			updatedRef := fmt.Sprintf("networkview/%s:%s", refBase, updateNetviewName)
-			updateObjIn := NewNetworkView(updateNetviewName,  comment, expectedEas, ref)
+			updateObjIn := NewNetworkView(updateNetviewName, comment, expectedEas, ref)
 
 			expectedObj := NewNetworkView(updateNetviewName, comment, expectedEas, updatedRef)
 
@@ -1871,7 +1871,7 @@ var _ = Describe("Object Manager", func() {
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyRecordA(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordA{*NewRecordA(dnsView, "", recordName, ipAddr, 0,false, "", nil, fakeRefReturn)},
+			resultObject:         []RecordA{*NewRecordA(dnsView, "", recordName, ipAddr, 0, false, "", nil, fakeRefReturn)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -1924,7 +1924,6 @@ var _ = Describe("Object Manager", func() {
 	})
 
 	Describe("Create an A-record by allocating next available IP address", func() {
-		return
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "private"
@@ -1945,6 +1944,9 @@ var _ = Describe("Object Manager", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordA(
 				dnsView, "", recordName, ipAddrFunc, 0, false, "", nil, ""),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordA(),
+			getObjectQueryParams: NewQueryParams(false, nil),
 			resultObject: NewRecordA(
 				dnsView, "", recordName, ipAddrRes, 0, false, "", nil, fakeRefReturn),
 			fakeRefReturn: fakeRefReturn,
