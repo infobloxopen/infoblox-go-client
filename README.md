@@ -10,10 +10,7 @@ This library is compatible with Go 1.2+
 - [Usage](#Usage)
 
 ## Build Status
-
-| Master                                                                                                                                          | 
-| ----------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) |
+[![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) 
 
 
 ## Prerequisites
