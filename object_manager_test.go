@@ -1171,6 +1171,117 @@ var _ = Describe("Object Manager", func() {
 		})
 	})
 
+	Describe("Allocate Network Container", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default_view"
+		cidr := "142.0.22.0/24"
+		prefixLen := uint(28)
+		networkName := "private-net"
+		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		ea := EA{"Site": "test"}
+		comment := "Test network container"
+		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
+
+		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
+		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+
+		connector := &fakeConnector{
+			createObjectObj: container,
+			resultObject:    resObj,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
+		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+
+		var actualNetwork *NetworkContainer
+		It("should pass expected Network Container Object to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetworkContainer(
+				netviewName, cidr, false, prefixLen, comment, ea)
+		})
+		It("should return expected Network Object", func() {
+			Expect(actualNetwork).To(Equal(connector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Does not allocate Network Container if an invalid cidr is passed", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default_view"
+		cidr := "10.0.1.0./64"
+		prefixLen := uint(65)
+		networkName := "private-net"
+		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		ea := EA{"Site": "test"}
+		comment := "Test network container"
+		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
+
+		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
+		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+
+		connector := &fakeConnector{
+			createObjectObj: container,
+			resultObject:    resObj,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
+		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+
+		var actualNetwork *NetworkContainer
+		It("should pass expected Network Container Object with invalid Cidr value to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetworkContainer(
+				netviewName, cidr, false, prefixLen, comment, ea)
+		})
+		It("should return nil and an error message", func() {
+			Expect(actualNetwork).To(Equal(connector.resultObject))
+			Expect(err).To(Equal(fmt.Errorf("CIDR format not matched")))
+		})
+	})
+
+	Describe("Allocate Network Container", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default_view"
+		cidr := "2003:db8:abcd:14::/64"
+		prefixLen := uint(28)
+		networkName := "private-net"
+		fakeRefReturn := fmt.Sprintf("ipv6networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		ea := EA{"Site": "test"}
+		comment := "Test network container"
+		resObj, err := BuildIPv6NetworkContainerFromRef(fakeRefReturn)
+		fmt.Println(resObj)
+		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, true)
+		container := NewNetworkContainerNextAvailable(containerInfo, true, comment, ea)
+
+		connector := &fakeConnector{
+			createObjectObj: container,
+			resultObject:    resObj,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
+		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+
+		var actualNetwork *NetworkContainer
+		It("should pass expected Network Container Object to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetworkContainer(
+				netviewName, cidr, true, prefixLen, comment, ea)
+		})
+		It("should return expected Network Object", func() {
+			Expect(actualNetwork).To(Equal(connector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Allocate Specific IP", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"

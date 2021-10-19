@@ -133,7 +133,7 @@ func (whr *WapiHttpRequestor) Init(cfg TransportConfig) {
 			RootCAs:       cfg.certPool,
 			Renegotiation: tls.RenegotiateOnceAsClient},
 		MaxIdleConnsPerHost: cfg.HttpPoolConnections,
-		Proxy: http.ProxyFromEnvironment,
+		Proxy:               http.ProxyFromEnvironment,
 	}
 
 	if cfg.ProxyUrl != nil {

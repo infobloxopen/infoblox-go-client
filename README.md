@@ -63,6 +63,7 @@ This library is compatible with Go 1.2+
 
    * AllocateIP
    * AllocateNetwork
+   * AllocateNetworkContainer
    * CreateARecord
    * CreateAAAARecord
    * CreateZoneAuth

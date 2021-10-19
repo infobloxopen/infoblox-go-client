@@ -16,6 +16,7 @@ var _ IBObjectManager = new(ObjectManager)
 type IBObjectManager interface {
 	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string, name string, comment string, eas EA) (*FixedAddress, error)
 	AllocateNetwork(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (network *Network, err error)
+	AllocateNetworkContainer(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (network *NetworkContainer, err error)
 	CreateARecord(netView string, dnsView string, name string, cidr string, ipAddr string, ttl uint32, useTTL bool, comment string, ea EA) (*RecordA, error)
 	CreateAAAARecord(netView string, dnsView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordAAAA, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
@@ -216,7 +217,7 @@ func (objMgr *ObjectManager) UpdateNetworkView(ref string, name string, comment 
 	if cleanName != "" {
 		nv.Name = cleanName
 	}
-    nv.Comment = comment
+	nv.Comment = comment
 	nv.Ea = setEas
 
 	updatedRef, err := objMgr.connector.UpdateObject(nv, ref)
@@ -251,6 +252,46 @@ func BuildNetworkFromRef(ref string) (*Network, error) {
 
 	newNet := NewNetwork(m[2], m[1], false, "", nil)
 	newNet.Ref = ref
+	return newNet, nil
+}
+
+func BuildNetworkContainerFromRef(ref string) (*NetworkContainer, error) {
+	// networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:89.0.0.0/24/global_view
+	r := regexp.MustCompile(`networkcontainer/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(.+)`)
+	m := r.FindStringSubmatch(ref)
+
+	if m == nil {
+		return nil, fmt.Errorf("CIDR format not matched")
+	}
+
+	newNet := NewNetworkContainer(m[2], m[1], false, "", nil)
+	newNet.Ref = ref
+	return newNet, nil
+}
+
+func BuildIPv6NetworkContainerFromRef(ref string) (*NetworkContainer, error) {
+	// ipv6networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:2001%3Adb8%3Aabcd%3A0012%3A%3A0/64/global_view
+	r := regexp.MustCompile(`ipv6networkcontainer/[^:]+:(([^\/]+)\/\d+)\/(.+)`)
+	m := r.FindStringSubmatch(ref)
+
+	if m == nil {
+		return nil, fmt.Errorf("CIDR format not matched")
+	}
+
+	cidr, err := url.QueryUnescape(m[1])
+	if err != nil {
+		return nil, fmt.Errorf(
+			"cannot extract network CIDR information from the reference '%s': %s",
+			ref, err.Error())
+	}
+
+	if _, _, err = net.ParseCIDR(cidr); err != nil {
+		return nil, fmt.Errorf("CIDR format not matched")
+	}
+
+	newNet := NewNetworkContainer(m[3], cidr, true, "", nil)
+	newNet.Ref = ref
+
 	return newNet, nil
 }
 
@@ -399,6 +440,33 @@ func (objMgr *ObjectManager) AllocateNetwork(
 		} else {
 			network, err = BuildNetworkFromRef(ref)
 		}
+	}
+
+	return
+}
+
+func (objMgr *ObjectManager) AllocateNetworkContainer(
+	netview string,
+	cidr string,
+	isIPv6 bool,
+	prefixLen uint,
+	comment string,
+	eas EA) (networkContainer *NetworkContainer, err error) {
+
+	containerInfo := NewNetworkContainerNextAvailableInfo(netview, cidr, prefixLen, isIPv6)
+	container := NewNetworkContainerNextAvailable(containerInfo, isIPv6, comment, eas)
+
+	ref, err := objMgr.connector.CreateObject(container)
+	fmt.Println(ref)
+	if err == nil {
+		if isIPv6 {
+			networkContainer, err = BuildIPv6NetworkContainerFromRef(ref)
+		} else {
+			networkContainer, err = BuildNetworkContainerFromRef(ref)
+		}
+	}
+	if err != nil {
+		return nil, err
 	}
 
 	return
