@@ -729,23 +729,47 @@ func NewHostRecord(
 }
 
 type RecordTXT struct {
-	IBBase `json:"-"`
-	Ref    string `json:"_ref,omitempty"`
-	Name   string `json:"name,omitempty"`
-	Text   string `json:"text,omitempty"`
-	Ttl    uint   `json:"ttl,omitempty"`
-	View   string `json:"view,omitempty"`
-	Zone   string `json:"zone,omitempty"`
-	Ea     EA     `json:"extattrs"`
-	UseTtl bool   `json:"use_ttl"`
+	IBBase  `json:"-"`
+	Ref     string `json:"_ref,omitempty"`
+	Name    string `json:"name,omitempty"`
+	Text    string `json:"text,omitempty"`
+	Ttl     uint32 `json:"ttl,omitempty"`
+	View    string `json:"view,omitempty"`
+	Zone    string `json:"zone,omitempty"`
+	Comment string `json:"comment"`
+	Ea      EA     `json:"extattrs,omitempty"`
+	UseTtl  bool   `json:"use_ttl,omitempty"`
 }
 
-func NewRecordTXT(rt RecordTXT) *RecordTXT {
-	res := rt
+func NewEmptyRecordTXT() *RecordTXT {
+	res := RecordTXT{}
 	res.objectType = "record:txt"
 	res.returnFields = []string{"extattrs", "name", "text", "view", "zone", "ttl", "use_ttl"}
 
 	return &res
+}
+
+func NewRecordTXT(
+	recordname string,
+	text string,
+	dnsview string,
+	zone string,
+	useTtl bool,
+	ttl uint32,
+	comment string,
+	eas EA) *RecordTXT {
+
+	res := NewEmptyRecordTXT()
+	res.Name = recordname
+	res.Text = text
+	res.View = dnsview
+	res.Zone = zone
+	res.UseTtl = useTtl
+	res.Ttl = ttl
+	res.Comment = comment
+	res.Ea = eas
+
+	return res
 }
 
 type ZoneAuth struct {
