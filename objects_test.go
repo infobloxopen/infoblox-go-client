@@ -589,7 +589,7 @@ var _ = Describe("Objects", func() {
 			It("should set base fields correctly", func() {
 				Expect(rh.ObjectType()).To(Equal("record:host"))
 				Expect(rh.ReturnFields()).To(ConsistOf("extattrs", "ipv4addrs", "ipv6addrs", "name", "view", "zone",
-					"comment", "network_view", "aliases", "use_ttl", "ttl"))
+					"comment", "network_view", "aliases", "use_ttl", "ttl", "configure_for_dns"))
 			})
 		})
 
