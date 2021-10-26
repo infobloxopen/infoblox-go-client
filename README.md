@@ -100,6 +100,7 @@ This library is compatible with Go 1.2+
    * GetFixedAddressByRef
    * GetHostRecord
    * GetHostRecordByRef
+   * SearchHostRecordByAltId
    * GetIpAddressFromHostRecord
    * GetNetwork
    * GetNetworkByRef
