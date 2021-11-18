@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
+
 var _ = Describe("Object Manager: network view", func() {
 	Describe("Create Network View", func() {
 		cmpType := "Docker"
