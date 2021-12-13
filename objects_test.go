@@ -468,7 +468,17 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(rptr.ObjectType()).To(Equal("record:ptr"))
-				Expect(rptr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "ipv6addr", "ptrdname", "view", "zone", "comment", "use_ttl", "ttl"))
+				Expect(rptr.ReturnFields()).To(ConsistOf(
+					"extattrs",
+					"ipv4addr",
+					"ipv6addr",
+					"name",
+					"ptrdname",
+					"view",
+					"zone",
+					"comment",
+					"use_ttl",
+					"ttl"))
 			})
 		})
 
