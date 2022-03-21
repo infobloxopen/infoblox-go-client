@@ -4,15 +4,15 @@ import "fmt"
 
 // Creates TXT Record. Use TTL of 0 to inherit TTL from the Zone
 func (objMgr *ObjectManager) CreateTXTRecord(
+	dnsView string,
 	recordName string,
 	text string,
-	dnsView string,
-	useTtl bool,
 	ttl uint32,
+	useTtl bool,
 	comment string,
 	eas EA) (*RecordTXT, error) {
 
-	recordTXT := NewRecordTXT(recordName, text, dnsView, "", useTtl, ttl, comment, eas)
+	recordTXT := NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas)
 
 	ref, err := objMgr.connector.CreateObject(recordTXT)
 	if err != nil {
@@ -29,24 +29,29 @@ func (objMgr *ObjectManager) GetTXTRecordByRef(ref string) (*RecordTXT, error) {
 	return recordTXT, err
 }
 
-func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
-	if name == "" {
-		return nil, fmt.Errorf("name can not be empty")
+func (objMgr *ObjectManager) GetTXTRecord(dnsview string, name string) (*RecordTXT, error) {
+	if dnsview == "" || name == "" {
+		return nil, fmt.Errorf("DNS view and name are required to retrieve a unique txt record")
 	}
 	var res []RecordTXT
 
 	recordTXT := NewEmptyRecordTXT()
 
 	sf := map[string]string{
+		"view": dnsview,
 		"name": name,
 	}
 	queryParams := NewQueryParams(false, sf)
 	err := objMgr.connector.GetObject(recordTXT, "", queryParams, &res)
 
-	if err != nil || res == nil || len(res) == 0 {
+	if err != nil {
 		return nil, err
+	} else if res == nil || len(res) == 0 {
+		return nil, NewNotFoundError(
+			fmt.Sprintf(
+				"TXT record with name '%s' in DNS view '%s' is not found",
+				name, dnsview))
 	}
-
 	return &res[0], nil
 }
 
@@ -54,12 +59,12 @@ func (objMgr *ObjectManager) UpdateTXTRecord(
 	ref string,
 	recordName string,
 	text string,
-	useTtl bool,
 	ttl uint32,
+	useTtl bool,
 	comment string,
 	eas EA) (*RecordTXT, error) {
 
-	recordTXT := NewRecordTXT(recordName, text, "", "", useTtl, ttl, comment, eas)
+	recordTXT := NewRecordTXT("", "", recordName, text, ttl, useTtl, comment, eas)
 	recordTXT.Ref = ref
 
 	reference, err := objMgr.connector.UpdateObject(recordTXT, ref)

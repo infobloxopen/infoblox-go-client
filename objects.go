@@ -730,42 +730,42 @@ func NewHostRecord(
 
 type RecordTXT struct {
 	IBBase  `json:"-"`
+	View    string `json:"view,omitempty"`
+	Zone    string `json:"zone,omitempty"`
 	Ref     string `json:"_ref,omitempty"`
 	Name    string `json:"name,omitempty"`
 	Text    string `json:"text,omitempty"`
-	Ttl     uint32 `json:"ttl,omitempty"`
-	View    string `json:"view,omitempty"`
-	Zone    string `json:"zone,omitempty"`
+	Ttl     uint32 `json:"ttl"`
+	UseTtl  bool   `json:"use_ttl"`
 	Comment string `json:"comment"`
-	Ea      EA     `json:"extattrs,omitempty"`
-	UseTtl  bool   `json:"use_ttl,omitempty"`
+	Ea      EA     `json:"extattrs"`
 }
 
 func NewEmptyRecordTXT() *RecordTXT {
 	res := RecordTXT{}
 	res.objectType = "record:txt"
-	res.returnFields = []string{"extattrs", "name", "text", "view", "zone", "ttl", "use_ttl"}
+	res.returnFields = []string{"view", "zone", "name", "text", "ttl", "use_ttl", "comment", "extattrs"}
 
 	return &res
 }
 
 func NewRecordTXT(
-	recordname string,
-	text string,
 	dnsview string,
 	zone string,
-	useTtl bool,
+	recordname string,
+	text string,
 	ttl uint32,
+	useTtl bool,
 	comment string,
 	eas EA) *RecordTXT {
 
 	res := NewEmptyRecordTXT()
-	res.Name = recordname
-	res.Text = text
 	res.View = dnsview
 	res.Zone = zone
-	res.UseTtl = useTtl
+	res.Name = recordname
+	res.Text = text
 	res.Ttl = ttl
+	res.UseTtl = useTtl
 	res.Comment = comment
 	res.Ea = eas
 
