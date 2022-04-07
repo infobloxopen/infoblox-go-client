@@ -5714,11 +5714,11 @@ func (HostRecord) ObjectType() string {
 	return "record:host"
 }
 
-// RecordNs represents Infoblox object record:ns
-type RecordNs struct {
+// RecordNS represents Infoblox object record:ns
+type RecordNS struct {
 	IBBase           `json:"-"`
 	Ref              string            `json:"_ref,omitempty"`
-	Addresses        []*Zonenameserver `json:"addresses,omitempty"`
+	Addresses        []*ZoneNameServer `json:"addresses,omitempty"`
 	CloudInfo        *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Creator          string            `json:"creator,omitempty"`
 	DnsName          string            `json:"dns_name,omitempty"`
@@ -5732,7 +5732,7 @@ type RecordNs struct {
 	Ea               EA                `json:"extattrs"`
 }
 
-func (RecordNs) ObjectType() string {
+func (RecordNS) ObjectType() string {
 	return "record:ns"
 }
 
@@ -10699,8 +10699,8 @@ type Zoneassociation struct {
 	View      string `json:"view,omitempty"`
 }
 
-// Zonenameserver represents Infoblox struct zonenameserver
-type Zonenameserver struct {
+// ZoneNameServer represents Infoblox struct zonenameserver
+type ZoneNameServer struct {
 	Address       string `json:"address,omitempty"`
 	AutoCreatePtr bool   `json:"auto_create_ptr,omitempty"`
 }
