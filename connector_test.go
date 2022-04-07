@@ -63,7 +63,7 @@ func (hr *FakeHttpRequestor) Init(authCfg AuthConfig, trCfg TransportConfig) {
 	hr.trCfg = trCfg
 }
 
-func (hr *FakeHttpRequestor) syncSendRequest(req *http.Request) ([]byte, error) {
+func (hr *FakeHttpRequestor) SendRequest(req *http.Request) ([]byte, error) {
 	Expect(req).To(Equal(hr.req))
 
 	return hr.res, nil
