@@ -5690,8 +5690,8 @@ type HostRecord struct {
 	DnsAliases               []string                  `json:"dns_aliases,omitempty"`
 	DnsName                  string                    `json:"dns_name,omitempty"`
 	EnableImmediateDiscovery bool                      `json:"enable_immediate_discovery,omitempty"`
-	Ipv4Addrs                []*HostRecordIpv4Addr     `json:"ipv4addrs"`
-	Ipv6Addrs                []*HostRecordIpv6Addr     `json:"ipv6addrs"`
+	Ipv4Addrs                []HostRecordIpv4Addr      `json:"ipv4addrs"`
+	Ipv6Addrs                []HostRecordIpv6Addr      `json:"ipv6addrs"`
 	LastQueried              time.Time                 `json:"last_queried,omitempty"`
 	MsAdUserData             *MsserverAduserData       `json:"ms_ad_user_data,omitempty"`
 	Name                     string                    `json:"name"`

@@ -25,8 +25,8 @@ var _ = Describe("Object Manager: host record", func() {
 		enabledhcp := false
 		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
-		resultIPv6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
+		resultIPV4Addrs := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPv6Addrs := HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		useTtl := true
 		ttl := uint32(70)
 		comment := "test"
@@ -40,8 +40,8 @@ var _ = Describe("Object Manager: host record", func() {
 			createObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPv6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPv6Addrs},
 				Ea:          eas,
 				EnableDns:   enabledns,
 				View:        dnsView,
@@ -54,8 +54,8 @@ var _ = Describe("Object Manager: host record", func() {
 			getObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPv6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPv6Addrs},
 				Ea:          eas,
 				EnableDns:   enabledns,
 				View:        dnsView,
@@ -69,8 +69,8 @@ var _ = Describe("Object Manager: host record", func() {
 			resultObject: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPv6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPv6Addrs},
 				Ea:          eas,
 				EnableDns:   enabledns,
 				View:        dnsView,
@@ -116,8 +116,8 @@ var _ = Describe("Object Manager: host record", func() {
 		enabledhcp := false
 		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
-		resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
+		resultIPV4Addrs := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPV6Addrs := HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		enableDNS := true
 		useTtl := true
 		ttl := uint32(70)
@@ -128,8 +128,8 @@ var _ = Describe("Object Manager: host record", func() {
 			createObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enableDNS,
 				View:        dnsView,
 				UseTtl:      useTtl,
@@ -141,8 +141,8 @@ var _ = Describe("Object Manager: host record", func() {
 			getObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enableDNS,
 				View:        dnsView,
 				Ref:         fakeRefReturn,
@@ -155,8 +155,8 @@ var _ = Describe("Object Manager: host record", func() {
 			resultObject: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enableDNS,
 				View:        dnsView,
 				Ref:         fakeRefReturn,
@@ -213,8 +213,8 @@ var _ = Describe("Object Manager: host record", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
-		resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
+		resultIPV4Addrs := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPV6Addrs := HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		useTtl := true
 		ttl := uint32(70)
 		comment := "test"
@@ -224,8 +224,8 @@ var _ = Describe("Object Manager: host record", func() {
 			createObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enabledns,
 				View:        dnsView,
 				UseTtl:      useTtl,
@@ -237,8 +237,8 @@ var _ = Describe("Object Manager: host record", func() {
 			getObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enabledns,
 				View:        dnsView,
 				Ref:         fakeRefReturn,
@@ -251,8 +251,8 @@ var _ = Describe("Object Manager: host record", func() {
 			resultObject: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enabledns,
 				View:        dnsView,
 				Ref:         fakeRefReturn,
@@ -310,8 +310,8 @@ var _ = Describe("Object Manager: host record", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
-		resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
+		resultIPV4Addrs := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPV6Addrs := HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		enableDNS := true
 		useTtl := true
 		ttl := uint32(70)
@@ -322,8 +322,8 @@ var _ = Describe("Object Manager: host record", func() {
 			createObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enableDNS,
 				View:        dnsView,
 				UseTtl:      useTtl,
@@ -335,8 +335,8 @@ var _ = Describe("Object Manager: host record", func() {
 			getObjectObj: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enableDNS,
 				View:        dnsView,
 				Ref:         fakeRefReturn,
@@ -349,8 +349,8 @@ var _ = Describe("Object Manager: host record", func() {
 			resultObject: &HostRecord{
 				NetworkView: netviewName,
 				Name:        recordName,
-				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs:   []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns:   enableDNS,
 				View:        dnsView,
 				Ref:         fakeRefReturn,
@@ -449,8 +449,8 @@ var _ = Describe("Object Manager: host record", func() {
 			initialAliases := []string{"abc.test.com", "xyz.test.com"}
 			initObj := &HostRecord{
 				Name:      hostName,
-				Ipv4Addrs: []*HostRecordIpv4Addr{},
-				Ipv6Addrs: []*HostRecordIpv6Addr{},
+				Ipv4Addrs: []HostRecordIpv4Addr{},
+				Ipv6Addrs: []HostRecordIpv6Addr{},
 				Ea:        initialEas,
 				EnableDns: enableDNS,
 				UseTtl:    useTtl,
@@ -473,8 +473,8 @@ var _ = Describe("Object Manager: host record", func() {
 			updateTtl := uint32(0)
 			updateObjIn := &HostRecord{
 				Name:      "host1.test.com",
-				Ipv4Addrs: []*HostRecordIpv4Addr{},
-				Ipv6Addrs: []*HostRecordIpv6Addr{},
+				Ipv4Addrs: []HostRecordIpv4Addr{},
+				Ipv6Addrs: []HostRecordIpv6Addr{},
 				Ea:        expectedEas,
 				EnableDns: enableDNS,
 				UseTtl:    updateUseTtl,
@@ -486,8 +486,8 @@ var _ = Describe("Object Manager: host record", func() {
 
 			expectedObj := &HostRecord{
 				Name:      "host1.test.com",
-				Ipv4Addrs: []*HostRecordIpv4Addr{},
-				Ipv6Addrs: []*HostRecordIpv6Addr{},
+				Ipv4Addrs: []HostRecordIpv4Addr{},
+				Ipv6Addrs: []HostRecordIpv6Addr{},
 				Ea:        expectedEas,
 				EnableDns: enableDNS,
 				UseTtl:    updateUseTtl,
@@ -523,14 +523,14 @@ var _ = Describe("Object Manager: host record", func() {
 			enableDHCP := false
 			macAddr := "01:23:45:67:80:ab"
 			duid := "02:24:46:68:81:cd"
-			resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDHCP}
-			resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enableDHCP}
+			resultIPV4Addrs := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDHCP}
+			resultIPV6Addrs := HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enableDHCP}
 			ref = fmt.Sprintf("record:host/%s:%s", refBase, hostName)
 
 			updateObjIn := &HostRecord{
 				Name:      hostName,
-				Ipv4Addrs: []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs: []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs: []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs: []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns: enableDNS,
 				UseTtl:    useTtl,
 				Ttl:       ttl,
@@ -540,8 +540,8 @@ var _ = Describe("Object Manager: host record", func() {
 
 			expectedObj := &HostRecord{
 				Name:      hostName,
-				Ipv4Addrs: []*HostRecordIpv4Addr{resultIPV4Addrs},
-				Ipv6Addrs: []*HostRecordIpv6Addr{resultIPV6Addrs},
+				Ipv4Addrs: []HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs: []HostRecordIpv6Addr{resultIPV6Addrs},
 				EnableDns: enableDNS,
 				UseTtl:    useTtl,
 				Ttl:       ttl,

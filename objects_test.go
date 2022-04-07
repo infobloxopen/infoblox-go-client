@@ -623,8 +623,8 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordHost object", func() {
-			ipv4addrs := []*HostRecordIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
-			ipv6addrs := []*HostRecordIpv6Addr{{Ipv6Addr: "fc00::0100"}, {Ipv6Addr: "fc00::0101"}}
+			ipv4addrs := []HostRecordIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
+			ipv6addrs := []HostRecordIpv6Addr{{Ipv6Addr: "fc00::0100"}, {Ipv6Addr: "fc00::0101"}}
 			name := "bind_host.domain.com"
 			view := "default"
 			zone := "domain.com"

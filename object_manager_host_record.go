@@ -36,27 +36,27 @@ func (objMgr *ObjectManager) CreateHostRecord(
 		ipv6Addr = fmt.Sprintf("func:nextavailableip:%s,%s", ipv6cidr, netview)
 	}
 	recordHost := &HostRecord{}
-	recordHostIpv6AddrSlice := []*HostRecordIpv6Addr{}
-	recordHostIpv4AddrSlice := []*HostRecordIpv4Addr{}
+	recordHostIpv6AddrSlice := []HostRecordIpv6Addr{}
+	recordHostIpv4AddrSlice := []HostRecordIpv4Addr{}
 	if ipv6Addr != "" {
 		enableDhcpv6 := false
 		if enableDhcp && duid != "" {
 			enableDhcpv6 = true
 		}
-		recordHostIpv6Addr := &HostRecordIpv6Addr{
+		recordHostIpv6Addr := HostRecordIpv6Addr{
 			Ipv6Addr:   ipv6Addr,
 			Duid:       duid,
 			EnableDhcp: enableDhcpv6,
 		}
-		recordHostIpv6AddrSlice = []*HostRecordIpv6Addr{recordHostIpv6Addr}
+		recordHostIpv6AddrSlice = []HostRecordIpv6Addr{recordHostIpv6Addr}
 	}
 	if ipv4Addr != "" {
 		enableDhcpv4 := false
 		if enableDhcp && macAddr != "" && macAddr != MACADDR_ZERO {
 			enableDhcpv4 = true
 		}
-		recordHostIpAddr := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDhcpv4}
-		recordHostIpv4AddrSlice = []*HostRecordIpv4Addr{recordHostIpAddr}
+		recordHostIpAddr := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDhcpv4}
+		recordHostIpv4AddrSlice = []HostRecordIpv4Addr{recordHostIpAddr}
 	}
 	recordHost = &HostRecord{
 		NetworkView: netview,
@@ -179,8 +179,8 @@ func (objMgr *ObjectManager) UpdateHostRecord(
 	eas EA,
 	aliases []string) (*HostRecord, error) {
 
-	recordHostIpv4AddrSlice := []*HostRecordIpv4Addr{}
-	recordHostIpv6AddrSlice := []*HostRecordIpv6Addr{}
+	recordHostIpv4AddrSlice := []HostRecordIpv4Addr{}
+	recordHostIpv6AddrSlice := []HostRecordIpv6Addr{}
 
 	enableDhcpv4 := false
 	enableDhcpv6 := false
@@ -208,8 +208,8 @@ func (objMgr *ObjectManager) UpdateHostRecord(
 				netView = "default"
 			}
 			newIpAddr := fmt.Sprintf("func:nextavailableip:%s,%s", ipv4cidr, netView)
-			recordHostIpAddr := &HostRecordIpv4Addr{Ipv4Addr: newIpAddr, Mac: macAddr, EnableDhcp: enableDhcpv4}
-			recordHostIpv4AddrSlice = []*HostRecordIpv4Addr{recordHostIpAddr}
+			recordHostIpAddr := HostRecordIpv4Addr{Ipv4Addr: newIpAddr, Mac: macAddr, EnableDhcp: enableDhcpv4}
+			recordHostIpv4AddrSlice = []HostRecordIpv4Addr{recordHostIpAddr}
 		}
 	} else {
 		ip := net.ParseIP(ipv4Addr)
@@ -219,8 +219,8 @@ func (objMgr *ObjectManager) UpdateHostRecord(
 		if ip.To4() == nil {
 			return nil, fmt.Errorf("IP address must be an IPv4 address, not an IPv6 one")
 		}
-		recordHostIpAddr := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDhcpv4}
-		recordHostIpv4AddrSlice = []*HostRecordIpv4Addr{recordHostIpAddr}
+		recordHostIpAddr := HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDhcpv4}
+		recordHostIpv4AddrSlice = []HostRecordIpv4Addr{recordHostIpAddr}
 	}
 	if ipv6Addr == "" {
 		if ipv6cidr != "" {
@@ -235,8 +235,8 @@ func (objMgr *ObjectManager) UpdateHostRecord(
 				netView = "default"
 			}
 			newIpAddr := fmt.Sprintf("func:nextavailableip:%s,%s", ipv6cidr, netView)
-			recordHostIpAddr := &HostRecordIpv6Addr{Ipv6Addr: newIpAddr, Duid: duid, EnableDhcp: enableDhcpv6}
-			recordHostIpv6AddrSlice = []*HostRecordIpv6Addr{recordHostIpAddr}
+			recordHostIpAddr := HostRecordIpv6Addr{Ipv6Addr: newIpAddr, Duid: duid, EnableDhcp: enableDhcpv6}
+			recordHostIpv6AddrSlice = []HostRecordIpv6Addr{recordHostIpAddr}
 		}
 	} else {
 		ip := net.ParseIP(ipv6Addr)
@@ -246,8 +246,8 @@ func (objMgr *ObjectManager) UpdateHostRecord(
 		if ip.To4() != nil || ip.To16() == nil {
 			return nil, fmt.Errorf("IP address must be an IPv6 address, not an IPv4 one")
 		}
-		recordHostIpAddr := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enableDhcpv6}
-		recordHostIpv6AddrSlice = []*HostRecordIpv6Addr{recordHostIpAddr}
+		recordHostIpAddr := HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enableDhcpv6}
+		recordHostIpv6AddrSlice = []HostRecordIpv6Addr{recordHostIpAddr}
 	}
 	updateHostRecord := &HostRecord{
 		Name:      name,
