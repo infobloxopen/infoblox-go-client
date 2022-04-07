@@ -5,12 +5,12 @@ import "fmt"
 // Creates TXT Record. Use TTL of 0 to inherit TTL from the Zone
 func (objMgr *ObjectManager) CreateTXTRecord(recordname string, text string, ttl uint, dnsview string) (*RecordTXT, error) {
 
-	recordTXT := NewRecordTXT(RecordTXT{
+	recordTXT := &RecordTXT{
 		View: dnsview,
 		Name: recordname,
 		Text: text,
 		Ttl:  ttl,
-	})
+	}
 
 	ref, err := objMgr.connector.CreateObject(recordTXT)
 	recordTXT.Ref = ref
@@ -18,7 +18,7 @@ func (objMgr *ObjectManager) CreateTXTRecord(recordname string, text string, ttl
 }
 
 func (objMgr *ObjectManager) GetTXTRecordByRef(ref string) (*RecordTXT, error) {
-	recordTXT := NewRecordTXT(RecordTXT{})
+	recordTXT := &RecordTXT{}
 	err := objMgr.connector.GetObject(
 		recordTXT, ref, NewQueryParams(false, nil), &recordTXT)
 	return recordTXT, err
@@ -30,7 +30,7 @@ func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
 	}
 	var res []RecordTXT
 
-	recordTXT := NewRecordTXT(RecordTXT{})
+	recordTXT := &RecordTXT{}
 
 	sf := map[string]string{
 		"name": name,
@@ -48,7 +48,7 @@ func (objMgr *ObjectManager) GetTXTRecord(name string) (*RecordTXT, error) {
 func (objMgr *ObjectManager) UpdateTXTRecord(recordname string, text string) (*RecordTXT, error) {
 	var res []RecordTXT
 
-	recordTXT := NewRecordTXT(RecordTXT{Name: recordname})
+	recordTXT := &RecordTXT{Name: recordname}
 
 	sf := map[string]string{
 		"name": recordname,

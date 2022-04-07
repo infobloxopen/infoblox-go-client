@@ -139,14 +139,11 @@ var _ = Describe("Object Manager", func() {
 			})
 
 		fakeConnector := &fakeConnector{
-			getObjectObj:         NewCapcityReport(CapacityReport{}),
+			getObjectObj:         &CapacityReport{},
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject: []CapacityReport{*NewCapcityReport(CapacityReport{
-				Ref:  fakeRefReturn,
-				Name: name,
-			})},
-			fakeRefReturn: fakeRefReturn,
+			resultObject:         []CapacityReport{{Ref: fakeRefReturn, Name: name}},
+			fakeRefReturn:        fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(fakeConnector, cmpType, tenantID)
@@ -176,13 +173,15 @@ var _ = Describe("Object Manager", func() {
 			})
 
 		USFakeConnector := &fakeConnector{
-			getObjectObj:         NewUpgradeStatus(UpgradeStatus{}),
+			getObjectObj:         &UpgradeStatus{},
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject: []UpgradeStatus{*NewUpgradeStatus(UpgradeStatus{
-				Ref:  fakeRefReturn,
-				Type: StatusType,
-			})},
+			resultObject: []UpgradeStatus{
+				{
+					Ref:  fakeRefReturn,
+					Type: StatusType,
+				},
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -207,13 +206,12 @@ var _ = Describe("Object Manager", func() {
 		fakeRefReturn := fmt.Sprintf("upgradestatus/Li51cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
 		expectErr := errors.New("Status type can not be nil")
 		USFakeConnector := &fakeConnector{
-			getObjectObj:         NewUpgradeStatus(UpgradeStatus{Type: StatusType}),
+			getObjectObj:         &UpgradeStatus{Type: StatusType},
 			getObjectRef:         "",
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: []UpgradeStatus{*NewUpgradeStatus(UpgradeStatus{
-				Ref:  fakeRefReturn,
-				Type: StatusType,
-			})},
+			resultObject: []UpgradeStatus{
+				{Ref: fakeRefReturn, Type: StatusType},
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 		objMgr := NewObjectManager(USFakeConnector, cmpType, tenantID)
@@ -230,12 +228,12 @@ var _ = Describe("Object Manager", func() {
 		fakeRefReturn := fmt.Sprintf("member/Li51cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
 		returnFields := []string{"host_name", "node_info", "time_zone"}
 		MemFakeConnector := &fakeConnector{
-			getObjectObj:         NewMember(Member{}),
+			getObjectObj:         &Member{},
 			getObjectRef:         "",
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: []Member{*NewMember(Member{
-				Ref: fakeRefReturn,
-			})},
+			resultObject: []Member{
+				{Ref: fakeRefReturn},
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 		objMgr := NewObjectManager(MemFakeConnector, cmpType, tenantID)
@@ -255,12 +253,12 @@ var _ = Describe("Object Manager", func() {
 		fakeRefReturn := fmt.Sprintf("grid/Li511cGdyYWRlc3RhdHVzJHVwZ3JhZGVfc3RhdHVz:test")
 		returnFields := []string{"name", "ntp_setting"}
 		GridFakeConnector := &fakeConnector{
-			getObjectObj:         NewGrid(Grid{}),
+			getObjectObj:         &Grid{},
 			getObjectRef:         "",
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: []Grid{*NewGrid(Grid{
-				Ref: fakeRefReturn,
-			})},
+			resultObject: []Grid{
+				{Ref: fakeRefReturn},
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 		objMgr := NewObjectManager(GridFakeConnector, cmpType, tenantID)
@@ -285,12 +283,12 @@ var _ = Describe("Object Manager", func() {
 			"limit_context",
 			"type"}
 		LicFakeConnector := &fakeConnector{
-			getObjectObj:         NewGridLicense(License{}),
+			getObjectObj:         &License{},
 			getObjectRef:         "",
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: []License{*NewGridLicense(License{
-				Ref: fakeRefReturn,
-			})},
+			resultObject: []License{
+				{Ref: fakeRefReturn},
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 		objMgr := NewObjectManager(LicFakeConnector, cmpType, tenantID)
@@ -309,8 +307,8 @@ var _ = Describe("Object Manager", func() {
 		fqdn := "azone.example.com"
 		fakeRefReturn := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
 		zaFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
-			resultObject:    NewZoneAuth(ZoneAuth{Fqdn: fqdn, Ref: fakeRefReturn}),
+			createObjectObj: &ZoneAuth{Fqdn: fqdn},
+			resultObject:    &ZoneAuth{Fqdn: fqdn, Ref: fakeRefReturn},
 			fakeRefReturn:   fakeRefReturn,
 		}
 
@@ -343,10 +341,10 @@ var _ = Describe("Object Manager", func() {
 		fqdn := "azone.example.com"
 		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:azone.example.com/default"
 		zdFakeConnector := &fakeConnector{
-			getObjectObj:         NewZoneAuth(ZoneAuth{}),
+			getObjectObj:         &ZoneAuth{},
 			getObjectRef:         fakeRefReturn,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
+			resultObject:         ZoneAuth{Fqdn: fqdn},
 		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
@@ -363,7 +361,6 @@ var _ = Describe("Object Manager", func() {
 			Expect(err).To(BeNil())
 		})
 		It("should return empty ZoneAuth and nil error if ref is empty", func() {
-			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.objectType = ""
 			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.returnFields = nil
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef("")
 			Expect(actualZoneAuth).To(Equal(getNoRef))
@@ -407,10 +404,12 @@ var _ = Describe("Object Manager", func() {
 			})
 
 		zdFakeConnector := &fakeConnector{
-			getObjectObj:         NewZoneDelegated(ZoneDelegated{}),
+			getObjectObj:         &ZoneDelegated{},
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject:         []ZoneDelegated{*NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, Ref: fakeRefReturn})},
+			resultObject: []ZoneDelegated{
+				{Fqdn: fqdn, Ref: fakeRefReturn},
+			},
 		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
@@ -441,8 +440,8 @@ var _ = Describe("Object Manager", func() {
 			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
 		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
 		zdFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo}),
-			resultObject:    NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn}),
+			createObjectObj: &ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo},
+			resultObject:    &ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn},
 			fakeRefReturn:   fakeRefReturn,
 		}
 
@@ -467,8 +466,8 @@ var _ = Describe("Object Manager", func() {
 			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
 			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
 
-		receiveUpdateObject := NewZoneDelegated(ZoneDelegated{Ref: fakeRefReturn, DelegateTo: delegateTo})
-		returnUpdateObject := NewZoneDelegated(ZoneDelegated{DelegateTo: delegateTo, Ref: fakeRefReturn})
+		receiveUpdateObject := &ZoneDelegated{Ref: fakeRefReturn, DelegateTo: delegateTo}
+		returnUpdateObject := &ZoneDelegated{DelegateTo: delegateTo, Ref: fakeRefReturn}
 		zdFakeConnector := &fakeConnector{
 			fakeRefReturn:   fakeRefReturn,
 			resultObject:    returnUpdateObject,

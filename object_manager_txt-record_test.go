@@ -18,28 +18,28 @@ var _ = Describe("Object Manager: TXT-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordTXT(RecordTXT{
+			createObjectObj: &RecordTXT{
 				Name: recordName,
 				Text: text,
 				Ttl:  ttl,
 				View: dnsView,
-			}),
+			},
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordTXT(RecordTXT{
+			getObjectObj: &RecordTXT{
 				Name: recordName,
 				Text: text,
 				View: dnsView,
 				Ref:  fakeRefReturn,
 				Ttl:  ttl,
-			}),
+			},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordTXT(RecordTXT{
+			resultObject: &RecordTXT{
 				Name: recordName,
 				Text: text,
 				View: dnsView,
 				Ttl:  ttl,
 				Ref:  fakeRefReturn,
-			}),
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 

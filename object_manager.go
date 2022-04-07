@@ -125,7 +125,7 @@ func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatu
 		msg := fmt.Sprintf("Status type can not be nil")
 		return res, errors.New(msg)
 	}
-	upgradestatus := NewUpgradeStatus(UpgradeStatus{})
+	upgradestatus := &UpgradeStatus{}
 
 	sf := map[string]string{
 		"type": statusType,
@@ -140,7 +140,7 @@ func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatu
 func (objMgr *ObjectManager) GetAllMembers() ([]Member, error) {
 	var res []Member
 
-	memberObj := NewMember(Member{})
+	memberObj := &Member{}
 	err := objMgr.connector.GetObject(
 		memberObj, "", NewQueryParams(false, nil), &res)
 	return res, err
@@ -150,7 +150,7 @@ func (objMgr *ObjectManager) GetAllMembers() ([]Member, error) {
 func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, error) {
 	var res []CapacityReport
 
-	capacityReport := NewCapcityReport(CapacityReport{})
+	capacityReport := &CapacityReport{}
 
 	sf := map[string]string{
 		"name": name,
@@ -164,7 +164,7 @@ func (objMgr *ObjectManager) GetCapacityReport(name string) ([]CapacityReport, e
 func (objMgr *ObjectManager) GetLicense() ([]License, error) {
 	var res []License
 
-	licenseObj := NewLicense(License{})
+	licenseObj := &License{}
 	err := objMgr.connector.GetObject(
 		licenseObj, "", NewQueryParams(false, nil), &res)
 	return res, err
@@ -174,7 +174,7 @@ func (objMgr *ObjectManager) GetLicense() ([]License, error) {
 func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 	var res []License
 
-	licenseObj := NewGridLicense(License{})
+	licenseObj := &License{}
 	err := objMgr.connector.GetObject(
 		licenseObj, "", NewQueryParams(false, nil), &res)
 	return res, err
@@ -184,7 +184,7 @@ func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	var res []Grid
 
-	gridObj := NewGrid(Grid{})
+	gridObj := &Grid{}
 	err := objMgr.connector.GetObject(
 		gridObj, "", NewQueryParams(false, nil), &res)
 	return res, err
@@ -195,9 +195,9 @@ func (objMgr *ObjectManager) CreateZoneAuth(
 	fqdn string,
 	eas EA) (*ZoneAuth, error) {
 
-	zoneAuth := NewZoneAuth(ZoneAuth{
+	zoneAuth := &ZoneAuth{
 		Fqdn: fqdn,
-		Ea:   eas})
+		Ea:   eas}
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
@@ -206,7 +206,7 @@ func (objMgr *ObjectManager) CreateZoneAuth(
 
 // Retreive a authortative zone by ref
 func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (*ZoneAuth, error) {
-	res := NewZoneAuth(ZoneAuth{})
+	res := &ZoneAuth{}
 
 	if ref == "" {
 		return nil, fmt.Errorf("empty reference to an object is not allowed")
@@ -226,7 +226,7 @@ func (objMgr *ObjectManager) DeleteZoneAuth(ref string) (string, error) {
 func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 	var res []ZoneAuth
 
-	zoneAuth := NewZoneAuth(ZoneAuth{})
+	zoneAuth := &ZoneAuth{}
 	err := objMgr.connector.GetObject(
 		zoneAuth, "", NewQueryParams(false, nil), &res)
 
@@ -240,7 +240,7 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 	}
 	var res []ZoneDelegated
 
-	zoneDelegated := NewZoneDelegated(ZoneDelegated{})
+	zoneDelegated := &ZoneDelegated{}
 
 	sf := map[string]string{
 		"fqdn": fqdn,
@@ -257,9 +257,9 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 
 // CreateZoneDelegated creates delegated zone
 func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
-	zoneDelegated := NewZoneDelegated(ZoneDelegated{
+	zoneDelegated := &ZoneDelegated{
 		Fqdn:       fqdn,
-		DelegateTo: delegate_to})
+		DelegateTo: delegate_to}
 
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref
@@ -269,9 +269,9 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []Name
 
 // UpdateZoneDelegated updates delegated zone
 func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
-	zoneDelegated := NewZoneDelegated(ZoneDelegated{
+	zoneDelegated := &ZoneDelegated{
 		Ref:        ref,
-		DelegateTo: delegate_to})
+		DelegateTo: delegate_to}
 
 	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
 	zoneDelegated.Ref = refResp

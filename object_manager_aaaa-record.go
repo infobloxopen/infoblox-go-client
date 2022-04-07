@@ -22,7 +22,16 @@ func (objMgr *ObjectManager) CreateAAAARecord(
 		return nil, fmt.Errorf(
 			"'name' argument is expected to be non-empty and it must NOT contain leading/trailing spaces")
 	}
-	recordAAAA := NewRecordAAAA(dnsView, recordName, "", useTtl, ttl, comment, eas, "")
+	//recordAAAA := NewRecordAAAA(dnsView, recordName, "", useTtl, ttl, comment, eas, "")
+
+	recordAAAA := &RecordAAAA{
+		View:    dnsView,
+		Name:    recordName,
+		UseTtl:  useTtl,
+		Ttl:     ttl,
+		Comment: comment,
+		Ea:      eas,
+	}
 
 	if ipAddr == "" {
 		if cidr == "" {
@@ -62,7 +71,7 @@ func (objMgr *ObjectManager) CreateAAAARecord(
 
 func (objMgr *ObjectManager) GetAAAARecord(dnsview string, recordName string, ipAddr string) (*RecordAAAA, error) {
 	var res []RecordAAAA
-	recordAAAA := NewEmptyRecordAAAA()
+	recordAAAA := &RecordAAAA{}
 	if dnsview == "" || recordName == "" || ipAddr == "" {
 		return nil, fmt.Errorf("DNS view, IPv6 address and record name of the record are required to retreive a unique AAAA record")
 	}
@@ -86,7 +95,7 @@ func (objMgr *ObjectManager) GetAAAARecord(dnsview string, recordName string, ip
 }
 
 func (objMgr *ObjectManager) GetAAAARecordByRef(ref string) (*RecordAAAA, error) {
-	recordAAAA := NewEmptyRecordAAAA()
+	recordAAAA := &RecordAAAA{}
 	err := objMgr.connector.GetObject(
 		recordAAAA, ref, NewQueryParams(false, nil), &recordAAAA)
 	return recordAAAA, err
@@ -142,7 +151,16 @@ func (objMgr *ObjectManager) UpdateAAAARecord(
 		}
 		newIpAddr = ipAddr
 	}
-	recordAAAA := NewRecordAAAA("", recordName, newIpAddr, useTtl, ttl, comment, setEas, ref)
+	recordAAAA := &RecordAAAA{
+		Name:     recordName,
+		Ipv6Addr: newIpAddr,
+		UseTtl:   useTtl,
+		Ttl:      ttl,
+		Comment:  comment,
+		Ea:       setEas,
+		Ref:      ref,
+	}
+
 	reference, err := objMgr.connector.UpdateObject(recordAAAA, ref)
 	if err != nil {
 		return nil, err

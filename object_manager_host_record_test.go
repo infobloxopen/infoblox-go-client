@@ -25,8 +25,8 @@ var _ = Describe("Object Manager: host record", func() {
 		enabledhcp := false
 		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPv6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPv6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		useTtl := true
 		ttl := uint32(70)
 		comment := "test"
@@ -37,20 +37,49 @@ var _ = Describe("Object Manager: host record", func() {
 		eas["VM Name"] = vmName
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPv6Addrs},
-				eas, enabledns, dnsView, "", "", useTtl, ttl, comment, aliases),
+			createObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPv6Addrs},
+				Ea:          eas,
+				EnableDns:   enabledns,
+				View:        dnsView,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPv6Addrs},
-				eas, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			getObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPv6Addrs},
+				Ea:          eas,
+				EnableDns:   enabledns,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPv6Addrs},
-				eas, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			resultObject: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPv6Addrs},
+				Ea:          eas,
+				EnableDns:   enabledns,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -87,8 +116,8 @@ var _ = Describe("Object Manager: host record", func() {
 		enabledhcp := false
 		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		enableDNS := true
 		useTtl := true
 		ttl := uint32(70)
@@ -96,20 +125,46 @@ var _ = Describe("Object Manager: host record", func() {
 		aliases := []string{"abc.test.com"}
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enableDNS, dnsView, "", "", useTtl, ttl, comment, aliases),
+			createObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			getObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			resultObject: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -158,28 +213,54 @@ var _ = Describe("Object Manager: host record", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		useTtl := true
 		ttl := uint32(70)
 		comment := "test"
 		aliases := []string{"test1"}
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enabledns, dnsView, "", "", useTtl, ttl, comment, aliases),
+			createObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enabledns,
+				View:        dnsView,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			getObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enabledns,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			resultObject: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enabledns,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -229,8 +310,8 @@ var _ = Describe("Object Manager: host record", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enabledhcp}
+		resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enabledhcp}
 		enableDNS := true
 		useTtl := true
 		ttl := uint32(70)
@@ -238,20 +319,46 @@ var _ = Describe("Object Manager: host record", func() {
 		aliases := []string{"abc.test.com"}
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enableDNS, dnsView, "", "", useTtl, ttl, comment, aliases),
+			createObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			getObjectObj: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
-				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
-				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
+			resultObject: &HostRecord{
+				NetworkView: netviewName,
+				Name:        recordName,
+				Ipv4Addrs:   []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs:   []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns:   enableDNS,
+				View:        dnsView,
+				Ref:         fakeRefReturn,
+				UseTtl:      useTtl,
+				Ttl:         ttl,
+				Comment:     comment,
+				Aliases:     aliases,
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -284,57 +391,15 @@ var _ = Describe("Object Manager: host record", func() {
 		})
 	})
 
-	Describe("Get Ipv4 and IPv6 Host Record Without DNS", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		netview := "private"
-		dnsview := "private"
-		hostName := "test"
-		ipv4Addr := "10.0.0.1"
-		ipv6Addr := "2001:db8:abcd:14::1"
-		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", hostName)
-		queryParams := NewQueryParams(
-			false,
-			map[string]string{
-				"name":         hostName,
-				"network_view": netview,
-				"view":         dnsview,
-				"ipv4addr":     "10.0.0.1",
-				"ipv6addr":     "2001:db8:abcd:14::1",
-			})
-		fipFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyHostRecord(),
-			getObjectQueryParams: queryParams,
-			getObjectRef:         "",
-			resultObject: []HostRecord{*NewHostRecord(
-				netview, hostName, ipv4Addr, ipv6Addr, nil, nil,
-				nil, true, dnsview, "", fakeRefReturn, false, 0, "", []string{})},
-			fakeRefReturn: fakeRefReturn,
-		}
-
-		objMgr := NewObjectManager(fipFakeConnector, cmpType, tenantID)
-
-		var actualhostRecord *HostRecord
-		var err error
-		It("should pass expected Host record Object to GetObject", func() {
-			actualhostRecord, err = objMgr.GetHostRecord(netview, dnsview, hostName, ipv4Addr, ipv6Addr)
-		})
-
-		It("should return expected Host record Object", func() {
-			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]HostRecord)[0]))
-			Expect(err).To(BeNil())
-		})
-	})
-
 	Describe("Get Host record by reference", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		hostName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", hostName)
-		resObj := NewEmptyHostRecord()
+		resObj := &HostRecord{}
 		resObj.Ref = fakeRefReturn
 		ncFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyHostRecord(),
+			getObjectObj:         &HostRecord{},
 			getObjectRef:         fakeRefReturn,
 			getObjectQueryParams: NewQueryParams(false, nil),
 			resultObject:         resObj,
@@ -382,8 +447,17 @@ var _ = Describe("Object Manager: host record", func() {
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
 			initialAliases := []string{"abc.test.com", "xyz.test.com"}
-			initObj := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, initialEas, enableDNS, "", "", "", useTtl, ttl, "old comment", initialAliases)
+			initObj := &HostRecord{
+				Name:      hostName,
+				Ipv4Addrs: []*HostRecordIpv4Addr{},
+				Ipv6Addrs: []*HostRecordIpv6Addr{},
+				Ea:        initialEas,
+				EnableDns: enableDNS,
+				UseTtl:    useTtl,
+				Ttl:       ttl,
+				Comment:   "old comment",
+				Aliases:   initialAliases,
+			}
 			initObj.Ref = ref
 
 			setEas := EA{
@@ -397,16 +471,34 @@ var _ = Describe("Object Manager: host record", func() {
 			comment := "test comment 1"
 			updateUseTtl := false
 			updateTtl := uint32(0)
-			updateObjIn := NewHostRecord("", "host1.test.com", "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
+			updateObjIn := &HostRecord{
+				Name:      "host1.test.com",
+				Ipv4Addrs: []*HostRecordIpv4Addr{},
+				Ipv6Addrs: []*HostRecordIpv6Addr{},
+				Ea:        expectedEas,
+				EnableDns: enableDNS,
+				UseTtl:    updateUseTtl,
+				Ttl:       updateTtl,
+				Comment:   comment,
+				Aliases:   expectedAliases,
+			}
 			updateObjIn.Ref = ref
 
-			expectedObj := NewHostRecord("", "host1.test.com", "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
+			expectedObj := &HostRecord{
+				Name:      "host1.test.com",
+				Ipv4Addrs: []*HostRecordIpv4Addr{},
+				Ipv6Addrs: []*HostRecordIpv6Addr{},
+				Ea:        expectedEas,
+				EnableDns: enableDNS,
+				UseTtl:    updateUseTtl,
+				Ttl:       updateTtl,
+				Comment:   comment,
+				Aliases:   expectedAliases,
+			}
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyHostRecord(),
+				getObjectObj:         &HostRecord{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
@@ -431,20 +523,34 @@ var _ = Describe("Object Manager: host record", func() {
 			enableDHCP := false
 			macAddr := "01:23:45:67:80:ab"
 			duid := "02:24:46:68:81:cd"
-			resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enableDHCP, "")
-			resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enableDHCP, "")
+			resultIPV4Addrs := &HostRecordIpv4Addr{Ipv4Addr: ipv4Addr, Mac: macAddr, EnableDhcp: enableDHCP}
+			resultIPV6Addrs := &HostRecordIpv6Addr{Ipv6Addr: ipv6Addr, Duid: duid, EnableDhcp: enableDHCP}
 			ref = fmt.Sprintf("record:host/%s:%s", refBase, hostName)
 
-			updateObjIn := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{*resultIPV4Addrs},
-				[]HostRecordIpv6Addr{*resultIPV6Addrs}, nil, enableDNS, "", "", "", useTtl, ttl, "", []string{})
+			updateObjIn := &HostRecord{
+				Name:      hostName,
+				Ipv4Addrs: []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs: []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns: enableDNS,
+				UseTtl:    useTtl,
+				Ttl:       ttl,
+				Aliases:   []string{},
+			}
 			updateObjIn.Ref = ref
 
-			expectedObj := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{*resultIPV4Addrs},
-				[]HostRecordIpv6Addr{*resultIPV6Addrs}, nil, enableDNS, "", "", "", useTtl, ttl, "", []string{})
+			expectedObj := &HostRecord{
+				Name:      hostName,
+				Ipv4Addrs: []*HostRecordIpv4Addr{resultIPV4Addrs},
+				Ipv6Addrs: []*HostRecordIpv6Addr{resultIPV6Addrs},
+				EnableDns: enableDNS,
+				UseTtl:    useTtl,
+				Ttl:       ttl,
+				Aliases:   []string{},
+			}
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyHostRecord(),
+				getObjectObj:         &HostRecord{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,

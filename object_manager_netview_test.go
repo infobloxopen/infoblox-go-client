@@ -16,8 +16,8 @@ var _ = Describe("Object Manager: network view", func() {
 		setEas := EA{"Cloud API Owned": true}
 		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
 		nvFakeConnector := &fakeConnector{
-			createObjectObj: NewNetworkView(netviewName, comment, setEas, ""),
-			resultObject:    NewNetworkView(netviewName, comment, setEas, fakeRefReturn),
+			createObjectObj: &NetworkView{Name: netviewName, Comment: comment, Ea: setEas},
+			resultObject:    &NetworkView{Name: netviewName, Comment: comment, Ea: setEas, Ref: fakeRefReturn},
 			fakeRefReturn:   fakeRefReturn,
 		}
 
@@ -47,10 +47,10 @@ var _ = Describe("Object Manager: network view", func() {
 			})
 
 		nvFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyNetworkView(),
+			getObjectObj:         &NetworkView{},
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject:         []NetworkView{*NewNetworkView(netviewName, "", nil, fakeRefReturn)},
+			resultObject:         []NetworkView{{Name: netviewName, Ref: fakeRefReturn}},
 		}
 
 		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
@@ -88,7 +88,7 @@ var _ = Describe("Object Manager: network view", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetworkView(netviewName, "old comment", initialEas, ref)
+			initObj := &NetworkView{Name: netviewName, Comment: "old comment", Ea: initialEas, Ref: ref}
 
 			setEas := EA{
 				"ea0": "ea0_old_value",
@@ -97,14 +97,14 @@ var _ = Describe("Object Manager: network view", func() {
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := NewEmptyNetworkView()
+			getObjIn := &NetworkView{}
 
 			comment := "test comment 1"
 			updateNetviewName := "default_view"
 			updatedRef := fmt.Sprintf("networkview/%s:%s", refBase, updateNetviewName)
-			updateObjIn := NewNetworkView(updateNetviewName, comment, expectedEas, ref)
+			updateObjIn := &NetworkView{Name: updateNetviewName, Comment: comment, Ea: expectedEas, Ref: ref}
 
-			expectedObj := NewNetworkView(updateNetviewName, comment, expectedEas, updatedRef)
+			expectedObj := &NetworkView{Name: updateNetviewName, Comment: comment, Ea: expectedEas, Ref: updatedRef}
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,

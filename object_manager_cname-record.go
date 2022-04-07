@@ -14,22 +14,31 @@ func (objMgr *ObjectManager) CreateCNAMERecord(
 	if canonical == "" || recordname == "" {
 		return nil, fmt.Errorf("canonical name and record name fields are required to create a CNAME record")
 	}
-	recordCNAME := NewRecordCNAME(dnsview, canonical, recordname, useTtl, ttl, comment, eas, "")
+
+	recordCNAME := &RecordCNAME{
+		View:      dnsview,
+		Canonical: canonical,
+		Name:      recordname,
+		UseTtl:    useTtl,
+		Ttl:       ttl,
+		Comment:   comment,
+		Ea:        eas,
+	}
 
 	ref, err := objMgr.connector.CreateObject(recordCNAME)
-        if err != nil {
-                return nil, err
-        }
+	if err != nil {
+		return nil, err
+	}
 	recordCNAME, err = objMgr.GetCNAMERecordByRef(ref)
-        if err != nil {
-                return nil, err
-        }
+	if err != nil {
+		return nil, err
+	}
 	return recordCNAME, err
 }
 
 func (objMgr *ObjectManager) GetCNAMERecord(dnsview string, canonical string, recordName string) (*RecordCNAME, error) {
 	var res []RecordCNAME
-	recordCNAME := NewEmptyRecordCNAME()
+	recordCNAME := &RecordCNAME{}
 	if dnsview == "" || canonical == "" || recordName == "" {
 		return nil, fmt.Errorf("DNS view, canonical name and record name of the record are required to retreive a unique CNAME record")
 	}
@@ -54,7 +63,7 @@ func (objMgr *ObjectManager) GetCNAMERecord(dnsview string, canonical string, re
 }
 
 func (objMgr *ObjectManager) GetCNAMERecordByRef(ref string) (*RecordCNAME, error) {
-	recordCNAME := NewEmptyRecordCNAME()
+	recordCNAME := &RecordCNAME{}
 	err := objMgr.connector.GetObject(
 		recordCNAME, ref, NewQueryParams(false, nil), &recordCNAME)
 	return recordCNAME, err
@@ -73,7 +82,16 @@ func (objMgr *ObjectManager) UpdateCNAMERecord(
 	comment string,
 	setEas EA) (*RecordCNAME, error) {
 
-	recordCNAME := NewRecordCNAME("", canonical, recordName, useTtl, ttl, comment, setEas, ref)
+	recordCNAME := &RecordCNAME{
+		Canonical: canonical,
+		Name:      recordName,
+		UseTtl:    useTtl,
+		Ttl:       ttl,
+		Comment:   comment,
+		Ea:        setEas,
+		Ref:       ref,
+	}
+
 	updatedRef, err := objMgr.connector.UpdateObject(recordCNAME, ref)
 	if err != nil {
 		return nil, err

@@ -20,13 +20,24 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 		ea := EA{"VM Name": vmName, "VM ID": vmID}
 		conn := &fakeConnector{
-			createObjectObj: NewRecordAAAA(
-				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
+			createObjectObj: &RecordAAAA{
+				View:     dnsView,
+				Name:     recordName,
+				Ipv6Addr: ipAddr,
+				Comment:  comment,
+				Ea:       ea,
+			},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectObj:         &RecordAAAA{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordAAAA(
-				dnsView, recordName, ipAddr, false, 0, comment, ea, fakeRefReturn),
+			resultObject: &RecordAAAA{
+				View:     dnsView,
+				Name:     recordName,
+				Ipv6Addr: ipAddr,
+				Comment:  comment,
+				Ea:       ea,
+				Ref:      fakeRefReturn,
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -57,13 +68,24 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 		ea := EA{"VM Name": vmName, "VM ID": vmID}
 		conn := &fakeConnector{
-			createObjectObj: NewRecordAAAA(
-				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
+			createObjectObj: RecordAAAA{
+				View:     dnsView,
+				Name:     recordName,
+				Ipv6Addr: ipAddr,
+				Comment:  comment,
+				Ea:       ea,
+			},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectObj:         &RecordAAAA{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordAAAA(
-				dnsView, recordName, ipAddr, false, 0, comment, ea, fakeRefReturn),
+			resultObject: &RecordAAAA{
+				View:     dnsView,
+				Name:     recordName,
+				Ipv6Addr: ipAddr,
+				Comment:  comment,
+				Ea:       ea,
+				Ref:      fakeRefReturn,
+			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -93,8 +115,13 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		comment := "Test creation"
 		ea := EA{"VM Name": vmName, "VM ID": vmID}
 		conn := &fakeConnector{
-			createObjectObj: NewRecordAAAA(
-				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
+			createObjectObj: &RecordAAAA{
+				View:     dnsView,
+				Name:     recordName,
+				Ipv6Addr: ipAddr,
+				Comment:  comment,
+				Ea:       ea,
+			},
 			createObjectError: fmt.Errorf("cannot parse CIDR value: invalid CIDR address: 10.0.0./24"),
 		}
 
@@ -128,10 +155,12 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectObj:         &RecordAAAA{},
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordAAAA{*NewRecordAAAA(dnsView, recordName, ipAddr, false, 0, "", nil, fakeRefReturn)},
-			fakeRefReturn:        fakeRefReturn,
+			resultObject: []RecordAAAA{
+				{View: dnsView, Name: recordName, Ipv6Addr: ipAddr, Ref: fakeRefReturn},
+			},
+			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -163,7 +192,7 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectObj:         &RecordAAAA{},
 			getObjectQueryParams: queryParams,
 			fakeRefReturn:        fakeRefReturn,
 			getObjectError:       fmt.Errorf("DNS view, IPv6 address and record name of the record are required to retreive a unique AAAA record"),
@@ -205,14 +234,14 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			initRef := fmt.Sprintf(
 				"record:aaaa/%s:%s/%s",
 				refBase, recordName, dnsView)
-			getObjIn := NewEmptyRecordAAAA()
+			getObjIn := &RecordAAAA{}
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         initRef,
 				getObjectError:       fmt.Errorf("test error"),
-				resultObject:         NewEmptyRecordAAAA(),
+				resultObject:         &RecordAAAA{},
 				fakeRefReturn:        "",
 			}
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
@@ -232,9 +261,18 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
 			initComment := "initial comment"
-			initObj := NewRecordAAAA(dnsView, recordName, initIpAddr, initUseTtl, newTtl, initComment, initialEas, initRef)
+			initObj := &RecordAAAA{
+				View:     dnsView,
+				Name:     recordName,
+				Ipv6Addr: initIpAddr,
+				UseTtl:   initUseTtl,
+				Ttl:      newTtl,
+				Comment:  initComment,
+				Ea:       initialEas,
+				Ref:      initRef,
+			}
 
-			getObjIn := NewEmptyRecordAAAA()
+			getObjIn := &RecordAAAA{}
 
 			newEas := EA{
 				"ea0": "ea0_old_value",
@@ -243,7 +281,15 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 				"ea5": "ea5_old_value"}
 
 			newComment := "test comment 1"
-			updateObjIn := NewRecordAAAA("", newRecordName, newIpAddr, newUseTtl, newTtl, newComment, newEas, initRef)
+			updateObjIn := &RecordAAAA{
+				Name:     newRecordName,
+				Ipv6Addr: newIpAddr,
+				UseTtl:   newUseTtl,
+				Ttl:      newTtl,
+				Comment:  newComment,
+				Ea:       newEas,
+				Ref:      initRef,
+			}
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,

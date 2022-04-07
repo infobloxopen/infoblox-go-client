@@ -23,11 +23,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			resultObject:         &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -60,11 +60,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.10.in-addr.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			resultObject:         &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -99,11 +99,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.10.in-addr.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			resultObject:         &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -137,11 +137,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			resultObject:         &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -173,11 +173,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%s", recordName, dnsView)
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			resultObject:         &RecordPTR{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -207,7 +207,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		ttl := uint32(70)
 
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
+			createObjectObj:   &RecordPTR{View: dnsView, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			createObjectError: fmt.Errorf("ptrdname is a required field to create a PTR record"),
 		}
 
@@ -237,7 +237,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		ttl := uint32(70)
 
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
+			createObjectObj:   &RecordPTR{View: dnsView, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			createObjectError: fmt.Errorf("%s is an invalid IP address", ipAddr),
 		}
 
@@ -266,7 +266,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		ttl := uint32(70)
 
 		conn := &fakeConnector{
-			createObjectObj: NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
+			createObjectObj: &RecordPTR{View: dnsView, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			createObjectError: fmt.Errorf("CIDR and network view are required to allocate a next available IP address\n" +
 				"IP address is required to create PTR record in reverse mapping zone\n" +
 				"record name is required to create a record in forwarrd mapping zone"),
@@ -302,9 +302,9 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
+			resultObject:         []RecordPTR{{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl}},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -341,9 +341,9 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
+			resultObject:         []RecordPTR{{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl}},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -380,9 +380,9 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         &RecordPTR{},
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
+			resultObject:         []RecordPTR{{View: dnsView, PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl}},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -430,7 +430,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := &RecordPTR{PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: "old comment", Ea: initialEas}
 			initObj.Ref = ref
 			initObj.Ipv4Addr = ipv4Addr
 
@@ -447,16 +447,16 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update-ptr.test.com"
 			updateIpAddr := "10.0.0.2"
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv4Addr = updateIpAddr
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv4Addr = updateIpAddr
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectObj:         &RecordPTR{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
@@ -483,7 +483,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := &RecordPTR{PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: "old comment", Ea: initialEas}
 			initObj.Ref = ref
 			initObj.Ipv4Addr = ipv6Addr
 
@@ -500,16 +500,16 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update"
 			updateIpAddr := "2001:db8:abcd:14::2"
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv6Addr = updateIpAddr
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv6Addr = updateIpAddr
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectObj:         &RecordPTR{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
@@ -536,7 +536,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := &RecordPTR{PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: "old comment", Ea: initialEas}
 			initObj.Ref = ref
 			initObj.Ipv4Addr = ipv4Addr
 
@@ -553,16 +553,16 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update-ptr.test.com"
 			updateIpAddr := fmt.Sprintf("func:nextavailableip:%s,%s", ipv4cidr, netview)
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv4Addr = updateIpAddr
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv4Addr = updateIpAddr
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectObj:         &RecordPTR{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
@@ -589,7 +589,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := &RecordPTR{PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: "old comment", Ea: initialEas}
 			initObj.Ref = ref
 			initObj.Ipv6Addr = ipv6Addr
 
@@ -606,16 +606,16 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update-ptr.test.com"
 			updateIpAddr := fmt.Sprintf("func:nextavailableip:%s,%s", ipv6cidr, netview)
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv6Addr = updateIpAddr
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv6Addr = updateIpAddr
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectObj:         &RecordPTR{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
@@ -642,7 +642,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := &RecordPTR{PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: "old comment", Ea: initialEas}
 			initObj.Ref = ref
 			initObj.Name = recordName
 
@@ -659,16 +659,16 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update"
 			updateName := "test-ptr-update"
 			updatedRef := fmt.Sprintf("record:ptr/%s:%s/20", refBase, newPtrdname)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			updateObjIn.Ref = ref
 			updateObjIn.Name = updateName
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := &RecordPTR{PtrdName: newPtrdname, UseTtl: updateUseTtl, Ttl: updateTtl, Comment: comment, Ea: expectedEas}
 			expectedObj.Ref = updatedRef
 			expectedObj.Name = updateName
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
+				getObjectObj:         &RecordPTR{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
@@ -713,7 +713,10 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordCNAME("", canonical, recordName, useTtl, ttl, "old comment", initialEas, ref)
+			initObj := &RecordCNAME{
+				Canonical: canonical, Name: recordName, UseTtl: useTtl,
+				Ttl: ttl, Comment: "old comment", Ea: initialEas, Ref: ref,
+			}
 			initObj.Ref = ref
 
 			setEas := EA{
@@ -729,12 +732,18 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newCanonical := "test-canonical-update.domain.com"
 			newRecordName := "test-update.domain.com"
 			updatedRef := fmt.Sprintf("record:cname/%s:%s", refBase, newRecordName)
-			updateObjIn := NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, ref)
+			updateObjIn := &RecordCNAME{
+				Canonical: canonical, Name: newRecordName, UseTtl: updateUseTtl,
+				Ttl: updateTtl, Comment: comment, Ea: expectedEas, Ref: ref,
+			}
 
-			expectedObj := NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, updatedRef)
+			expectedObj := &RecordCNAME{
+				Canonical: newCanonical, Name: newRecordName, UseTtl: updateUseTtl,
+				Ttl: updateTtl, Comment: comment, Ea: expectedEas, Ref: updatedRef,
+			}
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordCNAME(),
+				getObjectObj:         &RecordCNAME{},
 				getObjectQueryParams: NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,

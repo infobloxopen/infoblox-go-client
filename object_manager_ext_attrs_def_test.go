@@ -11,11 +11,11 @@ var _ = Describe("Object Manager: EA definition", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "Test Extensible Attribute"
 		flags := "CGV"
-		listValues := []EADefListValue{"True", "False"}
+		listValues := []*EADefListValue{{"True"}, {"False"}}
 		name := "TestEA"
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
-		ead := EADefinition{
+		ead := &EADefinition{
 			Name:               name,
 			Comment:            comment,
 			Flags:              flags,
@@ -24,8 +24,8 @@ var _ = Describe("Object Manager: EA definition", func() {
 			AllowedObjectTypes: allowedTypes}
 		fakeRefReturn := "extensibleattributedef/ZG5zLm5ldHdvcmtfdmlldyQyMw:TestEA"
 		eadFakeConnector := &fakeConnector{
-			createObjectObj: NewEADefinition(ead),
-			resultObject:    NewEADefinition(ead),
+			createObjectObj: ead,
+			resultObject:    ead,
 			fakeRefReturn:   fakeRefReturn,
 		}
 		eadFakeConnector.resultObject.(*EADefinition).Ref = fakeRefReturn
@@ -35,7 +35,7 @@ var _ = Describe("Object Manager: EA definition", func() {
 		var actualEADef *EADefinition
 		var err error
 		It("should pass expected EA Definintion Object to CreateObject", func() {
-			actualEADef, err = objMgr.CreateEADefinition(ead)
+			actualEADef, err = objMgr.CreateEADefinition(*ead)
 		})
 		It("should return expected EA Definition Object", func() {
 			Expect(actualEADef).To(Equal(eadFakeConnector.resultObject))
@@ -48,7 +48,7 @@ var _ = Describe("Object Manager: EA definition", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "Test Extensible Attribute"
 		flags := "CGV"
-		listValues := []EADefListValue{"True", "False"}
+		listValues := []*EADefListValue{{"True"}, {"False"}}
 		name := "TestEA"
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
@@ -73,10 +73,10 @@ var _ = Describe("Object Manager: EA definition", func() {
 			})
 
 		eadFakeConnector := &fakeConnector{
-			getObjectObj:         NewEADefinition(ead),
+			getObjectObj:         ead,
 			getObjectRef:         "",
 			getObjectQueryParams: queryParams,
-			resultObject:         []EADefinition{*NewEADefinition(eadRes)},
+			resultObject:         []EADefinition{eadRes},
 			fakeRefReturn:        fakeRefReturn,
 		}
 

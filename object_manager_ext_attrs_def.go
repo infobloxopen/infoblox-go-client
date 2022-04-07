@@ -1,18 +1,16 @@
 package ibclient
 
 func (objMgr *ObjectManager) CreateEADefinition(eadef EADefinition) (*EADefinition, error) {
-	newEadef := NewEADefinition(eadef)
+	ref, err := objMgr.connector.CreateObject(&eadef)
+	eadef.Ref = ref
 
-	ref, err := objMgr.connector.CreateObject(newEadef)
-	newEadef.Ref = ref
-
-	return newEadef, err
+	return &eadef, err
 }
 
 func (objMgr *ObjectManager) GetEADefinition(name string) (*EADefinition, error) {
 	var res []EADefinition
 
-	eadef := NewEADefinition(EADefinition{Name: name})
+	eadef := &EADefinition{Name: name}
 
 	sf := map[string]string{
 		"name": name,

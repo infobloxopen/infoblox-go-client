@@ -6,7 +6,7 @@ import (
 )
 
 func (objMgr *ObjectManager) CreateNetworkView(name string, comment string, setEas EA) (*NetworkView, error) {
-	networkView := NewNetworkView(name, comment, setEas, "")
+	networkView := &NetworkView{Name: name, Comment: comment, Ea: setEas}
 
 	ref, err := objMgr.connector.CreateObject(networkView)
 	networkView.Ref = ref
@@ -45,7 +45,7 @@ func (objMgr *ObjectManager) CreateDefaultNetviews(globalNetview string, localNe
 func (objMgr *ObjectManager) GetNetworkView(name string) (*NetworkView, error) {
 	var res []NetworkView
 
-	netview := NewEmptyNetworkView()
+	netview := &NetworkView{}
 	sf := map[string]string{
 		"name": name,
 	}
@@ -63,7 +63,7 @@ func (objMgr *ObjectManager) GetNetworkView(name string) (*NetworkView, error) {
 }
 
 func (objMgr *ObjectManager) GetNetworkViewByRef(ref string) (*NetworkView, error) {
-	res := NewEmptyNetworkView()
+	res := &NetworkView{}
 	queryParams := NewQueryParams(false, nil)
 	if err := objMgr.connector.GetObject(res, ref, queryParams, &res); err != nil {
 		return nil, err
@@ -77,7 +77,7 @@ func (objMgr *ObjectManager) GetNetworkViewByRef(ref string) (*NetworkView, erro
 
 func (objMgr *ObjectManager) UpdateNetworkView(ref string, name string, comment string, setEas EA) (*NetworkView, error) {
 
-	nv := NewEmptyNetworkView()
+	nv := &NetworkView{}
 
 	err := objMgr.connector.GetObject(
 		nv, ref, NewQueryParams(false, nil), nv)

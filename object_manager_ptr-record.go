@@ -23,7 +23,14 @@ func (objMgr *ObjectManager) CreatePTRRecord(
 	if ptrdname == "" {
 		return nil, fmt.Errorf("ptrdname is a required field to create a PTR record")
 	}
-	recordPTR := NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas)
+	recordPTR := &RecordPTR{
+		View:     dnsView,
+		PtrdName: ptrdname,
+		UseTtl:   useTtl,
+		Ttl:      ttl,
+		Comment:  comment,
+		Ea:       eas,
+	}
 
 	if recordName != "" {
 		recordPTR.Name = recordName
@@ -68,7 +75,7 @@ func (objMgr *ObjectManager) CreatePTRRecord(
 
 func (objMgr *ObjectManager) GetPTRRecord(dnsview string, ptrdname string, recordName string, ipAddr string) (*RecordPTR, error) {
 	var res []RecordPTR
-	recordPtr := NewEmptyRecordPTR()
+	recordPtr := &RecordPTR{}
 	sf := map[string]string{
 		"view":     dnsview,
 		"ptrdname": ptrdname,
@@ -104,7 +111,7 @@ func (objMgr *ObjectManager) GetPTRRecord(dnsview string, ptrdname string, recor
 }
 
 func (objMgr *ObjectManager) GetPTRRecordByRef(ref string) (*RecordPTR, error) {
-	recordPTR := NewEmptyRecordPTR()
+	recordPTR := &RecordPTR{}
 	err := objMgr.connector.GetObject(
 		recordPTR, ref, NewQueryParams(false, nil), &recordPTR)
 	return recordPTR, err
@@ -126,7 +133,7 @@ func (objMgr *ObjectManager) UpdatePTRRecord(
 	comment string,
 	setEas EA) (*RecordPTR, error) {
 
-	recordPTR := NewRecordPTR("", ptrdname, useTtl, ttl, comment, setEas)
+	recordPTR := &RecordPTR{PtrdName: ptrdname, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: setEas}
 	recordPTR.Ref = ref
 	recordPTR.Name = name
 	isIPv6, _ := regexp.MatchString(`^record:ptr/.+.ip6.arpa/.+`, ref)

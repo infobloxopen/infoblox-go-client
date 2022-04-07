@@ -23,12 +23,18 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 		eas := EA{"VM Name": vmName, "VM ID": vmID}
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, ""),
+			createObjectObj: &RecordCNAME{
+				View: dnsView, Canonical: canonical, Name: recordName,
+				UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas,
+			},
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectObj:         &RecordCNAME{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, fakeRefReturn),
-			fakeRefReturn:        fakeRefReturn,
+			resultObject: &RecordCNAME{
+				View: dnsView, Canonical: canonical, Name: recordName, UseTtl: useTtl,
+				Ttl: ttl, Comment: comment, Ea: eas, Ref: fakeRefReturn,
+			},
+			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -55,7 +61,7 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 		eas := EA{"VM Name": vmName, "VM ID": vmID}
 
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordCNAME(dnsView, "", "", useTtl, ttl, comment, eas, ""),
+			createObjectObj:   &RecordCNAME{View: dnsView, UseTtl: useTtl, Ttl: ttl, Comment: comment, Ea: eas},
 			createObjectError: fmt.Errorf("canonical name and record name fields are required to create a CNAME record"),
 		}
 
@@ -90,10 +96,12 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectObj:         &RecordCNAME{},
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordCNAME{*NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, "", nil, fakeRefReturn)},
-			fakeRefReturn:        fakeRefReturn,
+			resultObject: []RecordCNAME{
+				{View: dnsView, Canonical: canonical, Name: recordName, UseTtl: useTtl, Ttl: ttl, Ref: fakeRefReturn},
+			},
+			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -122,7 +130,7 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectObj:         &RecordCNAME{},
 			getObjectQueryParams: queryParams,
 			getObjectError:       fmt.Errorf("DNS view, canonical name and record name of the record are required to retreive a unique CNAME record"),
 		}
