@@ -604,27 +604,25 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordTXT object", func() {
+			view := "default"
 			name := "txt.domain.com"
 			text := "this is text string"
-			view := "default"
-			zone := "domain.com"
+			ttl := uint32(70)
+			useTtl := true
+			comment := "test client"
+			eas := EA{"Country": "test"}
 
-			rt := NewRecordTXT(RecordTXT{
-				Name: name,
-				Text: text,
-				View: view,
-				Zone: zone})
+			rt := NewRecordTXT(view, "", name, text, ttl, useTtl, comment, eas)
 
 			It("should set fields correctly", func() {
+				Expect(rt.View).To(Equal(view))
 				Expect(rt.Name).To(Equal(name))
 				Expect(rt.Text).To(Equal(text))
-				Expect(rt.View).To(Equal(view))
-				Expect(rt.Zone).To(Equal(zone))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(rt.ObjectType()).To(Equal("record:txt"))
-				Expect(rt.ReturnFields()).To(ConsistOf("extattrs", "name", "text", "view", "zone", "ttl", "use_ttl"))
+				Expect(rt.ReturnFields()).To(ConsistOf("view", "zone", "name", "text", "ttl", "use_ttl", "comment", "extattrs"))
 			})
 		})
 

@@ -8,39 +8,25 @@ import (
 )
 
 var _ = Describe("Object Manager: TXT-record", func() {
-	Describe("Allocate TXT Record ", func() {
+	Describe("Create TXT Record ", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		text := "test-text"
 		dnsView := "default"
+		text := "test-text"
 		recordName := "test"
-		ttl := uint(30)
+		useTtl := true
+		ttl := uint32(70)
+		comment := "creation test"
+		eas := EA{"Country": "test"}
 		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordTXT(RecordTXT{
-				Name: recordName,
-				Text: text,
-				Ttl:  ttl,
-				View: dnsView,
-			}),
-			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordTXT(RecordTXT{
-				Name: recordName,
-				Text: text,
-				View: dnsView,
-				Ref:  fakeRefReturn,
-				Ttl:  ttl,
-			}),
+			createObjectObj:      NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas),
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordTXT(),
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordTXT(RecordTXT{
-				Name: recordName,
-				Text: text,
-				View: dnsView,
-				Ttl:  ttl,
-				Ref:  fakeRefReturn,
-			}),
-			fakeRefReturn: fakeRefReturn,
+			resultObject:         NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas),
+			fakeRefReturn:        fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
@@ -48,11 +34,64 @@ var _ = Describe("Object Manager: TXT-record", func() {
 		var actualRecord *RecordTXT
 		var err error
 		It("should pass expected TXT record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateTXTRecord(recordName, text, 30, dnsView)
+			actualRecord, err = objMgr.CreateTXTRecord(dnsView, recordName, text, ttl, useTtl, comment, eas)
 		})
 		It("should return expected TXT record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Update TXT record", func() {
+		var (
+			err       error
+			objMgr    IBObjectManager
+			conn      *fakeConnector
+			ref       string
+			actualObj *RecordTXT
+		)
+
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		recordName := "test"
+
+		It("Updating text, ttl, useTtl, comment and EAs", func() {
+			ref = fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+			initialEas := EA{"Country": "old value"}
+			initObj := NewRecordTXT("", "", recordName, "old-text", uint32(70), true, "old comment", initialEas)
+			initObj.Ref = ref
+
+			expectedEas := EA{"Country": "new value"}
+
+			updateText := ""
+			updateComment := "new comment"
+			updateUseTtl := true
+			updateTtl := uint32(10)
+			updatedRef := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+			updateObjIn := NewRecordTXT("", "", recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
+			updateObjIn.Ref = ref
+
+			expectedObj := NewRecordTXT("", "", recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
+			expectedObj.Ref = updatedRef
+
+			conn = &fakeConnector{
+				getObjectObj:         NewEmptyRecordTXT(),
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         updatedRef,
+				getObjectError:       nil,
+				resultObject:         expectedObj,
+
+				updateObjectObj:   updateObjIn,
+				updateObjectRef:   ref,
+				updateObjectError: nil,
+
+				fakeRefReturn: updatedRef,
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			actualObj, err = objMgr.UpdateTXTRecord(ref, recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
+			Expect(err).To(BeNil())
+			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})
 	})
 
