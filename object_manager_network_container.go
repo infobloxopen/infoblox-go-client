@@ -88,7 +88,7 @@ func (objMgr *ObjectManager) AllocateNetworkContainer(
 	container := NewNetworkContainerNextAvailable(containerInfo, isIPv6, comment, eas)
 
 	ref, err := objMgr.connector.CreateObject(container)
-	fmt.Println(ref)
+
 	if err == nil {
 		if isIPv6 {
 			networkContainer, err = BuildIPv6NetworkContainerFromRef(ref)

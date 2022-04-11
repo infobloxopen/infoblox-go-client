@@ -655,7 +655,7 @@ type HostRecordIpv4Addr struct {
 	IBBase     `json:"-"`
 	Ipv4Addr   string `json:"ipv4addr,omitempty"`
 	Ref        string `json:"_ref,omitempty"`
-	Mac        string `json:"mac,omitempty"`
+	Mac        string `json:"mac"`
 	View       string `json:"view,omitempty"`
 	Cidr       string `json:"network,omitempty"`
 	EnableDhcp bool   `json:"configure_for_dhcp"`
@@ -687,7 +687,7 @@ type HostRecordIpv6Addr struct {
 	IBBase     `json:"-"`
 	Ipv6Addr   string `json:"ipv6addr,omitempty"`
 	Ref        string `json:"_ref,omitempty"`
-	Duid       string `json:"duid,omitempty"`
+	Duid       string `json:"duid"`
 	View       string `json:"view,omitempty"`
 	Cidr       string `json:"network,omitempty"`
 	EnableDhcp bool   `json:"configure_for_dhcp"`
