@@ -13,7 +13,8 @@ import (
 )
 
 type FakeRequestBuilder struct {
-	hostConfig HostConfig
+	hostCfg HostConfig
+	authCfg AuthConfig
 
 	r   RequestType
 	obj IBObject
@@ -24,8 +25,9 @@ type FakeRequestBuilder struct {
 	req     *http.Request
 }
 
-func (rb *FakeRequestBuilder) Init(cfg HostConfig) {
-	rb.hostConfig = cfg
+func (rb *FakeRequestBuilder) Init(hostCfg HostConfig, authCfg AuthConfig) {
+	rb.authCfg = authCfg
+	rb.hostCfg = hostCfg
 }
 
 func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, queryParams *QueryParams) string {
@@ -49,14 +51,16 @@ func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref stri
 }
 
 type FakeHttpRequestor struct {
-	config TransportConfig
+	authCfg AuthConfig
+	trCfg   TransportConfig
 
 	req *http.Request
 	res []byte
 }
 
-func (hr *FakeHttpRequestor) Init(config TransportConfig) {
-	hr.config = config
+func (hr *FakeHttpRequestor) Init(authCfg AuthConfig, trCfg TransportConfig) {
+	hr.authCfg = authCfg
+	hr.trCfg = trCfg
 }
 
 func (hr *FakeHttpRequestor) SendRequest(req *http.Request) ([]byte, error) {
@@ -78,14 +82,19 @@ var _ = Describe("Connector", func() {
 		username := "myname"
 		password := "mysecrete!"
 		hostCfg := HostConfig{
-			Host:     host,
-			Version:  version,
-			Port:     port,
+			Host:    host,
+			Version: version,
+			Port:    port,
+		}
+		authCfg := AuthConfig{
 			Username: username,
 			Password: password,
 		}
 
-		wrb := WapiRequestBuilder{HostConfig: hostCfg}
+		wrb, err := NewWapiRequestBuilder(hostCfg, authCfg)
+		if err != nil {
+			panic("NewWapiRequestBuilder() is not expected to return an error")
+		}
 
 		Describe("BuildUrl", func() {
 			Context("for CREATE request", func() {
@@ -276,10 +285,12 @@ var _ = Describe("Connector", func() {
 		httpRequestTimeout := 120
 		httpPoolConnections := 100
 
-		hostConfig := HostConfig{
-			Host:     host,
-			Version:  version,
-			Port:     port,
+		hostCfg := HostConfig{
+			Host:    host,
+			Version: version,
+			Port:    port,
+		}
+		authCfg := AuthConfig{
 			Username: username,
 			Password: password,
 		}
@@ -292,7 +303,7 @@ var _ = Describe("Connector", func() {
 			eas := EA{eaKey: eaVal}
 			netViewObj := &NetworkView{Name: netviewName, Ea: eas}
 
-			requestType := RequestType(CREATE)
+			requestType := CREATE
 			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 			netviewStr := `"network_view":"` + netviewName + `"`
 			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
@@ -312,7 +323,7 @@ var _ = Describe("Connector", func() {
 			expectRef := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
 			fakeref := `"` + expectRef + `"`
 			fhr := &FakeHttpRequestor{
-				config: transportConfig,
+				trCfg: transportConfig,
 
 				req: httpReq,
 				res: []byte(fakeref),
@@ -321,8 +332,7 @@ var _ = Describe("Connector", func() {
 			OrigValidateConnector := ValidateConnector
 			ValidateConnector = MockValidateConnector
 			defer func() { ValidateConnector = OrigValidateConnector }()
-			conn, err := NewConnector(hostConfig, transportConfig,
-				frb, fhr)
+			conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 			if err != nil {
 				Fail("Error creating Connector")
@@ -338,7 +348,7 @@ var _ = Describe("Connector", func() {
 		Describe("DeleteObject", func() {
 			ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 
-			requestType := RequestType(DELETE)
+			requestType := DELETE
 			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 				host, port, version, ref)
 			bodyStr := []byte{}
@@ -356,7 +366,7 @@ var _ = Describe("Connector", func() {
 			expectRef := ref
 			fakeref := `"` + expectRef + `"`
 			fhr := &FakeHttpRequestor{
-				config: transportConfig,
+				trCfg: transportConfig,
 
 				req: httpReq,
 				res: []byte(fakeref),
@@ -365,8 +375,7 @@ var _ = Describe("Connector", func() {
 			OrigValidateConnector := ValidateConnector
 			ValidateConnector = MockValidateConnector
 			defer func() { ValidateConnector = OrigValidateConnector }()
-			conn, err := NewConnector(hostConfig, transportConfig,
-				frb, fhr)
+			conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 			if err != nil {
 				Fail("Error creating Connector")
@@ -387,7 +396,7 @@ var _ = Describe("Connector", func() {
 			eas := EA{eaKey: eaVal}
 			netViewObj := &NetworkView{Name: netviewName, Ea: eas}
 
-			requestType := RequestType(GET)
+			requestType := GET
 			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 			netviewStr := `"network_view":"` + netviewName + `"`
 			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
@@ -410,7 +419,7 @@ var _ = Describe("Connector", func() {
 			expectRes, _ := json.Marshal(expectObj)
 
 			fhr := &FakeHttpRequestor{
-				config: transportConfig,
+				trCfg: transportConfig,
 
 				req: httpReq,
 				res: expectRes,
@@ -420,8 +429,7 @@ var _ = Describe("Connector", func() {
 			ValidateConnector = MockValidateConnector
 			defer func() { ValidateConnector = OrigValidateConnector }()
 
-			conn, err := NewConnector(hostConfig, transportConfig,
-				frb, fhr)
+			conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 			if err != nil {
 				Fail("Error creating Connector")
@@ -444,7 +452,7 @@ var _ = Describe("Connector", func() {
 				eas := EA{eaKey: eaVal}
 				netViewObj := &NetworkView{Name: netviewName, Ea: eas}
 
-				requestType := RequestType(GET)
+				requestType := GET
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 				netviewStr := `"network_view":"` + netviewName + `"`
 				urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
@@ -472,7 +480,7 @@ var _ = Describe("Connector", func() {
 				expectRes, _ := json.Marshal(expectObj)
 
 				fhr := &FakeHttpRequestor{
-					config: transportConfig,
+					trCfg: transportConfig,
 
 					req: httpReq,
 					res: expectRes,
@@ -482,8 +490,7 @@ var _ = Describe("Connector", func() {
 				ValidateConnector = MockValidateConnector
 				defer func() { ValidateConnector = OrigValidateConnector }()
 
-				conn, err := NewConnector(hostConfig, transportConfig,
-					frb, fhr)
+				conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 				if err != nil {
 					Fail("Error creating Connector")

@@ -110,6 +110,8 @@ This library is compatible with Go 1.2+
    * GetNetworkViewByRef
    * GetPTRRecordByRef
    * GetPTRRecord
+   * GetTXTRecord
+   * GetTXTRecordByRef
    * GetZoneAuthByRef
    * GetZoneDelegated
    * GetUpgradeStatus (2.7 or above)
@@ -125,6 +127,7 @@ This library is compatible with Go 1.2+
    * UpdateNetworkContainer
    * UpdateNetworkView
    * UpdatePTRRecord
+   * UpdateTXTRecord
    * UpdateARecord
    * UpdateZoneDelegated
 

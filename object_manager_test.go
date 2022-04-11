@@ -76,6 +76,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
 		case *RecordPTR:
 			*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
+		case *RecordTXT:
+			*res.(*[]RecordTXT) = c.resultObject.([]RecordTXT)
 		case *ZoneDelegated:
 			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
 		case *RecordCNAME:
@@ -99,6 +101,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			**res.(**HostRecord) = *c.resultObject.(*HostRecord)
 		case *RecordPTR:
 			**res.(**RecordPTR) = *c.resultObject.(*RecordPTR)
+		case *RecordTXT:
+			**res.(**RecordTXT) = *c.resultObject.(*RecordTXT)
 		case *RecordCNAME:
 			**res.(**RecordCNAME) = *c.resultObject.(*RecordCNAME)
 		case *RecordA:
