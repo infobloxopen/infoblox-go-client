@@ -361,13 +361,12 @@ var _ = Describe("Object Manager", func() {
 		It("should pass expected ZoneAuth Object to GetObject", func() {
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef(fakeRefReturn)
 		})
-		fmt.Printf("doodo  %s", actualZoneAuth)
+		fmt.Printf("doodo  %v", actualZoneAuth)
 		It("should return expected ZoneAuth Object", func() {
 			Expect(actualZoneAuth).To(Equal(zdFakeConnector.resultObject))
 			Expect(err).To(BeNil())
 		})
 		It("should return empty ZoneAuth and nil error if ref is empty", func() {
-			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.objectType = ""
 			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.returnFields = nil
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef("")
 			Expect(actualZoneAuth).To(Equal(getNoRef))

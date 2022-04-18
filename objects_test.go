@@ -10,18 +10,18 @@ var _ = Describe("Objects", func() {
 
 	Context("Grid object", func() {
 
-		tesNtpserver := NTPserver{
+		tesNtpserver := &NTPserver{
 			Address:              "16.4.1.2",
 			Burst:                true,
 			EnableAuthentication: true,
 			IBurst:               true,
-			Preffered:            true,
+			Preferred:            true,
 		}
 		grid := Grid{Name: "test", NTPSetting: &NTPSetting{EnableNTP: true,
 			NTPAcl:     nil,
 			NTPKeys:    nil,
 			NTPKod:     false,
-			NTPServers: []NTPserver{tesNtpserver},
+			NTPServers: []*NTPserver{tesNtpserver},
 		},
 		}
 		gridJSON := `{
@@ -33,7 +33,7 @@ var _ = Describe("Objects", func() {
 					"burst": true,
 					"enable_authentication": true,
 					"iburst": true,
-					"preffered": true
+					"preferred": true
 					}]
 				}
 				}`
@@ -139,7 +139,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Context("EADefListValue Object", func() {
-		var eadListVal EADefListValue = "Host Record"
+		eadListVal := EADefListValue{"Host Record"}
 
 		eadListValJSON := `{"value": "Host Record"}`
 
@@ -341,7 +341,7 @@ var _ = Describe("Objects", func() {
 		Context("EADefinition object", func() {
 			comment := "Test Extensible Attribute"
 			flags := "CGV"
-			listValues := []EADefListValue{"True", "False"}
+			listValues := []*EADefListValue{{"True"}, {"False"}}
 			name := "Test EA"
 			eaType := "string"
 			allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
