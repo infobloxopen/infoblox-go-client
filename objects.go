@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"reflect"
+	"time"
 )
 
 const MACADDR_ZERO = "00:00:00:00:00:00"
@@ -342,4 +343,24 @@ func NewLicense(license License) *License {
 	result.objectType = "member:license"
 	result.returnFields = returnFields
 	return &result
+}
+
+// UnixTime is used to marshall/unmarshall epoch seconds
+// presented in different parts of WAPI objects
+type UnixTime struct {
+	time.Time
+}
+
+func (u *UnixTime) UnmarshalJSON(b []byte) error {
+	var timestamp int64
+	err := json.Unmarshal(b, &timestamp)
+	if err != nil {
+		return err
+	}
+	u.Time = time.Unix(timestamp, 0)
+	return nil
+}
+
+func (u UnixTime) MarshalJSON() ([]byte, error) {
+	return []byte(fmt.Sprintf("%d", u.Time.Unix())), nil
 }

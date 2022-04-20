@@ -2,8 +2,6 @@
 
 package ibclient
 
-import "time"
-
 // Allrpzrecords represents Infoblox object allrpzrecords
 type Allrpzrecords struct {
 	IBBase         `json:"-"`
@@ -246,14 +244,14 @@ func (obj Approvalworkflow) ReturnFields() []string {
 // Awsuser represents Infoblox object awsuser
 type Awsuser struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	AccessKeyId     string     `json:"access_key_id,omitempty"`
-	AccountId       string     `json:"account_id,omitempty"`
-	LastUsed        *time.Time `json:"last_used,omitempty"`
-	Name            string     `json:"name,omitempty"`
-	NiosUserName    string     `json:"nios_user_name,omitempty"`
-	SecretAccessKey string     `json:"secret_access_key,omitempty"`
-	Status          string     `json:"status,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	AccessKeyId     string    `json:"access_key_id,omitempty"`
+	AccountId       string    `json:"account_id,omitempty"`
+	LastUsed        *UnixTime `json:"last_used,omitempty"`
+	Name            string    `json:"name,omitempty"`
+	NiosUserName    string    `json:"nios_user_name,omitempty"`
+	SecretAccessKey string    `json:"secret_access_key,omitempty"`
+	Status          string    `json:"status,omitempty"`
 }
 
 func (Awsuser) ObjectType() string {
@@ -277,7 +275,7 @@ type Bulkhost struct {
 	DnsPrefix       string            `json:"dns_prefix,omitempty"`
 	EndAddr         string            `json:"end_addr,omitempty"`
 	Ea              EA                `json:"extattrs,omitempty"`
-	LastQueried     *time.Time        `json:"last_queried,omitempty"`
+	LastQueried     *UnixTime         `json:"last_queried,omitempty"`
 	NameTemplate    string            `json:"name_template,omitempty"`
 	NetworkView     string            `json:"network_view,omitempty"`
 	Policy          string            `json:"policy,omitempty"`
@@ -351,13 +349,13 @@ func (obj Bfdtemplate) ReturnFields() []string {
 // Cacertificate represents Infoblox object cacertificate
 type Cacertificate struct {
 	IBBase            `json:"-"`
-	Ref               string     `json:"_ref,omitempty"`
-	DistinguishedName string     `json:"distinguished_name,omitempty"`
-	Issuer            string     `json:"issuer,omitempty"`
-	Serial            string     `json:"serial,omitempty"`
-	UsedBy            string     `json:"used_by,omitempty"`
-	ValidNotAfter     *time.Time `json:"valid_not_after,omitempty"`
-	ValidNotBefore    *time.Time `json:"valid_not_before,omitempty"`
+	Ref               string    `json:"_ref,omitempty"`
+	DistinguishedName string    `json:"distinguished_name,omitempty"`
+	Issuer            string    `json:"issuer,omitempty"`
+	Serial            string    `json:"serial,omitempty"`
+	UsedBy            string    `json:"used_by,omitempty"`
+	ValidNotAfter     *UnixTime `json:"valid_not_after,omitempty"`
+	ValidNotBefore    *UnixTime `json:"valid_not_before,omitempty"`
 }
 
 func (Cacertificate) ObjectType() string {
@@ -616,23 +614,23 @@ func (obj DdnsPrincipalcluster) ReturnFields() []string {
 // Csvimporttask represents Infoblox object csvimporttask
 type Csvimporttask struct {
 	IBBase         `json:"-"`
-	Ref            string     `json:"_ref,omitempty"`
-	Action         string     `json:"action,omitempty"`
-	AdminName      string     `json:"admin_name,omitempty"`
-	EndTime        *time.Time `json:"end_time,omitempty"`
-	FileName       string     `json:"file_name,omitempty"`
-	FileSize       uint32     `json:"file_size,omitempty"`
-	ImportId       uint32     `json:"import_id,omitempty"`
-	LinesFailed    uint32     `json:"lines_failed,omitempty"`
-	LinesProcessed uint32     `json:"lines_processed,omitempty"`
-	LinesWarning   uint32     `json:"lines_warning,omitempty"`
-	OnError        string     `json:"on_error,omitempty"`
-	Operation      string     `json:"operation,omitempty"`
-	Separator      string     `json:"separator,omitempty"`
-	StartTime      *time.Time `json:"start_time,omitempty"`
-	Status         string     `json:"status,omitempty"`
-	Stop           *Stopcsv   `json:"stop,omitempty"`
-	UpdateMethod   string     `json:"update_method,omitempty"`
+	Ref            string    `json:"_ref,omitempty"`
+	Action         string    `json:"action,omitempty"`
+	AdminName      string    `json:"admin_name,omitempty"`
+	EndTime        *UnixTime `json:"end_time,omitempty"`
+	FileName       string    `json:"file_name,omitempty"`
+	FileSize       uint32    `json:"file_size,omitempty"`
+	ImportId       uint32    `json:"import_id,omitempty"`
+	LinesFailed    uint32    `json:"lines_failed,omitempty"`
+	LinesProcessed uint32    `json:"lines_processed,omitempty"`
+	LinesWarning   uint32    `json:"lines_warning,omitempty"`
+	OnError        string    `json:"on_error,omitempty"`
+	Operation      string    `json:"operation,omitempty"`
+	Separator      string    `json:"separator,omitempty"`
+	StartTime      *UnixTime `json:"start_time,omitempty"`
+	Status         string    `json:"status,omitempty"`
+	Stop           *Stopcsv  `json:"stop,omitempty"`
+	UpdateMethod   string    `json:"update_method,omitempty"`
 }
 
 func (Csvimporttask) ObjectType() string {
@@ -653,12 +651,12 @@ type CiscoiseEndpoint struct {
 	Address                          string                    `json:"address,omitempty"`
 	BulkDownloadCertificateSubject   string                    `json:"bulk_download_certificate_subject,omitempty"`
 	BulkDownloadCertificateToken     string                    `json:"bulk_download_certificate_token,omitempty"`
-	BulkDownloadCertificateValidFrom *time.Time                `json:"bulk_download_certificate_valid_from,omitempty"`
-	BulkDownloadCertificateValidTo   *time.Time                `json:"bulk_download_certificate_valid_to,omitempty"`
+	BulkDownloadCertificateValidFrom *UnixTime                 `json:"bulk_download_certificate_valid_from,omitempty"`
+	BulkDownloadCertificateValidTo   *UnixTime                 `json:"bulk_download_certificate_valid_to,omitempty"`
 	ClientCertificateSubject         string                    `json:"client_certificate_subject,omitempty"`
 	ClientCertificateToken           string                    `json:"client_certificate_token,omitempty"`
-	ClientCertificateValidFrom       *time.Time                `json:"client_certificate_valid_from,omitempty"`
-	ClientCertificateValidTo         *time.Time                `json:"client_certificate_valid_to,omitempty"`
+	ClientCertificateValidFrom       *UnixTime                 `json:"client_certificate_valid_from,omitempty"`
+	ClientCertificateValidTo         *UnixTime                 `json:"client_certificate_valid_to,omitempty"`
 	Comment                          string                    `json:"comment,omitempty"`
 	ConnectionStatus                 string                    `json:"connection_status,omitempty"`
 	ConnectionTimeout                uint32                    `json:"connection_timeout,omitempty"`
@@ -715,7 +713,7 @@ type Dbsnapshot struct {
 	Comment            string          `json:"comment,omitempty"`
 	RollbackDbSnapshot *Emptyparams    `json:"rollback_db_snapshot,omitempty"`
 	SaveDbSnapshot     *Savedbsnapshot `json:"save_db_snapshot,omitempty"`
-	Timestamp          *time.Time      `json:"timestamp,omitempty"`
+	Timestamp          *UnixTime       `json:"timestamp,omitempty"`
 }
 
 func (Dbsnapshot) ObjectType() string {
@@ -1011,7 +1009,7 @@ type DiscoveryDeviceinterface struct {
 	Ea                                 EA                              `json:"extattrs,omitempty"`
 	IfaddrInfos                        []*DiscoveryIfaddrinfo          `json:"ifaddr_infos,omitempty"`
 	Index                              int                             `json:"index,omitempty"`
-	LastChange                         *time.Time                      `json:"last_change,omitempty"`
+	LastChange                         *UnixTime                       `json:"last_change,omitempty"`
 	LinkAggregation                    bool                            `json:"link_aggregation,omitempty"`
 	Mac                                string                          `json:"mac,omitempty"`
 	MsAdUserData                       *MsserverAduserData             `json:"ms_ad_user_data,omitempty"`
@@ -1095,14 +1093,14 @@ func (obj Discovery) ReturnFields() []string {
 // DiscoveryDiagnostictask represents Infoblox object discovery:diagnostictask
 type DiscoveryDiagnostictask struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	CommunityString string     `json:"community_string,omitempty"`
-	DebugSnmp       bool       `json:"debug_snmp,omitempty"`
-	ForceTest       bool       `json:"force_test,omitempty"`
-	IpAddress       string     `json:"ip_address,omitempty"`
-	NetworkView     string     `json:"network_view,omitempty"`
-	StartTime       *time.Time `json:"start_time,omitempty"`
-	TaskId          string     `json:"task_id,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	CommunityString string    `json:"community_string,omitempty"`
+	DebugSnmp       bool      `json:"debug_snmp,omitempty"`
+	ForceTest       bool      `json:"force_test,omitempty"`
+	IpAddress       string    `json:"ip_address,omitempty"`
+	NetworkView     string    `json:"network_view,omitempty"`
+	StartTime       *UnixTime `json:"start_time,omitempty"`
+	TaskId          string    `json:"task_id,omitempty"`
 }
 
 func (DiscoveryDiagnostictask) ObjectType() string {
@@ -1126,10 +1124,10 @@ type DiscoveryStatus struct {
 	ExistenceInfo         *DiscoveryStatusinfo `json:"existence_info,omitempty"`
 	FingerprintEnabled    bool                 `json:"fingerprint_enabled,omitempty"`
 	FingerprintInfo       *DiscoveryStatusinfo `json:"fingerprint_info,omitempty"`
-	FirstSeen             *time.Time           `json:"first_seen,omitempty"`
+	FirstSeen             *UnixTime            `json:"first_seen,omitempty"`
 	LastAction            string               `json:"last_action,omitempty"`
-	LastSeen              *time.Time           `json:"last_seen,omitempty"`
-	LastTimestamp         *time.Time           `json:"last_timestamp,omitempty"`
+	LastSeen              *UnixTime            `json:"last_seen,omitempty"`
+	LastTimestamp         *UnixTime            `json:"last_timestamp,omitempty"`
 	Name                  string               `json:"name,omitempty"`
 	NetworkView           string               `json:"network_view,omitempty"`
 	ReachableInfo         *DiscoveryStatusinfo `json:"reachable_info,omitempty"`
@@ -1156,11 +1154,11 @@ func (obj DiscoveryStatus) ReturnFields() []string {
 // DiscoverySdnnetwork represents Infoblox object discovery:sdnnetwork
 type DiscoverySdnnetwork struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	FirstSeen       *time.Time `json:"first_seen,omitempty"`
-	Name            string     `json:"name,omitempty"`
-	NetworkView     string     `json:"network_view,omitempty"`
-	SourceSdnConfig string     `json:"source_sdn_config,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	FirstSeen       *UnixTime `json:"first_seen,omitempty"`
+	Name            string    `json:"name,omitempty"`
+	NetworkView     string    `json:"network_view,omitempty"`
+	SourceSdnConfig string    `json:"source_sdn_config,omitempty"`
 }
 
 func (DiscoverySdnnetwork) ObjectType() string {
@@ -1192,9 +1190,9 @@ type Discoverytask struct {
 	PingTimeout             uint32                         `json:"ping_timeout,omitempty"`
 	ScheduledRun            *SettingSchedule               `json:"scheduled_run,omitempty"`
 	State                   string                         `json:"state,omitempty"`
-	StateTime               *time.Time                     `json:"state_time,omitempty"`
+	StateTime               *UnixTime                      `json:"state_time,omitempty"`
 	Status                  string                         `json:"status,omitempty"`
-	StatusTime              *time.Time                     `json:"status_time,omitempty"`
+	StatusTime              *UnixTime                      `json:"status_time,omitempty"`
 	TcpPorts                []*Discoverytaskport           `json:"tcp_ports,omitempty"`
 	TcpScanTechnique        string                         `json:"tcp_scan_technique,omitempty"`
 	VNetworkView            string                         `json:"v_network_view,omitempty"`
@@ -1218,7 +1216,7 @@ type Distributionschedule struct {
 	IBBase        `json:"-"`
 	Ref           string                  `json:"_ref,omitempty"`
 	Active        bool                    `json:"active,omitempty"`
-	StartTime     *time.Time              `json:"start_time,omitempty"`
+	StartTime     *UnixTime               `json:"start_time,omitempty"`
 	TimeZone      string                  `json:"time_zone,omitempty"`
 	UpgradeGroups []*UpgradegroupSchedule `json:"upgrade_groups,omitempty"`
 }
@@ -1606,17 +1604,17 @@ func (obj DtcMonitorSnmp) ReturnFields() []string {
 // DtcObject represents Infoblox object dtc:object
 type DtcObject struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	AbstractType    string     `json:"abstract_type,omitempty"`
-	Comment         string     `json:"comment,omitempty"`
-	DisplayType     string     `json:"display_type,omitempty"`
-	Ea              EA         `json:"extattrs,omitempty"`
-	Ipv4AddressList []string   `json:"ipv4_address_list,omitempty"`
-	Ipv6AddressList []string   `json:"ipv6_address_list,omitempty"`
-	Name            string     `json:"name,omitempty"`
-	Object          string     `json:"object,omitempty"`
-	Status          string     `json:"status,omitempty"`
-	StatusTime      *time.Time `json:"status_time,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	AbstractType    string    `json:"abstract_type,omitempty"`
+	Comment         string    `json:"comment,omitempty"`
+	DisplayType     string    `json:"display_type,omitempty"`
+	Ea              EA        `json:"extattrs,omitempty"`
+	Ipv4AddressList []string  `json:"ipv4_address_list,omitempty"`
+	Ipv6AddressList []string  `json:"ipv6_address_list,omitempty"`
+	Name            string    `json:"name,omitempty"`
+	Object          string    `json:"object,omitempty"`
+	Status          string    `json:"status,omitempty"`
+	StatusTime      *UnixTime `json:"status_time,omitempty"`
 }
 
 func (DtcObject) ObjectType() string {
@@ -2092,8 +2090,8 @@ type DxlEndpoint struct {
 	ClearOutboundWorkerLog     *Clearworkerlog                   `json:"clear_outbound_worker_log,omitempty"`
 	ClientCertificateSubject   string                            `json:"client_certificate_subject,omitempty"`
 	ClientCertificateToken     string                            `json:"client_certificate_token,omitempty"`
-	ClientCertificateValidFrom *time.Time                        `json:"client_certificate_valid_from,omitempty"`
-	ClientCertificateValidTo   *time.Time                        `json:"client_certificate_valid_to,omitempty"`
+	ClientCertificateValidFrom *UnixTime                         `json:"client_certificate_valid_from,omitempty"`
+	ClientCertificateValidTo   *UnixTime                         `json:"client_certificate_valid_to,omitempty"`
 	Comment                    string                            `json:"comment,omitempty"`
 	Disable                    bool                              `json:"disable,omitempty"`
 	Ea                         EA                                `json:"extattrs,omitempty"`
@@ -2347,9 +2345,9 @@ type GridCloudapiTenant struct {
 	Ref          string            `json:"_ref,omitempty"`
 	CloudInfo    *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Comment      string            `json:"comment,omitempty"`
-	CreatedTs    *time.Time        `json:"created_ts,omitempty"`
+	CreatedTs    *UnixTime         `json:"created_ts,omitempty"`
 	Id           string            `json:"id,omitempty"`
-	LastEventTs  *time.Time        `json:"last_event_ts,omitempty"`
+	LastEventTs  *UnixTime         `json:"last_event_ts,omitempty"`
 	Name         string            `json:"name,omitempty"`
 	NetworkCount uint32            `json:"network_count,omitempty"`
 	VmCount      uint32            `json:"vm_count,omitempty"`
@@ -2375,11 +2373,11 @@ type GridCloudapiVm struct {
 	Comment           string            `json:"comment,omitempty"`
 	ElasticIpAddress  string            `json:"elastic_ip_address,omitempty"`
 	Ea                EA                `json:"extattrs,omitempty"`
-	FirstSeen         *time.Time        `json:"first_seen,omitempty"`
+	FirstSeen         *UnixTime         `json:"first_seen,omitempty"`
 	Hostname          string            `json:"hostname,omitempty"`
 	Id                string            `json:"id,omitempty"`
 	KernelId          string            `json:"kernel_id,omitempty"`
-	LastSeen          *time.Time        `json:"last_seen,omitempty"`
+	LastSeen          *UnixTime         `json:"last_seen,omitempty"`
 	Name              string            `json:"name,omitempty"`
 	NetworkCount      uint32            `json:"network_count,omitempty"`
 	OperatingSystem   string            `json:"operating_system,omitempty"`
@@ -2466,11 +2464,11 @@ type GridCloudapiVmaddress struct {
 	Tenant                string              `json:"tenant,omitempty"`
 	VmAvailabilityZone    string              `json:"vm_availability_zone,omitempty"`
 	VmComment             string              `json:"vm_comment,omitempty"`
-	VmCreationTime        *time.Time          `json:"vm_creation_time,omitempty"`
+	VmCreationTime        *UnixTime           `json:"vm_creation_time,omitempty"`
 	VmHostname            string              `json:"vm_hostname,omitempty"`
 	VmId                  string              `json:"vm_id,omitempty"`
 	VmKernelId            string              `json:"vm_kernel_id,omitempty"`
-	VmLastUpdateTime      *time.Time          `json:"vm_last_update_time,omitempty"`
+	VmLastUpdateTime      *UnixTime           `json:"vm_last_update_time,omitempty"`
 	VmName                string              `json:"vm_name,omitempty"`
 	VmNetworkCount        uint32              `json:"vm_network_count,omitempty"`
 	VmOperatingSystem     string              `json:"vm_operating_system,omitempty"`
@@ -2600,7 +2598,7 @@ type GridLicensePool struct {
 	Ref              string                `json:"_ref,omitempty"`
 	Assigned         uint32                `json:"assigned,omitempty"`
 	ExpirationStatus string                `json:"expiration_status,omitempty"`
-	ExpiryDate       *time.Time            `json:"expiry_date,omitempty"`
+	ExpiryDate       *UnixTime             `json:"expiry_date,omitempty"`
 	Installed        uint32                `json:"installed,omitempty"`
 	Key              string                `json:"key,omitempty"`
 	Limit            string                `json:"limit,omitempty"`
@@ -2627,7 +2625,7 @@ type GridLicensePoolContainer struct {
 	IBBase                `json:"-"`
 	Ref                   string            `json:"_ref,omitempty"`
 	AllocateLicenses      *Allocatelicenses `json:"allocate_licenses,omitempty"`
-	LastEntitlementUpdate *time.Time        `json:"last_entitlement_update,omitempty"`
+	LastEntitlementUpdate *UnixTime         `json:"last_entitlement_update,omitempty"`
 	LpcUid                string            `json:"lpc_uid,omitempty"`
 }
 
@@ -2645,14 +2643,14 @@ func (obj GridLicensePoolContainer) ReturnFields() []string {
 // GridMaxminddbinfo represents Infoblox object grid:maxminddbinfo
 type GridMaxminddbinfo struct {
 	IBBase             `json:"-"`
-	Ref                string     `json:"_ref,omitempty"`
-	BinaryMajorVersion uint32     `json:"binary_major_version,omitempty"`
-	BinaryMinorVersion uint32     `json:"binary_minor_version,omitempty"`
-	BuildTime          *time.Time `json:"build_time,omitempty"`
-	DatabaseType       string     `json:"database_type,omitempty"`
-	DeploymentTime     *time.Time `json:"deployment_time,omitempty"`
-	Member             string     `json:"member,omitempty"`
-	TopologyType       string     `json:"topology_type,omitempty"`
+	Ref                string    `json:"_ref,omitempty"`
+	BinaryMajorVersion uint32    `json:"binary_major_version,omitempty"`
+	BinaryMinorVersion uint32    `json:"binary_minor_version,omitempty"`
+	BuildTime          *UnixTime `json:"build_time,omitempty"`
+	DatabaseType       string    `json:"database_type,omitempty"`
+	DeploymentTime     *UnixTime `json:"deployment_time,omitempty"`
+	Member             string    `json:"member,omitempty"`
+	TopologyType       string    `json:"topology_type,omitempty"`
 }
 
 func (GridMaxminddbinfo) ObjectType() string {
@@ -2792,7 +2790,7 @@ type GridServicerestartGroup struct {
 	Comment           string                           `json:"comment,omitempty"`
 	Ea                EA                               `json:"extattrs,omitempty"`
 	IsDefault         bool                             `json:"is_default,omitempty"`
-	LastUpdatedTime   *time.Time                       `json:"last_updated_time,omitempty"`
+	LastUpdatedTime   *UnixTime                        `json:"last_updated_time,omitempty"`
 	Members           []string                         `json:"members,omitempty"`
 	Mode              string                           `json:"mode,omitempty"`
 	Name              string                           `json:"name,omitempty"`
@@ -2841,13 +2839,13 @@ func (obj GridMemberCloudapi) ReturnFields() []string {
 // GridServicerestartRequestChangedobject represents Infoblox object grid:servicerestart:request:changedobject
 type GridServicerestartRequestChangedobject struct {
 	IBBase            `json:"-"`
-	Ref               string     `json:"_ref,omitempty"`
-	Action            string     `json:"action,omitempty"`
-	ChangedProperties []string   `json:"changed_properties,omitempty"`
-	ChangedTime       *time.Time `json:"changed_time,omitempty"`
-	ObjectName        string     `json:"object_name,omitempty"`
-	ObjectTypeField   string     `json:"object_type,omitempty"`
-	UserName          string     `json:"user_name,omitempty"`
+	Ref               string    `json:"_ref,omitempty"`
+	Action            string    `json:"action,omitempty"`
+	ChangedProperties []string  `json:"changed_properties,omitempty"`
+	ChangedTime       *UnixTime `json:"changed_time,omitempty"`
+	ObjectName        string    `json:"object_name,omitempty"`
+	ObjectTypeField   string    `json:"object_type,omitempty"`
+	UserName          string    `json:"user_name,omitempty"`
 }
 
 func (GridServicerestartRequestChangedobject) ObjectType() string {
@@ -2893,17 +2891,17 @@ func (obj GridServicerestartStatus) ReturnFields() []string {
 // GridServicerestartRequest represents Infoblox object grid:servicerestart:request
 type GridServicerestartRequest struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	Error           string     `json:"error,omitempty"`
-	Forced          bool       `json:"forced,omitempty"`
-	Group           string     `json:"group,omitempty"`
-	LastUpdatedTime *time.Time `json:"last_updated_time,omitempty"`
-	Member          string     `json:"member,omitempty"`
-	Needed          string     `json:"needed,omitempty"`
-	Order           int        `json:"order,omitempty"`
-	Result          string     `json:"result,omitempty"`
-	Service         string     `json:"service,omitempty"`
-	State           string     `json:"state,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	Error           string    `json:"error,omitempty"`
+	Forced          bool      `json:"forced,omitempty"`
+	Group           string    `json:"group,omitempty"`
+	LastUpdatedTime *UnixTime `json:"last_updated_time,omitempty"`
+	Member          string    `json:"member,omitempty"`
+	Needed          string    `json:"needed,omitempty"`
+	Order           int       `json:"order,omitempty"`
+	Result          string    `json:"result,omitempty"`
+	Service         string    `json:"service,omitempty"`
+	State           string    `json:"state,omitempty"`
 }
 
 func (GridServicerestartRequest) ObjectType() string {
@@ -3035,11 +3033,11 @@ type GridThreatanalytics struct {
 	EnableScheduledDownload                 bool                                    `json:"enable_scheduled_download,omitempty"`
 	EnableWhitelistAutoDownload             bool                                    `json:"enable_whitelist_auto_download,omitempty"`
 	EnableWhitelistScheduledDownload        bool                                    `json:"enable_whitelist_scheduled_download,omitempty"`
-	LastCheckedForUpdate                    *time.Time                              `json:"last_checked_for_update,omitempty"`
-	LastCheckedForWhitelistUpdate           *time.Time                              `json:"last_checked_for_whitelist_update,omitempty"`
-	LastModuleUpdateTime                    *time.Time                              `json:"last_module_update_time,omitempty"`
+	LastCheckedForUpdate                    *UnixTime                               `json:"last_checked_for_update,omitempty"`
+	LastCheckedForWhitelistUpdate           *UnixTime                               `json:"last_checked_for_whitelist_update,omitempty"`
+	LastModuleUpdateTime                    *UnixTime                               `json:"last_module_update_time,omitempty"`
 	LastModuleUpdateVersion                 string                                  `json:"last_module_update_version,omitempty"`
-	LastWhitelistUpdateTime                 *time.Time                              `json:"last_whitelist_update_time,omitempty"`
+	LastWhitelistUpdateTime                 *UnixTime                               `json:"last_whitelist_update_time,omitempty"`
 	LastWhitelistUpdateVersion              string                                  `json:"last_whitelist_update_version,omitempty"`
 	ModuleUpdatePolicy                      string                                  `json:"module_update_policy,omitempty"`
 	MoveBlacklistRpzToWhiteList             *Moveblacklistrpztowhitelistparams      `json:"move_blacklist_rpz_to_white_list,omitempty"`
@@ -3240,8 +3238,8 @@ type GridThreatprotection struct {
 	EnableScheduledDownload               bool                       `json:"enable_scheduled_download,omitempty"`
 	EventsPerSecondPerRule                uint32                     `json:"events_per_second_per_rule,omitempty"`
 	GridName                              string                     `json:"grid_name,omitempty"`
-	LastCheckedForUpdate                  *time.Time                 `json:"last_checked_for_update,omitempty"`
-	LastRuleUpdateTimestamp               *time.Time                 `json:"last_rule_update_timestamp,omitempty"`
+	LastCheckedForUpdate                  *UnixTime                  `json:"last_checked_for_update,omitempty"`
+	LastRuleUpdateTimestamp               *UnixTime                  `json:"last_rule_update_timestamp,omitempty"`
 	LastRuleUpdateVersion                 string                     `json:"last_rule_update_version,omitempty"`
 	NatRules                              []*ThreatprotectionNatrule `json:"nat_rules,omitempty"`
 	OutboundSettings                      *SettingAtpoutbound        `json:"outbound_settings,omitempty"`
@@ -3264,12 +3262,12 @@ func (obj GridThreatprotection) ReturnFields() []string {
 // GridX509certificate represents Infoblox object grid:x509certificate
 type GridX509certificate struct {
 	IBBase         `json:"-"`
-	Ref            string     `json:"_ref,omitempty"`
-	Issuer         string     `json:"issuer,omitempty"`
-	Serial         string     `json:"serial,omitempty"`
-	Subject        string     `json:"subject,omitempty"`
-	ValidNotAfter  *time.Time `json:"valid_not_after,omitempty"`
-	ValidNotBefore *time.Time `json:"valid_not_before,omitempty"`
+	Ref            string    `json:"_ref,omitempty"`
+	Issuer         string    `json:"issuer,omitempty"`
+	Serial         string    `json:"serial,omitempty"`
+	Subject        string    `json:"subject,omitempty"`
+	ValidNotAfter  *UnixTime `json:"valid_not_after,omitempty"`
+	ValidNotBefore *UnixTime `json:"valid_not_before,omitempty"`
 }
 
 func (GridX509certificate) ObjectType() string {
@@ -3388,7 +3386,7 @@ type IpamStatistics struct {
 	NetworkView       string              `json:"network_view,omitempty"`
 	UnmanagedCount    uint32              `json:"unmanaged_count,omitempty"`
 	Utilization       uint32              `json:"utilization,omitempty"`
-	UtilizationUpdate *time.Time          `json:"utilization_update,omitempty"`
+	UtilizationUpdate *UnixTime           `json:"utilization_update,omitempty"`
 }
 
 func (IpamStatistics) ObjectType() string {
@@ -3699,14 +3697,14 @@ func (obj Ipv6rangetemplate) ReturnFields() []string {
 // Kerberoskey represents Infoblox object kerberoskey
 type Kerberoskey struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	Domain          string     `json:"domain,omitempty"`
-	Enctype         string     `json:"enctype,omitempty"`
-	InUse           bool       `json:"in_use,omitempty"`
-	Members         []string   `json:"members,omitempty"`
-	Principal       string     `json:"principal,omitempty"`
-	UploadTimestamp *time.Time `json:"upload_timestamp,omitempty"`
-	Version         uint32     `json:"version,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	Domain          string    `json:"domain,omitempty"`
+	Enctype         string    `json:"enctype,omitempty"`
+	InUse           bool      `json:"in_use,omitempty"`
+	Members         []string  `json:"members,omitempty"`
+	Principal       string    `json:"principal,omitempty"`
+	UploadTimestamp *UnixTime `json:"upload_timestamp,omitempty"`
+	Version         uint32    `json:"version,omitempty"`
 }
 
 func (Kerberoskey) ObjectType() string {
@@ -3802,7 +3800,7 @@ type Ipv6Network struct {
 	EndpointSources                  []*CiscoiseEndpoint         `json:"endpoint_sources,omitempty"`
 	ExpandNetwork                    *Expandnetwork              `json:"expand_network,omitempty"`
 	Ea                               EA                          `json:"extattrs,omitempty"`
-	LastRirRegistrationUpdateSent    *time.Time                  `json:"last_rir_registration_update_sent,omitempty"`
+	LastRirRegistrationUpdateSent    *UnixTime                   `json:"last_rir_registration_update_sent,omitempty"`
 	LastRirRegistrationUpdateStatus  string                      `json:"last_rir_registration_update_status,omitempty"`
 	Members                          []*Dhcpmember               `json:"members,omitempty"`
 	MgmPrivate                       bool                        `json:"mgm_private,omitempty"`
@@ -3942,7 +3940,7 @@ type Ipv6NetworkContainer struct {
 	EnableImmediateDiscovery         bool                        `json:"enable_immediate_discovery,omitempty"`
 	EndpointSources                  []*CiscoiseEndpoint         `json:"endpoint_sources,omitempty"`
 	Ea                               EA                          `json:"extattrs,omitempty"`
-	LastRirRegistrationUpdateSent    *time.Time                  `json:"last_rir_registration_update_sent,omitempty"`
+	LastRirRegistrationUpdateSent    *UnixTime                   `json:"last_rir_registration_update_sent,omitempty"`
 	LastRirRegistrationUpdateStatus  string                      `json:"last_rir_registration_update_status,omitempty"`
 	MgmPrivate                       bool                        `json:"mgm_private,omitempty"`
 	MgmPrivateOverridable            bool                        `json:"mgm_private_overridable,omitempty"`
@@ -4036,9 +4034,9 @@ type Lease struct {
 	BillingClass          string              `json:"billing_class,omitempty"`
 	BindingState          string              `json:"binding_state,omitempty"`
 	ClientHostname        string              `json:"client_hostname,omitempty"`
-	Cltt                  *time.Time          `json:"cltt,omitempty"`
+	Cltt                  *UnixTime           `json:"cltt,omitempty"`
 	DiscoveredData        *Discoverydata      `json:"discovered_data,omitempty"`
-	Ends                  *time.Time          `json:"ends,omitempty"`
+	Ends                  *UnixTime           `json:"ends,omitempty"`
 	Fingerprint           string              `json:"fingerprint,omitempty"`
 	Hardware              string              `json:"hardware,omitempty"`
 	Ipv6Duid              string              `json:"ipv6_duid,omitempty"`
@@ -4060,9 +4058,9 @@ type Lease struct {
 	RemoteId              string              `json:"remote_id,omitempty"`
 	ServedBy              string              `json:"served_by,omitempty"`
 	ServerHostName        string              `json:"server_host_name,omitempty"`
-	Starts                *time.Time          `json:"starts,omitempty"`
-	Tsfp                  *time.Time          `json:"tsfp,omitempty"`
-	Tstp                  *time.Time          `json:"tstp,omitempty"`
+	Starts                *UnixTime           `json:"starts,omitempty"`
+	Tsfp                  *UnixTime           `json:"tsfp,omitempty"`
+	Tstp                  *UnixTime           `json:"tstp,omitempty"`
 	Uid                   string              `json:"uid,omitempty"`
 	Username              string              `json:"username,omitempty"`
 	Variable              string              `json:"variable,omitempty"`
@@ -4082,13 +4080,13 @@ func (obj Lease) ReturnFields() []string {
 // LicenseGridwide represents Infoblox object license:gridwide
 type LicenseGridwide struct {
 	IBBase           `json:"-"`
-	Ref              string     `json:"_ref,omitempty"`
-	ExpirationStatus string     `json:"expiration_status,omitempty"`
-	ExpiryDate       *time.Time `json:"expiry_date,omitempty"`
-	Key              string     `json:"key,omitempty"`
-	Limit            string     `json:"limit,omitempty"`
-	LimitContext     string     `json:"limit_context,omitempty"`
-	Type             string     `json:"type,omitempty"`
+	Ref              string    `json:"_ref,omitempty"`
+	ExpirationStatus string    `json:"expiration_status,omitempty"`
+	ExpiryDate       *UnixTime `json:"expiry_date,omitempty"`
+	Key              string    `json:"key,omitempty"`
+	Limit            string    `json:"limit,omitempty"`
+	LimitContext     string    `json:"limit_context,omitempty"`
+	Type             string    `json:"type,omitempty"`
 }
 
 func (LicenseGridwide) ObjectType() string {
@@ -4125,19 +4123,19 @@ func (obj LocaluserAuthservice) ReturnFields() []string {
 // Mastergrid represents Infoblox object mastergrid
 type Mastergrid struct {
 	IBBase              `json:"-"`
-	Ref                 string     `json:"_ref,omitempty"`
-	Address             string     `json:"address,omitempty"`
-	ConnectionDisabled  bool       `json:"connection_disabled,omitempty"`
-	ConnectionTimestamp *time.Time `json:"connection_timestamp,omitempty"`
-	Detached            bool       `json:"detached,omitempty"`
-	Enable              bool       `json:"enable,omitempty"`
-	Joined              bool       `json:"joined,omitempty"`
-	LastEvent           string     `json:"last_event,omitempty"`
-	LastEventDetails    string     `json:"last_event_details,omitempty"`
-	LastSyncTimestamp   *time.Time `json:"last_sync_timestamp,omitempty"`
-	Port                uint32     `json:"port,omitempty"`
-	Status              string     `json:"status,omitempty"`
-	UseMgmtPort         bool       `json:"use_mgmt_port,omitempty"`
+	Ref                 string    `json:"_ref,omitempty"`
+	Address             string    `json:"address,omitempty"`
+	ConnectionDisabled  bool      `json:"connection_disabled,omitempty"`
+	ConnectionTimestamp *UnixTime `json:"connection_timestamp,omitempty"`
+	Detached            bool      `json:"detached,omitempty"`
+	Enable              bool      `json:"enable,omitempty"`
+	Joined              bool      `json:"joined,omitempty"`
+	LastEvent           string    `json:"last_event,omitempty"`
+	LastEventDetails    string    `json:"last_event_details,omitempty"`
+	LastSyncTimestamp   *UnixTime `json:"last_sync_timestamp,omitempty"`
+	Port                uint32    `json:"port,omitempty"`
+	Status              string    `json:"status,omitempty"`
+	UseMgmtPort         bool      `json:"use_mgmt_port,omitempty"`
 }
 
 func (Mastergrid) ObjectType() string {
@@ -4154,27 +4152,27 @@ func (obj Mastergrid) ReturnFields() []string {
 // Macfilteraddress represents Infoblox object macfilteraddress
 type Macfilteraddress struct {
 	IBBase              `json:"-"`
-	Ref                 string     `json:"_ref,omitempty"`
-	AuthenticationTime  *time.Time `json:"authentication_time,omitempty"`
-	Comment             string     `json:"comment,omitempty"`
-	ExpirationTime      *time.Time `json:"expiration_time,omitempty"`
-	Ea                  EA         `json:"extattrs,omitempty"`
-	Filter              string     `json:"filter,omitempty"`
-	Fingerprint         string     `json:"fingerprint,omitempty"`
-	GuestCustomField1   string     `json:"guest_custom_field1,omitempty"`
-	GuestCustomField2   string     `json:"guest_custom_field2,omitempty"`
-	GuestCustomField3   string     `json:"guest_custom_field3,omitempty"`
-	GuestCustomField4   string     `json:"guest_custom_field4,omitempty"`
-	GuestEmail          string     `json:"guest_email,omitempty"`
-	GuestFirstName      string     `json:"guest_first_name,omitempty"`
-	GuestLastName       string     `json:"guest_last_name,omitempty"`
-	GuestMiddleName     string     `json:"guest_middle_name,omitempty"`
-	GuestPhone          string     `json:"guest_phone,omitempty"`
-	IsRegisteredUser    bool       `json:"is_registered_user,omitempty"`
-	Mac                 string     `json:"mac,omitempty"`
-	NeverExpires        bool       `json:"never_expires,omitempty"`
-	ReservedForInfoblox string     `json:"reserved_for_infoblox,omitempty"`
-	Username            string     `json:"username,omitempty"`
+	Ref                 string    `json:"_ref,omitempty"`
+	AuthenticationTime  *UnixTime `json:"authentication_time,omitempty"`
+	Comment             string    `json:"comment,omitempty"`
+	ExpirationTime      *UnixTime `json:"expiration_time,omitempty"`
+	Ea                  EA        `json:"extattrs,omitempty"`
+	Filter              string    `json:"filter,omitempty"`
+	Fingerprint         string    `json:"fingerprint,omitempty"`
+	GuestCustomField1   string    `json:"guest_custom_field1,omitempty"`
+	GuestCustomField2   string    `json:"guest_custom_field2,omitempty"`
+	GuestCustomField3   string    `json:"guest_custom_field3,omitempty"`
+	GuestCustomField4   string    `json:"guest_custom_field4,omitempty"`
+	GuestEmail          string    `json:"guest_email,omitempty"`
+	GuestFirstName      string    `json:"guest_first_name,omitempty"`
+	GuestLastName       string    `json:"guest_last_name,omitempty"`
+	GuestMiddleName     string    `json:"guest_middle_name,omitempty"`
+	GuestPhone          string    `json:"guest_phone,omitempty"`
+	IsRegisteredUser    bool      `json:"is_registered_user,omitempty"`
+	Mac                 string    `json:"mac,omitempty"`
+	NeverExpires        bool      `json:"never_expires,omitempty"`
+	ReservedForInfoblox string    `json:"reserved_for_infoblox,omitempty"`
+	Username            string    `json:"username,omitempty"`
 }
 
 func (Macfilteraddress) ObjectType() string {
@@ -4229,15 +4227,15 @@ func (obj MemberFiledistribution) ReturnFields() []string {
 // MemberLicense represents Infoblox object member:license
 type MemberLicense struct {
 	IBBase           `json:"-"`
-	Ref              string     `json:"_ref,omitempty"`
-	ExpirationStatus string     `json:"expiration_status,omitempty"`
-	ExpiryDate       *time.Time `json:"expiry_date,omitempty"`
-	Hwid             string     `json:"hwid,omitempty"`
-	Key              string     `json:"key,omitempty"`
-	Kind             string     `json:"kind,omitempty"`
-	Limit            string     `json:"limit,omitempty"`
-	LimitContext     string     `json:"limit_context,omitempty"`
-	Type             string     `json:"type,omitempty"`
+	Ref              string    `json:"_ref,omitempty"`
+	ExpirationStatus string    `json:"expiration_status,omitempty"`
+	ExpiryDate       *UnixTime `json:"expiry_date,omitempty"`
+	Hwid             string    `json:"hwid,omitempty"`
+	Key              string    `json:"key,omitempty"`
+	Kind             string    `json:"kind,omitempty"`
+	Limit            string    `json:"limit,omitempty"`
+	LimitContext     string    `json:"limit_context,omitempty"`
+	Type             string    `json:"type,omitempty"`
 }
 
 func (MemberLicense) ObjectType() string {
@@ -4807,7 +4805,7 @@ type Msserver struct {
 	DnsView                     string          `json:"dns_view,omitempty"`
 	Ea                          EA              `json:"extattrs,omitempty"`
 	GridMember                  string          `json:"grid_member,omitempty"`
-	LastSeen                    *time.Time      `json:"last_seen,omitempty"`
+	LastSeen                    *UnixTime       `json:"last_seen,omitempty"`
 	LogDestination              string          `json:"log_destination,omitempty"`
 	LogLevel                    string          `json:"log_level,omitempty"`
 	LoginName                   string          `json:"login_name,omitempty"`
@@ -4842,28 +4840,28 @@ func (obj Msserver) ReturnFields() []string {
 // MsserverDhcp represents Infoblox object msserver:dhcp
 type MsserverDhcp struct {
 	IBBase                     `json:"-"`
-	Ref                        string     `json:"_ref,omitempty"`
-	Address                    string     `json:"address,omitempty"`
-	Comment                    string     `json:"comment,omitempty"`
-	DhcpUtilization            uint32     `json:"dhcp_utilization,omitempty"`
-	DhcpUtilizationStatus      string     `json:"dhcp_utilization_status,omitempty"`
-	DynamicHosts               uint32     `json:"dynamic_hosts,omitempty"`
-	LastSyncTs                 *time.Time `json:"last_sync_ts,omitempty"`
-	LoginName                  string     `json:"login_name,omitempty"`
-	LoginPassword              string     `json:"login_password,omitempty"`
-	NetworkView                string     `json:"network_view,omitempty"`
-	NextSyncControl            string     `json:"next_sync_control,omitempty"`
-	ReadOnly                   bool       `json:"read_only,omitempty"`
-	ServerName                 string     `json:"server_name,omitempty"`
-	StaticHosts                uint32     `json:"static_hosts,omitempty"`
-	Status                     string     `json:"status,omitempty"`
-	StatusDetail               string     `json:"status_detail,omitempty"`
-	StatusLastUpdated          *time.Time `json:"status_last_updated,omitempty"`
-	SupportsFailover           bool       `json:"supports_failover,omitempty"`
-	SynchronizationInterval    uint32     `json:"synchronization_interval,omitempty"`
-	TotalHosts                 uint32     `json:"total_hosts,omitempty"`
-	UseLogin                   bool       `json:"use_login,omitempty"`
-	UseSynchronizationInterval bool       `json:"use_synchronization_interval,omitempty"`
+	Ref                        string    `json:"_ref,omitempty"`
+	Address                    string    `json:"address,omitempty"`
+	Comment                    string    `json:"comment,omitempty"`
+	DhcpUtilization            uint32    `json:"dhcp_utilization,omitempty"`
+	DhcpUtilizationStatus      string    `json:"dhcp_utilization_status,omitempty"`
+	DynamicHosts               uint32    `json:"dynamic_hosts,omitempty"`
+	LastSyncTs                 *UnixTime `json:"last_sync_ts,omitempty"`
+	LoginName                  string    `json:"login_name,omitempty"`
+	LoginPassword              string    `json:"login_password,omitempty"`
+	NetworkView                string    `json:"network_view,omitempty"`
+	NextSyncControl            string    `json:"next_sync_control,omitempty"`
+	ReadOnly                   bool      `json:"read_only,omitempty"`
+	ServerName                 string    `json:"server_name,omitempty"`
+	StaticHosts                uint32    `json:"static_hosts,omitempty"`
+	Status                     string    `json:"status,omitempty"`
+	StatusDetail               string    `json:"status_detail,omitempty"`
+	StatusLastUpdated          *UnixTime `json:"status_last_updated,omitempty"`
+	SupportsFailover           bool      `json:"supports_failover,omitempty"`
+	SynchronizationInterval    uint32    `json:"synchronization_interval,omitempty"`
+	TotalHosts                 uint32    `json:"total_hosts,omitempty"`
+	UseLogin                   bool      `json:"use_login,omitempty"`
+	UseSynchronizationInterval bool      `json:"use_synchronization_interval,omitempty"`
 }
 
 func (MsserverDhcp) ObjectType() string {
@@ -5032,8 +5030,8 @@ type Member struct {
 	MemberAdminOperation            *Memberadminoperationparams     `json:"member_admin_operation,omitempty"`
 	MemberServiceCommunication      []*Memberservicecommunication   `json:"member_service_communication,omitempty"`
 	MgmtPortSetting                 *Mgmtportsetting                `json:"mgmt_port_setting,omitempty"`
-	MmdbEaBuildTime                 *time.Time                      `json:"mmdb_ea_build_time,omitempty"`
-	MmdbGeoipBuildTime              *time.Time                      `json:"mmdb_geoip_build_time,omitempty"`
+	MmdbEaBuildTime                 *UnixTime                       `json:"mmdb_ea_build_time,omitempty"`
+	MmdbGeoipBuildTime              *UnixTime                       `json:"mmdb_geoip_build_time,omitempty"`
 	NatSetting                      *Natsetting                     `json:"nat_setting,omitempty"`
 	NodeInfo                        []*Nodeinfo                     `json:"node_info,omitempty"`
 	NTPSetting                      *MemberNtp                      `json:"ntp_setting,omitempty"`
@@ -5198,22 +5196,22 @@ func (obj Networktemplate) ReturnFields() []string {
 // Networkuser represents Infoblox object networkuser
 type Networkuser struct {
 	IBBase          `json:"-"`
-	Ref             string     `json:"_ref,omitempty"`
-	Address         string     `json:"address,omitempty"`
-	AddressObject   string     `json:"address_object,omitempty"`
-	DataSource      string     `json:"data_source,omitempty"`
-	DataSourceIp    string     `json:"data_source_ip,omitempty"`
-	Domainname      string     `json:"domainname,omitempty"`
-	FirstSeenTime   *time.Time `json:"first_seen_time,omitempty"`
-	Guid            string     `json:"guid,omitempty"`
-	LastSeenTime    *time.Time `json:"last_seen_time,omitempty"`
-	LastUpdatedTime *time.Time `json:"last_updated_time,omitempty"`
-	LogonId         string     `json:"logon_id,omitempty"`
-	LogoutTime      *time.Time `json:"logout_time,omitempty"`
-	Name            string     `json:"name,omitempty"`
-	Network         string     `json:"network,omitempty"`
-	NetworkView     string     `json:"network_view,omitempty"`
-	UserStatus      string     `json:"user_status,omitempty"`
+	Ref             string    `json:"_ref,omitempty"`
+	Address         string    `json:"address,omitempty"`
+	AddressObject   string    `json:"address_object,omitempty"`
+	DataSource      string    `json:"data_source,omitempty"`
+	DataSourceIp    string    `json:"data_source_ip,omitempty"`
+	Domainname      string    `json:"domainname,omitempty"`
+	FirstSeenTime   *UnixTime `json:"first_seen_time,omitempty"`
+	Guid            string    `json:"guid,omitempty"`
+	LastSeenTime    *UnixTime `json:"last_seen_time,omitempty"`
+	LastUpdatedTime *UnixTime `json:"last_updated_time,omitempty"`
+	LogonId         string    `json:"logon_id,omitempty"`
+	LogoutTime      *UnixTime `json:"logout_time,omitempty"`
+	Name            string    `json:"name,omitempty"`
+	Network         string    `json:"network,omitempty"`
+	NetworkView     string    `json:"network_view,omitempty"`
+	UserStatus      string    `json:"user_status,omitempty"`
 }
 
 func (Networkuser) ObjectType() string {
@@ -5234,8 +5232,8 @@ type NotificationRestEndpoint struct {
 	ClearOutboundWorkerLog     *Clearworkerlog                   `json:"clear_outbound_worker_log,omitempty"`
 	ClientCertificateSubject   string                            `json:"client_certificate_subject,omitempty"`
 	ClientCertificateToken     string                            `json:"client_certificate_token,omitempty"`
-	ClientCertificateValidFrom *time.Time                        `json:"client_certificate_valid_from,omitempty"`
-	ClientCertificateValidTo   *time.Time                        `json:"client_certificate_valid_to,omitempty"`
+	ClientCertificateValidFrom *UnixTime                         `json:"client_certificate_valid_from,omitempty"`
+	ClientCertificateValidTo   *UnixTime                         `json:"client_certificate_valid_to,omitempty"`
 	Comment                    string                            `json:"comment,omitempty"`
 	Ea                         EA                                `json:"extattrs,omitempty"`
 	LogLevel                   string                            `json:"log_level,omitempty"`
@@ -5271,7 +5269,7 @@ type NotificationRestTemplate struct {
 	IBBase           `json:"-"`
 	Ref              string                               `json:"_ref,omitempty"`
 	ActionName       string                               `json:"action_name,omitempty"`
-	AddedOn          *time.Time                           `json:"added_on,omitempty"`
+	AddedOn          *UnixTime                            `json:"added_on,omitempty"`
 	Comment          string                               `json:"comment,omitempty"`
 	Content          string                               `json:"content,omitempty"`
 	EventType        []string                             `json:"event_type,omitempty"`
@@ -5437,7 +5435,7 @@ type Ipv4NetworkContainer struct {
 	IpamEmailAddresses               []string                    `json:"ipam_email_addresses,omitempty"`
 	IpamThresholdSettings            *SettingIpamThreshold       `json:"ipam_threshold_settings,omitempty"`
 	IpamTrapSettings                 *SettingIpamTrap            `json:"ipam_trap_settings,omitempty"`
-	LastRirRegistrationUpdateSent    *time.Time                  `json:"last_rir_registration_update_sent,omitempty"`
+	LastRirRegistrationUpdateSent    *UnixTime                   `json:"last_rir_registration_update_sent,omitempty"`
 	LastRirRegistrationUpdateStatus  string                      `json:"last_rir_registration_update_status,omitempty"`
 	LeaseScavengeTime                int                         `json:"lease_scavenge_time,omitempty"`
 	LogicFilterRules                 []*Logicfilterrule          `json:"logic_filter_rules,omitempty"`
@@ -5569,7 +5567,7 @@ type Ipv4Network struct {
 	IpamThresholdSettings            *SettingIpamThreshold       `json:"ipam_threshold_settings,omitempty"`
 	IpamTrapSettings                 *SettingIpamTrap            `json:"ipam_trap_settings,omitempty"`
 	Ipv4Addr                         string                      `json:"ipv4addr,omitempty"`
-	LastRirRegistrationUpdateSent    *time.Time                  `json:"last_rir_registration_update_sent,omitempty"`
+	LastRirRegistrationUpdateSent    *UnixTime                   `json:"last_rir_registration_update_sent,omitempty"`
 	LastRirRegistrationUpdateStatus  string                      `json:"last_rir_registration_update_status,omitempty"`
 	LeaseScavengeTime                int                         `json:"lease_scavenge_time,omitempty"`
 	LogicFilterRules                 []*Logicfilterrule          `json:"logic_filter_rules,omitempty"`
@@ -5639,7 +5637,7 @@ type Ipv4Network struct {
 	UseUpdateDnsOnLeaseRenewal       bool                        `json:"use_update_dns_on_lease_renewal,omitempty"`
 	UseZoneAssociations              bool                        `json:"use_zone_associations,omitempty"`
 	Utilization                      uint32                      `json:"utilization,omitempty"`
-	UtilizationUpdate                *time.Time                  `json:"utilization_update,omitempty"`
+	UtilizationUpdate                *UnixTime                   `json:"utilization_update,omitempty"`
 	Vlans                            []*Vlanlink                 `json:"vlans,omitempty"`
 	ZoneAssociations                 []*Zoneassociation          `json:"zone_associations,omitempty"`
 }
@@ -5875,8 +5873,8 @@ type PxgridEndpoint struct {
 	Address                    string                            `json:"address,omitempty"`
 	ClientCertificateSubject   string                            `json:"client_certificate_subject,omitempty"`
 	ClientCertificateToken     string                            `json:"client_certificate_token,omitempty"`
-	ClientCertificateValidFrom *time.Time                        `json:"client_certificate_valid_from,omitempty"`
-	ClientCertificateValidTo   *time.Time                        `json:"client_certificate_valid_to,omitempty"`
+	ClientCertificateValidFrom *UnixTime                         `json:"client_certificate_valid_from,omitempty"`
+	ClientCertificateValidTo   *UnixTime                         `json:"client_certificate_valid_to,omitempty"`
 	Comment                    string                            `json:"comment,omitempty"`
 	Disable                    bool                              `json:"disable,omitempty"`
 	Ea                         EA                                `json:"extattrs,omitempty"`
@@ -6167,7 +6165,7 @@ type RecordCaa struct {
 	CaValue           string            `json:"ca_value,omitempty"`
 	CloudInfo         *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Comment           string            `json:"comment,omitempty"`
-	CreationTime      *time.Time        `json:"creation_time,omitempty"`
+	CreationTime      *UnixTime         `json:"creation_time,omitempty"`
 	Creator           string            `json:"creator,omitempty"`
 	DdnsPrincipal     string            `json:"ddns_principal,omitempty"`
 	DdnsProtected     bool              `json:"ddns_protected,omitempty"`
@@ -6175,7 +6173,7 @@ type RecordCaa struct {
 	DnsName           string            `json:"dns_name,omitempty"`
 	Ea                EA                `json:"extattrs,omitempty"`
 	ForbidReclamation bool              `json:"forbid_reclamation,omitempty"`
-	LastQueried       *time.Time        `json:"last_queried,omitempty"`
+	LastQueried       *UnixTime         `json:"last_queried,omitempty"`
 	Name              string            `json:"name,omitempty"`
 	Reclaimable       bool              `json:"reclaimable,omitempty"`
 	Ttl               uint32            `json:"ttl,omitempty"`
@@ -6207,7 +6205,7 @@ type RecordAlias struct {
 	DnsName            string              `json:"dns_name,omitempty"`
 	DnsTargetName      string              `json:"dns_target_name,omitempty"`
 	Ea                 EA                  `json:"extattrs,omitempty"`
-	LastQueried        *time.Time          `json:"last_queried,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	TargetName         string              `json:"target_name,omitempty"`
 	TargetType         string              `json:"target_type,omitempty"`
@@ -6231,16 +6229,16 @@ func (obj RecordAlias) ReturnFields() []string {
 // RecordDhcid represents Infoblox object record:dhcid
 type RecordDhcid struct {
 	IBBase       `json:"-"`
-	Ref          string     `json:"_ref,omitempty"`
-	CreationTime *time.Time `json:"creation_time,omitempty"`
-	Creator      string     `json:"creator,omitempty"`
-	Dhcid        string     `json:"dhcid,omitempty"`
-	DnsName      string     `json:"dns_name,omitempty"`
-	Name         string     `json:"name,omitempty"`
-	Ttl          uint32     `json:"ttl,omitempty"`
-	UseTtl       bool       `json:"use_ttl,omitempty"`
-	View         string     `json:"view,omitempty"`
-	Zone         string     `json:"zone,omitempty"`
+	Ref          string    `json:"_ref,omitempty"`
+	CreationTime *UnixTime `json:"creation_time,omitempty"`
+	Creator      string    `json:"creator,omitempty"`
+	Dhcid        string    `json:"dhcid,omitempty"`
+	DnsName      string    `json:"dns_name,omitempty"`
+	Name         string    `json:"name,omitempty"`
+	Ttl          uint32    `json:"ttl,omitempty"`
+	UseTtl       bool      `json:"use_ttl,omitempty"`
+	View         string    `json:"view,omitempty"`
+	Zone         string    `json:"zone,omitempty"`
 }
 
 func (RecordDhcid) ObjectType() string {
@@ -6260,7 +6258,7 @@ type RecordDname struct {
 	Ref               string            `json:"_ref,omitempty"`
 	CloudInfo         *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Comment           string            `json:"comment,omitempty"`
-	CreationTime      *time.Time        `json:"creation_time,omitempty"`
+	CreationTime      *UnixTime         `json:"creation_time,omitempty"`
 	Creator           string            `json:"creator,omitempty"`
 	DdnsPrincipal     string            `json:"ddns_principal,omitempty"`
 	DdnsProtected     bool              `json:"ddns_protected,omitempty"`
@@ -6269,7 +6267,7 @@ type RecordDname struct {
 	DnsTarget         string            `json:"dns_target,omitempty"`
 	Ea                EA                `json:"extattrs,omitempty"`
 	ForbidReclamation bool              `json:"forbid_reclamation,omitempty"`
-	LastQueried       *time.Time        `json:"last_queried,omitempty"`
+	LastQueried       *UnixTime         `json:"last_queried,omitempty"`
 	Name              string            `json:"name,omitempty"`
 	Reclaimable       bool              `json:"reclaimable,omitempty"`
 	SharedRecordGroup string            `json:"shared_record_group,omitempty"`
@@ -6294,21 +6292,21 @@ func (obj RecordDname) ReturnFields() []string {
 // RecordDnskey represents Infoblox object record:dnskey
 type RecordDnskey struct {
 	IBBase       `json:"-"`
-	Ref          string     `json:"_ref,omitempty"`
-	Algorithm    string     `json:"algorithm,omitempty"`
-	Comment      string     `json:"comment,omitempty"`
-	CreationTime *time.Time `json:"creation_time,omitempty"`
-	Creator      string     `json:"creator,omitempty"`
-	DnsName      string     `json:"dns_name,omitempty"`
-	Flags        int        `json:"flags,omitempty"`
-	KeyTag       uint32     `json:"key_tag,omitempty"`
-	LastQueried  *time.Time `json:"last_queried,omitempty"`
-	Name         string     `json:"name,omitempty"`
-	PublicKey    string     `json:"public_key,omitempty"`
-	Ttl          uint32     `json:"ttl,omitempty"`
-	UseTtl       bool       `json:"use_ttl,omitempty"`
-	View         string     `json:"view,omitempty"`
-	Zone         string     `json:"zone,omitempty"`
+	Ref          string    `json:"_ref,omitempty"`
+	Algorithm    string    `json:"algorithm,omitempty"`
+	Comment      string    `json:"comment,omitempty"`
+	CreationTime *UnixTime `json:"creation_time,omitempty"`
+	Creator      string    `json:"creator,omitempty"`
+	DnsName      string    `json:"dns_name,omitempty"`
+	Flags        int       `json:"flags,omitempty"`
+	KeyTag       uint32    `json:"key_tag,omitempty"`
+	LastQueried  *UnixTime `json:"last_queried,omitempty"`
+	Name         string    `json:"name,omitempty"`
+	PublicKey    string    `json:"public_key,omitempty"`
+	Ttl          uint32    `json:"ttl,omitempty"`
+	UseTtl       bool      `json:"use_ttl,omitempty"`
+	View         string    `json:"view,omitempty"`
+	Zone         string    `json:"zone,omitempty"`
 }
 
 func (RecordDnskey) ObjectType() string {
@@ -6330,7 +6328,7 @@ type RecordCNAME struct {
 	Canonical          string              `json:"canonical,omitempty"`
 	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment            string              `json:"comment,omitempty"`
-	CreationTime       *time.Time          `json:"creation_time,omitempty"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
 	Creator            string              `json:"creator,omitempty"`
 	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
 	DdnsProtected      bool                `json:"ddns_protected,omitempty"`
@@ -6339,7 +6337,7 @@ type RecordCNAME struct {
 	DnsName            string              `json:"dns_name,omitempty"`
 	Ea                 EA                  `json:"extattrs,omitempty"`
 	ForbidReclamation  bool                `json:"forbid_reclamation,omitempty"`
-	LastQueried        *time.Time          `json:"last_queried,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	Reclaimable        bool                `json:"reclaimable,omitempty"`
 	SharedRecordGroup  string              `json:"shared_record_group,omitempty"`
@@ -6510,13 +6508,13 @@ type RecordDs struct {
 	Algorithm    string            `json:"algorithm,omitempty"`
 	CloudInfo    *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Comment      string            `json:"comment,omitempty"`
-	CreationTime *time.Time        `json:"creation_time,omitempty"`
+	CreationTime *UnixTime         `json:"creation_time,omitempty"`
 	Creator      string            `json:"creator,omitempty"`
 	Digest       string            `json:"digest,omitempty"`
 	DigestType   string            `json:"digest_type,omitempty"`
 	DnsName      string            `json:"dns_name,omitempty"`
 	KeyTag       uint32            `json:"key_tag,omitempty"`
-	LastQueried  *time.Time        `json:"last_queried,omitempty"`
+	LastQueried  *UnixTime         `json:"last_queried,omitempty"`
 	Name         string            `json:"name,omitempty"`
 	Ttl          uint32            `json:"ttl,omitempty"`
 	UseTtl       bool              `json:"use_ttl,omitempty"`
@@ -6538,16 +6536,16 @@ func (obj RecordDs) ReturnFields() []string {
 // RecordDtclbdn represents Infoblox object record:dtclbdn
 type RecordDtclbdn struct {
 	IBBase      `json:"-"`
-	Ref         string     `json:"_ref,omitempty"`
-	Comment     string     `json:"comment,omitempty"`
-	Disable     bool       `json:"disable,omitempty"`
-	Ea          EA         `json:"extattrs,omitempty"`
-	LastQueried *time.Time `json:"last_queried,omitempty"`
-	Lbdn        string     `json:"lbdn,omitempty"`
-	Name        string     `json:"name,omitempty"`
-	Pattern     string     `json:"pattern,omitempty"`
-	View        string     `json:"view,omitempty"`
-	Zone        string     `json:"zone,omitempty"`
+	Ref         string    `json:"_ref,omitempty"`
+	Comment     string    `json:"comment,omitempty"`
+	Disable     bool      `json:"disable,omitempty"`
+	Ea          EA        `json:"extattrs,omitempty"`
+	LastQueried *UnixTime `json:"last_queried,omitempty"`
+	Lbdn        string    `json:"lbdn,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Pattern     string    `json:"pattern,omitempty"`
+	View        string    `json:"view,omitempty"`
+	Zone        string    `json:"zone,omitempty"`
 }
 
 func (RecordDtclbdn) ObjectType() string {
@@ -6567,7 +6565,7 @@ type RecordNaptr struct {
 	Ref               string            `json:"_ref,omitempty"`
 	CloudInfo         *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Comment           string            `json:"comment,omitempty"`
-	CreationTime      *time.Time        `json:"creation_time,omitempty"`
+	CreationTime      *UnixTime         `json:"creation_time,omitempty"`
 	Creator           string            `json:"creator,omitempty"`
 	DdnsPrincipal     string            `json:"ddns_principal,omitempty"`
 	DdnsProtected     bool              `json:"ddns_protected,omitempty"`
@@ -6577,7 +6575,7 @@ type RecordNaptr struct {
 	Ea                EA                `json:"extattrs,omitempty"`
 	Flags             string            `json:"flags,omitempty"`
 	ForbidReclamation bool              `json:"forbid_reclamation,omitempty"`
-	LastQueried       *time.Time        `json:"last_queried,omitempty"`
+	LastQueried       *UnixTime         `json:"last_queried,omitempty"`
 	Name              string            `json:"name,omitempty"`
 	Order             uint32            `json:"order,omitempty"`
 	Preference        uint32            `json:"preference,omitempty"`
@@ -6625,7 +6623,7 @@ type HostRecord struct {
 	Ea                       EA                        `json:"extattrs,omitempty"`
 	Ipv4Addrs                []HostRecordIpv4Addr      `json:"ipv4addrs,omitempty"`
 	Ipv6Addrs                []HostRecordIpv6Addr      `json:"ipv6addrs,omitempty"`
-	LastQueried              *time.Time                `json:"last_queried,omitempty"`
+	LastQueried              *UnixTime                 `json:"last_queried,omitempty"`
 	MsAdUserData             *MsserverAduserData       `json:"ms_ad_user_data,omitempty"`
 	Name                     string                    `json:"name,omitempty"`
 	NetworkView              string                    `json:"network_view,omitempty"`
@@ -6704,7 +6702,7 @@ type RecordNS struct {
 	CloudInfo        *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Creator          string            `json:"creator,omitempty"`
 	DnsName          string            `json:"dns_name,omitempty"`
-	LastQueried      *time.Time        `json:"last_queried,omitempty"`
+	LastQueried      *UnixTime         `json:"last_queried,omitempty"`
 	MsDelegationName string            `json:"ms_delegation_name,omitempty"`
 	Name             string            `json:"name,omitempty"`
 	Nameserver       string            `json:"nameserver,omitempty"`
@@ -6731,7 +6729,7 @@ type RecordAAAA struct {
 	AwsRte53RecordInfo  *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo           *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment             string              `json:"comment,omitempty"`
-	CreationTime        *time.Time          `json:"creation_time,omitempty"`
+	CreationTime        *UnixTime           `json:"creation_time,omitempty"`
 	Creator             string              `json:"creator,omitempty"`
 	DdnsPrincipal       string              `json:"ddns_principal,omitempty"`
 	DdnsProtected       bool                `json:"ddns_protected,omitempty"`
@@ -6741,7 +6739,7 @@ type RecordAAAA struct {
 	Ea                  EA                  `json:"extattrs,omitempty"`
 	ForbidReclamation   bool                `json:"forbid_reclamation,omitempty"`
 	Ipv6Addr            string              `json:"ipv6addr,omitempty"`
-	LastQueried         *time.Time          `json:"last_queried,omitempty"`
+	LastQueried         *UnixTime           `json:"last_queried,omitempty"`
 	MsAdUserData        *MsserverAduserData `json:"ms_ad_user_data,omitempty"`
 	Name                string              `json:"name,omitempty"`
 	Reclaimable         bool                `json:"reclaimable,omitempty"`
@@ -6801,7 +6799,7 @@ type RecordMx struct {
 	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment            string              `json:"comment,omitempty"`
-	CreationTime       *time.Time          `json:"creation_time,omitempty"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
 	Creator            string              `json:"creator,omitempty"`
 	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
 	DdnsProtected      bool                `json:"ddns_protected,omitempty"`
@@ -6810,7 +6808,7 @@ type RecordMx struct {
 	DnsName            string              `json:"dns_name,omitempty"`
 	Ea                 EA                  `json:"extattrs,omitempty"`
 	ForbidReclamation  bool                `json:"forbid_reclamation,omitempty"`
-	LastQueried        *time.Time          `json:"last_queried,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	MailExchanger      string              `json:"mail_exchanger,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	Preference         uint32              `json:"preference,omitempty"`
@@ -6848,7 +6846,7 @@ type HostRecordIpv6Addr struct {
 	Ipv6Addr             string              `json:"ipv6addr,omitempty"`
 	Ipv6prefix           string              `json:"ipv6prefix,omitempty"`
 	Ipv6prefixBits       uint32              `json:"ipv6prefix_bits,omitempty"`
-	LastQueried          *time.Time          `json:"last_queried,omitempty"`
+	LastQueried          *UnixTime           `json:"last_queried,omitempty"`
 	MatchClient          string              `json:"match_client,omitempty"`
 	MsAdUserData         *MsserverAduserData `json:"ms_ad_user_data,omitempty"`
 	Network              string              `json:"network,omitempty"`
@@ -6910,7 +6908,7 @@ type HostRecordIpv4Addr struct {
 	IgnoreClientRequestedOptions    bool                `json:"ignore_client_requested_options,omitempty"`
 	Ipv4Addr                        string              `json:"ipv4addr,omitempty"`
 	IsInvalidMac                    bool                `json:"is_invalid_mac,omitempty"`
-	LastQueried                     *time.Time          `json:"last_queried,omitempty"`
+	LastQueried                     *UnixTime           `json:"last_queried,omitempty"`
 	LogicFilterRules                []*Logicfilterrule  `json:"logic_filter_rules,omitempty"`
 	Mac                             string              `json:"mac,omitempty"`
 	MatchClient                     string              `json:"match_client,omitempty"`
@@ -6967,11 +6965,11 @@ type RecordNsec struct {
 	IBBase           `json:"-"`
 	Ref              string            `json:"_ref,omitempty"`
 	CloudInfo        *GridCloudapiInfo `json:"cloud_info,omitempty"`
-	CreationTime     *time.Time        `json:"creation_time,omitempty"`
+	CreationTime     *UnixTime         `json:"creation_time,omitempty"`
 	Creator          string            `json:"creator,omitempty"`
 	DnsName          string            `json:"dns_name,omitempty"`
 	DnsNextOwnerName string            `json:"dns_next_owner_name,omitempty"`
-	LastQueried      *time.Time        `json:"last_queried,omitempty"`
+	LastQueried      *UnixTime         `json:"last_queried,omitempty"`
 	Name             string            `json:"name,omitempty"`
 	NextOwnerName    string            `json:"next_owner_name,omitempty"`
 	RrsetTypes       []string          `json:"rrset_types,omitempty"`
@@ -6998,12 +6996,12 @@ type RecordNsec3 struct {
 	Ref           string            `json:"_ref,omitempty"`
 	Algorithm     string            `json:"algorithm,omitempty"`
 	CloudInfo     *GridCloudapiInfo `json:"cloud_info,omitempty"`
-	CreationTime  *time.Time        `json:"creation_time,omitempty"`
+	CreationTime  *UnixTime         `json:"creation_time,omitempty"`
 	Creator       string            `json:"creator,omitempty"`
 	DnsName       string            `json:"dns_name,omitempty"`
 	Flags         uint32            `json:"flags,omitempty"`
 	Iterations    uint32            `json:"iterations,omitempty"`
-	LastQueried   *time.Time        `json:"last_queried,omitempty"`
+	LastQueried   *UnixTime         `json:"last_queried,omitempty"`
 	Name          string            `json:"name,omitempty"`
 	NextOwnerName string            `json:"next_owner_name,omitempty"`
 	RrsetTypes    []string          `json:"rrset_types,omitempty"`
@@ -7032,7 +7030,7 @@ type RecordA struct {
 	AwsRte53RecordInfo  *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo           *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment             string              `json:"comment,omitempty"`
-	CreationTime        *time.Time          `json:"creation_time,omitempty"`
+	CreationTime        *UnixTime           `json:"creation_time,omitempty"`
 	Creator             string              `json:"creator,omitempty"`
 	DdnsPrincipal       string              `json:"ddns_principal,omitempty"`
 	DdnsProtected       bool                `json:"ddns_protected,omitempty"`
@@ -7042,7 +7040,7 @@ type RecordA struct {
 	Ea                  EA                  `json:"extattrs,omitempty"`
 	ForbidReclamation   bool                `json:"forbid_reclamation,omitempty"`
 	Ipv4Addr            string              `json:"ipv4addr,omitempty"`
-	LastQueried         *time.Time          `json:"last_queried,omitempty"`
+	LastQueried         *UnixTime           `json:"last_queried,omitempty"`
 	MsAdUserData        *MsserverAduserData `json:"ms_ad_user_data,omitempty"`
 	Name                string              `json:"name,omitempty"`
 	Reclaimable         bool                `json:"reclaimable,omitempty"`
@@ -7104,12 +7102,12 @@ type RecordNsec3param struct {
 	Ref          string            `json:"_ref,omitempty"`
 	Algorithm    string            `json:"algorithm,omitempty"`
 	CloudInfo    *GridCloudapiInfo `json:"cloud_info,omitempty"`
-	CreationTime *time.Time        `json:"creation_time,omitempty"`
+	CreationTime *UnixTime         `json:"creation_time,omitempty"`
 	Creator      string            `json:"creator,omitempty"`
 	DnsName      string            `json:"dns_name,omitempty"`
 	Flags        uint32            `json:"flags,omitempty"`
 	Iterations   uint32            `json:"iterations,omitempty"`
-	LastQueried  *time.Time        `json:"last_queried,omitempty"`
+	LastQueried  *UnixTime         `json:"last_queried,omitempty"`
 	Name         string            `json:"name,omitempty"`
 	Salt         string            `json:"salt,omitempty"`
 	Ttl          uint32            `json:"ttl,omitempty"`
@@ -7299,7 +7297,7 @@ type RecordPTR struct {
 	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment            string              `json:"comment,omitempty"`
-	CreationTime       *time.Time          `json:"creation_time,omitempty"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
 	Creator            string              `json:"creator,omitempty"`
 	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
 	DdnsProtected      bool                `json:"ddns_protected,omitempty"`
@@ -7311,7 +7309,7 @@ type RecordPTR struct {
 	ForbidReclamation  bool                `json:"forbid_reclamation,omitempty"`
 	Ipv4Addr           string              `json:"ipv4addr,omitempty"`
 	Ipv6Addr           string              `json:"ipv6addr,omitempty"`
-	LastQueried        *time.Time          `json:"last_queried,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	MsAdUserData       *MsserverAduserData `json:"ms_ad_user_data,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	PtrdName           string              `json:"ptrdname,omitempty"`
@@ -7497,23 +7495,23 @@ func (obj RecordRpzPtr) ReturnFields() []string {
 // RecordRpzNaptr represents Infoblox object record:rpz:naptr
 type RecordRpzNaptr struct {
 	IBBase      `json:"-"`
-	Ref         string     `json:"_ref,omitempty"`
-	Comment     string     `json:"comment,omitempty"`
-	Disable     bool       `json:"disable,omitempty"`
-	Ea          EA         `json:"extattrs,omitempty"`
-	Flags       string     `json:"flags,omitempty"`
-	LastQueried *time.Time `json:"last_queried,omitempty"`
-	Name        string     `json:"name,omitempty"`
-	Order       uint32     `json:"order,omitempty"`
-	Preference  uint32     `json:"preference,omitempty"`
-	Regexp      string     `json:"regexp,omitempty"`
-	Replacement string     `json:"replacement,omitempty"`
-	RpZone      string     `json:"rp_zone,omitempty"`
-	Services    string     `json:"services,omitempty"`
-	Ttl         uint32     `json:"ttl,omitempty"`
-	UseTtl      bool       `json:"use_ttl,omitempty"`
-	View        string     `json:"view,omitempty"`
-	Zone        string     `json:"zone,omitempty"`
+	Ref         string    `json:"_ref,omitempty"`
+	Comment     string    `json:"comment,omitempty"`
+	Disable     bool      `json:"disable,omitempty"`
+	Ea          EA        `json:"extattrs,omitempty"`
+	Flags       string    `json:"flags,omitempty"`
+	LastQueried *UnixTime `json:"last_queried,omitempty"`
+	Name        string    `json:"name,omitempty"`
+	Order       uint32    `json:"order,omitempty"`
+	Preference  uint32    `json:"preference,omitempty"`
+	Regexp      string    `json:"regexp,omitempty"`
+	Replacement string    `json:"replacement,omitempty"`
+	RpZone      string    `json:"rp_zone,omitempty"`
+	Services    string    `json:"services,omitempty"`
+	Ttl         uint32    `json:"ttl,omitempty"`
+	UseTtl      bool      `json:"use_ttl,omitempty"`
+	View        string    `json:"view,omitempty"`
+	Zone        string    `json:"zone,omitempty"`
 }
 
 func (RecordRpzNaptr) ObjectType() string {
@@ -7590,15 +7588,15 @@ type RecordRrsig struct {
 	Ref            string            `json:"_ref,omitempty"`
 	Algorithm      string            `json:"algorithm,omitempty"`
 	CloudInfo      *GridCloudapiInfo `json:"cloud_info,omitempty"`
-	CreationTime   *time.Time        `json:"creation_time,omitempty"`
+	CreationTime   *UnixTime         `json:"creation_time,omitempty"`
 	Creator        string            `json:"creator,omitempty"`
 	DnsName        string            `json:"dns_name,omitempty"`
 	DnsSignerName  string            `json:"dns_signer_name,omitempty"`
-	ExpirationTime *time.Time        `json:"expiration_time,omitempty"`
-	InceptionTime  *time.Time        `json:"inception_time,omitempty"`
+	ExpirationTime *UnixTime         `json:"expiration_time,omitempty"`
+	InceptionTime  *UnixTime         `json:"inception_time,omitempty"`
 	KeyTag         uint32            `json:"key_tag,omitempty"`
 	Labels         uint32            `json:"labels,omitempty"`
-	LastQueried    *time.Time        `json:"last_queried,omitempty"`
+	LastQueried    *UnixTime         `json:"last_queried,omitempty"`
 	Name           string            `json:"name,omitempty"`
 	OriginalTtl    uint32            `json:"original_ttl,omitempty"`
 	Signature      string            `json:"signature,omitempty"`
@@ -7628,7 +7626,7 @@ type RecordSrv struct {
 	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment            string              `json:"comment,omitempty"`
-	CreationTime       *time.Time          `json:"creation_time,omitempty"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
 	Creator            string              `json:"creator,omitempty"`
 	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
 	DdnsProtected      bool                `json:"ddns_protected,omitempty"`
@@ -7637,7 +7635,7 @@ type RecordSrv struct {
 	DnsTarget          string              `json:"dns_target,omitempty"`
 	Ea                 EA                  `json:"extattrs,omitempty"`
 	ForbidReclamation  bool                `json:"forbid_reclamation,omitempty"`
-	LastQueried        *time.Time          `json:"last_queried,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	Port               uint32              `json:"port,omitempty"`
 	Priority           uint32              `json:"priority,omitempty"`
@@ -7674,7 +7672,7 @@ type RecordUnknown struct {
 	DnsName              string            `json:"dns_name,omitempty"`
 	EnableHostNamePolicy bool              `json:"enable_host_name_policy,omitempty"`
 	Ea                   EA                `json:"extattrs,omitempty"`
-	LastQueried          *time.Time        `json:"last_queried,omitempty"`
+	LastQueried          *UnixTime         `json:"last_queried,omitempty"`
 	Name                 string            `json:"name,omitempty"`
 	Policy               string            `json:"policy,omitempty"`
 	RecordType           string            `json:"record_type,omitempty"`
@@ -7703,7 +7701,7 @@ type RecordTXT struct {
 	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
 	Comment            string              `json:"comment,omitempty"`
-	CreationTime       *time.Time          `json:"creation_time,omitempty"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
 	Creator            string              `json:"creator,omitempty"`
 	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
 	DdnsProtected      bool                `json:"ddns_protected,omitempty"`
@@ -7711,7 +7709,7 @@ type RecordTXT struct {
 	DnsName            string              `json:"dns_name,omitempty"`
 	Ea                 EA                  `json:"extattrs,omitempty"`
 	ForbidReclamation  bool                `json:"forbid_reclamation,omitempty"`
-	LastQueried        *time.Time          `json:"last_queried,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	Reclaimable        bool                `json:"reclaimable,omitempty"`
 	SharedRecordGroup  string              `json:"shared_record_group,omitempty"`
@@ -7775,7 +7773,7 @@ type RecordTlsa struct {
 	Disable          bool              `json:"disable,omitempty"`
 	DnsName          string            `json:"dns_name,omitempty"`
 	Ea               EA                `json:"extattrs,omitempty"`
-	LastQueried      *time.Time        `json:"last_queried,omitempty"`
+	LastQueried      *UnixTime         `json:"last_queried,omitempty"`
 	MatchedType      uint32            `json:"matched_type,omitempty"`
 	Name             string            `json:"name,omitempty"`
 	Selector         uint32            `json:"selector,omitempty"`
@@ -8000,15 +7998,15 @@ func (obj Ruleset) ReturnFields() []string {
 // Scavengingtask represents Infoblox object scavengingtask
 type Scavengingtask struct {
 	IBBase             `json:"-"`
-	Ref                string     `json:"_ref,omitempty"`
-	Action             string     `json:"action,omitempty"`
-	AssociatedObject   string     `json:"associated_object,omitempty"`
-	EndTime            *time.Time `json:"end_time,omitempty"`
-	ProcessedRecords   uint32     `json:"processed_records,omitempty"`
-	ReclaimableRecords uint32     `json:"reclaimable_records,omitempty"`
-	ReclaimedRecords   uint32     `json:"reclaimed_records,omitempty"`
-	StartTime          *time.Time `json:"start_time,omitempty"`
-	Status             string     `json:"status,omitempty"`
+	Ref                string    `json:"_ref,omitempty"`
+	Action             string    `json:"action,omitempty"`
+	AssociatedObject   string    `json:"associated_object,omitempty"`
+	EndTime            *UnixTime `json:"end_time,omitempty"`
+	ProcessedRecords   uint32    `json:"processed_records,omitempty"`
+	ReclaimableRecords uint32    `json:"reclaimable_records,omitempty"`
+	ReclaimedRecords   uint32    `json:"reclaimed_records,omitempty"`
+	StartTime          *UnixTime `json:"start_time,omitempty"`
+	Status             string    `json:"status,omitempty"`
 }
 
 func (Scavengingtask) ObjectType() string {
@@ -8036,13 +8034,13 @@ type Scheduledtask struct {
 	ExecutionDetails     []string         `json:"execution_details,omitempty"`
 	ExecutionDetailsType string           `json:"execution_details_type,omitempty"`
 	ExecutionStatus      string           `json:"execution_status,omitempty"`
-	ExecutionTime        *time.Time       `json:"execution_time,omitempty"`
+	ExecutionTime        *UnixTime        `json:"execution_time,omitempty"`
 	IsNetworkInsightTask bool             `json:"is_network_insight_task,omitempty"`
 	Member               string           `json:"member,omitempty"`
 	PredecessorTask      string           `json:"predecessor_task,omitempty"`
 	ReExecuteTask        bool             `json:"re_execute_task,omitempty"`
-	ScheduledTime        *time.Time       `json:"scheduled_time,omitempty"`
-	SubmitTime           *time.Time       `json:"submit_time,omitempty"`
+	ScheduledTime        *UnixTime        `json:"scheduled_time,omitempty"`
+	SubmitTime           *UnixTime        `json:"submit_time,omitempty"`
 	Submitter            string           `json:"submitter,omitempty"`
 	SubmitterComment     string           `json:"submitter_comment,omitempty"`
 	TaskId               uint32           `json:"task_id,omitempty"`
@@ -8425,18 +8423,18 @@ func (obj Snmpuser) ReturnFields() []string {
 // Superhostchild represents Infoblox object superhostchild
 type Superhostchild struct {
 	IBBase            `json:"-"`
-	Ref               string     `json:"_ref,omitempty"`
-	AssociatedObject  string     `json:"associated_object,omitempty"`
-	Comment           string     `json:"comment,omitempty"`
-	CreationTimestamp *time.Time `json:"creation_timestamp,omitempty"`
-	Data              string     `json:"data,omitempty"`
-	Disabled          bool       `json:"disabled,omitempty"`
-	Name              string     `json:"name,omitempty"`
-	NetworkView       string     `json:"network_view,omitempty"`
-	Parent            string     `json:"parent,omitempty"`
-	RecordParent      string     `json:"record_parent,omitempty"`
-	Type              string     `json:"type,omitempty"`
-	View              string     `json:"view,omitempty"`
+	Ref               string    `json:"_ref,omitempty"`
+	AssociatedObject  string    `json:"associated_object,omitempty"`
+	Comment           string    `json:"comment,omitempty"`
+	CreationTimestamp *UnixTime `json:"creation_timestamp,omitempty"`
+	Data              string    `json:"data,omitempty"`
+	Disabled          bool      `json:"disabled,omitempty"`
+	Name              string    `json:"name,omitempty"`
+	NetworkView       string    `json:"network_view,omitempty"`
+	Parent            string    `json:"parent,omitempty"`
+	RecordParent      string    `json:"record_parent,omitempty"`
+	Type              string    `json:"type,omitempty"`
+	View              string    `json:"view,omitempty"`
 }
 
 func (Superhostchild) ObjectType() string {
@@ -8528,7 +8526,7 @@ type Tftpfiledir struct {
 	Ref             string            `json:"_ref,omitempty"`
 	Directory       string            `json:"directory,omitempty"`
 	IsSyncedToGm    bool              `json:"is_synced_to_gm,omitempty"`
-	LastModify      *time.Time        `json:"last_modify,omitempty"`
+	LastModify      *UnixTime         `json:"last_modify,omitempty"`
 	Name            string            `json:"name,omitempty"`
 	Type            string            `json:"type,omitempty"`
 	VtftpDirMembers []*Vtftpdirmember `json:"vtftp_dir_members,omitempty"`
@@ -8781,14 +8779,14 @@ func (obj ThreatprotectionRulecategory) ReturnFields() []string {
 // ThreatprotectionRuleset represents Infoblox object threatprotection:ruleset
 type ThreatprotectionRuleset struct {
 	IBBase                `json:"-"`
-	Ref                   string     `json:"_ref,omitempty"`
-	AddType               string     `json:"add_type,omitempty"`
-	AddedTime             *time.Time `json:"added_time,omitempty"`
-	Comment               string     `json:"comment,omitempty"`
-	DoNotDelete           bool       `json:"do_not_delete,omitempty"`
-	IsFactoryResetEnabled bool       `json:"is_factory_reset_enabled,omitempty"`
-	UsedBy                []string   `json:"used_by,omitempty"`
-	Version               string     `json:"version,omitempty"`
+	Ref                   string    `json:"_ref,omitempty"`
+	AddType               string    `json:"add_type,omitempty"`
+	AddedTime             *UnixTime `json:"added_time,omitempty"`
+	Comment               string    `json:"comment,omitempty"`
+	DoNotDelete           bool      `json:"do_not_delete,omitempty"`
+	IsFactoryResetEnabled bool      `json:"is_factory_reset_enabled,omitempty"`
+	UsedBy                []string  `json:"used_by,omitempty"`
+	Version               string    `json:"version,omitempty"`
 }
 
 func (ThreatprotectionRuleset) ObjectType() string {
@@ -8852,13 +8850,13 @@ type Upgradegroup struct {
 	Comment                    string                `json:"comment,omitempty"`
 	DistributionDependentGroup string                `json:"distribution_dependent_group,omitempty"`
 	DistributionPolicy         string                `json:"distribution_policy,omitempty"`
-	DistributionTime           *time.Time            `json:"distribution_time,omitempty"`
+	DistributionTime           *UnixTime             `json:"distribution_time,omitempty"`
 	Members                    []*UpgradegroupMember `json:"members,omitempty"`
 	Name                       string                `json:"name,omitempty"`
 	TimeZone                   string                `json:"time_zone,omitempty"`
 	UpgradeDependentGroup      string                `json:"upgrade_dependent_group,omitempty"`
 	UpgradePolicy              string                `json:"upgrade_policy,omitempty"`
-	UpgradeTime                *time.Time            `json:"upgrade_time,omitempty"`
+	UpgradeTime                *UnixTime             `json:"upgrade_time,omitempty"`
 }
 
 func (Upgradegroup) ObjectType() string {
@@ -8877,7 +8875,7 @@ type Upgradeschedule struct {
 	IBBase        `json:"-"`
 	Ref           string                  `json:"_ref,omitempty"`
 	Active        bool                    `json:"active,omitempty"`
-	StartTime     *time.Time              `json:"start_time,omitempty"`
+	StartTime     *UnixTime               `json:"start_time,omitempty"`
 	TimeZone      string                  `json:"time_zone,omitempty"`
 	UpgradeGroups []*UpgradegroupSchedule `json:"upgrade_groups,omitempty"`
 }
@@ -8896,25 +8894,25 @@ func (obj Upgradeschedule) ReturnFields() []string {
 // UserProfile represents Infoblox object userprofile
 type UserProfile struct {
 	IBBase                 `json:"-"`
-	Ref                    string     `json:"_ref,omitempty"`
-	ActiveDashboardType    string     `json:"active_dashboard_type,omitempty"`
-	AdminGroup             string     `json:"admin_group,omitempty"`
-	DaysToExpire           int        `json:"days_to_expire,omitempty"`
-	Email                  string     `json:"email,omitempty"`
-	GlobalSearchOnEa       bool       `json:"global_search_on_ea,omitempty"`
-	GlobalSearchOnNiData   bool       `json:"global_search_on_ni_data,omitempty"`
-	GridAdminGroups        []string   `json:"grid_admin_groups,omitempty"`
-	LastLogin              *time.Time `json:"last_login,omitempty"`
-	LbTreeNodesAtGenLevel  uint32     `json:"lb_tree_nodes_at_gen_level,omitempty"`
-	LbTreeNodesAtLastLevel uint32     `json:"lb_tree_nodes_at_last_level,omitempty"`
-	MaxCountWidgets        uint32     `json:"max_count_widgets,omitempty"`
-	Name                   string     `json:"name,omitempty"`
-	OldPassword            string     `json:"old_password,omitempty"`
-	Password               string     `json:"password,omitempty"`
-	TableSize              uint32     `json:"table_size,omitempty"`
-	TimeZone               string     `json:"time_zone,omitempty"`
-	UseTimeZone            bool       `json:"use_time_zone,omitempty"`
-	UserType               string     `json:"user_type,omitempty"`
+	Ref                    string    `json:"_ref,omitempty"`
+	ActiveDashboardType    string    `json:"active_dashboard_type,omitempty"`
+	AdminGroup             string    `json:"admin_group,omitempty"`
+	DaysToExpire           int       `json:"days_to_expire,omitempty"`
+	Email                  string    `json:"email,omitempty"`
+	GlobalSearchOnEa       bool      `json:"global_search_on_ea,omitempty"`
+	GlobalSearchOnNiData   bool      `json:"global_search_on_ni_data,omitempty"`
+	GridAdminGroups        []string  `json:"grid_admin_groups,omitempty"`
+	LastLogin              *UnixTime `json:"last_login,omitempty"`
+	LbTreeNodesAtGenLevel  uint32    `json:"lb_tree_nodes_at_gen_level,omitempty"`
+	LbTreeNodesAtLastLevel uint32    `json:"lb_tree_nodes_at_last_level,omitempty"`
+	MaxCountWidgets        uint32    `json:"max_count_widgets,omitempty"`
+	Name                   string    `json:"name,omitempty"`
+	OldPassword            string    `json:"old_password,omitempty"`
+	Password               string    `json:"password,omitempty"`
+	TableSize              uint32    `json:"table_size,omitempty"`
+	TimeZone               string    `json:"time_zone,omitempty"`
+	UseTimeZone            bool      `json:"use_time_zone,omitempty"`
+	UserType               string    `json:"user_type,omitempty"`
 }
 
 func (UserProfile) ObjectType() string {
@@ -8952,7 +8950,7 @@ type UpgradeStatus struct {
 	CurrentVersion              string           `json:"current_version,omitempty"`
 	CurrentVersionSummary       string           `json:"current_version_summary,omitempty"`
 	DistributionScheduleActive  bool             `json:"distribution_schedule_active,omitempty"`
-	DistributionScheduleTime    *time.Time       `json:"distribution_schedule_time,omitempty"`
+	DistributionScheduleTime    *UnixTime        `json:"distribution_schedule_time,omitempty"`
 	DistributionState           string           `json:"distribution_state,omitempty"`
 	DistributionVersion         string           `json:"distribution_version,omitempty"`
 	DistributionVersionSummary  string           `json:"distribution_version_summary,omitempty"`
@@ -8967,9 +8965,9 @@ type UpgradeStatus struct {
 	Message                     string           `json:"message,omitempty"`
 	PnodeRole                   string           `json:"pnode_role,omitempty"`
 	Reverted                    bool             `json:"reverted,omitempty"`
-	StatusTime                  *time.Time       `json:"status_time,omitempty"`
+	StatusTime                  *UnixTime        `json:"status_time,omitempty"`
 	StatusValue                 string           `json:"status_value,omitempty"`
-	StatusValueUpdateTime       *time.Time       `json:"status_value_update_time,omitempty"`
+	StatusValueUpdateTime       *UnixTime        `json:"status_value_update_time,omitempty"`
 	Steps                       []*Upgradestep   `json:"steps,omitempty"`
 	StepsCompleted              int              `json:"steps_completed,omitempty"`
 	StepsTotal                  int              `json:"steps_total,omitempty"`
@@ -9088,11 +9086,11 @@ func (obj Vlanview) ReturnFields() []string {
 // ZoneAuthDiscrepancy represents Infoblox object zone_auth_discrepancy
 type ZoneAuthDiscrepancy struct {
 	IBBase      `json:"-"`
-	Ref         string     `json:"_ref,omitempty"`
-	Description string     `json:"description,omitempty"`
-	Severity    string     `json:"severity,omitempty"`
-	Timestamp   *time.Time `json:"timestamp,omitempty"`
-	Zone        string     `json:"zone,omitempty"`
+	Ref         string    `json:"_ref,omitempty"`
+	Description string    `json:"description,omitempty"`
+	Severity    string    `json:"severity,omitempty"`
+	Timestamp   *UnixTime `json:"timestamp,omitempty"`
+	Zone        string    `json:"zone,omitempty"`
 }
 
 func (ZoneAuthDiscrepancy) ObjectType() string {
@@ -9126,7 +9124,7 @@ type Vdiscoverytask struct {
 	Enabled                         bool               `json:"enabled,omitempty"`
 	FqdnOrIp                        string             `json:"fqdn_or_ip,omitempty"`
 	IdentityVersion                 string             `json:"identity_version,omitempty"`
-	LastRun                         *time.Time         `json:"last_run,omitempty"`
+	LastRun                         *UnixTime          `json:"last_run,omitempty"`
 	Member                          string             `json:"member,omitempty"`
 	MergeData                       bool               `json:"merge_data,omitempty"`
 	Name                            string             `json:"name,omitempty"`
@@ -9449,10 +9447,10 @@ type ZoneAuth struct {
 	DnssecGetZoneKeys                       *Dnssecgetzonekeys            `json:"dnssec_get_zone_keys,omitempty"`
 	DnssecKeyParams                         *Dnsseckeyparams              `json:"dnssec_key_params,omitempty"`
 	DnssecKeys                              []*Dnsseckey                  `json:"dnssec_keys,omitempty"`
-	DnssecKskRolloverDate                   *time.Time                    `json:"dnssec_ksk_rollover_date,omitempty"`
+	DnssecKskRolloverDate                   *UnixTime                     `json:"dnssec_ksk_rollover_date,omitempty"`
 	DnssecOperation                         *Dnssecoperation              `json:"dnssec_operation,omitempty"`
 	DnssecSetZoneKeys                       *Dnssecsetzonekeys            `json:"dnssec_set_zone_keys,omitempty"`
-	DnssecZskRolloverDate                   *time.Time                    `json:"dnssec_zsk_rollover_date,omitempty"`
+	DnssecZskRolloverDate                   *UnixTime                     `json:"dnssec_zsk_rollover_date,omitempty"`
 	Dnssecgetkskrollover                    *Dnssecgetkskrollover         `json:"dnssecgetkskrollover,omitempty"`
 	DoHostAbstraction                       bool                          `json:"do_host_abstraction,omitempty"`
 	EffectiveCheckNamesPolicy               string                        `json:"effective_check_names_policy,omitempty"`
@@ -9469,7 +9467,7 @@ type ZoneAuth struct {
 	IsDnssecEnabled                         bool                          `json:"is_dnssec_enabled,omitempty"`
 	IsDnssecSigned                          bool                          `json:"is_dnssec_signed,omitempty"`
 	IsMultimaster                           bool                          `json:"is_multimaster,omitempty"`
-	LastQueried                             *time.Time                    `json:"last_queried,omitempty"`
+	LastQueried                             *UnixTime                     `json:"last_queried,omitempty"`
 	LastQueriedAcl                          []*Addressac                  `json:"last_queried_acl,omitempty"`
 	LockUnlockZone                          *Lockunlockzone               `json:"lock_unlock_zone,omitempty"`
 	Locked                                  bool                          `json:"locked,omitempty"`
@@ -9498,7 +9496,7 @@ type ZoneAuth struct {
 	RecordNamePolicy                        string                        `json:"record_name_policy,omitempty"`
 	RecordsMonitored                        bool                          `json:"records_monitored,omitempty"`
 	RestartIfNeeded                         bool                          `json:"restart_if_needed,omitempty"`
-	RrNotQueriedEnabledTime                 *time.Time                    `json:"rr_not_queried_enabled_time,omitempty"`
+	RrNotQueriedEnabledTime                 *UnixTime                     `json:"rr_not_queried_enabled_time,omitempty"`
 	RunScavenging                           *Runscavenging                `json:"run_scavenging,omitempty"`
 	ScavengingSettings                      *SettingScavenging            `json:"scavenging_settings,omitempty"`
 	SetSoaSerialNumber                      bool                          `json:"set_soa_serial_number,omitempty"`
@@ -9534,7 +9532,7 @@ type ZoneAuth struct {
 	UsingSrgAssociations                    bool                          `json:"using_srg_associations,omitempty"`
 	View                                    string                        `json:"view,omitempty"`
 	ZoneFormat                              string                        `json:"zone_format,omitempty"`
-	ZoneNotQueriedEnabledTime               *time.Time                    `json:"zone_not_queried_enabled_time,omitempty"`
+	ZoneNotQueriedEnabledTime               *UnixTime                     `json:"zone_not_queried_enabled_time,omitempty"`
 }
 
 func (ZoneAuth) ObjectType() string {
@@ -9587,7 +9585,7 @@ type ZoneRp struct {
 	RpzDropIpRuleEnabled             bool                   `json:"rpz_drop_ip_rule_enabled,omitempty"`
 	RpzDropIpRuleMinPrefixLengthIpv4 uint32                 `json:"rpz_drop_ip_rule_min_prefix_length_ipv4,omitempty"`
 	RpzDropIpRuleMinPrefixLengthIpv6 uint32                 `json:"rpz_drop_ip_rule_min_prefix_length_ipv6,omitempty"`
-	RpzLastUpdatedTime               *time.Time             `json:"rpz_last_updated_time,omitempty"`
+	RpzLastUpdatedTime               *UnixTime              `json:"rpz_last_updated_time,omitempty"`
 	RpzPolicy                        string                 `json:"rpz_policy,omitempty"`
 	RpzPriority                      uint32                 `json:"rpz_priority,omitempty"`
 	RpzPriorityEnd                   uint32                 `json:"rpz_priority_end,omitempty"`
@@ -10038,23 +10036,23 @@ type AdmingroupTroubleshootingtoplevelcommands struct {
 
 // Adsites represents Infoblox struct adsites
 type Adsites struct {
-	UseDefaultIpSiteLink       bool       `json:"use_default_ip_site_link,omitempty"`
-	DefaultIpSiteLink          string     `json:"default_ip_site_link,omitempty"`
-	UseLogin                   bool       `json:"use_login,omitempty"`
-	LoginName                  string     `json:"login_name,omitempty"`
-	LoginPassword              string     `json:"login_password,omitempty"`
-	UseSynchronizationMinDelay bool       `json:"use_synchronization_min_delay,omitempty"`
-	SynchronizationMinDelay    uint32     `json:"synchronization_min_delay,omitempty"`
-	UseLdapTimeout             bool       `json:"use_ldap_timeout,omitempty"`
-	LdapTimeout                uint32     `json:"ldap_timeout,omitempty"`
-	LdapAuthPort               uint32     `json:"ldap_auth_port,omitempty"`
-	LdapEncryption             string     `json:"ldap_encryption,omitempty"`
-	Managed                    bool       `json:"managed,omitempty"`
-	ReadOnly                   bool       `json:"read_only,omitempty"`
-	LastSyncTs                 *time.Time `json:"last_sync_ts,omitempty"`
-	LastSyncStatus             string     `json:"last_sync_status,omitempty"`
-	LastSyncDetail             string     `json:"last_sync_detail,omitempty"`
-	SupportsIpv6               bool       `json:"supports_ipv6,omitempty"`
+	UseDefaultIpSiteLink       bool      `json:"use_default_ip_site_link,omitempty"`
+	DefaultIpSiteLink          string    `json:"default_ip_site_link,omitempty"`
+	UseLogin                   bool      `json:"use_login,omitempty"`
+	LoginName                  string    `json:"login_name,omitempty"`
+	LoginPassword              string    `json:"login_password,omitempty"`
+	UseSynchronizationMinDelay bool      `json:"use_synchronization_min_delay,omitempty"`
+	SynchronizationMinDelay    uint32    `json:"synchronization_min_delay,omitempty"`
+	UseLdapTimeout             bool      `json:"use_ldap_timeout,omitempty"`
+	LdapTimeout                uint32    `json:"ldap_timeout,omitempty"`
+	LdapAuthPort               uint32    `json:"ldap_auth_port,omitempty"`
+	LdapEncryption             string    `json:"ldap_encryption,omitempty"`
+	Managed                    bool      `json:"managed,omitempty"`
+	ReadOnly                   bool      `json:"read_only,omitempty"`
+	LastSyncTs                 *UnixTime `json:"last_sync_ts,omitempty"`
+	LastSyncStatus             string    `json:"last_sync_status,omitempty"`
+	LastSyncDetail             string    `json:"last_sync_detail,omitempty"`
+	SupportsIpv6               bool      `json:"supports_ipv6,omitempty"`
 }
 
 // Advisortestconnection represents Infoblox struct advisortestconnection
@@ -10084,20 +10082,20 @@ type Awsrte53recordinfo struct {
 
 // Awsrte53task represents Infoblox struct awsrte53task
 type Awsrte53task struct {
-	Name             string     `json:"name,omitempty"`
-	Disabled         bool       `json:"disabled,omitempty"`
-	State            string     `json:"state,omitempty"`
-	StateMsg         string     `json:"state_msg,omitempty"`
-	Filter           string     `json:"filter,omitempty"`
-	ScheduleInterval uint32     `json:"schedule_interval,omitempty"`
-	ScheduleUnits    string     `json:"schedule_units,omitempty"`
-	AwsUser          string     `json:"aws_user,omitempty"`
-	StatusTimestamp  *time.Time `json:"status_timestamp,omitempty"`
-	LastRun          *time.Time `json:"last_run,omitempty"`
-	SyncPublicZones  bool       `json:"sync_public_zones,omitempty"`
-	SyncPrivateZones bool       `json:"sync_private_zones,omitempty"`
-	ZoneCount        uint32     `json:"zone_count,omitempty"`
-	CredentialsType  string     `json:"credentials_type,omitempty"`
+	Name             string    `json:"name,omitempty"`
+	Disabled         bool      `json:"disabled,omitempty"`
+	State            string    `json:"state,omitempty"`
+	StateMsg         string    `json:"state_msg,omitempty"`
+	Filter           string    `json:"filter,omitempty"`
+	ScheduleInterval uint32    `json:"schedule_interval,omitempty"`
+	ScheduleUnits    string    `json:"schedule_units,omitempty"`
+	AwsUser          string    `json:"aws_user,omitempty"`
+	StatusTimestamp  *UnixTime `json:"status_timestamp,omitempty"`
+	LastRun          *UnixTime `json:"last_run,omitempty"`
+	SyncPublicZones  bool      `json:"sync_public_zones,omitempty"`
+	SyncPrivateZones bool      `json:"sync_private_zones,omitempty"`
+	ZoneCount        uint32    `json:"zone_count,omitempty"`
+	CredentialsType  string    `json:"credentials_type,omitempty"`
 }
 
 // Awsrte53zoneinfo represents Infoblox struct awsrte53zoneinfo
@@ -10262,20 +10260,20 @@ type Dhcpoption struct {
 
 // Dhcpserver represents Infoblox struct dhcpserver
 type Dhcpserver struct {
-	UseLogin                   bool       `json:"use_login,omitempty"`
-	LoginName                  string     `json:"login_name,omitempty"`
-	LoginPassword              string     `json:"login_password,omitempty"`
-	Managed                    bool       `json:"managed,omitempty"`
-	NextSyncControl            string     `json:"next_sync_control,omitempty"`
-	Status                     string     `json:"status,omitempty"`
-	StatusLastUpdated          *time.Time `json:"status_last_updated,omitempty"`
-	UseEnableMonitoring        bool       `json:"use_enable_monitoring,omitempty"`
-	EnableMonitoring           bool       `json:"enable_monitoring,omitempty"`
-	UseEnableInvalidMac        bool       `json:"use_enable_invalid_mac,omitempty"`
-	EnableInvalidMac           bool       `json:"enable_invalid_mac,omitempty"`
-	SupportsFailover           bool       `json:"supports_failover,omitempty"`
-	UseSynchronizationMinDelay bool       `json:"use_synchronization_min_delay,omitempty"`
-	SynchronizationMinDelay    uint32     `json:"synchronization_min_delay,omitempty"`
+	UseLogin                   bool      `json:"use_login,omitempty"`
+	LoginName                  string    `json:"login_name,omitempty"`
+	LoginPassword              string    `json:"login_password,omitempty"`
+	Managed                    bool      `json:"managed,omitempty"`
+	NextSyncControl            string    `json:"next_sync_control,omitempty"`
+	Status                     string    `json:"status,omitempty"`
+	StatusLastUpdated          *UnixTime `json:"status_last_updated,omitempty"`
+	UseEnableMonitoring        bool      `json:"use_enable_monitoring,omitempty"`
+	EnableMonitoring           bool      `json:"enable_monitoring,omitempty"`
+	UseEnableInvalidMac        bool      `json:"use_enable_invalid_mac,omitempty"`
+	EnableInvalidMac           bool      `json:"enable_invalid_mac,omitempty"`
+	SupportsFailover           bool      `json:"supports_failover,omitempty"`
+	UseSynchronizationMinDelay bool      `json:"use_synchronization_min_delay,omitempty"`
+	SynchronizationMinDelay    uint32    `json:"synchronization_min_delay,omitempty"`
 }
 
 // DiscoveryAdvancedpollsetting represents Infoblox struct discovery:advancedpollsetting
@@ -10305,29 +10303,29 @@ type DiscoveryAdvancedsdnpollsettings struct {
 
 // DiscoveryAdvisorsetting represents Infoblox struct discovery:advisorsetting
 type DiscoveryAdvisorsetting struct {
-	EnableProxy               bool       `json:"enable_proxy,omitempty"`
-	ProxyAddress              string     `json:"proxy_address,omitempty"`
-	ProxyPort                 uint32     `json:"proxy_port,omitempty"`
-	UseProxyUsernamePasswd    bool       `json:"use_proxy_username_passwd,omitempty"`
-	ProxyUsername             string     `json:"proxy_username,omitempty"`
-	ProxyPassword             string     `json:"proxy_password,omitempty"`
-	ExecutionInterval         uint32     `json:"execution_interval,omitempty"`
-	ExecutionHour             uint32     `json:"execution_hour,omitempty"`
-	NetworkInterfaceType      string     `json:"network_interface_type,omitempty"`
-	NetworkInterfaceVirtualIp string     `json:"network_interface_virtual_ip,omitempty"`
-	Address                   string     `json:"address,omitempty"`
-	Port                      uint32     `json:"port,omitempty"`
-	AuthType                  string     `json:"auth_type,omitempty"`
-	AuthToken                 string     `json:"auth_token,omitempty"`
-	Username                  string     `json:"username,omitempty"`
-	Password                  string     `json:"password,omitempty"`
-	MinSeverity               string     `json:"min_severity,omitempty"`
-	LastExecTime              *time.Time `json:"last_exec_time,omitempty"`
-	LastExecStatus            string     `json:"last_exec_status,omitempty"`
-	LastExecDetails           string     `json:"last_exec_details,omitempty"`
-	LastRunNowTime            *time.Time `json:"last_run_now_time,omitempty"`
-	LastRunNowStatus          string     `json:"last_run_now_status,omitempty"`
-	LastRunNowDetails         string     `json:"last_run_now_details,omitempty"`
+	EnableProxy               bool      `json:"enable_proxy,omitempty"`
+	ProxyAddress              string    `json:"proxy_address,omitempty"`
+	ProxyPort                 uint32    `json:"proxy_port,omitempty"`
+	UseProxyUsernamePasswd    bool      `json:"use_proxy_username_passwd,omitempty"`
+	ProxyUsername             string    `json:"proxy_username,omitempty"`
+	ProxyPassword             string    `json:"proxy_password,omitempty"`
+	ExecutionInterval         uint32    `json:"execution_interval,omitempty"`
+	ExecutionHour             uint32    `json:"execution_hour,omitempty"`
+	NetworkInterfaceType      string    `json:"network_interface_type,omitempty"`
+	NetworkInterfaceVirtualIp string    `json:"network_interface_virtual_ip,omitempty"`
+	Address                   string    `json:"address,omitempty"`
+	Port                      uint32    `json:"port,omitempty"`
+	AuthType                  string    `json:"auth_type,omitempty"`
+	AuthToken                 string    `json:"auth_token,omitempty"`
+	Username                  string    `json:"username,omitempty"`
+	Password                  string    `json:"password,omitempty"`
+	MinSeverity               string    `json:"min_severity,omitempty"`
+	LastExecTime              *UnixTime `json:"last_exec_time,omitempty"`
+	LastExecStatus            string    `json:"last_exec_status,omitempty"`
+	LastExecDetails           string    `json:"last_exec_details,omitempty"`
+	LastRunNowTime            *UnixTime `json:"last_run_now_time,omitempty"`
+	LastRunNowStatus          string    `json:"last_run_now_status,omitempty"`
+	LastRunNowDetails         string    `json:"last_run_now_details,omitempty"`
 }
 
 // DiscoveryAutoconversionsetting represents Infoblox struct discovery:autoconversionsetting
@@ -10480,9 +10478,9 @@ type DiscoverySnmpcredential struct {
 
 // DiscoveryStatusinfo represents Infoblox struct discovery:statusinfo
 type DiscoveryStatusinfo struct {
-	Status    string     `json:"status,omitempty"`
-	Message   string     `json:"message,omitempty"`
-	Timestamp *time.Time `json:"timestamp,omitempty"`
+	Status    string    `json:"status,omitempty"`
+	Message   string    `json:"message,omitempty"`
+	Timestamp *UnixTime `json:"timestamp,omitempty"`
 }
 
 // DiscoveryVlaninfo represents Infoblox struct discovery:vlaninfo
@@ -10500,102 +10498,102 @@ type DiscoveryVrfmappingrule struct {
 
 // Discoverydata represents Infoblox struct discoverydata
 type Discoverydata struct {
-	DeviceModel                     string     `json:"device_model,omitempty"`
-	DevicePortName                  string     `json:"device_port_name,omitempty"`
-	DevicePortType                  string     `json:"device_port_type,omitempty"`
-	DeviceType                      string     `json:"device_type,omitempty"`
-	DeviceVendor                    string     `json:"device_vendor,omitempty"`
-	DiscoveredName                  string     `json:"discovered_name,omitempty"`
-	Discoverer                      string     `json:"discoverer,omitempty"`
-	Duid                            string     `json:"duid,omitempty"`
-	FirstDiscovered                 *time.Time `json:"first_discovered,omitempty"`
-	IprgNo                          uint32     `json:"iprg_no,omitempty"`
-	IprgState                       string     `json:"iprg_state,omitempty"`
-	IprgType                        string     `json:"iprg_type,omitempty"`
-	LastDiscovered                  *time.Time `json:"last_discovered,omitempty"`
-	MacAddress                      string     `json:"mac_address,omitempty"`
-	MgmtIpAddress                   string     `json:"mgmt_ip_address,omitempty"`
-	NetbiosName                     string     `json:"netbios_name,omitempty"`
-	NetworkComponentDescription     string     `json:"network_component_description,omitempty"`
-	NetworkComponentIp              string     `json:"network_component_ip,omitempty"`
-	NetworkComponentModel           string     `json:"network_component_model,omitempty"`
-	NetworkComponentName            string     `json:"network_component_name,omitempty"`
-	NetworkComponentPortDescription string     `json:"network_component_port_description,omitempty"`
-	NetworkComponentPortName        string     `json:"network_component_port_name,omitempty"`
-	NetworkComponentPortNumber      string     `json:"network_component_port_number,omitempty"`
-	NetworkComponentType            string     `json:"network_component_type,omitempty"`
-	NetworkComponentVendor          string     `json:"network_component_vendor,omitempty"`
-	OpenPorts                       string     `json:"open_ports,omitempty"`
-	Os                              string     `json:"os,omitempty"`
-	PortDuplex                      string     `json:"port_duplex,omitempty"`
-	PortLinkStatus                  string     `json:"port_link_status,omitempty"`
-	PortSpeed                       string     `json:"port_speed,omitempty"`
-	PortStatus                      string     `json:"port_status,omitempty"`
-	PortType                        string     `json:"port_type,omitempty"`
-	PortVlanDescription             string     `json:"port_vlan_description,omitempty"`
-	PortVlanName                    string     `json:"port_vlan_name,omitempty"`
-	PortVlanNumber                  string     `json:"port_vlan_number,omitempty"`
-	VAdapter                        string     `json:"v_adapter,omitempty"`
-	VCluster                        string     `json:"v_cluster,omitempty"`
-	VDatacenter                     string     `json:"v_datacenter,omitempty"`
-	VEntityName                     string     `json:"v_entity_name,omitempty"`
-	VEntityType                     string     `json:"v_entity_type,omitempty"`
-	VHost                           string     `json:"v_host,omitempty"`
-	VSwitch                         string     `json:"v_switch,omitempty"`
-	VmiName                         string     `json:"vmi_name,omitempty"`
-	VmiId                           string     `json:"vmi_id,omitempty"`
-	VlanPortGroup                   string     `json:"vlan_port_group,omitempty"`
-	VswitchName                     string     `json:"vswitch_name,omitempty"`
-	VswitchId                       string     `json:"vswitch_id,omitempty"`
-	VswitchType                     string     `json:"vswitch_type,omitempty"`
-	VswitchIpv6Enabled              bool       `json:"vswitch_ipv6_enabled,omitempty"`
-	VportName                       string     `json:"vport_name,omitempty"`
-	VportMacAddress                 string     `json:"vport_mac_address,omitempty"`
-	VportLinkStatus                 string     `json:"vport_link_status,omitempty"`
-	VportConfSpeed                  string     `json:"vport_conf_speed,omitempty"`
-	VportConfMode                   string     `json:"vport_conf_mode,omitempty"`
-	VportSpeed                      string     `json:"vport_speed,omitempty"`
-	VportMode                       string     `json:"vport_mode,omitempty"`
-	VswitchSegmentType              string     `json:"vswitch_segment_type,omitempty"`
-	VswitchSegmentName              string     `json:"vswitch_segment_name,omitempty"`
-	VswitchSegmentId                string     `json:"vswitch_segment_id,omitempty"`
-	VswitchSegmentPortGroup         string     `json:"vswitch_segment_port_group,omitempty"`
-	VswitchAvailablePortsCount      uint32     `json:"vswitch_available_ports_count,omitempty"`
-	VswitchTepType                  string     `json:"vswitch_tep_type,omitempty"`
-	VswitchTepIp                    string     `json:"vswitch_tep_ip,omitempty"`
-	VswitchTepPortGroup             string     `json:"vswitch_tep_port_group,omitempty"`
-	VswitchTepVlan                  string     `json:"vswitch_tep_vlan,omitempty"`
-	VswitchTepDhcpServer            string     `json:"vswitch_tep_dhcp_server,omitempty"`
-	VswitchTepMulticast             string     `json:"vswitch_tep_multicast,omitempty"`
-	VmhostIpAddress                 string     `json:"vmhost_ip_address,omitempty"`
-	VmhostName                      string     `json:"vmhost_name,omitempty"`
-	VmhostMacAddress                string     `json:"vmhost_mac_address,omitempty"`
-	VmhostSubnetCidr                uint32     `json:"vmhost_subnet_cidr,omitempty"`
-	VmhostNicNames                  string     `json:"vmhost_nic_names,omitempty"`
-	VmiTenantId                     string     `json:"vmi_tenant_id,omitempty"`
-	CmpType                         string     `json:"cmp_type,omitempty"`
-	VmiIpType                       string     `json:"vmi_ip_type,omitempty"`
-	VmiPrivateAddress               string     `json:"vmi_private_address,omitempty"`
-	VmiIsPublicAddress              bool       `json:"vmi_is_public_address,omitempty"`
-	CiscoIseSsid                    string     `json:"cisco_ise_ssid,omitempty"`
-	CiscoIseEndpointProfile         string     `json:"cisco_ise_endpoint_profile,omitempty"`
-	CiscoIseSessionState            string     `json:"cisco_ise_session_state,omitempty"`
-	CiscoIseSecurityGroup           string     `json:"cisco_ise_security_group,omitempty"`
-	TaskName                        string     `json:"task_name,omitempty"`
-	NetworkComponentLocation        string     `json:"network_component_location,omitempty"`
-	NetworkComponentContact         string     `json:"network_component_contact,omitempty"`
-	DeviceLocation                  string     `json:"device_location,omitempty"`
-	DeviceContact                   string     `json:"device_contact,omitempty"`
-	ApName                          string     `json:"ap_name,omitempty"`
-	ApIpAddress                     string     `json:"ap_ip_address,omitempty"`
-	ApSsid                          string     `json:"ap_ssid,omitempty"`
-	BridgeDomain                    string     `json:"bridge_domain,omitempty"`
-	EndpointGroups                  string     `json:"endpoint_groups,omitempty"`
-	Tenant                          string     `json:"tenant,omitempty"`
-	VrfName                         string     `json:"vrf_name,omitempty"`
-	VrfDescription                  string     `json:"vrf_description,omitempty"`
-	VrfRd                           string     `json:"vrf_rd,omitempty"`
-	BgpAs                           uint32     `json:"bgp_as,omitempty"`
+	DeviceModel                     string    `json:"device_model,omitempty"`
+	DevicePortName                  string    `json:"device_port_name,omitempty"`
+	DevicePortType                  string    `json:"device_port_type,omitempty"`
+	DeviceType                      string    `json:"device_type,omitempty"`
+	DeviceVendor                    string    `json:"device_vendor,omitempty"`
+	DiscoveredName                  string    `json:"discovered_name,omitempty"`
+	Discoverer                      string    `json:"discoverer,omitempty"`
+	Duid                            string    `json:"duid,omitempty"`
+	FirstDiscovered                 *UnixTime `json:"first_discovered,omitempty"`
+	IprgNo                          uint32    `json:"iprg_no,omitempty"`
+	IprgState                       string    `json:"iprg_state,omitempty"`
+	IprgType                        string    `json:"iprg_type,omitempty"`
+	LastDiscovered                  *UnixTime `json:"last_discovered,omitempty"`
+	MacAddress                      string    `json:"mac_address,omitempty"`
+	MgmtIpAddress                   string    `json:"mgmt_ip_address,omitempty"`
+	NetbiosName                     string    `json:"netbios_name,omitempty"`
+	NetworkComponentDescription     string    `json:"network_component_description,omitempty"`
+	NetworkComponentIp              string    `json:"network_component_ip,omitempty"`
+	NetworkComponentModel           string    `json:"network_component_model,omitempty"`
+	NetworkComponentName            string    `json:"network_component_name,omitempty"`
+	NetworkComponentPortDescription string    `json:"network_component_port_description,omitempty"`
+	NetworkComponentPortName        string    `json:"network_component_port_name,omitempty"`
+	NetworkComponentPortNumber      string    `json:"network_component_port_number,omitempty"`
+	NetworkComponentType            string    `json:"network_component_type,omitempty"`
+	NetworkComponentVendor          string    `json:"network_component_vendor,omitempty"`
+	OpenPorts                       string    `json:"open_ports,omitempty"`
+	Os                              string    `json:"os,omitempty"`
+	PortDuplex                      string    `json:"port_duplex,omitempty"`
+	PortLinkStatus                  string    `json:"port_link_status,omitempty"`
+	PortSpeed                       string    `json:"port_speed,omitempty"`
+	PortStatus                      string    `json:"port_status,omitempty"`
+	PortType                        string    `json:"port_type,omitempty"`
+	PortVlanDescription             string    `json:"port_vlan_description,omitempty"`
+	PortVlanName                    string    `json:"port_vlan_name,omitempty"`
+	PortVlanNumber                  string    `json:"port_vlan_number,omitempty"`
+	VAdapter                        string    `json:"v_adapter,omitempty"`
+	VCluster                        string    `json:"v_cluster,omitempty"`
+	VDatacenter                     string    `json:"v_datacenter,omitempty"`
+	VEntityName                     string    `json:"v_entity_name,omitempty"`
+	VEntityType                     string    `json:"v_entity_type,omitempty"`
+	VHost                           string    `json:"v_host,omitempty"`
+	VSwitch                         string    `json:"v_switch,omitempty"`
+	VmiName                         string    `json:"vmi_name,omitempty"`
+	VmiId                           string    `json:"vmi_id,omitempty"`
+	VlanPortGroup                   string    `json:"vlan_port_group,omitempty"`
+	VswitchName                     string    `json:"vswitch_name,omitempty"`
+	VswitchId                       string    `json:"vswitch_id,omitempty"`
+	VswitchType                     string    `json:"vswitch_type,omitempty"`
+	VswitchIpv6Enabled              bool      `json:"vswitch_ipv6_enabled,omitempty"`
+	VportName                       string    `json:"vport_name,omitempty"`
+	VportMacAddress                 string    `json:"vport_mac_address,omitempty"`
+	VportLinkStatus                 string    `json:"vport_link_status,omitempty"`
+	VportConfSpeed                  string    `json:"vport_conf_speed,omitempty"`
+	VportConfMode                   string    `json:"vport_conf_mode,omitempty"`
+	VportSpeed                      string    `json:"vport_speed,omitempty"`
+	VportMode                       string    `json:"vport_mode,omitempty"`
+	VswitchSegmentType              string    `json:"vswitch_segment_type,omitempty"`
+	VswitchSegmentName              string    `json:"vswitch_segment_name,omitempty"`
+	VswitchSegmentId                string    `json:"vswitch_segment_id,omitempty"`
+	VswitchSegmentPortGroup         string    `json:"vswitch_segment_port_group,omitempty"`
+	VswitchAvailablePortsCount      uint32    `json:"vswitch_available_ports_count,omitempty"`
+	VswitchTepType                  string    `json:"vswitch_tep_type,omitempty"`
+	VswitchTepIp                    string    `json:"vswitch_tep_ip,omitempty"`
+	VswitchTepPortGroup             string    `json:"vswitch_tep_port_group,omitempty"`
+	VswitchTepVlan                  string    `json:"vswitch_tep_vlan,omitempty"`
+	VswitchTepDhcpServer            string    `json:"vswitch_tep_dhcp_server,omitempty"`
+	VswitchTepMulticast             string    `json:"vswitch_tep_multicast,omitempty"`
+	VmhostIpAddress                 string    `json:"vmhost_ip_address,omitempty"`
+	VmhostName                      string    `json:"vmhost_name,omitempty"`
+	VmhostMacAddress                string    `json:"vmhost_mac_address,omitempty"`
+	VmhostSubnetCidr                uint32    `json:"vmhost_subnet_cidr,omitempty"`
+	VmhostNicNames                  string    `json:"vmhost_nic_names,omitempty"`
+	VmiTenantId                     string    `json:"vmi_tenant_id,omitempty"`
+	CmpType                         string    `json:"cmp_type,omitempty"`
+	VmiIpType                       string    `json:"vmi_ip_type,omitempty"`
+	VmiPrivateAddress               string    `json:"vmi_private_address,omitempty"`
+	VmiIsPublicAddress              bool      `json:"vmi_is_public_address,omitempty"`
+	CiscoIseSsid                    string    `json:"cisco_ise_ssid,omitempty"`
+	CiscoIseEndpointProfile         string    `json:"cisco_ise_endpoint_profile,omitempty"`
+	CiscoIseSessionState            string    `json:"cisco_ise_session_state,omitempty"`
+	CiscoIseSecurityGroup           string    `json:"cisco_ise_security_group,omitempty"`
+	TaskName                        string    `json:"task_name,omitempty"`
+	NetworkComponentLocation        string    `json:"network_component_location,omitempty"`
+	NetworkComponentContact         string    `json:"network_component_contact,omitempty"`
+	DeviceLocation                  string    `json:"device_location,omitempty"`
+	DeviceContact                   string    `json:"device_contact,omitempty"`
+	ApName                          string    `json:"ap_name,omitempty"`
+	ApIpAddress                     string    `json:"ap_ip_address,omitempty"`
+	ApSsid                          string    `json:"ap_ssid,omitempty"`
+	BridgeDomain                    string    `json:"bridge_domain,omitempty"`
+	EndpointGroups                  string    `json:"endpoint_groups,omitempty"`
+	Tenant                          string    `json:"tenant,omitempty"`
+	VrfName                         string    `json:"vrf_name,omitempty"`
+	VrfDescription                  string    `json:"vrf_description,omitempty"`
+	VrfRd                           string    `json:"vrf_rd,omitempty"`
+	BgpAs                           uint32    `json:"bgp_as,omitempty"`
 }
 
 // Discoverydataconversion represents Infoblox struct discoverydataconversion
@@ -10634,12 +10632,12 @@ type Dnssecgetzonekeys struct{}
 
 // Dnsseckey represents Infoblox struct dnsseckey
 type Dnsseckey struct {
-	Tag           uint32     `json:"tag,omitempty"`
-	Status        string     `json:"status,omitempty"`
-	NextEventDate *time.Time `json:"next_event_date,omitempty"`
-	Type          string     `json:"type,omitempty"`
-	Algorithm     string     `json:"algorithm,omitempty"`
-	PublicKey     string     `json:"public_key,omitempty"`
+	Tag           uint32    `json:"tag,omitempty"`
+	Status        string    `json:"status,omitempty"`
+	NextEventDate *UnixTime `json:"next_event_date,omitempty"`
+	Type          string    `json:"type,omitempty"`
+	Algorithm     string    `json:"algorithm,omitempty"`
+	PublicKey     string    `json:"public_key,omitempty"`
 }
 
 // Dnsseckeyalgorithm represents Infoblox struct dnsseckeyalgorithm
@@ -10687,31 +10685,31 @@ type Dnssectrustedkey struct {
 
 // Dnsserver represents Infoblox struct dnsserver
 type Dnsserver struct {
-	UseLogin                   bool       `json:"use_login,omitempty"`
-	LoginName                  string     `json:"login_name,omitempty"`
-	LoginPassword              string     `json:"login_password,omitempty"`
-	Managed                    bool       `json:"managed,omitempty"`
-	NextSyncControl            string     `json:"next_sync_control,omitempty"`
-	Status                     string     `json:"status,omitempty"`
-	StatusDetail               string     `json:"status_detail,omitempty"`
-	StatusLastUpdated          *time.Time `json:"status_last_updated,omitempty"`
-	LastSyncTs                 *time.Time `json:"last_sync_ts,omitempty"`
-	LastSyncStatus             string     `json:"last_sync_status,omitempty"`
-	LastSyncDetail             string     `json:"last_sync_detail,omitempty"`
-	Forwarders                 string     `json:"forwarders,omitempty"`
-	SupportsIpv6               bool       `json:"supports_ipv6,omitempty"`
-	SupportsIpv6Reverse        bool       `json:"supports_ipv6_reverse,omitempty"`
-	SupportsRrDname            bool       `json:"supports_rr_dname,omitempty"`
-	SupportsDnssec             bool       `json:"supports_dnssec,omitempty"`
-	SupportsActiveDirectory    bool       `json:"supports_active_directory,omitempty"`
-	Address                    string     `json:"address,omitempty"`
-	SupportsRrNaptr            bool       `json:"supports_rr_naptr,omitempty"`
-	UseEnableMonitoring        bool       `json:"use_enable_monitoring,omitempty"`
-	EnableMonitoring           bool       `json:"enable_monitoring,omitempty"`
-	UseSynchronizationMinDelay bool       `json:"use_synchronization_min_delay,omitempty"`
-	SynchronizationMinDelay    uint32     `json:"synchronization_min_delay,omitempty"`
-	UseEnableDnsReportsSync    bool       `json:"use_enable_dns_reports_sync,omitempty"`
-	EnableDnsReportsSync       bool       `json:"enable_dns_reports_sync,omitempty"`
+	UseLogin                   bool      `json:"use_login,omitempty"`
+	LoginName                  string    `json:"login_name,omitempty"`
+	LoginPassword              string    `json:"login_password,omitempty"`
+	Managed                    bool      `json:"managed,omitempty"`
+	NextSyncControl            string    `json:"next_sync_control,omitempty"`
+	Status                     string    `json:"status,omitempty"`
+	StatusDetail               string    `json:"status_detail,omitempty"`
+	StatusLastUpdated          *UnixTime `json:"status_last_updated,omitempty"`
+	LastSyncTs                 *UnixTime `json:"last_sync_ts,omitempty"`
+	LastSyncStatus             string    `json:"last_sync_status,omitempty"`
+	LastSyncDetail             string    `json:"last_sync_detail,omitempty"`
+	Forwarders                 string    `json:"forwarders,omitempty"`
+	SupportsIpv6               bool      `json:"supports_ipv6,omitempty"`
+	SupportsIpv6Reverse        bool      `json:"supports_ipv6_reverse,omitempty"`
+	SupportsRrDname            bool      `json:"supports_rr_dname,omitempty"`
+	SupportsDnssec             bool      `json:"supports_dnssec,omitempty"`
+	SupportsActiveDirectory    bool      `json:"supports_active_directory,omitempty"`
+	Address                    string    `json:"address,omitempty"`
+	SupportsRrNaptr            bool      `json:"supports_rr_naptr,omitempty"`
+	UseEnableMonitoring        bool      `json:"use_enable_monitoring,omitempty"`
+	EnableMonitoring           bool      `json:"enable_monitoring,omitempty"`
+	UseSynchronizationMinDelay bool      `json:"use_synchronization_min_delay,omitempty"`
+	SynchronizationMinDelay    uint32    `json:"synchronization_min_delay,omitempty"`
+	UseEnableDnsReportsSync    bool      `json:"use_enable_dns_reports_sync,omitempty"`
+	EnableDnsReportsSync       bool      `json:"enable_dns_reports_sync,omitempty"`
 }
 
 // Dnstapsetting represents Infoblox struct dnstapsetting
@@ -11057,9 +11055,9 @@ type GridInformationalbannersetting struct {
 
 // GridLicensesubpool represents Infoblox struct grid:licensesubpool
 type GridLicensesubpool struct {
-	Key        string     `json:"key,omitempty"`
-	Installed  uint32     `json:"installed,omitempty"`
-	ExpiryDate *time.Time `json:"expiry_date,omitempty"`
+	Key        string    `json:"key,omitempty"`
+	Installed  uint32    `json:"installed,omitempty"`
+	ExpiryDate *UnixTime `json:"expiry_date,omitempty"`
 }
 
 // GridLockoutsetting represents Infoblox struct grid:lockoutsetting
@@ -11429,19 +11427,19 @@ type Msdnsserver struct {
 
 // MsserverAduser represents Infoblox struct msserver:aduser
 type MsserverAduser struct {
-	LoginName                  string     `json:"login_name,omitempty"`
-	LoginPassword              string     `json:"login_password,omitempty"`
-	EnableUserSync             bool       `json:"enable_user_sync,omitempty"`
-	SynchronizationInterval    uint32     `json:"synchronization_interval,omitempty"`
-	LastSyncTime               *time.Time `json:"last_sync_time,omitempty"`
-	LastSyncStatus             string     `json:"last_sync_status,omitempty"`
-	LastSyncDetail             string     `json:"last_sync_detail,omitempty"`
-	LastSuccessSyncTime        *time.Time `json:"last_success_sync_time,omitempty"`
-	UseLogin                   bool       `json:"use_login,omitempty"`
-	UseEnableAdUserSync        bool       `json:"use_enable_ad_user_sync,omitempty"`
-	UseSynchronizationMinDelay bool       `json:"use_synchronization_min_delay,omitempty"`
-	UseEnableUserSync          bool       `json:"use_enable_user_sync,omitempty"`
-	UseSynchronizationInterval bool       `json:"use_synchronization_interval,omitempty"`
+	LoginName                  string    `json:"login_name,omitempty"`
+	LoginPassword              string    `json:"login_password,omitempty"`
+	EnableUserSync             bool      `json:"enable_user_sync,omitempty"`
+	SynchronizationInterval    uint32    `json:"synchronization_interval,omitempty"`
+	LastSyncTime               *UnixTime `json:"last_sync_time,omitempty"`
+	LastSyncStatus             string    `json:"last_sync_status,omitempty"`
+	LastSyncDetail             string    `json:"last_sync_detail,omitempty"`
+	LastSuccessSyncTime        *UnixTime `json:"last_success_sync_time,omitempty"`
+	UseLogin                   bool      `json:"use_login,omitempty"`
+	UseEnableAdUserSync        bool      `json:"use_enable_ad_user_sync,omitempty"`
+	UseSynchronizationMinDelay bool      `json:"use_synchronization_min_delay,omitempty"`
+	UseEnableUserSync          bool      `json:"use_enable_user_sync,omitempty"`
+	UseSynchronizationInterval bool      `json:"use_synchronization_interval,omitempty"`
 }
 
 // MsserverAduserData represents Infoblox struct msserver:aduser:data
@@ -11991,18 +11989,18 @@ type SettingScavenging struct {
 
 // SettingSchedule represents Infoblox struct setting:schedule
 type SettingSchedule struct {
-	Weekdays        []string   `json:"weekdays,omitempty"`
-	TimeZone        string     `json:"time_zone,omitempty"`
-	RecurringTime   *time.Time `json:"recurring_time,omitempty"`
-	Frequency       string     `json:"frequency,omitempty"`
-	Every           uint32     `json:"every,omitempty"`
-	MinutesPastHour uint32     `json:"minutes_past_hour,omitempty"`
-	HourOfDay       uint32     `json:"hour_of_day,omitempty"`
-	Year            uint32     `json:"year,omitempty"`
-	Month           uint32     `json:"month,omitempty"`
-	DayOfMonth      uint32     `json:"day_of_month,omitempty"`
-	Repeat          string     `json:"repeat,omitempty"`
-	Disable         bool       `json:"disable,omitempty"`
+	Weekdays        []string  `json:"weekdays,omitempty"`
+	TimeZone        string    `json:"time_zone,omitempty"`
+	RecurringTime   *UnixTime `json:"recurring_time,omitempty"`
+	Frequency       string    `json:"frequency,omitempty"`
+	Every           uint32    `json:"every,omitempty"`
+	MinutesPastHour uint32    `json:"minutes_past_hour,omitempty"`
+	HourOfDay       uint32    `json:"hour_of_day,omitempty"`
+	Year            uint32    `json:"year,omitempty"`
+	Month           uint32    `json:"month,omitempty"`
+	DayOfMonth      uint32    `json:"day_of_month,omitempty"`
+	Repeat          string    `json:"repeat,omitempty"`
+	Disable         bool      `json:"disable,omitempty"`
 }
 
 // SettingSecurity represents Infoblox struct setting:security
@@ -12138,10 +12136,10 @@ type SmartfolderQueryitem struct {
 
 // SmartfolderQueryitemvalue represents Infoblox struct smartfolder:queryitemvalue
 type SmartfolderQueryitemvalue struct {
-	ValueInteger int        `json:"value_integer,omitempty"`
-	ValueString  string     `json:"value_string,omitempty"`
-	ValueDate    *time.Time `json:"value_date,omitempty"`
-	ValueBoolean bool       `json:"value_boolean,omitempty"`
+	ValueInteger int       `json:"value_integer,omitempty"`
+	ValueString  string    `json:"value_string,omitempty"`
+	ValueDate    *UnixTime `json:"value_date,omitempty"`
+	ValueBoolean bool      `json:"value_boolean,omitempty"`
 }
 
 // Smartfoldersaveasparams represents Infoblox struct smartfoldersaveasparams
@@ -12283,12 +12281,12 @@ type ThreatprotectionRuleparam struct {
 
 // ThreatprotectionStatinfo represents Infoblox struct threatprotection:statinfo
 type ThreatprotectionStatinfo struct {
-	Timestamp     *time.Time `json:"timestamp,omitempty"`
-	Critical      uint64     `json:"critical,omitempty"`
-	Major         uint64     `json:"major,omitempty"`
-	Warning       uint64     `json:"warning,omitempty"`
-	Informational uint64     `json:"informational,omitempty"`
-	Total         uint64     `json:"total,omitempty"`
+	Timestamp     *UnixTime `json:"timestamp,omitempty"`
+	Critical      uint64    `json:"critical,omitempty"`
+	Major         uint64    `json:"major,omitempty"`
+	Warning       uint64    `json:"warning,omitempty"`
+	Informational uint64    `json:"informational,omitempty"`
+	Total         uint64    `json:"total,omitempty"`
 }
 
 // Thresholdtrap represents Infoblox struct thresholdtrap
@@ -12349,12 +12347,12 @@ type UpgradegroupMember struct {
 
 // UpgradegroupSchedule represents Infoblox struct upgradegroup:schedule
 type UpgradegroupSchedule struct {
-	Name                       string     `json:"name,omitempty"`
-	TimeZone                   string     `json:"time_zone,omitempty"`
-	DistributionDependentGroup string     `json:"distribution_dependent_group,omitempty"`
-	UpgradeDependentGroup      string     `json:"upgrade_dependent_group,omitempty"`
-	DistributionTime           *time.Time `json:"distribution_time,omitempty"`
-	UpgradeTime                *time.Time `json:"upgrade_time,omitempty"`
+	Name                       string    `json:"name,omitempty"`
+	TimeZone                   string    `json:"time_zone,omitempty"`
+	DistributionDependentGroup string    `json:"distribution_dependent_group,omitempty"`
+	UpgradeDependentGroup      string    `json:"upgrade_dependent_group,omitempty"`
+	DistributionTime           *UnixTime `json:"distribution_time,omitempty"`
+	UpgradeTime                *UnixTime `json:"upgrade_time,omitempty"`
 }
 
 // Upgradegroupnowparams represents Infoblox struct upgradegroupnowparams

@@ -374,13 +374,14 @@ var _ = Describe("Objects", func() {
 					ref, err := connector.CreateObject(a)
 					Expect(err).To(BeNil())
 
-					a.SetReturnFields([]string{"view", "comment"})
+					a.SetReturnFields([]string{"view", "comment", "creation_time"})
 					var res ibclient.RecordA
 					err = connector.GetObject(a, ref, nil, &res)
 					Expect(err).To(BeNil())
 					Expect(res.Ref).To(Equal(ref))
 					Expect(res.View).To(Equal(a.View))
 					Expect(res.Comment).To(Equal(a.Comment))
+					Expect(res.CreationTime).To(Not(BeNil()))
 
 					a.View = ""
 					a.Comment = "A Record updated by e2e test"
