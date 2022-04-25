@@ -27,7 +27,7 @@ var _ = Describe("Objects", func() {
 		requestor := &ibclient.WapiHttpRequestor{}
 		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 		Expect(err).To(BeNil())
-		connector = &ConnectorFacadeE2E{*ibclientConnector, make(map[string]struct{})}
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
 	})
 
 	AfterEach(func() {
@@ -179,39 +179,70 @@ var _ = Describe("Objects", func() {
 				})
 			})
 
-			//Describe("IPv4 Host Record", func() {
-			//	It("Should properly serialize/deserialize", func() {
-			//		fa := &ibclient.HostRecord{
-			//			NetworkView: "e2e_test_view",
-			//			Name:        "e2e_test_host_record",
-			//			Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-			//				{
-			//					Ipv4Addr: "192.168.1.60",
-			//					Mac:      "00:00:00:00:00:00",
-			//				},
-			//			},
-			//			Comment: "IPv4 Host Record created by e2e test",
-			//		}
-			//
-			//		ref, err := connector.CreateObject(fa)
-			//		Expect(err).To(BeNil())
-			//
-			//		var res ibclient.HostRecord
-			//		err = connector.GetObject(fa, ref, nil, &res)
-			//		Expect(err).To(BeNil())
-			//		Expect(res.Ref).To(Equal(ref))
-			//		Expect(res.NetworkView).To(Equal(fa.NetworkView))
-			//		Expect(res.Name).To(Equal(fa.Name))
-			//		Expect(res.Comment).To(Equal(fa.Comment))
-			//
-			//		fa.Comment = "IPv4 Host Record updated by e2e test"
-			//		updRef, err := connector.UpdateObject(fa, ref)
-			//		Expect(err).To(BeNil())
-			//
-			//		_, err = connector.DeleteObject(updRef)
-			//		Expect(err).To(BeNil())
-			//	})
-			//})
+			Describe("IPv4 Host Record", func() {
+				It("Should properly serialize/deserialize", func() {
+					By("Creating DNS view")
+					v := &ibclient.View{
+						Name:        "e2e_test_dns_view",
+						NetworkView: "e2e_test_view",
+						Comment:     "DNS View created by e2e test",
+					}
+					_, err := connector.CreateObject(v)
+					Expect(err).To(BeNil())
+
+					By("Creating forwarding-mapping DNS Auth Zone")
+					zf := &ibclient.ZoneAuth{
+						View:    "e2e_test_dns_view",
+						Fqdn:    "e2e-test.com",
+						Comment: "Forwarding-mapping DNS Auth Zone created by e2e test",
+					}
+					_, err = connector.CreateObject(zf)
+					Expect(err).To(BeNil())
+
+					By("Creating reverse-mapping DNS Auth Zone")
+					zr := &ibclient.ZoneAuth{
+						View:       "e2e_test_dns_view",
+						Fqdn:       "192.168.1.0/24",
+						ZoneFormat: "IPV4",
+						Comment:    "Reverse-mapping DNS Auth Zone created by e2e test",
+					}
+					_, err = connector.CreateObject(zr)
+					Expect(err).To(BeNil())
+
+					fa := &ibclient.HostRecord{
+						NetworkView: "e2e_test_view",
+						View:        "e2e_test_dns_view",
+						Name:        "e2e_test_host_record.e2e-test.com",
+						Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+							{
+								Ipv4Addr: "192.168.1.60",
+								Mac:      "00:00:00:00:00:00",
+							},
+						},
+						Comment: "IPv4 Host Record created by e2e test",
+					}
+
+					ref, err := connector.CreateObject(fa)
+					Expect(err).To(BeNil())
+
+					fa.SetReturnFields(append(fa.ReturnFields(), "network_view", "comment"))
+					var res ibclient.HostRecord
+					err = connector.GetObject(fa, ref, nil, &res)
+					Expect(err).To(BeNil())
+					Expect(res.Ref).To(Equal(ref))
+					Expect(res.NetworkView).To(Equal(fa.NetworkView))
+					Expect(res.Name).To(Equal(fa.Name))
+					Expect(res.Comment).To(Equal(fa.Comment))
+
+					fa.NetworkView = ""
+					fa.Comment = "IPv4 Host Record updated by e2e test"
+					updRef, err := connector.UpdateObject(fa, ref)
+					Expect(err).To(BeNil())
+
+					_, err = connector.DeleteObject(updRef)
+					Expect(err).To(BeNil())
+				})
+			})
 
 		})
 
