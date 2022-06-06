@@ -147,7 +147,7 @@ func (whr *WapiHttpRequestor) Init(authCfg AuthConfig, trCfg TransportConfig) {
 	if authCfg.ClientKey != nil && authCfg.ClientCert != nil {
 		cert, err := tls.X509KeyPair(authCfg.ClientCert, authCfg.ClientKey)
 		if err != nil {
-			log.Fatal("Invalid certificate key pair: ", err)
+			log.Fatal("Invalid certificate key pair (PEM format error): ", err)
 		}
 
 		certList = []tls.Certificate{cert}
