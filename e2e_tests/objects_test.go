@@ -422,6 +422,36 @@ var _ = Describe("Objects", func() {
 					_, err = connector.DeleteObject(updRef)
 					Expect(err).To(BeNil())
 				})
+
+				It("Should support search by zone field", func() {
+					a := &ibclient.RecordA{
+						View:     "e2e_test_dns_view",
+						Name:     "e2e_test_a_record.e2e-test.com",
+						Ipv4Addr: "192.168.1.45",
+						Ttl:      5,
+						UseTtl:   true,
+						Comment:  "A Record created by e2e test",
+						Ea:       make(ibclient.EA),
+					}
+
+					ref, err := connector.CreateObject(a)
+					Expect(err).To(BeNil())
+
+					aSearch := &ibclient.RecordA{}
+					aSearch.SetReturnFields([]string{"view", "comment", "creation_time", "zone"})
+					var res []ibclient.RecordA
+					queryParams := ibclient.NewQueryParams(false, map[string]string{"view": "e2e_test_dns_view", "zone": "e2e-test.com"})
+					err = connector.GetObject(aSearch, "", queryParams, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].Ref).To(Equal(ref))
+					Expect(res[0].View).To(Equal(a.View))
+					Expect(res[0].Comment).To(Equal(a.Comment))
+					Expect(res[0].Zone).To(Equal("e2e-test.com"))
+					Expect(res[0].CreationTime).To(Not(BeNil()))
+
+					_, err = connector.DeleteObject(ref)
+					Expect(err).To(BeNil())
+				})
 			})
 
 			Describe("AAAA Record", func() {
