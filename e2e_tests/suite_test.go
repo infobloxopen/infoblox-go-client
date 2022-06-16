@@ -2,8 +2,7 @@ package e2e_tests
 
 import (
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
-	. "github.com/onsi/ginkgo"
-	"github.com/onsi/ginkgo/config"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"log"
 	"testing"
@@ -12,8 +11,9 @@ import (
 
 func TestE2EInfobloxGoClient(t *testing.T) {
 	RegisterFailHandler(Fail)
-	config.DefaultReporterConfig.SlowSpecThreshold = (time.Minute * 10).Seconds()
-	RunSpecs(t, "InfobloxGoClient E2E Test Suite")
+	_, reporterConfig := GinkgoConfiguration()
+	reporterConfig.SlowSpecThreshold = time.Minute * 10
+	RunSpecs(t, "InfobloxGoClient E2E Test Suite", reporterConfig)
 }
 
 // ConnectorFacadeE2E is an end-to-end test facade for the ibclient.Connector.

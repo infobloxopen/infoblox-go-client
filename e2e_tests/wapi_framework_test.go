@@ -2,7 +2,7 @@ package e2e_tests
 
 import (
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
 )
@@ -163,7 +163,7 @@ var _ = Describe("Go Client", func() {
 		Expect(err).To(BeNil())
 		Expect(res[0].Comment).To(Equal("Default ICMP health monitor"))
 		Expect(res[0].Name).To(Equal("icmp"))
-		Expect(res[0].Ref).To(Equal("dtc:monitor/Li5sYl9oZWFsdGhfbW9uaXRvciQw:icmp"))
+		Expect(res[0].Ref).To(MatchRegexp("^dtc:monitor.*icmp$"))
 		Expect(res[0].Type).To(Equal("ICMP"))
 
 		Expect(res[1].Comment).To(Equal("Default HTTP health monitor"))

@@ -2,7 +2,7 @@ package e2e_tests
 
 import (
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
 )
