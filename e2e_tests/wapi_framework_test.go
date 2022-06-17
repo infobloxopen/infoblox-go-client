@@ -35,7 +35,7 @@ var _ = Describe("Go Client", func() {
 		Expect(err).To(BeNil())
 	})
 
-	It("Should get the Grid object", func() {
+	It("Should get the Grid object", Label("ID: 1", "RO"), func() {
 		var res []ibclient.Grid
 		search := &ibclient.Grid{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -43,7 +43,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("grid/b25lLmNsdXN0ZXIkMA:Infoblox"))
 	})
 
-	It("Should get the Member object", func() {
+	It("Should get the Member object", Label("ID: 2", "RO"), func() {
 		var res []ibclient.Member
 		search := &ibclient.Member{}
 		search.SetReturnFields([]string{"host_name"})
@@ -53,7 +53,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].HostName).To(Equal("infoblox.localdomain"))
 	})
 
-	It("Should get the Admin User [admin]", func() {
+	It("Should get the Admin User [admin]", Label("ID: 3", "RO"), func() {
 		var res []ibclient.Adminuser
 		search := &ibclient.Adminuser{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -62,7 +62,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].AdminGroups[0]).To(Equal("admin-group"))
 	})
 
-	It("Should get the Admin Group [admin-group]", func() {
+	It("Should get the Admin Group [admin-group]", Label("ID: 4", "RO"), func() {
 		var res []ibclient.Admingroup
 		search := &ibclient.Admingroup{}
 		qp := ibclient.NewQueryParams(false, map[string]string{"name": "admin-group"})
@@ -72,7 +72,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Name).To(Equal("admin-group"))
 	})
 
-	It("Should get the AllRecords without search fields (N)", func() {
+	It("Should get the AllRecords without search fields (N)", Label("ID: 5", "RO"), func() {
 		var res []ibclient.Allrecords
 		search := &ibclient.Allrecords{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -80,14 +80,14 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	PIt("Should get the CSV Import task", func() {
+	PIt("Should get the CSV Import task", Label("ID: 6", "RO"), func() {
 		var res []ibclient.Csvimporttask
 		search := &ibclient.Csvimporttask{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
 	})
 
-	It("Should get the Discovery object (N)", func() {
+	It("Should get the Discovery object (N)", Label("ID: 7", "RO"), func() {
 		var res []ibclient.Discovery
 		search := &ibclient.Discovery{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -95,7 +95,7 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	PIt("Should get the Discovery Device object (N)", func() {
+	PIt("Should get the Discovery Device object (N)", Label("ID: 8", "RO"), func() {
 		var res []ibclient.DiscoveryDevice
 		search := &ibclient.DiscoveryDevice{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -103,7 +103,7 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	It("Should get the Discovery Device Component object (N)", func() {
+	It("Should get the Discovery Device Component object (N)", Label("ID: 9", "RO"), func() {
 		var res []ibclient.DiscoveryDevicecomponent
 		search := &ibclient.DiscoveryDevicecomponent{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -111,7 +111,7 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	It("Should get the Discovery Device Interface object (N)", func() {
+	It("Should get the Discovery Device Interface object (N)", Label("ID: 10", "RO"), func() {
 		var res []ibclient.DiscoveryDeviceinterface
 		search := &ibclient.DiscoveryDeviceinterface{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -119,14 +119,14 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	It("Should get the Discovery Device Neighbor object", func() {
+	It("Should get the Discovery Device Neighbor object", Label("ID: 11", "RO"), func() {
 		var res []ibclient.DiscoveryDeviceneighbor
 		search := &ibclient.DiscoveryDeviceneighbor{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Discovery Status object (N)", func() {
+	It("Should get the Discovery Status object (N)", Label("ID: 12", "RO"), func() {
 		var res []ibclient.DiscoveryStatus
 		search := &ibclient.DiscoveryStatus{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -134,7 +134,7 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	It("Should get the DTC (N)", func() {
+	It("Should get the DTC (N)", Label("ID: 13", "RO"), func() {
 		var res []ibclient.Dtc
 		search := &ibclient.Dtc{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -142,21 +142,21 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	It("Should get the DTC Certificate object", func() {
+	It("Should get the DTC Certificate object", Label("ID: 14", "RO"), func() {
 		var res []ibclient.DtcCertificate
 		search := &ibclient.DtcCertificate{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DTC LBDN object", func() {
+	It("Should get the DTC LBDN object", Label("ID: 15", "RO"), func() {
 		var res []ibclient.DtcLbdn
 		search := &ibclient.DtcLbdn{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DTC monitor object", func() {
+	It("Should get the DTC monitor object", Label("ID: 16", "RO"), func() {
 		var res []ibclient.DtcMonitor
 		search := &ibclient.DtcMonitor{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -168,26 +168,26 @@ var _ = Describe("Go Client", func() {
 
 		Expect(res[1].Comment).To(Equal("Default HTTP health monitor"))
 		Expect(res[1].Name).To(Equal("http"))
-		Expect(res[1].Ref).To(Equal("dtc:monitor/Li5sYl9oZWFsdGhfbW9uaXRvciQx:http"))
+		Expect(res[1].Ref).To(MatchRegexp("^dtc:monitor.*http$"))
 		Expect(res[1].Type).To(Equal("HTTP"))
 
 		Expect(res[2].Comment).To(Equal("Default HTTPS health monitor"))
 		Expect(res[2].Name).To(Equal("https"))
-		Expect(res[2].Ref).To(Equal("dtc:monitor/Li5sYl9oZWFsdGhfbW9uaXRvciQy:https"))
+		Expect(res[2].Ref).To(MatchRegexp("^dtc:monitor.*https$"))
 		Expect(res[2].Type).To(Equal("HTTP"))
 
 		Expect(res[3].Comment).To(Equal("Default SIP health monitor"))
 		Expect(res[3].Name).To(Equal("sip"))
-		Expect(res[3].Ref).To(Equal("dtc:monitor/Li5sYl9oZWFsdGhfbW9uaXRvciQz:sip"))
+		Expect(res[3].Ref).To(MatchRegexp("^dtc:monitor.*sip$"))
 		Expect(res[3].Type).To(Equal("SIP"))
 
 		Expect(res[4].Comment).To(Equal("Default PDP health monitor"))
 		Expect(res[4].Name).To(Equal("pdp"))
-		Expect(res[4].Ref).To(Equal("dtc:monitor/Li5sYl9oZWFsdGhfbW9uaXRvciQ0:pdp"))
+		Expect(res[4].Ref).To(MatchRegexp("^dtc:monitor.*pdp$"))
 		Expect(res[4].Type).To(Equal("PDP"))
 	})
 
-	It("Should get the DTC HTTP monitor object", func() {
+	It("Should get the DTC HTTP monitor object", Label("ID: 17", "RO"), func() {
 		var res []ibclient.DtcMonitorHttp
 		search := &ibclient.DtcMonitorHttp{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -201,7 +201,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[1].Ref).To(Equal("dtc:monitor:http/ZG5zLmlkbnNfbW9uaXRvcl9odHRwJGh0dHBz:https"))
 	})
 
-	It("Should get the DTC ICMP monitor object", func() {
+	It("Should get the DTC ICMP monitor object", Label("ID: 18", "RO"), func() {
 		var res []ibclient.DtcMonitorIcmp
 		search := &ibclient.DtcMonitorIcmp{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -211,7 +211,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("dtc:monitor:icmp/ZG5zLmlkbnNfbW9uaXRvcl9pY21wJGljbXA:icmp"))
 	})
 
-	It("Should get the DTC PDP monitor object", func() {
+	It("Should get the DTC PDP monitor object", Label("ID: 19", "RO"), func() {
 		var res []ibclient.DtcMonitorPdp
 		search := &ibclient.DtcMonitorPdp{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -221,7 +221,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("dtc:monitor:pdp/ZG5zLmlkbnNfbW9uaXRvcl9wZHAkcGRw:pdp"))
 	})
 
-	It("Should get the DTC SIP monitor object", func() {
+	It("Should get the DTC SIP monitor object", Label("ID: 20", "RO"), func() {
 		var res []ibclient.DtcMonitorSip
 		search := &ibclient.DtcMonitorSip{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -231,42 +231,49 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("dtc:monitor:sip/ZG5zLmlkbnNfbW9uaXRvcl9zaXAkc2lw:sip"))
 	})
 
-	It("Should get the DTC TCP monitor object", func() {
+	It("Should get the DTC TCP monitor object", Label("ID: 21", "RO"), func() {
 		var res []ibclient.DtcMonitorTcp
 		search := &ibclient.DtcMonitorTcp{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DTC object", func() {
+	It("Should get the DTC object", Label("ID: 22", "RO"), func() {
 		var res []ibclient.DtcObject
 		search := &ibclient.DtcObject{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DTC POOL object", func() {
+	It("Should get the DTC POOL object", Label("ID: 23", "RO"), func() {
 		var res []ibclient.DtcPool
 		search := &ibclient.DtcPool{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DTC Server object", func() {
+	It("Should get the DTC Server object", Label("ID: 24", "RO"), func() {
 		var res []ibclient.DtcServer
 		search := &ibclient.DtcServer{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DTC Topology Rule object", func() {
+	It("Should get the DTC Topology object", Label("ID: 25", "RO"), func() {
 		var res []ibclient.DtcTopology
 		search := &ibclient.DtcTopology{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Extensible Attribute Definition object", func() {
+	It("Should get the DTC Topology Rule object", Label("ID: 26", "RO"), func() {
+		var res []ibclient.DtcTopologyRule
+		search := &ibclient.DtcTopologyRule{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the Extensible Attribute Definition object", Label("ID: 27", "RO"), func() {
 		var res []ibclient.EADefinition
 		search := &ibclient.EADefinition{}
 		qp := ibclient.NewQueryParams(false, map[string]string{"name": "Site"})
@@ -277,7 +284,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Type).To(Equal("STRING"))
 	})
 
-	It("Should not get the File operations object", func() {
+	It("Should not get the File operations object", Label("ID: 28", "RO"), func() {
 		var res []ibclient.Fileop
 		search := &ibclient.Fileop{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -285,7 +292,7 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	It("Should get the Grid Cloud API object", func() {
+	It("Should get the Grid Cloud API object", Label("ID: 29", "RO"), func() {
 		var res []ibclient.GridCloudapi
 		search := &ibclient.GridCloudapi{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -296,7 +303,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("grid:cloudapi/b25lLnZjb25uZWN0b3JfY2x1c3RlciQw:grid"))
 	})
 
-	It("Should get the Grid Cloud Statistics object", func() {
+	It("Should get the Grid Cloud Statistics object", Label("ID: 30", "RO"), func() {
 		var res []ibclient.GridCloudapiCloudstatistics
 		search := &ibclient.GridCloudapiCloudstatistics{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -311,21 +318,21 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].FixedIpCount).To(Equal(uint32(0)))
 	})
 
-	It("Should get the Grid Cloud API Tenant object", func() {
+	It("Should get the Grid Cloud API Tenant object", Label("ID: 31", "RO"), func() {
 		var res []ibclient.GridCloudapiTenant
 		search := &ibclient.GridCloudapiTenant{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Grid Cloud API VM address object", func() {
+	It("Should get the Grid Cloud API VM address object", Label("ID: 32", "RO"), func() {
 		var res []ibclient.GridCloudapiVmaddress
 		search := &ibclient.GridCloudapiVmaddress{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Grid DHCP properties object", func() {
+	It("Should get the Grid DHCP properties object", Label("ID: 33", "RO"), func() {
 		var res []ibclient.GridDhcpproperties
 		search := &ibclient.GridDhcpproperties{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -334,7 +341,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("grid:dhcpproperties/ZG5zLmNsdXN0ZXJfZGhjcF9wcm9wZXJ0aWVzJDA:Infoblox"))
 	})
 
-	It("Should get the Grid Dns object", func() {
+	It("Should get the Grid Dns object", Label("ID: 34", "RO"), func() {
 		var res []ibclient.GridDns
 		search := &ibclient.GridDns{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -342,15 +349,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("grid:dns/ZG5zLmNsdXN0ZXJfZG5zX3Byb3BlcnRpZXMkMA:Infoblox"))
 	})
 
-	It("Should get the Grid Dns object", func() {
-		var res []ibclient.GridDns
-		search := &ibclient.GridDns{}
-		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(BeNil())
-		Expect(res[0].Ref).To(Equal("grid:dns/ZG5zLmNsdXN0ZXJfZG5zX3Byb3BlcnRpZXMkMA:Infoblox"))
-	})
-
-	PIt("Should get the MaxMind DB Info object", func() {
+	PIt("Should get the MaxMind DB Info object", Label("ID: 35", "RO"), func() {
 		var res []ibclient.GridMaxminddbinfo
 		search := &ibclient.GridMaxminddbinfo{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -359,14 +358,14 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("grid:maxminddbinfo/ZG5zLm1heG1pbmRfZGJfaW5mbyQw:maxminddbinfo"))
 	})
 
-	It("Should get the Member Cloud API object", func() {
+	It("Should get the Member Cloud API object", Label("ID: 36", "RO"), func() {
 		var res []ibclient.GridMemberCloudapi
 		search := &ibclient.GridMemberCloudapi{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the x509certificate object", func() {
+	It("Should get the x509certificate object", Label("ID: 37", "RO"), func() {
 		var res []ibclient.GridX509certificate
 		search := &ibclient.GridX509certificate{}
 		err := connector.GetObject(search, "", nil, &res)
@@ -374,7 +373,7 @@ var _ = Describe("Go Client", func() {
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should add Network View [dhcpview]", func() {
+	It("Should add Network View [dhcpview]", Label("ID: 38", "RW"), func() {
 		nv := &ibclient.NetworkView{
 			Name:    "dhcpview",
 			Comment: "wapi added",
@@ -383,7 +382,7 @@ var _ = Describe("Go Client", func() {
 		Expect(err).To(BeNil())
 	})
 
-	It("Should add FMZ Auth Zone [wapi.com]", func() {
+	It("Should add FMZ Auth Zone [wapi.com]", Label("ID: 39", "RW"), func() {
 		nv := &ibclient.ZoneAuth{
 			View: "default",
 			Fqdn: "wapi.com",
@@ -393,7 +392,7 @@ var _ = Describe("Go Client", func() {
 		Expect(ref).To(MatchRegexp("zone_auth.*wapi.com/default"))
 	})
 
-	When("Auth Zone [wapi.com] exists", func() {
+	When("Auth Zone [wapi.com] exists", Label("RW"), func() {
 		BeforeEach(func() {
 			nv := &ibclient.ZoneAuth{
 				View: "default",
@@ -403,7 +402,7 @@ var _ = Describe("Go Client", func() {
 			Expect(err).To(BeNil())
 		})
 
-		It("Should add CNAME Record [cname.wapi.com]", func() {
+		It("Should add CNAME Record [cname.wapi.com]", Label("ID: 40", "RW"), func() {
 			r := &ibclient.RecordCNAME{
 				View:      "default",
 				Name:      "cname.wapi.com",
@@ -415,7 +414,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:cname.*cname\\.wapi\\.com/default$"))
 		})
 
-		It("Should add A Record [a.wapi.com]", func() {
+		It("Should add A Record [a.wapi.com]", Label("ID: 41", "RW"), func() {
 			r := &ibclient.RecordA{
 				Name:     "a.wapi.com",
 				Ipv4Addr: "9.0.0.1",
@@ -430,7 +429,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:a.*a\\.wapi\\.com/default$"))
 		})
 
-		It("Should add AAAA Record [aaaa.wapi.com]", func() {
+		It("Should add AAAA Record [aaaa.wapi.com]", Label("ID: 42", "RW"), func() {
 			r := &ibclient.RecordAAAA{
 				Name:     "aaaa.wapi.com",
 				Ipv6Addr: "99::99",
@@ -445,22 +444,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:aaaa.*aaaa\\.wapi\\.com/default$"))
 		})
 
-		It("Should add AAAA Record [aaaa.wapi.com]", func() {
-			r := &ibclient.RecordAAAA{
-				Name:     "aaaa.wapi.com",
-				Ipv6Addr: "99::99",
-				Comment:  "Added AAAA Record",
-				Disable:  false,
-				Ttl:      uint32(10),
-				UseTtl:   true,
-				View:     "default",
-			}
-			ref, err := connector.CreateObject(r)
-			Expect(err).To(BeNil())
-			Expect(ref).To(MatchRegexp("^record:aaaa.*aaaa\\.wapi\\.com/default$"))
-		})
-
-		It("Should add Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields", func() {
+		It("Should add Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields", Label("ID: 43", "RW"), func() {
 			r := &ibclient.HostRecord{
 				Name: "h1.wapi.com",
 				View: "default",
@@ -479,7 +463,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
 		})
 
-		It("Should add MX Record [mx.wapi.com]", func() {
+		It("Should add MX Record [mx.wapi.com]", Label("ID: 44", "RW"), func() {
 			r := &ibclient.RecordMx{
 				Name:          "mx.wapi.com",
 				MailExchanger: "wapi.com",
@@ -494,7 +478,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
 		})
 
-		It("Should add TXT Record [txt.wapi.com]", func() {
+		It("Should add TXT Record [txt.wapi.com]", Label("ID: 45", "RW"), func() {
 			r := &ibclient.RecordTXT{
 				Name:    "txt.wapi.com",
 				Text:    "wapi.com",
@@ -509,7 +493,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:txt.*txt\\.wapi\\.com/default$"))
 		})
 
-		It("Should add PTR Record [ptr1.wapi.com]", func() {
+		It("Should add PTR Record [ptr1.wapi.com]", Label("ID: 46", "RW"), func() {
 			r := &ibclient.RecordPTR{
 				Name:     "ptr1.wapi.com",
 				PtrdName: "ptr.wapi.com",
@@ -524,7 +508,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:ptr.*ptr1\\.wapi\\.com/default$"))
 		})
 
-		It("Should add SRV Record with all the attributes, using free format [name = srv.wapi.com]", func() {
+		It("Should add SRV Record with all the attributes, using free format [name = srv.wapi.com]", Label("ID: 47", "RW"), func() {
 			r := &ibclient.RecordSrv{
 				Name:     "srv.wapi.com",
 				Weight:   uint32(10),
@@ -553,7 +537,7 @@ var _ = Describe("Go Client", func() {
 			Expect(err).To(BeNil())
 		})
 
-		It("Should add Network [92.0.0.0/8] in custom network view [dhcpview]", func() {
+		It("Should add Network [92.0.0.0/8] in custom network view [dhcpview]", Label("ID: 48", "RW"), func() {
 			r := &ibclient.Ipv4Network{
 				Comment:     "Add ipv4network through WAPI",
 				Network:     "92.0.0.0/8",
@@ -564,7 +548,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^network.*92\\.0\\.0\\.0/8/dhcpview$"))
 		})
 
-		When("Network [92.0.0.0/8] in custom network view [dhcpview] exists", func() {
+		When("Network [92.0.0.0/8] in custom network view [dhcpview] exists", Label("RW"), func() {
 			BeforeEach(func() {
 				r := &ibclient.Ipv4Network{
 					Comment:     "Add ipv4network through WAPI",
@@ -576,7 +560,7 @@ var _ = Describe("Go Client", func() {
 				Expect(ref).To(MatchRegexp("^network.*92\\.0\\.0\\.0/8/dhcpview$"))
 			})
 
-			It("Should add IPv4 Range with mandatory fields start_addr [92.0.0.10] end_addr [92.0.0.20]", func() {
+			It("Should add IPv4 Range with mandatory fields start_addr [92.0.0.10] end_addr [92.0.0.20]", Label("ID: 49", "RW"), func() {
 				r := &ibclient.Range{
 					StartAddr:   "92.0.0.10",
 					EndAddr:     "92.0.0.20",
@@ -588,7 +572,7 @@ var _ = Describe("Go Client", func() {
 				Expect(ref).To(MatchRegexp("^range.*92\\.0\\.0\\.10/92\\.0\\.0\\.20/dhcpview$"))
 			})
 
-			It("Should add IPv4 fixed address [92.0.0.2] and mac [11:11:11:11:11:15]", func() {
+			It("Should add IPv4 fixed address [92.0.0.2] and mac [11:11:11:11:11:15]", Label("ID: 55", "RW"), func() {
 				fa := &ibclient.Ipv4FixedAddress{
 					Name:        "wapi-fa1",
 					Ipv4Addr:    "92.0.0.2",
@@ -603,7 +587,7 @@ var _ = Describe("Go Client", func() {
 		})
 	})
 
-	It("Should add IPv6 Network [1::/16]", func() {
+	It("Should add IPv6 Network [1::/16]", Label("ID: 50", "RW"), func() {
 		n := &ibclient.Ipv6Network{
 			AutoCreateReversezone: false,
 			Comment:               "Add ipv6network through WAPI",
@@ -615,7 +599,7 @@ var _ = Describe("Go Client", func() {
 		Expect(ref).To(MatchRegexp("^ipv6network.*1%3A%3A/16/default$"))
 	})
 
-	When("IPv6 Network [1::/16] exists", func() {
+	When("IPv6 Network [1::/16] exists", Label("RW"), func() {
 		BeforeEach(func() {
 			n := &ibclient.Ipv6Network{
 				AutoCreateReversezone: false,
@@ -628,7 +612,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^ipv6network.*1%3A%3A/16/default$"))
 		})
 
-		It("Should add IPv6 Range [start_addr = 1::1; end_addr = 1::20]", func() {
+		It("Should add IPv6 Range [start_addr = 1::1; end_addr = 1::20]", Label("ID: 51", "RW"), func() {
 			r := &ibclient.Ipv6range{
 				StartAddr: "1::1",
 				EndAddr:   "1::20",
@@ -640,7 +624,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^ipv6range.*1%3A%3A1/1%3A%3A20/default$"))
 		})
 
-		It("Should add ipv6fixedaddress [1::50]", func() {
+		It("Should add ipv6fixedaddress [1::50]", Label("ID: 56", "RW"), func() {
 			fa := &ibclient.Ipv6FixedAddress{
 				Duid:        "ab:34:56:78:90",
 				NetworkView: "default",
@@ -651,7 +635,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^ipv6fixedaddress.*1%3A%3A50/default"))
 		})
 
-		When("IPv6 Range [start_addr = 1::1; end_addr = 1::20] exits", func() {
+		When("IPv6 Range [start_addr = 1::1; end_addr = 1::20] exits", Label("RW"), func() {
 			BeforeEach(func() {
 				r := &ibclient.Ipv6range{
 					StartAddr: "1::1",
@@ -664,7 +648,7 @@ var _ = Describe("Go Client", func() {
 				Expect(ref).To(MatchRegexp("^ipv6range.*1%3A%3A1/1%3A%3A20/default$"))
 			})
 
-			PIt("Should get the IPAM IPv6Address object", func() {
+			PIt("Should get the IPAM IPv6Address object", Label("ID: 63", "RO"), func() {
 				var res []ibclient.Ipv6address
 				search := &ibclient.Ipv6address{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ip_address": "1::1"})
@@ -686,7 +670,7 @@ var _ = Describe("Go Client", func() {
 			})
 		})
 
-		When("ipv6fixedaddress [1::50] exists", func() {
+		When("ipv6fixedaddress [1::50] exists", Label("RW"), func() {
 			BeforeEach(func() {
 				fa := &ibclient.Ipv6FixedAddress{
 					Duid:        "ab:34:56:78:90",
@@ -698,7 +682,7 @@ var _ = Describe("Go Client", func() {
 				Expect(ref).To(MatchRegexp("^ipv6fixedaddress.*1%3A%3A50/default"))
 			})
 
-			It("Should get ipv6fixedaddress with default return fields", func() {
+			It("Should get ipv6fixedaddress with default return fields", Label("ID: 74", "RO"), func() {
 				var res []ibclient.Ipv6FixedAddress
 				search := &ibclient.Ipv6FixedAddress{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ipv6addr": "1::50"})
@@ -712,7 +696,7 @@ var _ = Describe("Go Client", func() {
 		})
 	})
 
-	It("Should add Network Container [78.0.0.0/8]", func() {
+	It("Should add Network Container [78.0.0.0/8]", Label("ID: 52", "RW"), func() {
 		nc := &ibclient.Ipv4NetworkContainer{
 			AutoCreateReversezone: false,
 			Comment:               "Add networkcontainer through WAPI",
@@ -724,7 +708,7 @@ var _ = Describe("Go Client", func() {
 		Expect(ref).To(MatchRegexp("^networkcontainer.*78\\.0\\.0\\.0/8/default$"))
 	})
 
-	When("Network Container [78.0.0.0/8] exits", func() {
+	When("Network Container [78.0.0.0/8] exits", Label("RW"), func() {
 		BeforeEach(func() {
 			nc := &ibclient.Ipv4NetworkContainer{
 				AutoCreateReversezone: false,
@@ -737,7 +721,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^networkcontainer.*78\\.0\\.0\\.0/8/default$"))
 		})
 
-		It("Should add Network [78.0.0.0/30] to the Network Container [78.0.0.0/8]", func() {
+		It("Should add Network [78.0.0.0/30] to the Network Container [78.0.0.0/8]", Label("ID: 53", "RW"), func() {
 			n := &ibclient.Ipv4Network{
 				Comment:     "Add a network to container 78.0.0.0/8 through WAPI",
 				Network:     "78.0.0.0/30",
@@ -748,7 +732,7 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^network.*78\\.0\\.0\\.0/30/default$"))
 		})
 
-		When("Network [78.0.0.0/30] exists", func() {
+		When("Network [78.0.0.0/30] exists", Label("RW"), func() {
 			BeforeEach(func() {
 				n := &ibclient.Ipv4Network{
 					Comment:     "Add a network to container 78.0.0.0/8 through WAPI",
@@ -760,7 +744,7 @@ var _ = Describe("Go Client", func() {
 				Expect(ref).To(MatchRegexp("^network.*78\\.0\\.0\\.0/30/default$"))
 			})
 
-			PIt("Should get the IPAM IPv4Address object", func() {
+			PIt("Should get the IPAM IPv4Address object", Label("ID: 62", "RO"), func() {
 				var res []ibclient.Ipv4address
 				search := &ibclient.Ipv4address{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ip_address": "78.0.0.1"})
@@ -781,7 +765,7 @@ var _ = Describe("Go Client", func() {
 		})
 	})
 
-	It("Should add IPv6 Network Container [2000::/64]", func() {
+	It("Should add IPv6 Network Container [2000::/64]", Label("ID: 54", "RW"), func() {
 		n := &ibclient.Ipv6Network{
 			AutoCreateReversezone: false,
 			Comment:               "Add ipv6networkcontainer through WAPI",
@@ -793,7 +777,7 @@ var _ = Describe("Go Client", func() {
 		Expect(ref).To(MatchRegexp("^ipv6network.*2000%3A%3A/64/default"))
 	})
 
-	It("Should add DNS view [view1]", func() {
+	It("Should add DNS view [view1]", Label("ID: 57", "RW"), func() {
 		v := &ibclient.View{
 			Name: "view1",
 		}
@@ -802,7 +786,7 @@ var _ = Describe("Go Client", func() {
 		Expect(ref).To(MatchRegexp("^view.*view1/false$"))
 	})
 
-	It("Should add Named ACL without 'access_list' field [wapi-na2]", func() {
+	It("Should add Named ACL without 'access_list' field [wapi-na2]", Label("ID: 58", "RW"), func() {
 		v := &ibclient.Namedacl{
 			Name:    "wapi-na2",
 			Comment: "No acls present",
@@ -820,42 +804,42 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Name).To(Equal("wapi-na2"))
 	})
 
-	It("Should get the DHCP network template object", func() {
+	It("Should get the DHCP network template object", Label("ID: 64", "RO"), func() {
 		var res []ibclient.Networktemplate
 		search := &ibclient.Networktemplate{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DHCP IPv6 network template object", func() {
+	It("Should get the DHCP IPv6 network template object", Label("ID: 65", "RO"), func() {
 		var res []ibclient.Ipv6networktemplate
 		search := &ibclient.Ipv6networktemplate{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DHCP IPv6 Shared Network object", func() {
+	It("Should get the DHCP IPv6 Shared Network object", Label("ID: 66", "RO"), func() {
 		var res []ibclient.Ipv6sharednetwork
 		search := &ibclient.Ipv6sharednetwork{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the DHCP Lease object", func() {
+	It("Should get the DHCP Lease object", Label("ID: 67", "RO"), func() {
 		var res []ibclient.Lease
 		search := &ibclient.Lease{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the MAC Filter Address object", func() {
+	It("Should get the MAC Filter Address object", Label("ID: 68", "RO"), func() {
 		var res []ibclient.Macfilteraddress
 		search := &ibclient.Macfilteraddress{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Member DHCP properties object", func() {
+	It("Should get the Member DHCP properties object", Label("ID: 69", "RO"), func() {
 		var res []ibclient.MemberDhcpproperties
 		search := &ibclient.MemberDhcpproperties{}
 		search.SetReturnFields([]string{"host_name"})
@@ -865,7 +849,7 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(MatchRegexp("^member:dhcpproperties.*infoblox.localdomain$"))
 	})
 
-	It("Should get the Member DNS object", func() {
+	It("Should get the Member DNS object", Label("ID: 70", "RO"), func() {
 		var res []ibclient.MemberDns
 		search := &ibclient.MemberDns{}
 		search.SetReturnFields([]string{"host_name"})
@@ -875,21 +859,21 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(MatchRegexp("^member:dns.*infoblox.localdomain$"))
 	})
 
-	It("Should get the Active Directory Domain object", func() {
+	It("Should get the Active Directory Domain object", Label("ID: 71", "RO"), func() {
 		var res []ibclient.MsserverAdsitesDomain
 		search := &ibclient.MsserverAdsitesDomain{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Active Directory Site object", func() {
+	It("Should get the Active Directory Site object", Label("ID: 72", "RO"), func() {
 		var res []ibclient.MsserverAdsitesSite
 		search := &ibclient.MsserverAdsitesSite{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
-	It("Should get the Permissions object", func() {
+	It("Should get the Permissions object", Label("ID: 73", "RO"), func() {
 		var res []ibclient.Permission
 		search := &ibclient.Permission{}
 		err := connector.GetObject(search, "", nil, &res)

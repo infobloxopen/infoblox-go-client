@@ -36,7 +36,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Describe("Network View", func() {
-		It("Should properly serialize/deserialize", func() {
+		It("Should properly serialize/deserialize", Label("RW"), func() {
 			nv := &ibclient.NetworkView{
 				Name:    "e2e_test_view",
 				Comment: "Network View created by e2e test",
@@ -61,7 +61,7 @@ var _ = Describe("Objects", func() {
 		})
 	})
 
-	When("Network View exists", func() {
+	When("Network View exists", Label("RW"), func() {
 		BeforeEach(func() {
 			nv := &ibclient.NetworkView{
 				Name:    "e2e_test_view",
@@ -72,7 +72,7 @@ var _ = Describe("Objects", func() {
 			Expect(err).To(BeNil())
 		})
 
-		Describe("IPv4 Network", func() {
+		Describe("IPv4 Network", Label("RW"), func() {
 			It("Should properly serialize/deserialize", func() {
 				nw := &ibclient.Ipv4Network{
 					NetworkView: "e2e_test_view",
@@ -101,7 +101,7 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
-		When("IPv4 Network exists", func() {
+		When("IPv4 Network exists", Label("RW"), func() {
 			BeforeEach(func() {
 				nw := &ibclient.Ipv4Network{
 					NetworkView: "e2e_test_view",
@@ -114,7 +114,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("IPv4 Fixed Address", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					fa := &ibclient.Ipv4FixedAddress{
 						NetworkView: "e2e_test_view",
 						Name:        "e2e_test_ipv4_fixed_address",
@@ -147,7 +147,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("IP Range", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					r := &ibclient.Range{
 						NetworkView: "e2e_test_view",
 						Name:        "e2e_test_ip_range",
@@ -180,7 +180,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("IPv4 Host Record", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					By("Creating DNS view")
 					v := &ibclient.View{
 						Name:        "e2e_test_dns_view",
@@ -247,7 +247,7 @@ var _ = Describe("Objects", func() {
 		})
 
 		Describe("IPv4 Network Container", func() {
-			It("Should properly serialize/deserialize", func() {
+			It("Should properly serialize/deserialize", Label("RW"), func() {
 				nc := &ibclient.Ipv4NetworkContainer{
 					NetworkView: "e2e_test_view",
 					Network:     "192.168.1.0/24",
@@ -278,7 +278,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Describe("DNS View", func() {
-		It("Should properly serialize/deserialize", func() {
+		It("Should properly serialize/deserialize", Label("RW"), func() {
 			v := &ibclient.View{
 				Name:    "e2e_test_dns_view",
 				Comment: "DNS View created by e2e test",
@@ -305,7 +305,7 @@ var _ = Describe("Objects", func() {
 		})
 	})
 
-	When("DNS View exists", func() {
+	When("DNS View exists", Label("RW"), func() {
 		BeforeEach(func() {
 			v := &ibclient.View{
 				Name:    "e2e_test_dns_view",
@@ -317,7 +317,7 @@ var _ = Describe("Objects", func() {
 		})
 
 		Describe("DNS Zone Auth", func() {
-			It("Should support CRUD operations of forwarding-mapping zone", func() {
+			It("Should support CRUD operations of forwarding-mapping zone", Label("RW"), func() {
 				z := &ibclient.ZoneAuth{
 					View:    "e2e_test_dns_view",
 					Fqdn:    "e2e-test.com",
@@ -346,7 +346,7 @@ var _ = Describe("Objects", func() {
 				Expect(err).To(BeNil())
 			})
 
-			It("Should support CRUD operations of reverse-mapping zone", func() {
+			It("Should support CRUD operations of reverse-mapping zone", Label("RW"), func() {
 				z := &ibclient.ZoneAuth{
 					View:       "e2e_test_dns_view",
 					Fqdn:       "192.168.1.0/24",
@@ -378,7 +378,7 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
-		When("forwarding-mapping DNS Zone Exists", func() {
+		When("forwarding-mapping DNS Zone Exists", Label("RW"), func() {
 			BeforeEach(func() {
 				z := &ibclient.ZoneAuth{
 					View:    "e2e_test_dns_view",
@@ -391,7 +391,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("A Record", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					a := &ibclient.RecordA{
 						View:     "e2e_test_dns_view",
 						Name:     "e2e_test_a_record.e2e-test.com",
@@ -423,7 +423,7 @@ var _ = Describe("Objects", func() {
 					Expect(err).To(BeNil())
 				})
 
-				It("Should support search by zone field", func() {
+				It("Should support search by zone field", Label("RW"), func() {
 					a := &ibclient.RecordA{
 						View:     "e2e_test_dns_view",
 						Name:     "e2e_test_a_record.e2e-test.com",
@@ -455,7 +455,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("AAAA Record", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					aaaa := &ibclient.RecordAAAA{
 						View:     "e2e_test_dns_view",
 						Name:     "e2e_test_a_record.e2e-test.com",
@@ -490,7 +490,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("CNAME Record", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					cname := &ibclient.RecordCNAME{
 						View:      "e2e_test_dns_view",
 						Canonical: "e2e_test_cname_record.e2e-test.com",
@@ -524,7 +524,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			Describe("TXT Record", func() {
-				It("Should properly serialize/deserialize", func() {
+				It("Should properly serialize/deserialize", Label("RW"), func() {
 					txt := &ibclient.RecordTXT{
 						View:    "e2e_test_dns_view",
 						Name:    "e2e_test_txt_record.e2e-test.com",
@@ -557,7 +557,7 @@ var _ = Describe("Objects", func() {
 				})
 			})
 
-			When("reverse-mapping DNS Zone Exists", func() {
+			When("reverse-mapping DNS Zone Exists", Label("RW"), func() {
 				BeforeEach(func() {
 					z := &ibclient.ZoneAuth{
 						View:       "e2e_test_dns_view",
@@ -571,7 +571,7 @@ var _ = Describe("Objects", func() {
 				})
 
 				Describe("PTR Record", func() {
-					It("Should properly serialize/deserialize", func() {
+					It("Should properly serialize/deserialize", Label("RW"), func() {
 						ptr := &ibclient.RecordPTR{
 							View:     "e2e_test_dns_view",
 							PtrdName: "e2e_test_ptr_record.e2e-test.com",
@@ -610,7 +610,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Describe("EA Definition", func() {
-		It("Should properly serialize/deserialize", func() {
+		It("Should properly serialize/deserialize", Label("RW"), func() {
 			eadef := &ibclient.EADefinition{
 				Name:       "E2E Test EA",
 				Comment:    "EA Def created by e2e test",
