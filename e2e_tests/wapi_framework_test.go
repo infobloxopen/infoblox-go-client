@@ -414,6 +414,38 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:cname.*cname\\.wapi\\.com/default$"))
 		})
 
+		When("CNAME Record [cname.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordCNAME{
+					View:      "default",
+					Name:      "cname.wapi.com",
+					Canonical: "qatest1.com",
+					Comment:   "verified",
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:cname.*cname\\.wapi\\.com/default$"))
+			})
+
+			It("Should get the CNAME Record [cname.wapi.com]", Label("ID: 108", "RO"), func() {
+				// Get the CNAME Record [cname.wapi.com] to validate the above addition
+				// case by searching with all the attributes
+				var res []ibclient.RecordCNAME
+				search := &ibclient.RecordCNAME{}
+				qp := ibclient.NewQueryParams(false, map[string]string{
+					"view":      "default",
+					"name":      "cname.wapi.com",
+					"canonical": "qatest1.com",
+				})
+				err := connector.GetObject(search, "", qp, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Ref).To(MatchRegexp("record:cname.*cname\\.wapi\\.com/default$"))
+				Expect(res[0].View).To(Equal("default"))
+				Expect(res[0].Name).To(Equal("cname.wapi.com"))
+				Expect(res[0].Canonical).To(Equal("qatest1.com"))
+			})
+		})
+
 		It("Should add A Record [a.wapi.com]", Label("ID: 41", "RW"), func() {
 			r := &ibclient.RecordA{
 				Name:     "a.wapi.com",
@@ -427,6 +459,44 @@ var _ = Describe("Go Client", func() {
 			ref, err := connector.CreateObject(r)
 			Expect(err).To(BeNil())
 			Expect(ref).To(MatchRegexp("^record:a.*a\\.wapi\\.com/default$"))
+		})
+
+		When("A Record [a.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordA{
+					Name:     "a.wapi.com",
+					Ipv4Addr: "9.0.0.1",
+					Comment:  "Added A Record",
+					Disable:  false,
+					Ttl:      uint32(10),
+					UseTtl:   true,
+					View:     "default",
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:a.*a\\.wapi\\.com/default$"))
+			})
+
+			It("Should get the A Record [a.wapi.com]", Label("ID: 109", "RO"), func() {
+				// Get the A Record [a.wapi.com] to validate the above addition case
+				var res []ibclient.RecordA
+				search := &ibclient.RecordA{}
+				search.SetReturnFields([]string{"name", "ipv4addr", "comment", "disable", "ttl", "use_ttl", "view"})
+				qp := ibclient.NewQueryParams(false, map[string]string{
+					"view": "default",
+					"name": "a.wapi.com",
+				})
+				err := connector.GetObject(search, "", qp, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Ref).To(MatchRegexp("record:a.*a\\.wapi\\.com/default$"))
+				Expect(res[0].Name).To(Equal("a.wapi.com"))
+				Expect(res[0].Ipv4Addr).To(Equal("9.0.0.1"))
+				Expect(res[0].Comment).To(Equal("Added A Record"))
+				Expect(res[0].Disable).To(Equal(false))
+				Expect(res[0].Ttl).To(Equal(uint32(10)))
+				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(res[0].View).To(Equal("default"))
+			})
 		})
 
 		It("Should add AAAA Record [aaaa.wapi.com]", Label("ID: 42", "RW"), func() {
@@ -444,24 +514,186 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:aaaa.*aaaa\\.wapi\\.com/default$"))
 		})
 
-		It("Should add Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields", Label("ID: 43", "RW"), func() {
-			r := &ibclient.HostRecord{
-				Name: "h1.wapi.com",
-				View: "default",
-				Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-					{EnableDhcp: false, Ipv4Addr: "20.20.20.20"},
-					{Ipv4Addr: "20.20.20.30"},
-					{EnableDhcp: false, Ipv4Addr: "20.20.20.40"},
-				},
-				Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
-					{EnableDhcp: true, Ipv6Addr: "2000::1", Duid: "11:10"},
-					{Ipv6Addr: "2000::2"},
-				},
-			}
-			ref, err := connector.CreateObject(r)
-			Expect(err).To(BeNil())
-			Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+		When("AAAA Record [aaaa.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordAAAA{
+					Name:     "aaaa.wapi.com",
+					Ipv6Addr: "99::99",
+					Comment:  "Added AAAA Record",
+					Disable:  false,
+					Ttl:      uint32(10),
+					UseTtl:   true,
+					View:     "default",
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:aaaa.*aaaa\\.wapi\\.com/default$"))
+			})
+
+			It("Should get the AAAA Record [aaaa.wapi.com]", Label("ID: 87", "RO"), func() {
+				// Get the AAAA Record [aaaa.wapi.com] to validate the above addition case
+				var res []ibclient.RecordAAAA
+				search := &ibclient.RecordAAAA{}
+				search.SetReturnFields([]string{"name", "ipv6addr", "comment", "disable", "ttl", "use_ttl", "view"})
+				err := connector.GetObject(search, "", nil, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Ref).To(MatchRegexp("record:aaaa.*aaaa\\.wapi\\.com/default$"))
+				Expect(res[0].Name).To(Equal("aaaa.wapi.com"))
+				Expect(res[0].Ipv6Addr).To(Equal("99::99"))
+				Expect(res[0].Comment).To(Equal("Added AAAA Record"))
+				Expect(res[0].Disable).To(Equal(false))
+				Expect(res[0].Ttl).To(Equal(uint32(10)))
+				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(res[0].View).To(Equal("default"))
+			})
 		})
+
+		It("Should add Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields",
+			Label("ID: 43", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name: "h1.wapi.com",
+					View: "default",
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: false, Ipv4Addr: "20.20.20.20"},
+						{Ipv4Addr: "20.20.20.30"},
+						{EnableDhcp: false, Ipv4Addr: "20.20.20.40"},
+					},
+					Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
+						{EnableDhcp: true, Ipv6Addr: "2000::1", Duid: "11:10"},
+						{Ipv6Addr: "2000::2"},
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+			},
+		)
+
+		When("Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields exits",
+			Label("RW"), func() {
+				BeforeEach(func() {
+					r := &ibclient.HostRecord{
+						Name: "h1.wapi.com",
+						View: "default",
+						Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+							{EnableDhcp: false, Ipv4Addr: "20.20.20.20"},
+							{Ipv4Addr: "20.20.20.30"},
+							{EnableDhcp: false, Ipv4Addr: "20.20.20.40"},
+						},
+						Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
+							{EnableDhcp: true, Ipv6Addr: "2000::1", Duid: "11:10"},
+							{Ipv6Addr: "2000::2"},
+						},
+					}
+					ref, err := connector.CreateObject(r)
+					Expect(err).To(BeNil())
+					Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+				})
+
+				It("Should get the DNS Host record object", Label("ID: 91", "RO"), func() {
+					var res []ibclient.HostRecord
+					search := &ibclient.HostRecord{}
+					qp := ibclient.NewQueryParams(false, map[string]string{
+						"view": "default",
+						"name": "h1.wapi.com",
+					})
+					err := connector.GetObject(search, "", qp, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].Name).To(Equal("h1.wapi.com"))
+
+					Expect(res[0].Ipv6Addrs[0].EnableDhcp).To(Equal(true))
+					Expect(res[0].Ipv6Addrs[0].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A1/h1\\.wapi\\.com/default$"))
+					Expect(res[0].Ipv6Addrs[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv6Addrs[0].Ipv6Addr).To(Equal("2000::1"))
+					Expect(res[0].Ipv6Addrs[0].Duid).To(Equal("11:10"))
+					Expect(res[0].Ipv6Addrs[1].EnableDhcp).To(Equal(false))
+					Expect(res[0].Ipv6Addrs[1].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A2/h1\\.wapi\\.com/default$"))
+					Expect(res[0].Ipv6Addrs[1].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv6Addrs[1].Ipv6Addr).To(Equal("2000::2"))
+
+					Expect(res[0].Ipv4Addrs[0].EnableDhcp).To(Equal(false))
+					Expect(res[0].Ipv4Addrs[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv4Addrs[0].Ipv4Addr).To(Equal("20.20.20.20"))
+					Expect(res[0].Ipv4Addrs[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.20/h1\\.wapi\\.com/default$"))
+					Expect(res[0].Ipv4Addrs[1].EnableDhcp).To(Equal(false))
+					Expect(res[0].Ipv4Addrs[1].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv4Addrs[1].Ipv4Addr).To(Equal("20.20.20.30"))
+					Expect(res[0].Ipv4Addrs[1].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.30/h1\\.wapi\\.com/default$"))
+					Expect(res[0].Ipv4Addrs[2].EnableDhcp).To(Equal(false))
+					Expect(res[0].Ipv4Addrs[2].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv4Addrs[2].Ipv4Addr).To(Equal("20.20.20.40"))
+					Expect(res[0].Ipv4Addrs[2].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.40/h1\\.wapi\\.com/default$"))
+
+					Expect(res[0].Ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+					Expect(res[0].View).To(Equal("default"))
+				})
+
+				It("Should get the IPv4 Host address object", Label("ID: 92", "RO"), func() {
+					var res []ibclient.HostRecordIpv4Addr
+					search := &ibclient.HostRecordIpv4Addr{}
+					qp := ibclient.NewQueryParams(false, map[string]string{
+						"network_view": "default",
+						"ipv4addr":     "20.20.20.20",
+					})
+					err := connector.GetObject(search, "", qp, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(res[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv4Addr).To(Equal("20.20.20.20"))
+					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.20/h1\\.wapi\\.com/default$"))
+
+					qp = ibclient.NewQueryParams(false, map[string]string{
+						"network_view": "default",
+						"ipv4addr":     "20.20.20.30",
+					})
+					err = connector.GetObject(search, "", qp, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(res[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv4Addr).To(Equal("20.20.20.30"))
+					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.30/h1\\.wapi\\.com/default$"))
+
+					qp = ibclient.NewQueryParams(false, map[string]string{
+						"network_view": "default",
+						"ipv4addr":     "20.20.20.40",
+					})
+					err = connector.GetObject(search, "", qp, &res)
+					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(res[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv4Addr).To(Equal("20.20.20.40"))
+					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.40/h1\\.wapi\\.com/default$"))
+
+				})
+
+				It("Should get the IPv6 Host address object", Label("ID: 93", "RO"), func() {
+					var res []ibclient.HostRecordIpv6Addr
+					search := &ibclient.HostRecordIpv6Addr{}
+					qp := ibclient.NewQueryParams(false, map[string]string{
+						"network_view": "default",
+						"ipv6addr":     "2000::1",
+					})
+					err := connector.GetObject(search, "", qp, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].EnableDhcp).To(Equal(true))
+					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A1/h1\\.wapi\\.com/default$"))
+					Expect(res[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv6Addr).To(Equal("2000::1"))
+					Expect(res[0].Duid).To(Equal("11:10"))
+
+					qp = ibclient.NewQueryParams(false, map[string]string{
+						"network_view": "default",
+						"ipv6addr":     "2000::2",
+					})
+					err = connector.GetObject(search, "", qp, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A2/h1\\.wapi\\.com/default$"))
+					Expect(res[0].Host).To(Equal("h1.wapi.com"))
+					Expect(res[0].Ipv6Addr).To(Equal("2000::2"))
+
+				})
+			},
+		)
 
 		It("Should add MX Record [mx.wapi.com]", Label("ID: 44", "RW"), func() {
 			r := &ibclient.RecordMx{
@@ -476,6 +708,46 @@ var _ = Describe("Go Client", func() {
 			ref, err := connector.CreateObject(r)
 			Expect(err).To(BeNil())
 			Expect(ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
+		})
+
+		When("MX Record [mx.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordMx{
+					Name:          "mx.wapi.com",
+					MailExchanger: "wapi.com",
+					Preference:    uint32(10),
+					Comment:       "Creating mx record through infoblox-go-client",
+					Disable:       false,
+					Ttl:           uint32(20),
+					UseTtl:        true,
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
+			})
+
+			It("Should get the MX Record [mx.wapi.com]", Label("ID: 86", "RO"), func() {
+				// Get the MX Record [mx.wapi.com] to validate the above addition case
+				var res []ibclient.RecordMx
+				search := &ibclient.RecordMx{}
+				search.SetReturnFields([]string{"comment", "disable", "mail_exchanger", "name", "preference", "ttl", "use_ttl", "view", "zone"})
+				qp := ibclient.NewQueryParams(false, map[string]string{
+					"view": "default",
+					"name": "mx.wapi.com",
+				})
+				err := connector.GetObject(search, "", qp, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("Creating mx record through infoblox-go-client"))
+				Expect(res[0].Name).To(Equal("mx.wapi.com"))
+				Expect(res[0].Zone).To(Equal("wapi.com"))
+				Expect(res[0].MailExchanger).To(Equal("wapi.com"))
+				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(res[0].Disable).To(Equal(false))
+				Expect(res[0].Preference).To(Equal(uint32(10)))
+				Expect(res[0].Ttl).To(Equal(uint32(20)))
+				Expect(res[0].Ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
+				Expect(res[0].View).To(Equal("default"))
+			})
 		})
 
 		It("Should add TXT Record [txt.wapi.com]", Label("ID: 45", "RW"), func() {
@@ -493,6 +765,45 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:txt.*txt\\.wapi\\.com/default$"))
 		})
 
+		When("TXT Record [txt.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordTXT{
+					Name:    "txt.wapi.com",
+					Text:    "wapi.com",
+					Comment: "Creating txt record through infoblox-go-client",
+					Disable: false,
+					Ttl:     uint32(20),
+					UseTtl:  true,
+					View:    "default",
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:txt.*txt\\.wapi\\.com/default$"))
+			})
+
+			It("Should get the TXT Record with all the fields", Label("ID: 85", "RO"), func() {
+				// Get the TXT Record with all the fields
+				var res []ibclient.RecordTXT
+				search := &ibclient.RecordTXT{}
+				search.SetReturnFields([]string{"comment", "disable", "text", "name", "ttl", "use_ttl", "view", "zone"})
+				qp := ibclient.NewQueryParams(false, map[string]string{
+					"view": "default",
+					"name": "txt.wapi.com",
+				})
+				err := connector.GetObject(search, "", qp, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("Creating txt record through infoblox-go-client"))
+				Expect(res[0].Name).To(Equal("txt.wapi.com"))
+				Expect(res[0].Zone).To(Equal("wapi.com"))
+				Expect(res[0].Text).To(Equal("wapi.com"))
+				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(res[0].Disable).To(Equal(false))
+				Expect(res[0].Ttl).To(Equal(uint32(20)))
+				Expect(res[0].Ref).To(MatchRegexp("record:txt.*txt\\.wapi\\.com/default$"))
+				Expect(res[0].View).To(Equal("default"))
+			})
+		})
+
 		It("Should add PTR Record [ptr1.wapi.com]", Label("ID: 46", "RW"), func() {
 			r := &ibclient.RecordPTR{
 				Name:     "ptr1.wapi.com",
@@ -508,22 +819,121 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^record:ptr.*ptr1\\.wapi\\.com/default$"))
 		})
 
-		It("Should add SRV Record with all the attributes, using free format [name = srv.wapi.com]", Label("ID: 47", "RW"), func() {
-			r := &ibclient.RecordSrv{
-				Name:     "srv.wapi.com",
-				Weight:   uint32(10),
-				Priority: uint32(10),
-				Port:     uint32(10),
-				Target:   "srv.wapi.com",
-				Comment:  "wapi added",
-				Disable:  false,
-				Ttl:      10,
-				UseTtl:   true,
-				View:     "default",
-			}
-			ref, err := connector.CreateObject(r)
+		When("PTR Record [ptr1.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordPTR{
+					Name:     "ptr1.wapi.com",
+					PtrdName: "ptr.wapi.com",
+					View:     "default",
+					Comment:  "wapi added",
+					Disable:  false,
+					Ttl:      uint32(10),
+					UseTtl:   true,
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:ptr.*ptr1\\.wapi\\.com/default$"))
+			})
+
+			It("Should get the PTR Record [ptr1.wapi.com]", Label("ID: 84", "RO"), func() {
+				// Get the PTR Record [ptr1.wapi.com] to validate the above addition case
+				var res []ibclient.RecordPTR
+				search := &ibclient.RecordPTR{}
+				search.SetReturnFields([]string{"comment", "ptrdname", "disable", "name", "ttl", "use_ttl", "view", "zone"})
+				qp := ibclient.NewQueryParams(false, map[string]string{
+					"view": "default",
+					"name": "ptr1.wapi.com",
+				})
+				err := connector.GetObject(search, "", qp, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("wapi added"))
+				Expect(res[0].PtrdName).To(Equal("ptr.wapi.com"))
+				Expect(res[0].Name).To(Equal("ptr1.wapi.com"))
+				Expect(res[0].Zone).To(Equal("wapi.com"))
+				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(res[0].Disable).To(Equal(false))
+				Expect(res[0].Ttl).To(Equal(uint32(10)))
+				Expect(res[0].Ref).To(MatchRegexp("^record:ptr.*ptr1\\.wapi\\.com/default$"))
+				Expect(res[0].View).To(Equal("default"))
+			})
+		})
+
+		It("Should add SRV Record with all the attributes, using free format [name = srv.wapi.com]",
+			Label("ID: 47", "RW"), func() {
+				r := &ibclient.RecordSrv{
+					Name:     "srv.wapi.com",
+					Weight:   uint32(10),
+					Priority: uint32(10),
+					Port:     uint32(10),
+					Target:   "srv.wapi.com",
+					Comment:  "wapi added",
+					Disable:  false,
+					Ttl:      10,
+					UseTtl:   true,
+					View:     "default",
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:srv.*srv\\.wapi\\.com/default$"))
+			},
+		)
+
+		When("SRV Record [name = srv.wapi.com] exists", Label("RW"), func() {
+			BeforeEach(func() {
+				r := &ibclient.RecordSrv{
+					Name:     "srv.wapi.com",
+					Weight:   uint32(10),
+					Priority: uint32(10),
+					Port:     uint32(10),
+					Target:   "srv.wapi.com",
+					Comment:  "wapi added",
+					Disable:  false,
+					Ttl:      10,
+					UseTtl:   true,
+					View:     "default",
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:srv.*srv\\.wapi\\.com/default$"))
+			})
+
+			It("Should get SRV record [name = srv.wapi.com]", Label("ID: 83", "RO"), func() {
+
+				// Get SRV record to validate above case
+				var res []ibclient.RecordSrv
+				search := &ibclient.RecordSrv{}
+				search.SetReturnFields([]string{
+					"name", "weight", "priority", "port", "target",
+					"comment", "disable", "ttl", "use_ttl", "zone", "view",
+				})
+				qp := ibclient.NewQueryParams(false, map[string]string{"name": "srv.wapi.com"})
+				err := connector.GetObject(search, "", qp, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("wapi added"))
+				Expect(res[0].View).To(Equal("default"))
+				Expect(res[0].Name).To(Equal("srv.wapi.com"))
+				Expect(res[0].Weight).To(Equal(uint32(10)))
+				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(res[0].Priority).To(Equal(uint32(10)))
+				Expect(res[0].Disable).To(Equal(false))
+				Expect(res[0].Ttl).To(Equal(uint32(10)))
+				Expect(res[0].Ref).To(MatchRegexp("record:srv.*srv\\.wapi\\.com/default$"))
+				Expect(res[0].Zone).To(Equal("wapi.com"))
+				Expect(res[0].Port).To(Equal(uint32(10)))
+				Expect(res[0].Target).To(Equal("srv.wapi.com"))
+			})
+		})
+
+		It("Should get the FMZ Auth Zone [wapi.com]", Label("ID: 88", "RO"), func() {
+			var res []ibclient.ZoneAuth
+			search := &ibclient.ZoneAuth{}
+			search.SetReturnFields(append(search.ReturnFields(), "comment"))
+			qp := ibclient.NewQueryParams(false, map[string]string{"view": "default", "fqdn": "wapi.com"})
+			err := connector.GetObject(search, "", qp, &res)
 			Expect(err).To(BeNil())
-			Expect(ref).To(MatchRegexp("^record:srv.*srv\\.wapi\\.com/default$"))
+			Expect(res[0].Ref).To(MatchRegexp("zone_auth.*wapi\\.com/default$"))
+			Expect(res[0].View).To(Equal("default"))
+			Expect(res[0].Fqdn).To(Equal("wapi.com"))
 		})
 	})
 
@@ -560,29 +970,64 @@ var _ = Describe("Go Client", func() {
 				Expect(ref).To(MatchRegexp("^network.*92\\.0\\.0\\.0/8/dhcpview$"))
 			})
 
-			It("Should add IPv4 Range with mandatory fields start_addr [92.0.0.10] end_addr [92.0.0.20]", Label("ID: 49", "RW"), func() {
-				r := &ibclient.Range{
-					StartAddr:   "92.0.0.10",
-					EndAddr:     "92.0.0.20",
-					Comment:     "Add Range through WAPI",
-					NetworkView: "dhcpview",
-				}
-				ref, err := connector.CreateObject(r)
-				Expect(err).To(BeNil())
-				Expect(ref).To(MatchRegexp("^range.*92\\.0\\.0\\.10/92\\.0\\.0\\.20/dhcpview$"))
-			})
+			It("Should add IPv4 Range with mandatory fields start_addr [92.0.0.10] end_addr [92.0.0.20]",
+				Label("ID: 49", "ID: 80", "RW"), func() {
+					r := &ibclient.Range{
+						StartAddr:   "92.0.0.10",
+						EndAddr:     "92.0.0.20",
+						Comment:     "Add Range through WAPI",
+						NetworkView: "dhcpview",
+					}
+					ref, err := connector.CreateObject(r)
+					Expect(err).To(BeNil())
+					Expect(ref).To(MatchRegexp("^range.*92\\.0\\.0\\.10/92\\.0\\.0\\.20/dhcpview$"))
 
-			It("Should add IPv4 fixed address [92.0.0.2] and mac [11:11:11:11:11:15]", Label("ID: 55", "RW"), func() {
-				fa := &ibclient.Ipv4FixedAddress{
-					Name:        "wapi-fa1",
-					Ipv4Addr:    "92.0.0.2",
-					NetworkView: "dhcpview",
-					Mac:         "11:11:11:11:11:15",
-					Comment:     "HellO",
-				}
-				ref, err := connector.CreateObject(fa)
+					var res []ibclient.Range
+					search := &ibclient.Range{}
+					err = connector.GetObject(search, "", nil, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].Network).To(Equal("92.0.0.0/8"))
+					Expect(res[0].Comment).To(Equal("Add Range through WAPI"))
+					Expect(res[0].NetworkView).To(Equal("dhcpview"))
+					Expect(res[0].StartAddr).To(Equal("92.0.0.10"))
+					Expect(res[0].EndAddr).To(Equal("92.0.0.20"))
+					Expect(res[0].Ref).To(MatchRegexp("92.0.0.10/92.0.0.20/dhcpview$"))
+				},
+			)
+
+			It("Should add IPv4 fixed address [92.0.0.2] and mac [11:11:11:11:11:15]",
+				Label("ID: 55", "ID: 75", "RW"), func() {
+					fa := &ibclient.Ipv4FixedAddress{
+						Name:        "wapi-fa1",
+						Ipv4Addr:    "92.0.0.2",
+						NetworkView: "dhcpview",
+						Mac:         "11:11:11:11:11:15",
+						Comment:     "HellO",
+					}
+					ref, err := connector.CreateObject(fa)
+					Expect(err).To(BeNil())
+					Expect(ref).To(MatchRegexp("^fixedaddress.*92\\.0\\.0\\.2/dhcpview"))
+
+					var res []ibclient.Ipv4FixedAddress
+					search := &ibclient.Ipv4FixedAddress{}
+					err = connector.GetObject(search, "", nil, &res)
+					Expect(err).To(BeNil())
+					Expect(res[0].Ref).To(MatchRegexp("^fixedaddress.*92\\.0\\.0\\.2/dhcpview"))
+					Expect(res[0].Ipv4Addr).To(MatchRegexp("92.0.0.2"))
+					Expect(res[0].NetworkView).To(MatchRegexp("dhcpview"))
+				},
+			)
+
+			It("Should get the Network [92.0.0.0/8]", Label("ID: 81", "RO"), func() {
+				var res []ibclient.Ipv4Network
+				search := &ibclient.Ipv4Network{}
+				qp := ibclient.NewQueryParams(false, map[string]string{"network": "92.0.0.0/8"})
+				err := connector.GetObject(search, "", qp, &res)
 				Expect(err).To(BeNil())
-				Expect(ref).To(MatchRegexp("^fixedaddress.*92\\.0\\.0\\.2/dhcpview"))
+				Expect(res[0].Ref).To(MatchRegexp("92.0.0.0/8/dhcpview$"))
+				Expect(res[0].Comment).To(Equal("Add ipv4network through WAPI"))
+				Expect(res[0].Network).To(Equal("92.0.0.0/8"))
+				Expect(res[0].NetworkView).To(Equal("dhcpview"))
 			})
 		})
 	})
@@ -635,6 +1080,17 @@ var _ = Describe("Go Client", func() {
 			Expect(ref).To(MatchRegexp("^ipv6fixedaddress.*1%3A%3A50/default"))
 		})
 
+		It("Should get the IPv6 Network [1::/16]", Label("ID: 79", "RO"), func() {
+			var res []ibclient.Ipv6Network
+			search := &ibclient.Ipv6Network{}
+			err := connector.GetObject(search, "", nil, &res)
+			Expect(err).To(BeNil())
+			Expect(res[0].Comment).To(Equal("Add ipv6network through WAPI"))
+			Expect(res[0].NetworkView).To(Equal("default"))
+			Expect(res[0].Ref).To(MatchRegexp("1%3A%3A/16/default$"))
+			Expect(res[0].Network).To(Equal("1::/16"))
+		})
+
 		When("IPv6 Range [start_addr = 1::1; end_addr = 1::20] exits", Label("RW"), func() {
 			BeforeEach(func() {
 				r := &ibclient.Ipv6range{
@@ -667,6 +1123,19 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Ref).To(Equal("ipv6address/Li5pcHY2X2FkZHJlc3MkMTo6MS8w:1%3A%3A1"))
 				Expect(res[0].IpAddress).To(Equal("1::1"))
 				Expect(res[0].Names).To(HaveLen(0))
+			})
+
+			It("Should get the IPv6 Range [1::1/1::20] using reference with all default fields", Label("ID: 78", "RO"), func() {
+				var res []ibclient.Ipv6range
+				search := &ibclient.Ipv6range{}
+				err := connector.GetObject(search, "", nil, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("Add Range through WAPI"))
+				Expect(res[0].Network).To(Equal("1::/16"))
+				Expect(res[0].NetworkView).To(Equal("default"))
+				Expect(res[0].StartAddr).To(Equal("1::1"))
+				Expect(res[0].EndAddr).To(Equal("1::20"))
+				Expect(res[0].Ref).To(MatchRegexp("1%3A%3A1/1%3A%3A20/default$"))
 			})
 		})
 
@@ -763,10 +1232,25 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Names).To(HaveLen(0))
 			})
 		})
+
+		It("Should get the Network Container [78.0.0.0/8] using reference with all return fields",
+			Label("ID: 77", "RO"), func() {
+				var res []ibclient.Ipv4NetworkContainer
+				search := &ibclient.Ipv4NetworkContainer{}
+				search.SetReturnFields([]string{"comment", "network", "network_view", "network_container"})
+				err := connector.GetObject(search, "", nil, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("Add networkcontainer through WAPI"))
+				Expect(res[0].NetworkContainer).To(Equal("/"))
+				Expect(res[0].Network).To(Equal("78.0.0.0/8"))
+				Expect(res[0].NetworkView).To(Equal("default"))
+				Expect(res[0].Ref).To(MatchRegexp("78.0.0.0/8/default$"))
+			},
+		)
 	})
 
 	It("Should add IPv6 Network Container [2000::/64]", Label("ID: 54", "RW"), func() {
-		n := &ibclient.Ipv6Network{
+		n := &ibclient.Ipv6NetworkContainer{
 			AutoCreateReversezone: false,
 			Comment:               "Add ipv6networkcontainer through WAPI",
 			Network:               "2000::/64",
@@ -775,6 +1259,35 @@ var _ = Describe("Go Client", func() {
 		ref, err := connector.CreateObject(n)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("^ipv6network.*2000%3A%3A/64/default"))
+	})
+
+	When("IPv6 Network Container [2000::/64] exists", Label("RW"), func() {
+		BeforeEach(func() {
+			n := &ibclient.Ipv6NetworkContainer{
+				AutoCreateReversezone: false,
+				Comment:               "Add ipv6networkcontainer through WAPI",
+				Network:               "2000::/64",
+				NetworkView:           "default",
+			}
+			ref, err := connector.CreateObject(n)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^ipv6network.*2000%3A%3A/64/default"))
+		})
+
+		It("Should get the IPv6 Network Container [2000::/64] using reference with all return fields",
+			Label("ID: 76", "RO"), func() {
+				var res []ibclient.Ipv6NetworkContainer
+				search := &ibclient.Ipv6NetworkContainer{}
+				search.SetReturnFields([]string{"comment", "network", "network_view", "network_container"})
+				err := connector.GetObject(search, "", nil, &res)
+				Expect(err).To(BeNil())
+				Expect(res[0].Comment).To(Equal("Add ipv6networkcontainer through WAPI"))
+				Expect(res[0].NetworkContainer).To(Equal("/"))
+				Expect(res[0].Network).To(Equal("2000::/64"))
+				Expect(res[0].NetworkView).To(Equal("default"))
+				Expect(res[0].Ref).To(MatchRegexp("2000%3A%3A/64/default$"))
+			},
+		)
 	})
 
 	It("Should add DNS view [view1]", Label("ID: 57", "RW"), func() {
@@ -786,23 +1299,25 @@ var _ = Describe("Go Client", func() {
 		Expect(ref).To(MatchRegexp("^view.*view1/false$"))
 	})
 
-	It("Should add Named ACL without 'access_list' field [wapi-na2]", Label("ID: 58", "RW"), func() {
-		v := &ibclient.Namedacl{
-			Name:    "wapi-na2",
-			Comment: "No acls present",
-		}
-		ref, err := connector.CreateObject(v)
-		Expect(err).To(BeNil())
-		Expect(ref).To(MatchRegexp("^namedacl.*wapi-na2$"))
+	It("Should add Named ACL without 'access_list' field [wapi-na2]",
+		Label("ID: 58", "ID: 60", "RW"), func() {
+			v := &ibclient.Namedacl{
+				Name:    "wapi-na2",
+				Comment: "No acls present",
+			}
+			ref, err := connector.CreateObject(v)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^namedacl.*wapi-na2$"))
 
-		var res []ibclient.Namedacl
-		search := &ibclient.Namedacl{}
-		err = connector.GetObject(search, "", nil, &res)
-		Expect(err).To(BeNil())
-		Expect(res[0].Comment).To(Equal("No acls present"))
-		Expect(res[0].Ref).To(MatchRegexp("wapi-na2"))
-		Expect(res[0].Name).To(Equal("wapi-na2"))
-	})
+			var res []ibclient.Namedacl
+			search := &ibclient.Namedacl{}
+			err = connector.GetObject(search, "", nil, &res)
+			Expect(err).To(BeNil())
+			Expect(res[0].Comment).To(Equal("No acls present"))
+			Expect(res[0].Ref).To(MatchRegexp("wapi-na2"))
+			Expect(res[0].Name).To(Equal("wapi-na2"))
+		},
+	)
 
 	It("Should get the DHCP network template object", Label("ID: 64", "RO"), func() {
 		var res []ibclient.Networktemplate
@@ -882,6 +1397,127 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Role).To(Equal("DNS Admin"))
 		Expect(res[0].Ref).To(MatchRegexp("^permission.*Admin/WRITE$"))
 		Expect(res[0].ResourceType).To(Equal("VIEW"))
+	})
+
+	It("Should get the DNS NAPTR record object", Label("ID: 89", "RO"), func() {
+		var res []ibclient.RecordNaptr
+		search := &ibclient.RecordNaptr{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DTC LBDN object", Label("ID: 90", "RO"), func() {
+		var res []ibclient.RecordDtclbdn
+		search := &ibclient.RecordDtclbdn{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DTC LBDN object", Label("ID: 90", "RO"), func() {
+		var res []ibclient.RecordDtclbdn
+		search := &ibclient.RecordDtclbdn{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DHCP Roaming Host object", Label("ID: 94", "RO"), func() {
+		var res []ibclient.Roaminghost
+		search := &ibclient.Roaminghost{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the Scheduled Task object", Label("ID: 95", "RO"), func() {
+		var res []ibclient.Scheduledtask
+		search := &ibclient.Scheduledtask{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the Search object (N)", Label("ID: 96", "RO"), func() {
+		var res []ibclient.Search
+		search := &ibclient.Search{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).NotTo(BeNil())
+		// TODO Check the error string
+	})
+
+	It("Should get the DHCP Shared Network object", Label("ID: 97", "RO"), func() {
+		var res []ibclient.Sharednetwork
+		search := &ibclient.Sharednetwork{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DHCP Shared A record object", Label("ID: 98", "RO"), func() {
+		var res []ibclient.SharedrecordA
+		search := &ibclient.SharedrecordA{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DHCP Shared AAAA record object", Label("ID: 99", "RO"), func() {
+		var res []ibclient.SharedrecordAaaa
+		search := &ibclient.SharedrecordAaaa{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DHCP Shared MX record object", Label("ID: 100", "RO"), func() {
+		var res []ibclient.SharedrecordMx
+		search := &ibclient.SharedrecordMx{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DHCP Shared TXT record object", Label("ID: 101", "RO"), func() {
+		var res []ibclient.SharedrecordTxt
+		search := &ibclient.SharedrecordTxt{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DHCP Shared SRV record object", Label("ID: 102", "RO"), func() {
+		var res []ibclient.SharedrecordSrv
+		search := &ibclient.SharedrecordSrv{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the snmpuser object (N)", Label("ID: 103", "RO"), func() {
+		var res []ibclient.Snmpuser
+		search := &ibclient.Snmpuser{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).NotTo(BeNil())
+		// TODO Check the error string
+	})
+
+	It("Should get the Zone discrepancy information object", Label("ID: 104", "RO"), func() {
+		var res []ibclient.ZoneAuthDiscrepancy
+		search := &ibclient.ZoneAuthDiscrepancy{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DNS Delegated Zone object", Label("ID: 105", "RO"), func() {
+		var res []ibclient.ZoneDelegated
+		search := &ibclient.ZoneDelegated{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DNS Forward Zone object", Label("ID: 106", "RO"), func() {
+		var res []ibclient.ZoneForward
+		search := &ibclient.ZoneForward{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
+	})
+
+	It("Should get the DNS Stub Zone object", Label("ID: 107", "RO"), func() {
+		var res []ibclient.ZoneStub
+		search := &ibclient.ZoneStub{}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).To(MatchError("not found"))
 	})
 
 })
