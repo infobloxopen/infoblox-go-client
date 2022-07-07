@@ -31,6 +31,16 @@ func (c *ConnectorFacadeE2E) CreateObject(obj ibclient.IBObject) (ref string, er
 	return ref, err
 }
 
+func (c *ConnectorFacadeE2E) UpdateObject(obj ibclient.IBObject, ref string) (refRes string, err error) {
+	refRes, err = c.Connector.UpdateObject(obj, ref)
+	if err == nil {
+		// Update object ref
+		c.removeDeleteRef(ref)
+		c.addDeleteRef(refRes)
+	}
+	return refRes, err
+}
+
 func (c *ConnectorFacadeE2E) DeleteObject(ref string) (refRes string, err error) {
 	refRes, err = c.Connector.DeleteObject(ref)
 	if err == nil {
