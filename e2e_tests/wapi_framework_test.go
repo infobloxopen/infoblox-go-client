@@ -95,7 +95,7 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	PIt("Should get the Discovery Device object (N)", Label("ID: 8", "RO"), func() {
+	It("Should get the Discovery Device object (N)", Label("ID: 8", "RO"), func() {
 		var res []ibclient.DiscoveryDevice
 		search := &ibclient.DiscoveryDevice{}
 		err := connector.GetObject(search, "", nil, &res)
