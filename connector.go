@@ -350,8 +350,6 @@ func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 }
 
 func (c *Connector) GetObject(
-	// TODO: distinguish between "not found" and other kinds of errors.
-
 	obj IBObject, ref string,
 	queryParams *QueryParams, res interface{}) (err error) {
 
