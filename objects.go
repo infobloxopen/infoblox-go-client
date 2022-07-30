@@ -173,6 +173,57 @@ func (SingleRequest) ObjectType() string {
 	return "request"
 }
 
+type NetworkContainerNextAvailable struct {
+	IBBase  `json:"-"`
+	Network *NetworkContainerNextAvailableInfo `json:"network"`
+	Comment string                             `json:"comment"`
+	Ea      EA                                 `json:"extattrs"`
+}
+
+type NetworkContainerNextAvailableInfo struct {
+	Function     string            `json:"_object_function"`
+	ResultField  string            `json:"_result_field"`
+	Object       string            `json:"_object"`
+	ObjectParams map[string]string `json:"_object_parameters"`
+	Params       map[string]uint   `json:"_parameters"`
+	NetviewName  string            `json:"network_view,omitempty"`
+}
+
+func NewNetworkContainerNextAvailableInfo(netview, cidr string, prefixLen uint, isIPv6 bool) *NetworkContainerNextAvailableInfo {
+	containerInfo := NetworkContainerNextAvailableInfo{
+		Function:     "next_available_network",
+		ResultField:  "networks",
+		ObjectParams: map[string]string{"network": cidr},
+		Params:       map[string]uint{"cidr": prefixLen},
+		NetviewName:  netview,
+	}
+
+	if isIPv6 {
+		containerInfo.Object = "ipv6networkcontainer"
+	} else {
+		containerInfo.Object = "networkcontainer"
+	}
+
+	return &containerInfo
+}
+
+func NewNetworkContainerNextAvailable(ncav *NetworkContainerNextAvailableInfo, isIPv6 bool, comment string, ea EA) *NetworkContainerNextAvailable {
+	nc := &NetworkContainerNextAvailable{
+		Network: ncav,
+		Ea:      ea,
+		Comment: comment,
+	}
+
+	if isIPv6 {
+		nc.objectType = "ipv6networkcontainer"
+	} else {
+		nc.objectType = "networkcontainer"
+	}
+	nc.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+
+	return nc
+}
+
 type FixedAddress struct {
 	IBBase      `json:"-"`
 	objectType  string
