@@ -174,10 +174,15 @@ func (SingleRequest) ObjectType() string {
 }
 
 type NetworkContainerNextAvailable struct {
-	IBBase  `json:"-"`
-	Network *NetworkContainerNextAvailableInfo `json:"network"`
-	Comment string                             `json:"comment"`
-	Ea      EA                                 `json:"extattrs"`
+	IBBase     `json:"-"`
+	objectType string
+	Network    *NetworkContainerNextAvailableInfo `json:"network"`
+	Comment    string                             `json:"comment"`
+	Ea         EA                                 `json:"extattrs"`
+}
+
+func (nc *NetworkContainerNextAvailable) ObjectType() string {
+	return nc.objectType
 }
 
 type NetworkContainerNextAvailableInfo struct {
