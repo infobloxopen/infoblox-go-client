@@ -788,7 +788,7 @@ var _ = Describe("Go Client", func() {
 		)
 
 		It("Should add MX Record [mx.wapi.com]", Label("ID: 44", "RW"), func() {
-			r := &ibclient.RecordMx{
+			r := &ibclient.RecordMX{
 				Name:          "mx.wapi.com",
 				MailExchanger: "wapi.com",
 				Preference:    uint32(10),
@@ -805,7 +805,7 @@ var _ = Describe("Go Client", func() {
 		When("MX Record [mx.wapi.com] exists", Label("RW"), func() {
 			var ref string
 			BeforeEach(func() {
-				r := &ibclient.RecordMx{
+				r := &ibclient.RecordMX{
 					Name:          "mx.wapi.com",
 					MailExchanger: "wapi.com",
 					Preference:    uint32(10),
@@ -822,8 +822,8 @@ var _ = Describe("Go Client", func() {
 
 			It("Should get the MX Record [mx.wapi.com]", Label("ID: 86", "RO"), func() {
 				// Get the MX Record [mx.wapi.com] to validate the above addition case
-				var res []ibclient.RecordMx
-				search := &ibclient.RecordMx{}
+				var res []ibclient.RecordMX
+				search := &ibclient.RecordMX{}
 				search.SetReturnFields([]string{"comment", "disable", "mail_exchanger", "name", "preference", "ttl", "use_ttl", "view", "zone"})
 				qp := ibclient.NewQueryParams(false, map[string]string{
 					"view": "default",
@@ -845,7 +845,7 @@ var _ = Describe("Go Client", func() {
 
 			PIt("Should modify the MX Record [mx.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 113", "ID: 145", "RW"), func() {
-					r := &ibclient.RecordMx{
+					r := &ibclient.RecordMX{
 						Comment: "Modified mx Record",
 						Disable: true,
 						Ttl:     120,
@@ -856,8 +856,8 @@ var _ = Describe("Go Client", func() {
 					Expect(ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
 
 					// Get the MX Record [mx.wapi.com] to validate the above modified fields
-					var res []ibclient.RecordMx
-					search := &ibclient.RecordMx{}
+					var res []ibclient.RecordMX
+					search := &ibclient.RecordMX{}
 					search.SetReturnFields([]string{"comment", "disable", "ttl", "use_ttl"})
 					qp := ibclient.NewQueryParams(false, map[string]string{
 						"view": "default",
@@ -1045,7 +1045,7 @@ var _ = Describe("Go Client", func() {
 
 		It("Should add SRV Record with all the attributes, using free format [name = srv.wapi.com]",
 			Label("ID: 47", "RW"), func() {
-				r := &ibclient.RecordSrv{
+				r := &ibclient.RecordSRV{
 					Name:     "srv.wapi.com",
 					Weight:   uint32(10),
 					Priority: uint32(10),
@@ -1066,7 +1066,7 @@ var _ = Describe("Go Client", func() {
 		When("SRV Record [name = srv.wapi.com] exists", Label("RW"), func() {
 			var ref string
 			BeforeEach(func() {
-				r := &ibclient.RecordSrv{
+				r := &ibclient.RecordSRV{
 					Name:     "srv.wapi.com",
 					Weight:   uint32(10),
 					Priority: uint32(10),
@@ -1087,8 +1087,8 @@ var _ = Describe("Go Client", func() {
 			It("Should get SRV record [name = srv.wapi.com]", Label("ID: 83", "RO"), func() {
 
 				// Get SRV record to validate above case
-				var res []ibclient.RecordSrv
-				search := &ibclient.RecordSrv{}
+				var res []ibclient.RecordSRV
+				search := &ibclient.RecordSRV{}
 				search.SetReturnFields([]string{
 					"name", "weight", "priority", "port", "target",
 					"comment", "disable", "ttl", "use_ttl", "zone", "view",
@@ -1112,7 +1112,7 @@ var _ = Describe("Go Client", func() {
 
 			PIt("Should modify the SRV Record [srv.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 116", "ID: 142", "RW"), func() {
-					r := &ibclient.RecordSrv{
+					r := &ibclient.RecordSRV{
 						Comment: "Modified SRV Record",
 						Disable: true,
 						Ttl:     uint32(120),
@@ -1123,8 +1123,8 @@ var _ = Describe("Go Client", func() {
 					Expect(ref).To(MatchRegexp("^record:srv.*srv\\.wapi\\.com/default$"))
 
 					// Get the SRV Record [srv.wapi.com] to validate the above modified fields
-					var res []ibclient.RecordSrv
-					search := &ibclient.RecordSrv{}
+					var res []ibclient.RecordSRV
+					search := &ibclient.RecordSRV{}
 					search.SetReturnFields([]string{"comment", "disable", "ttl", "use_ttl"})
 					qp := ibclient.NewQueryParams(false, map[string]string{"name": "srv.wapi.com"})
 					err = connector.GetObject(search, "", qp, &res)
@@ -1418,7 +1418,7 @@ var _ = Describe("Go Client", func() {
 		})
 
 		It("Should add IPv6 Range [start_addr = 1::1; end_addr = 1::20]", Label("ID: 51", "RW"), func() {
-			r := &ibclient.Ipv6range{
+			r := &ibclient.IPv6Range{
 				StartAddr: "1::1",
 				EndAddr:   "1::20",
 				Network:   "1::/16",
@@ -1454,7 +1454,7 @@ var _ = Describe("Go Client", func() {
 		When("IPv6 Range [start_addr = 1::1; end_addr = 1::20] exits", Label("RW"), func() {
 			var refRange string
 			BeforeEach(func() {
-				r := &ibclient.Ipv6range{
+				r := &ibclient.IPv6Range{
 					StartAddr: "1::1",
 					EndAddr:   "1::20",
 					Network:   "1::/16",
@@ -1467,8 +1467,8 @@ var _ = Describe("Go Client", func() {
 			})
 
 			PIt("Should get the IPAM IPv6Address object", Label("ID: 63", "RO"), func() {
-				var res []ibclient.Ipv6address
-				search := &ibclient.Ipv6address{}
+				var res []ibclient.IPv6Address
+				search := &ibclient.IPv6Address{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ip_address": "1::1"})
 				err := connector.GetObject(search, "", qp, &res)
 				Expect(err).To(BeNil())
@@ -1488,8 +1488,8 @@ var _ = Describe("Go Client", func() {
 			})
 
 			It("Should get the IPv6 Range [1::1/1::20] using reference with all default fields", Label("ID: 78", "RO"), func() {
-				var res []ibclient.Ipv6range
-				search := &ibclient.Ipv6range{}
+				var res []ibclient.IPv6Range
+				search := &ibclient.IPv6Range{}
 				err := connector.GetObject(search, "", nil, &res)
 				Expect(err).To(BeNil())
 				Expect(res[0].Comment).To(Equal("Add Range through WAPI"))
@@ -1502,7 +1502,7 @@ var _ = Describe("Go Client", func() {
 
 			It("Should modify the IPv6 Range [1::1/1::20] of the fields [comment, domain_name, use_domain_name]",
 				Label("ID: 121", "ID: 137", "RW"), func() {
-					r := &ibclient.Ipv6range{
+					r := &ibclient.IPv6Range{
 						Comment:          "modified comment",
 						UseRecycleLeases: true,
 						RecycleLeases:    true,
@@ -1512,8 +1512,8 @@ var _ = Describe("Go Client", func() {
 					Expect(ref).To(MatchRegexp("^ipv6range.*1%3A%3A1/1%3A%3A20/default$"))
 
 					// Get the IPv6 Range [1::1/1::20] to validate the above modified fields
-					var res []ibclient.Ipv6range
-					search := &ibclient.Ipv6range{}
+					var res []ibclient.IPv6Range
+					search := &ibclient.IPv6Range{}
 					search.SetReturnFields([]string{"comment", "recycle_leases", "use_recycle_leases"})
 					qp := ibclient.NewQueryParams(
 						false,
@@ -1668,8 +1668,8 @@ var _ = Describe("Go Client", func() {
 			})
 
 			PIt("Should get the IPAM IPv4Address object", Label("ID: 62", "RO"), func() {
-				var res []ibclient.Ipv4address
-				search := &ibclient.Ipv4address{}
+				var res []ibclient.IPv4Address
+				search := &ibclient.IPv4Address{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ip_address": "78.0.0.1"})
 				err := connector.GetObject(search, "", qp, &res)
 				Expect(err).To(BeNil())
@@ -1882,22 +1882,22 @@ var _ = Describe("Go Client", func() {
 	)
 
 	It("Should get the DHCP network template object", Label("ID: 64", "RO"), func() {
-		var res []ibclient.Networktemplate
-		search := &ibclient.Networktemplate{}
+		var res []ibclient.NetworkTemplate
+		search := &ibclient.NetworkTemplate{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the DHCP IPv6 network template object", Label("ID: 65", "RO"), func() {
-		var res []ibclient.Ipv6networktemplate
-		search := &ibclient.Ipv6networktemplate{}
+		var res []ibclient.IPv6NetworkTemplate
+		search := &ibclient.IPv6NetworkTemplate{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the DHCP IPv6 Shared Network object", Label("ID: 66", "RO"), func() {
-		var res []ibclient.Ipv6sharednetwork
-		search := &ibclient.Ipv6sharednetwork{}
+		var res []ibclient.IPv6SharedNetwork
+		search := &ibclient.IPv6SharedNetwork{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
@@ -1910,15 +1910,15 @@ var _ = Describe("Go Client", func() {
 	})
 
 	It("Should get the MAC Filter Address object", Label("ID: 68", "RO"), func() {
-		var res []ibclient.Macfilteraddress
-		search := &ibclient.Macfilteraddress{}
+		var res []ibclient.MACFilterAddress
+		search := &ibclient.MACFilterAddress{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the Member DHCP properties object", Label("ID: 69", "RO"), func() {
-		var res []ibclient.MemberDhcpproperties
-		search := &ibclient.MemberDhcpproperties{}
+		var res []ibclient.MemberDHCPProperties
+		search := &ibclient.MemberDHCPProperties{}
 		search.SetReturnFields([]string{"host_name"})
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
@@ -1983,15 +1983,15 @@ var _ = Describe("Go Client", func() {
 	})
 
 	It("Should get the DHCP Roaming Host object", Label("ID: 94", "RO"), func() {
-		var res []ibclient.Roaminghost
-		search := &ibclient.Roaminghost{}
+		var res []ibclient.RoamingHost
+		search := &ibclient.RoamingHost{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the Scheduled Task object", Label("ID: 95", "RO"), func() {
-		var res []ibclient.Scheduledtask
-		search := &ibclient.Scheduledtask{}
+		var res []ibclient.ScheduledTask
+		search := &ibclient.ScheduledTask{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
@@ -2005,36 +2005,36 @@ var _ = Describe("Go Client", func() {
 	})
 
 	It("Should get the DHCP Shared Network object", Label("ID: 97", "RO"), func() {
-		var res []ibclient.Sharednetwork
-		search := &ibclient.Sharednetwork{}
+		var res []ibclient.SharedNetwork
+		search := &ibclient.SharedNetwork{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the DHCP Shared A record object", Label("ID: 98", "RO"), func() {
-		var res []ibclient.SharedrecordA
-		search := &ibclient.SharedrecordA{}
+		var res []ibclient.SharedRecordA
+		search := &ibclient.SharedRecordA{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the DHCP Shared AAAA record object", Label("ID: 99", "RO"), func() {
-		var res []ibclient.SharedrecordAaaa
-		search := &ibclient.SharedrecordAaaa{}
+		var res []ibclient.SharedRecordAAAA
+		search := &ibclient.SharedRecordAAAA{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the DHCP Shared MX record object", Label("ID: 100", "RO"), func() {
-		var res []ibclient.SharedrecordMx
-		search := &ibclient.SharedrecordMx{}
+		var res []ibclient.SharedRecordMX
+		search := &ibclient.SharedRecordMX{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
 
 	It("Should get the DHCP Shared TXT record object", Label("ID: 101", "RO"), func() {
-		var res []ibclient.SharedrecordTxt
-		search := &ibclient.SharedrecordTxt{}
+		var res []ibclient.SharedRecordTXT
+		search := &ibclient.SharedRecordTXT{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(MatchError("not found"))
 	})
@@ -2047,8 +2047,8 @@ var _ = Describe("Go Client", func() {
 	})
 
 	It("Should get the snmpuser object (N)", Label("ID: 103", "RO"), func() {
-		var res []ibclient.Snmpuser
-		search := &ibclient.Snmpuser{}
+		var res []ibclient.SNMPUser
+		search := &ibclient.SNMPUser{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).NotTo(BeNil())
 		// TODO Check the error string
