@@ -2,6 +2,7 @@ package e2e_tests
 
 import (
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
@@ -397,7 +398,7 @@ var _ = Describe("Objects", func() {
 						Name:     "e2e_test_a_record.e2e-test.com",
 						Ipv4Addr: "192.168.1.45",
 						Ttl:      5,
-						UseTtl:   true,
+						UseTtl:   utils.Bool(true),
 						Comment:  "A Record created by e2e test",
 						Ea:       make(ibclient.EA),
 					}
@@ -429,7 +430,7 @@ var _ = Describe("Objects", func() {
 						Name:     "e2e_test_a_record.e2e-test.com",
 						Ipv4Addr: "192.168.1.45",
 						Ttl:      5,
-						UseTtl:   true,
+						UseTtl:   utils.Bool(true),
 						Comment:  "A Record created by e2e test",
 						Ea:       make(ibclient.EA),
 					}
@@ -461,7 +462,7 @@ var _ = Describe("Objects", func() {
 						Name:     "e2e_test_a_record.e2e-test.com",
 						Ipv6Addr: "2001:db8:abcd:14::1",
 						Ttl:      5,
-						UseTtl:   true,
+						UseTtl:   utils.Bool(true),
 						Comment:  "A Record created by e2e test",
 						Ea:       make(ibclient.EA),
 					}
@@ -530,7 +531,7 @@ var _ = Describe("Objects", func() {
 						Name:    "e2e_test_txt_record.e2e-test.com",
 						Text:    "TXT Record created by e2e test",
 						Ttl:     5,
-						UseTtl:  true,
+						UseTtl:  utils.Bool(true),
 						Comment: "TXT Record created by e2e test",
 					}
 

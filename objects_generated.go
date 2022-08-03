@@ -2,6 +2,8 @@
 
 package ibclient
 
+import "github.com/infobloxopen/infoblox-go-client/v2/utils"
+
 // WAPI_VERSION is a version of WAPI, which was used to generate infoblox-go-client.
 const WAPI_VERSION = "2.12.1"
 
@@ -1054,7 +1056,7 @@ func (Csvimporttask) ObjectType() string {
 
 func (obj Csvimporttask) ReturnFields() []string {
 	if obj.returnFields == nil {
-		obj.returnFields = []string{"action", "admin_name", "end_time", "file_name", "file_size", "import_id", "lines_failed", "lines_processed", "lines_warning", "on_error", "operation", "separator", "start_time", "status", "update_method"}
+		obj.returnFields = []string{"admin_name", "end_time", "file_name", "file_size", "import_id", "lines_failed", "lines_processed", "lines_warning", "on_error", "operation", "separator", "start_time", "status", "update_method"}
 	}
 	return obj.returnFields
 }
@@ -1908,6 +1910,7 @@ func (obj DiscoverySdnnetwork) ReturnFields() []string {
 }
 
 // DiscoveryStatus represents Infoblox object discovery:status.
+// The discovery status of discovered data
 type DiscoveryStatus struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
@@ -5692,7 +5695,7 @@ type IPv4Address struct {
 	// The name of the network view.
 	NetworkView string `json:"network_view,omitempty"`
 	// The objects associated with the IP address.
-	Objects string `json:"objects,omitempty"`
+	Objects []string `json:"objects,omitempty"`
 	// The reserved port for the address.
 	ReservedPort string `json:"reserved_port,omitempty"`
 	// The current status of the address.
@@ -5757,7 +5760,7 @@ type IPv6Address struct {
 	// The name of the network view.
 	NetworkView string `json:"network_view,omitempty"`
 	// The objects associated with the IP address.
-	Objects string `json:"objects,omitempty"`
+	Objects []string `json:"objects,omitempty"`
 	// The reserved port for the address.
 	ReservedPort string `json:"reserved_port,omitempty"`
 	// The current status of the address.
@@ -5981,7 +5984,7 @@ type Ipv6FixedAddress struct {
 	// Use flag for: options
 	UseOptions bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Determines if the SNMPv3 credential should be used for the IPv6 fixed
 	// address.
 	UseSnmp3Credential bool `json:"use_snmp3_credential,omitempty"`
@@ -11591,7 +11594,7 @@ type RecordA struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -11635,7 +11638,7 @@ func NewRecordA(
 	res.Name = name
 	res.Ipv4Addr = ipAddr
 	res.Ttl = ttl
-	res.UseTtl = useTTL
+	res.UseTtl = utils.Bool(useTTL)
 	res.Comment = comment
 	res.Ea = eas
 	res.Ref = ref
@@ -11699,7 +11702,7 @@ type RecordAAAA struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -11739,7 +11742,7 @@ func NewRecordAAAA(
 	res.View = view
 	res.Name = name
 	res.Ipv6Addr = ipAddr
-	res.UseTtl = useTtl
+	res.UseTtl = utils.Bool(useTtl)
 	res.Ttl = ttl
 	res.Comment = comment
 	res.Ea = eas
@@ -12668,7 +12671,7 @@ type RecordMX struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13927,7 +13930,7 @@ type RecordSRV struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The weight of the SRV record. Valid values are from 0 to 65535 (inclusive),
@@ -14064,7 +14067,7 @@ type RecordTXT struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -14106,7 +14109,7 @@ func NewRecordTXT(
 	res.Name = recordname
 	res.Text = text
 	res.Ttl = ttl
-	res.UseTtl = useTtl
+	res.UseTtl = utils.Bool(useTtl)
 	res.Comment = comment
 	res.Ea = eas
 

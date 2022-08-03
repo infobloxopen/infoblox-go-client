@@ -2,6 +2,7 @@ package e2e_tests
 
 import (
 	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
@@ -80,11 +81,11 @@ var _ = Describe("Go Client", func() {
 		// TODO Check the error string
 	})
 
-	PIt("Should get the CSV Import task", Label("ID: 6", "RO"), func() {
+	It("Should get the CSV Import task", Label("ID: 6", "RO"), func() {
 		var res []ibclient.Csvimporttask
 		search := &ibclient.Csvimporttask{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(BeNil())
+		Expect(err).NotTo(BeNil())
 	})
 
 	It("Should get the Discovery object (N)", Label("ID: 7", "RO"), func() {
@@ -349,13 +350,11 @@ var _ = Describe("Go Client", func() {
 		Expect(res[0].Ref).To(Equal("grid:dns/ZG5zLmNsdXN0ZXJfZG5zX3Byb3BlcnRpZXMkMA:Infoblox"))
 	})
 
-	PIt("Should get the MaxMind DB Info object", Label("ID: 35", "RO"), func() {
+	It("Should get the MaxMind DB Info object", Label("ID: 35", "RO"), func() {
 		var res []ibclient.GridMaxminddbinfo
 		search := &ibclient.GridMaxminddbinfo{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(BeNil())
-		Expect(res[0].BinaryMajorVersion).To(Equal(uint32(2)))
-		Expect(res[0].Ref).To(Equal("grid:maxminddbinfo/ZG5zLm1heG1pbmRfZGJfaW5mbyQw:maxminddbinfo"))
+		Expect(err).NotTo(BeNil())
 	})
 
 	It("Should get the Member Cloud API object", Label("ID: 36", "RO"), func() {
@@ -485,7 +484,7 @@ var _ = Describe("Go Client", func() {
 				Comment:  "Added A Record",
 				Disable:  false,
 				Ttl:      uint32(10),
-				UseTtl:   true,
+				UseTtl:   utils.Bool(true),
 				View:     "default",
 			}
 			ref, err := connector.CreateObject(r)
@@ -502,7 +501,7 @@ var _ = Describe("Go Client", func() {
 					Comment:  "Added A Record",
 					Disable:  false,
 					Ttl:      uint32(10),
-					UseTtl:   true,
+					UseTtl:   utils.Bool(true),
 					View:     "default",
 				}
 				var err error
@@ -528,17 +527,17 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Comment).To(Equal("Added A Record"))
 				Expect(res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
-				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].View).To(Equal("default"))
 			})
 
-			PIt("Should modify the A Record [a.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
+			It("Should modify the A Record [a.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 111", "ID: 147", "RW"), func() {
 					r := &ibclient.RecordA{
 						Comment: "Modified A Record",
 						Disable: true,
 						Ttl:     uint32(20),
-						UseTtl:  false,
+						UseTtl:  utils.Bool(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -558,7 +557,7 @@ var _ = Describe("Go Client", func() {
 					Expect(res[0].Comment).To(Equal("Modified A Record"))
 					Expect(res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(20)))
-					Expect(res[0].UseTtl).To(Equal(false))
+					Expect(*res[0].UseTtl).To(Equal(false))
 				},
 			)
 		})
@@ -570,7 +569,7 @@ var _ = Describe("Go Client", func() {
 				Comment:  "Added AAAA Record",
 				Disable:  false,
 				Ttl:      uint32(10),
-				UseTtl:   true,
+				UseTtl:   utils.Bool(true),
 				View:     "default",
 			}
 			ref, err := connector.CreateObject(r)
@@ -587,7 +586,7 @@ var _ = Describe("Go Client", func() {
 					Comment:  "Added AAAA Record",
 					Disable:  false,
 					Ttl:      uint32(10),
-					UseTtl:   true,
+					UseTtl:   utils.Bool(true),
 					View:     "default",
 				}
 				var err error
@@ -609,17 +608,17 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Comment).To(Equal("Added AAAA Record"))
 				Expect(res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
-				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].View).To(Equal("default"))
 			})
 
-			PIt("Should modify the AAAA Record [aaaa.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
+			It("Should modify the AAAA Record [aaaa.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 112", "ID: 146", "RW"), func() {
 					r := &ibclient.RecordAAAA{
 						Comment: "Modified AAAA Record",
 						Disable: true,
 						Ttl:     uint32(20),
-						UseTtl:  false,
+						UseTtl:  utils.Bool(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -635,7 +634,7 @@ var _ = Describe("Go Client", func() {
 					Expect(res[0].Comment).To(Equal("Modified AAAA Record"))
 					Expect(res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(20)))
-					Expect(res[0].UseTtl).To(Equal(false))
+					Expect(*res[0].UseTtl).To(Equal(false))
 				},
 			)
 		})
@@ -795,7 +794,7 @@ var _ = Describe("Go Client", func() {
 				Comment:       "Creating mx record through infoblox-go-client",
 				Disable:       false,
 				Ttl:           uint32(20),
-				UseTtl:        true,
+				UseTtl:        utils.Bool(true),
 			}
 			ref, err := connector.CreateObject(r)
 			Expect(err).To(BeNil())
@@ -812,7 +811,7 @@ var _ = Describe("Go Client", func() {
 					Comment:       "Creating mx record through infoblox-go-client",
 					Disable:       false,
 					Ttl:           uint32(20),
-					UseTtl:        true,
+					UseTtl:        utils.Bool(true),
 				}
 				var err error
 				ref, err = connector.CreateObject(r)
@@ -835,7 +834,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Name).To(Equal("mx.wapi.com"))
 				Expect(res[0].Zone).To(Equal("wapi.com"))
 				Expect(res[0].MailExchanger).To(Equal("wapi.com"))
-				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].Disable).To(Equal(false))
 				Expect(res[0].Preference).To(Equal(uint32(10)))
 				Expect(res[0].Ttl).To(Equal(uint32(20)))
@@ -843,13 +842,13 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].View).To(Equal("default"))
 			})
 
-			PIt("Should modify the MX Record [mx.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
+			It("Should modify the MX Record [mx.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 113", "ID: 145", "RW"), func() {
 					r := &ibclient.RecordMX{
 						Comment: "Modified mx Record",
 						Disable: true,
 						Ttl:     120,
-						UseTtl:  false,
+						UseTtl:  utils.Bool(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -869,7 +868,7 @@ var _ = Describe("Go Client", func() {
 					Expect(res[0].Comment).To(Equal("Modified mx Record"))
 					Expect(res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
-					Expect(res[0].UseTtl).To(Equal(false))
+					Expect(*res[0].UseTtl).To(Equal(false))
 				},
 			)
 		})
@@ -881,7 +880,7 @@ var _ = Describe("Go Client", func() {
 				Comment: "Creating txt record through infoblox-go-client",
 				Disable: false,
 				Ttl:     uint32(20),
-				UseTtl:  true,
+				UseTtl:  utils.Bool(true),
 				View:    "default",
 			}
 			ref, err := connector.CreateObject(r)
@@ -898,7 +897,7 @@ var _ = Describe("Go Client", func() {
 					Comment: "Creating txt record through infoblox-go-client",
 					Disable: false,
 					Ttl:     uint32(20),
-					UseTtl:  true,
+					UseTtl:  utils.Bool(true),
 					View:    "default",
 				}
 				var err error
@@ -922,20 +921,20 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Name).To(Equal("txt.wapi.com"))
 				Expect(res[0].Zone).To(Equal("wapi.com"))
 				Expect(res[0].Text).To(Equal("wapi.com"))
-				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(20)))
 				Expect(res[0].Ref).To(MatchRegexp("record:txt.*txt\\.wapi\\.com/default$"))
 				Expect(res[0].View).To(Equal("default"))
 			})
 
-			PIt("Should modify the TXT Record [txt.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
+			It("Should modify the TXT Record [txt.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 114", "ID: 144", "RW"), func() {
 					r := &ibclient.RecordTXT{
 						Comment: "Modified TXT Record",
 						Disable: true,
 						Ttl:     uint32(120),
-						UseTtl:  false,
+						UseTtl:  utils.Bool(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -955,7 +954,7 @@ var _ = Describe("Go Client", func() {
 					Expect(res[0].Comment).To(Equal("Modified TXT Record"))
 					Expect(res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
-					Expect(res[0].UseTtl).To(Equal(false))
+					Expect(*res[0].UseTtl).To(Equal(false))
 				},
 			)
 		})
@@ -1015,13 +1014,13 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].View).To(Equal("default"))
 			})
 
-			PIt("Should modify the PTR Record [ptr1.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
+			It("Should modify the PTR Record [ptr1.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 115", "ID: 143", "RW"), func() {
 					r := &ibclient.RecordTXT{
 						Comment: "Modified PTR Record",
 						Disable: true,
 						Ttl:     uint32(120),
-						UseTtl:  false,
+						UseTtl:  utils.Bool(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -1054,7 +1053,7 @@ var _ = Describe("Go Client", func() {
 					Comment:  "wapi added",
 					Disable:  false,
 					Ttl:      10,
-					UseTtl:   true,
+					UseTtl:   utils.Bool(true),
 					View:     "default",
 				}
 				ref, err := connector.CreateObject(r)
@@ -1075,7 +1074,7 @@ var _ = Describe("Go Client", func() {
 					Comment:  "wapi added",
 					Disable:  false,
 					Ttl:      10,
-					UseTtl:   true,
+					UseTtl:   utils.Bool(true),
 					View:     "default",
 				}
 				var err error
@@ -1100,7 +1099,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].View).To(Equal("default"))
 				Expect(res[0].Name).To(Equal("srv.wapi.com"))
 				Expect(res[0].Weight).To(Equal(uint32(10)))
-				Expect(res[0].UseTtl).To(Equal(true))
+				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].Priority).To(Equal(uint32(10)))
 				Expect(res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
@@ -1110,13 +1109,13 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Target).To(Equal("srv.wapi.com"))
 			})
 
-			PIt("Should modify the SRV Record [srv.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
+			It("Should modify the SRV Record [srv.wapi.com] of the fields [comment, disable, ttl, use_ttl]",
 				Label("ID: 116", "ID: 142", "RW"), func() {
 					r := &ibclient.RecordSRV{
 						Comment: "Modified SRV Record",
 						Disable: true,
 						Ttl:     uint32(120),
-						UseTtl:  false,
+						UseTtl:  utils.Bool(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -1133,7 +1132,7 @@ var _ = Describe("Go Client", func() {
 					Expect(res[0].Comment).To(Equal("Modified SRV Record"))
 					Expect(res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
-					Expect(res[0].UseTtl).To(Equal(false))
+					Expect(*res[0].UseTtl).To(Equal(false))
 				},
 			)
 		})
@@ -1466,7 +1465,7 @@ var _ = Describe("Go Client", func() {
 				Expect(refRange).To(MatchRegexp("^ipv6range.*1%3A%3A1/1%3A%3A20/default$"))
 			})
 
-			PIt("Should get the IPAM IPv6Address object", Label("ID: 63", "RO"), func() {
+			It("Should get the IPAM IPv6Address object", Label("ID: 63", "RO"), func() {
 				var res []ibclient.IPv6Address
 				search := &ibclient.IPv6Address{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ip_address": "1::1"})
@@ -1554,11 +1553,11 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Ipv6Addr).To(Equal("1::50"))
 			})
 
-			PIt("Should modify the fields [comment, use_preferred_lifetime, preferred_lifetime] in ipv6fixedaddress [1::50]",
+			It("Should modify the fields [comment, use_preferred_lifetime, preferred_lifetime] in ipv6fixedaddress [1::50]",
 				Label("ID: 125", "ID: 133", "RW"), func() {
 					r := &ibclient.Ipv6FixedAddress{
 						Comment:              "Modify the ipv6fixedaddress object",
-						UsePreferredLifetime: false,
+						UsePreferredLifetime: utils.Bool(false),
 						PreferredLifetime:    220,
 					}
 					ref, err := connector.UpdateObject(r, refFixedAddress)
@@ -1576,8 +1575,8 @@ var _ = Describe("Go Client", func() {
 					Expect(res[0].Comment).To(Equal("Modify the ipv6fixedaddress object"))
 					Expect(res[0].NetworkView).To(Equal("default"))
 					Expect(res[0].Duid).To(Equal("ab:34:56:78:90"))
-					Expect(res[0].UsePreferredLifetime).To(Equal(false))
-					Expect(res[0].PreferredLifetime).To(Equal(220))
+					Expect(*res[0].UsePreferredLifetime).To(Equal(false))
+					Expect(res[0].PreferredLifetime).To(Equal(uint32(220)))
 					Expect(res[0].Ref).To(MatchRegexp("^ipv6fixedaddress.*1%3A%3A50/default$"))
 					Expect(res[0].Ipv6Addr).To(Equal("1::50"))
 				},
@@ -1667,7 +1666,7 @@ var _ = Describe("Go Client", func() {
 				Expect(networkRef).To(MatchRegexp("^network.*78\\.0\\.0\\.0/30/default$"))
 			})
 
-			PIt("Should get the IPAM IPv4Address object", Label("ID: 62", "RO"), func() {
+			It("Should get the IPAM IPv4Address object", Label("ID: 62", "RO"), func() {
 				var res []ibclient.IPv4Address
 				search := &ibclient.IPv4Address{}
 				qp := ibclient.NewQueryParams(false, map[string]string{"ip_address": "78.0.0.1"})
@@ -1681,7 +1680,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].IsConflict).To(Equal(false))
 				Expect(res[0].MacAddress).To(Equal(""))
 				Expect(res[0].Types).To(HaveLen(0))
-				Expect(res[0].Ref).To(Equal("ipv4address/Li5pcHY0X2FkZHJlc3MkOTIuMC4wLjEvMA:78.0.0.1"))
+				Expect(res[0].Ref).To(MatchRegexp("ipv4address.*78\\.0\\.0\\.1"))
 				Expect(res[0].IpAddress).To(Equal("78.0.0.1"))
 				Expect(res[0].Names).To(HaveLen(0))
 			})
