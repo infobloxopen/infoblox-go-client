@@ -48,7 +48,7 @@ Create, Update, Delete and Get operation on below records are being added or enh
 - Feature: Add ability to set extensible attributes when creating a network `#119 <https://github.com/infobloxopen/infoblox-go-client/issues/119>`_
 - Feature request: add host aliases get/create/update `#126 <https://github.com/infobloxopen/infoblox-go-client/issues/126>`_
 
-# v2.2.0
+## v2.2.0
 
 WAPI version used to generate the client is "2.12.1"
 
