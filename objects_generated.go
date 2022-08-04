@@ -22,15 +22,15 @@ type AdAuthService struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the default search path for nested group querying is
 	// used.
-	DisableDefaultSearchPath bool `json:"disable_default_search_path,omitempty"`
+	DisableDefaultSearchPath *bool `json:"disable_default_search_path,omitempty"`
 	// Determines if Active Directory Authentication Service is disabled.
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// The AD authentication server list.
 	DomainControllers []*AdAuthServer `json:"domain_controllers,omitempty"`
 	// The AD authentication service name.
 	Name string `json:"name,omitempty"`
 	// Determines whether the nested group querying is enabled.
-	NestedGroupQuerying bool `json:"nested_group_querying,omitempty"`
+	NestedGroupQuerying *bool `json:"nested_group_querying,omitempty"`
 	// The number of seconds that the appliance waits for a response from the AD
 	// server.
 	Timeout uint32 `json:"timeout,omitempty"`
@@ -80,9 +80,9 @@ type Admingroup struct {
 	DhcpShowCommands *AdmingroupDhcpshowcommands `json:"dhcp_show_commands,omitempty"`
 	// Determines whether the Admin Group is disabled or not. When this is set to
 	// False, the Admin Group is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Disable concurrent login feature
-	DisableConcurrentLogin bool `json:"disable_concurrent_login,omitempty"`
+	DisableConcurrentLogin *bool `json:"disable_concurrent_login,omitempty"`
 	// Dns set commands for the dns command group.
 	DnsSetCommands *AdmingroupDnssetcommands `json:"dns_set_commands,omitempty"`
 	// Dns show commands for the dns command group.
@@ -97,7 +97,7 @@ type Admingroup struct {
 	EmailAddresses []string `json:"email_addresses,omitempty"`
 	// Determines whether the restrictions will be applied to the admin connector
 	// level for users of this Admin Group.
-	EnableRestrictedUserAccess bool `json:"enable_restricted_user_access,omitempty"`
+	EnableRestrictedUserAccess *bool `json:"enable_restricted_user_access,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -134,17 +134,17 @@ type Admingroup struct {
 	// Determines whether this Admin Group is a superuser group. A superuser group
 	// can perform all operations on the appliance, and can view and configure all
 	// types of data.
-	Superuser bool `json:"superuser,omitempty"`
+	Superuser *bool `json:"superuser,omitempty"`
 	// Toplevel commands for the troubleshooting command group.
 	TroubleShootingToplevelCommands *AdmingroupTroubleshootingtoplevelcommands `json:"trouble_shooting_toplevel_commands,omitempty"`
 	// This is the use flag for account inactivity lockout settings.
-	UseAccountInactivityLockoutEnable bool `json:"use_account_inactivity_lockout_enable,omitempty"`
+	UseAccountInactivityLockoutEnable *bool `json:"use_account_inactivity_lockout_enable,omitempty"`
 	// Whether to override grid concurrent login
-	UseDisableConcurrentLogin bool `json:"use_disable_concurrent_login,omitempty"`
+	UseDisableConcurrentLogin *bool `json:"use_disable_concurrent_login,omitempty"`
 	// Whether to override grid sequential lockout setting
-	UseLockoutSetting bool `json:"use_lockout_setting,omitempty"`
+	UseLockoutSetting *bool `json:"use_lockout_setting,omitempty"`
 	// Whether grid password expiry setting should be override.
-	UsePasswordSetting bool `json:"use_password_setting,omitempty"`
+	UsePasswordSetting *bool `json:"use_password_setting,omitempty"`
 	// The access control items for this Admin Group.
 	UserAccess []*Addressac `json:"user_access,omitempty"`
 }
@@ -170,7 +170,7 @@ type Adminrole struct {
 	// The descriptive comment of the Admin Role object.
 	Comment string `json:"comment,omitempty"`
 	// The disable flag.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -210,12 +210,12 @@ type Adminuser struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the admin user is disabled or not. When this is set to
 	// False, the admin user is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The e-mail address for the admin user.
 	Email string `json:"email,omitempty"`
 	// Determines whether the user is allowed to log in only with the certificate.
 	// Regular username/password authentication will be disabled for this user.
-	EnableCertificateAuthentication bool `json:"enable_certificate_authentication,omitempty"`
+	EnableCertificateAuthentication *bool `json:"enable_certificate_authentication,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -230,9 +230,9 @@ type Adminuser struct {
 	// The time zone for this admin user.
 	TimeZone string `json:"time_zone,omitempty"`
 	// \, Enable/disable the ssh keypair authentication.
-	UseSshKeys bool `json:"use_ssh_keys,omitempty"`
+	UseSshKeys *bool `json:"use_ssh_keys,omitempty"`
 	// Use flag for: time_zone
-	UseTimeZone bool `json:"use_time_zone,omitempty"`
+	UseTimeZone *bool `json:"use_time_zone,omitempty"`
 }
 
 func (Adminuser) ObjectType() string {
@@ -429,23 +429,23 @@ type Approvalworkflow struct {
 	// The requirement for the comment when an approver approves a submitted task.
 	ApproverComment string `json:"approver_comment,omitempty"`
 	// Determines whether approval task notifications are enabled.
-	EnableApprovalNotify bool `json:"enable_approval_notify,omitempty"`
+	EnableApprovalNotify *bool `json:"enable_approval_notify,omitempty"`
 	// Determines whether approved task notifications are enabled.
-	EnableApprovedNotify bool `json:"enable_approved_notify,omitempty"`
+	EnableApprovedNotify *bool `json:"enable_approved_notify,omitempty"`
 	// Determines whether failed task notifications are enabled.
-	EnableFailedNotify bool `json:"enable_failed_notify,omitempty"`
+	EnableFailedNotify *bool `json:"enable_failed_notify,omitempty"`
 	// Determines whether e-mail notifications to admin group's e-mail address are
 	// enabled.
-	EnableNotifyGroup bool `json:"enable_notify_group,omitempty"`
+	EnableNotifyGroup *bool `json:"enable_notify_group,omitempty"`
 	// Determines whether e-mail notifications to an admin member's e-mail address
 	// are enabled.
-	EnableNotifyUser bool `json:"enable_notify_user,omitempty"`
+	EnableNotifyUser *bool `json:"enable_notify_user,omitempty"`
 	// Determines whether rejected task notifications are enabled.
-	EnableRejectedNotify bool `json:"enable_rejected_notify,omitempty"`
+	EnableRejectedNotify *bool `json:"enable_rejected_notify,omitempty"`
 	// Determines whether rescheduled task notifications are enabled.
-	EnableRescheduledNotify bool `json:"enable_rescheduled_notify,omitempty"`
+	EnableRescheduledNotify *bool `json:"enable_rescheduled_notify,omitempty"`
 	// Determines whether succeeded task notifications are enabled.
-	EnableSucceededNotify bool `json:"enable_succeeded_notify,omitempty"`
+	EnableSucceededNotify *bool `json:"enable_succeeded_notify,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -532,7 +532,7 @@ type Awsrte53taskgroup struct {
 	// The name of the DNS view for consolidating zones.
 	ConsolidatedView string `json:"consolidated_view,omitempty"`
 	// Indicates if the task group is enabled or disabled.
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// Member on which the tasks in this task group will be run.
 	GridMember string `json:"grid_member,omitempty"`
 	// The name of this AWS Route53 sync task group.
@@ -648,7 +648,7 @@ type Bulkhost struct {
 	// The descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// The disable flag of a DNS BulkHost record.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The prefix, in punycode format, for the bulk host.
 	DnsPrefix string `json:"dns_prefix,omitempty"`
 	// The last IP address in the address range for the bulk host.
@@ -668,7 +668,7 @@ type Bulkhost struct {
 	// characters) inserted at the beginning of each host name.
 	Prefix string `json:"prefix,omitempty"`
 	// The reverse flag of the BulkHost record.
-	Reverse bool `json:"reverse,omitempty"`
+	Reverse *bool `json:"reverse,omitempty"`
 	// The first IP address in the address range for the bulk host.
 	StartAddr string `json:"start_addr,omitempty"`
 	// The bulk host name template format.
@@ -676,9 +676,9 @@ type Bulkhost struct {
 	// The Time to Live (TTL) value.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: name_template
-	UseNameTemplate bool `json:"use_name_template,omitempty"`
+	UseNameTemplate *bool `json:"use_name_template,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The view for the bulk host.
 	View string `json:"view,omitempty"`
 	// The zone name.
@@ -803,9 +803,9 @@ type Captiveportal struct {
 	// The company name that appears in the guest registration page.
 	CompanyName string `json:"company_name,omitempty"`
 	// Determines if authentication failures are logged to syslog or not.
-	EnableSyslogAuthFailure bool `json:"enable_syslog_auth_failure,omitempty"`
+	EnableSyslogAuthFailure *bool `json:"enable_syslog_auth_failure,omitempty"`
 	// Determines if successful authentications are logged to syslog or not.
-	EnableSyslogAuthSuccess bool `json:"enable_syslog_auth_success,omitempty"`
+	EnableSyslogAuthSuccess *bool `json:"enable_syslog_auth_success,omitempty"`
 	// The type of user to be enabled for the captive portal.
 	EnableUserType string `json:"enable_user_type,omitempty"`
 	// The encryption the captive portal uses.
@@ -816,32 +816,32 @@ type Captiveportal struct {
 	// page.
 	GuestCustomField1Name string `json:"guest_custom_field1_name,omitempty"`
 	// Determines if the custom field is required or not.
-	GuestCustomField1Required bool `json:"guest_custom_field1_required,omitempty"`
+	GuestCustomField1Required *bool `json:"guest_custom_field1_required,omitempty"`
 	// The name of the custom field that you are adding to the guest registration
 	// page.
 	GuestCustomField2Name string `json:"guest_custom_field2_name,omitempty"`
 	// Determines if the custom field is required or not.
-	GuestCustomField2Required bool `json:"guest_custom_field2_required,omitempty"`
+	GuestCustomField2Required *bool `json:"guest_custom_field2_required,omitempty"`
 	// The name of the custom field that you are adding to the guest registration
 	// page.
 	GuestCustomField3Name string `json:"guest_custom_field3_name,omitempty"`
 	// Determines if the custom field is required or not.
-	GuestCustomField3Required bool `json:"guest_custom_field3_required,omitempty"`
+	GuestCustomField3Required *bool `json:"guest_custom_field3_required,omitempty"`
 	// The name of the custom field that you are adding to the guest registration
 	// page.
 	GuestCustomField4Name string `json:"guest_custom_field4_name,omitempty"`
 	// Determines if the custom field is required or not.
-	GuestCustomField4Required bool `json:"guest_custom_field4_required,omitempty"`
+	GuestCustomField4Required *bool `json:"guest_custom_field4_required,omitempty"`
 	// Determines if the email address of the guest is required or not.
-	GuestEmailRequired bool `json:"guest_email_required,omitempty"`
+	GuestEmailRequired *bool `json:"guest_email_required,omitempty"`
 	// Determines if the first name of the guest is required or not.
-	GuestFirstNameRequired bool `json:"guest_first_name_required,omitempty"`
+	GuestFirstNameRequired *bool `json:"guest_first_name_required,omitempty"`
 	// Determines if the last name of the guest is required or not.
-	GuestLastNameRequired bool `json:"guest_last_name_required,omitempty"`
+	GuestLastNameRequired *bool `json:"guest_last_name_required,omitempty"`
 	// Determines if the middle name of the guest is required or not.
-	GuestMiddleNameRequired bool `json:"guest_middle_name_required,omitempty"`
+	GuestMiddleNameRequired *bool `json:"guest_middle_name_required,omitempty"`
 	// Determines if the phone number of the guest is required or not.
-	GuestPhoneRequired bool `json:"guest_phone_required,omitempty"`
+	GuestPhoneRequired *bool `json:"guest_phone_required,omitempty"`
 	// The helpdesk message that appears in the guest registration page.
 	HelpdeskMessage string `json:"helpdesk_message,omitempty"`
 	// Determines the IP address on which the captive portal listens. Valid if
@@ -859,7 +859,7 @@ type Captiveportal struct {
 	// performance.
 	Port uint32 `json:"port,omitempty"`
 	// Determines if the captive portal service is enabled or not.
-	ServiceEnabled bool `json:"service_enabled,omitempty"`
+	ServiceEnabled *bool `json:"service_enabled,omitempty"`
 	// The syslog level at which authentication failures are logged.
 	SyslogAuthFailureLevel string `json:"syslog_auth_failure_level,omitempty"`
 	// The syslog level at which successful authentications are logged.
@@ -893,13 +893,13 @@ type CertificateAuthservice struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this certificate authentication service is enabled or
 	// disabled.
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// Determines if username/password authentication together with client
 	// certificate authentication is enabled or disabled.
-	EnablePasswordRequest bool `json:"enable_password_request,omitempty"`
+	EnablePasswordRequest *bool `json:"enable_password_request,omitempty"`
 	// Determines if the lookup for user group membership information on remote
 	// services is enabled or disabled.
-	EnableRemoteLookup bool `json:"enable_remote_lookup,omitempty"`
+	EnableRemoteLookup *bool `json:"enable_remote_lookup,omitempty"`
 	// The number of validation attempts before the appliance contacts the next
 	// responder.
 	MaxRetries uint32 `json:"max_retries,omitempty"`
@@ -975,7 +975,7 @@ type CiscoiseEndpoint struct {
 	ConnectionTimeout uint32 `json:"connection_timeout,omitempty"`
 	// Determines whether a Cisco ISE endpoint is disabled or not. When this is set
 	// to False, the Cisco ISE endpoint is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -1056,7 +1056,7 @@ func (Csvimporttask) ObjectType() string {
 
 func (obj Csvimporttask) ReturnFields() []string {
 	if obj.returnFields == nil {
-		obj.returnFields = []string{"admin_name", "end_time", "file_name", "file_size", "import_id", "lines_failed", "lines_processed", "lines_warning", "on_error", "operation", "separator", "start_time", "status", "update_method"}
+		obj.returnFields = []string{"action", "admin_name", "end_time", "file_name", "file_size", "import_id", "lines_failed", "lines_processed", "lines_warning", "on_error", "operation", "separator", "start_time", "status", "update_method"}
 	}
 	return obj.returnFields
 }
@@ -1269,9 +1269,9 @@ type Dhcpfailover struct {
 	MsAssociationMode string `json:"ms_association_mode,omitempty"`
 	// Determines if the authentication for the failover association is enabled or
 	// not.
-	MsEnableAuthentication bool `json:"ms_enable_authentication,omitempty"`
+	MsEnableAuthentication *bool `json:"ms_enable_authentication,omitempty"`
 	// Determines if the switchover interval is enabled or not.
-	MsEnableSwitchoverInterval bool `json:"ms_enable_switchover_interval,omitempty"`
+	MsEnableSwitchoverInterval *bool `json:"ms_enable_switchover_interval,omitempty"`
 	// The mode for the failover association.
 	MsFailoverMode string `json:"ms_failover_mode,omitempty"`
 	// Failover partner defined in the association with the Microsoft Server.
@@ -1303,7 +1303,7 @@ type Dhcpfailover struct {
 	PrimaryState string `json:"primary_state,omitempty"`
 	// Determines if the leases are kept in recycle bin until one week after
 	// expiration or not.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// The secondary server of a DHCP failover object.
 	Secondary string `json:"secondary,omitempty"`
 	// The type of the secondary server of DHCP Failover association object.
@@ -1311,11 +1311,11 @@ type Dhcpfailover struct {
 	// The secondary server status of a DHCP failover object.
 	SecondaryState string `json:"secondary_state,omitempty"`
 	// Use flag for: failover_port
-	UseFailoverPort bool `json:"use_failover_port,omitempty"`
+	UseFailoverPort *bool `json:"use_failover_port,omitempty"`
 	// Use flag for: ms_switchover_interval
-	UseMsSwitchoverInterval bool `json:"use_ms_switchover_interval,omitempty"`
+	UseMsSwitchoverInterval *bool `json:"use_ms_switchover_interval,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 }
 
 func (Dhcpfailover) ObjectType() string {
@@ -1502,7 +1502,7 @@ type DiscoveryDevice struct {
 	PortStats *DiscoveryDevicePortstatistics `json:"port_stats,omitempty"`
 	// A flag indicated that NI should send enable command when interacting with
 	// device.
-	PrivilegedPolling bool `json:"privileged_polling,omitempty"`
+	PrivilegedPolling *bool `json:"privileged_polling,omitempty"`
 	// The type of the device.
 	Type string `json:"type,omitempty"`
 	// User-defined management IP address of the device.
@@ -1736,9 +1736,9 @@ type DiscoveryDiagnostictask struct {
 	// The SNMP community string of the discovery diagnostic task.
 	CommunityString string `json:"community_string,omitempty"`
 	// The SNMP debug flag of the discovery diagnostic task.
-	DebugSnmp bool `json:"debug_snmp,omitempty"`
+	DebugSnmp *bool `json:"debug_snmp,omitempty"`
 	// The force test flag of the discovery diagnostic task.
-	ForceTest bool `json:"force_test,omitempty"`
+	ForceTest *bool `json:"force_test,omitempty"`
 	// The IP address of the discovery diagnostic task.
 	IpAddress string `json:"ip_address,omitempty"`
 	// The network view name of the discovery diagnostic task.
@@ -1787,11 +1787,11 @@ type DiscoveryGridproperties struct {
 	// values are unsigned integer between 1 and 100, inclusive.
 	DnsLookupThrottle uint32 `json:"dns_lookup_throttle,omitempty"`
 	// Advisor application enabled/disabled.
-	EnableAdvisor bool `json:"enable_advisor,omitempty"`
+	EnableAdvisor *bool `json:"enable_advisor,omitempty"`
 	// The flag that enables automatic conversion of discovered data.
-	EnableAutoConversion bool `json:"enable_auto_conversion,omitempty"`
+	EnableAutoConversion *bool `json:"enable_auto_conversion,omitempty"`
 	// The flag that enables updating discovered data for managed objects.
-	EnableAutoUpdates bool `json:"enable_auto_updates,omitempty"`
+	EnableAutoUpdates *bool `json:"enable_auto_updates,omitempty"`
 	// The Grid name.
 	GridName string `json:"grid_name,omitempty"`
 	// Determines the timeout to ignore the discovery conflict duration (in
@@ -1802,7 +1802,7 @@ type DiscoveryGridproperties struct {
 	// Ports to scan.
 	Ports []*DiscoveryPort `json:"ports,omitempty"`
 	// Determines if the same port control is used for discovery blackout.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// Discovery SNMP v1 and v2 credentials.
 	Snmpv1v2Credentials []*DiscoverySnmpcredential `json:"snmpv1v2_credentials,omitempty"`
 	// Discovery SNMP v3 credentials.
@@ -1845,12 +1845,12 @@ type DiscoveryMemberproperties struct {
 	// The name of the network discovery Grid member.
 	DiscoveryMember string `json:"discovery_member,omitempty"`
 	// Determines if the discovery service is enabled.
-	EnableService bool `json:"enable_service,omitempty"`
+	EnableService *bool `json:"enable_service,omitempty"`
 	// Gateway seed routers.
 	GatewaySeedRouters []*DiscoverySeedrouter `json:"gateway_seed_routers,omitempty"`
 	// Determines if the standalone mode for discovery network monitor is enabled
 	// or not.
-	IsSa bool `json:"is_sa,omitempty"`
+	IsSa *bool `json:"is_sa,omitempty"`
 	// Discovery member role.
 	Role string `json:"role,omitempty"`
 	// Discovery networks to which the member is assigned.
@@ -1864,11 +1864,11 @@ type DiscoveryMemberproperties struct {
 	// Discovery SNMP v3 credentials.
 	Snmpv3Credentials []*DiscoverySnmp3credential `json:"snmpv3_credentials,omitempty"`
 	// Use flag for: cli_credentials
-	UseCliCredentials bool `json:"use_cli_credentials,omitempty"`
+	UseCliCredentials *bool `json:"use_cli_credentials,omitempty"`
 	// Use flag for: snmpv1v2_credentials
-	UseSnmpv1v2Credentials bool `json:"use_snmpv1v2_credentials,omitempty"`
+	UseSnmpv1v2Credentials *bool `json:"use_snmpv1v2_credentials,omitempty"`
 	// Use flag for: snmpv3_credentials
-	UseSnmpv3Credentials bool `json:"use_snmpv3_credentials,omitempty"`
+	UseSnmpv3Credentials *bool `json:"use_snmpv3_credentials,omitempty"`
 }
 
 func (DiscoveryMemberproperties) ObjectType() string {
@@ -2004,15 +2004,15 @@ type Discoverytask struct {
 	// The network discovery CSV file name.
 	CsvFileName string `json:"csv_file_name,omitempty"`
 	// Determines whether IP scanning is disabled.
-	DisableIpScanning bool `json:"disable_ip_scanning,omitempty"`
+	DisableIpScanning *bool `json:"disable_ip_scanning,omitempty"`
 	// Determines whether VMWare scanning is disabled.
-	DisableVmwareScanning bool `json:"disable_vmware_scanning,omitempty"`
+	DisableVmwareScanning *bool `json:"disable_vmware_scanning,omitempty"`
 	// The discovery task identifier.
 	DiscoveryTaskOid string `json:"discovery_task_oid,omitempty"`
 	// The Grid member that runs the discovery.
 	MemberName string `json:"member_name,omitempty"`
 	// Determines whether to replace or merge new data with existing data.
-	MergeData bool `json:"merge_data,omitempty"`
+	MergeData *bool `json:"merge_data,omitempty"`
 	// Network discovery scanning mode.
 	Mode string `json:"mode,omitempty"`
 	// Name of the network view in which target networks for network discovery
@@ -2070,7 +2070,7 @@ type Distributionschedule struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether the distribution schedule is active.
-	Active bool `json:"active,omitempty"`
+	Active *bool `json:"active,omitempty"`
 	// The start time of the distribution.
 	StartTime *UnixTime `json:"start_time,omitempty"`
 	// Time zone of the distribution start time.
@@ -2104,10 +2104,10 @@ type Dns64group struct {
 	// The descriptive comment for the DNS64 synthesis group object.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the DNS64 synthesis group is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines whether the DNS64 synthesis of AAAA records is enabled for DNS64
 	// synthesis groups that request DNSSEC data.
-	EnableDnssecDns64 bool `json:"enable_dnssec_dns64,omitempty"`
+	EnableDnssecDns64 *bool `json:"enable_dnssec_dns64,omitempty"`
 	// Access Control settings that contain IPv6 addresses or prefix ranges that
 	// cannot be used by IPv6-only hosts, such as IP addresses in the ::ffff:0:0/96
 	// network. When DNS server retrieves an AAAA record that contains an IPv6
@@ -2224,12 +2224,12 @@ type DtcLbdn struct {
 	AuthZones []*ZoneAuth `json:"auth_zones,omitempty"`
 	// Flag for enabling auto managing DTC Consolidated Monitors on related DTC
 	// Pools.
-	AutoConsolidatedMonitors bool `json:"auto_consolidated_monitors,omitempty"`
+	AutoConsolidatedMonitors *bool `json:"auto_consolidated_monitors,omitempty"`
 	// Comment for the DTC LBDN; maximum 256 characters.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the DTC LBDN is disabled or not. When this is set to
 	// False, the fixed address is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -2261,7 +2261,7 @@ type DtcLbdn struct {
 	// The list of resource record types supported by LBDN.
 	Types []string `json:"types,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (DtcLbdn) ObjectType() string {
@@ -2347,7 +2347,7 @@ type DtcMonitorHttp struct {
 	ContentExtractValue string `json:"content_extract_value,omitempty"`
 	// Determines whether the Server Name Indication (SNI) for HTTPS monitor is
 	// enabled.
-	EnableSni bool `json:"enable_sni,omitempty"`
+	EnableSni *bool `json:"enable_sni,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -2370,12 +2370,12 @@ type DtcMonitorHttp struct {
 	// alive after it was dead.
 	RetryUp uint32 `json:"retry_up,omitempty"`
 	// The connection security status.
-	Secure bool `json:"secure,omitempty"`
+	Secure *bool `json:"secure,omitempty"`
 	// The timeout for TCP health check in seconds.
 	Timeout uint32 `json:"timeout,omitempty"`
 	// Determines whether the validation of the remote server's certificate is
 	// enabled.
-	ValidateCert bool `json:"validate_cert,omitempty"`
+	ValidateCert *bool `json:"validate_cert,omitempty"`
 }
 
 func (DtcMonitorHttp) ObjectType() string {
@@ -2506,7 +2506,7 @@ type DtcMonitorSip struct {
 	Transport string `json:"transport,omitempty"`
 	// Determines whether the validation of the remote server's certificate is
 	// enabled.
-	ValidateCert bool `json:"validate_cert,omitempty"`
+	ValidateCert *bool `json:"validate_cert,omitempty"`
 }
 
 func (DtcMonitorSip) ObjectType() string {
@@ -2656,7 +2656,7 @@ type DtcPool struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Flag for enabling auto managing DTC Consolidated Monitors in DTC Pool.
-	AutoConsolidatedMonitors bool `json:"auto_consolidated_monitors,omitempty"`
+	AutoConsolidatedMonitors *bool `json:"auto_consolidated_monitors,omitempty"`
 	// A resource in the pool is available if ANY, at least QUORUM, or ALL monitors
 	// for the pool say that it is up.
 	Availability string `json:"availability,omitempty"`
@@ -2667,7 +2667,7 @@ type DtcPool struct {
 	ConsolidatedMonitors []*DtcPoolConsolidatedMonitorHealth `json:"consolidated_monitors,omitempty"`
 	// Determines whether the DTC Pool is disabled or not. When this is set to
 	// False, the fixed address is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -2703,7 +2703,7 @@ type DtcPool struct {
 	// (cached). Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (DtcPool) ObjectType() string {
@@ -2730,7 +2730,7 @@ type DtcRecordA struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the DTC Server object with which the DTC record is associated.
 	DtcServer string `json:"dtc_server,omitempty"`
 	// The IPv4 Address of the domain name.
@@ -2738,7 +2738,7 @@ type DtcRecordA struct {
 	// The Time to Live (TTL) value.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (DtcRecordA) ObjectType() string {
@@ -2765,7 +2765,7 @@ type DtcRecordAaaa struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the DTC Server object with which the DTC record is associated.
 	DtcServer string `json:"dtc_server,omitempty"`
 	// The IPv6 Address of the domain name.
@@ -2773,7 +2773,7 @@ type DtcRecordAaaa struct {
 	// The Time to Live (TTL) value.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (DtcRecordAaaa) ObjectType() string {
@@ -2802,7 +2802,7 @@ type DtcRecordCname struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The canonical name as server by DNS protocol.
 	DnsCanonical string `json:"dns_canonical,omitempty"`
 	// The name of the DTC Server object with which the DTC record is associated.
@@ -2810,7 +2810,7 @@ type DtcRecordCname struct {
 	// The Time to Live (TTL) value.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (DtcRecordCname) ObjectType() string {
@@ -2836,7 +2836,7 @@ type DtcRecordNaptr struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the DTC Server object with which the DTC record is associated.
 	DtcServer string `json:"dtc_server,omitempty"`
 	// The flags used to control the interpretation of the fields for an NAPTR
@@ -2867,7 +2867,7 @@ type DtcRecordNaptr struct {
 	// The Time to Live (TTL) value.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (DtcRecordNaptr) ObjectType() string {
@@ -2891,7 +2891,7 @@ type DtcRecordSrv struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the DTC Server object with which the DTC record is associated.
 	DtcServer string `json:"dtc_server,omitempty"`
 	// The name for an SRV record in unicode format.
@@ -2908,7 +2908,7 @@ type DtcRecordSrv struct {
 	// The Time to Live (TTL) value.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The weight of the SRV record. Valid values are from 0 to 65535 (inclusive),
 	// in 32-bit unsigned integer format.
 	Weight uint32 `json:"weight,omitempty"`
@@ -2933,12 +2933,12 @@ type DtcServer struct {
 	// Enabling this option will auto-create a single read-only A/AAAA/CNAME record
 	// corresponding to the configured hostname and update it if the hostname
 	// changes.
-	AutoCreateHostRecord bool `json:"auto_create_host_record,omitempty"`
+	AutoCreateHostRecord *bool `json:"auto_create_host_record,omitempty"`
 	// Comment for the DTC Server; maximum 256 characters.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the DTC Server is disabled or not. When this is set to
 	// False, the fixed address is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -2953,7 +2953,7 @@ type DtcServer struct {
 	// The hostname for Server Name Indication (SNI) in FQDN format.
 	SniHostname string `json:"sni_hostname,omitempty"`
 	// Use flag for: sni_hostname
-	UseSniHostname bool `json:"use_sni_hostname,omitempty"`
+	UseSniHostname *bool `json:"use_sni_hostname,omitempty"`
 }
 
 func (DtcServer) ObjectType() string {
@@ -3078,7 +3078,7 @@ type DxlEndpoint struct {
 	// The comment of a DXL endpoint.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a DXL endpoint is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -3241,10 +3241,10 @@ type Filtermac struct {
 	// up to 4294967295 secs. The minimum value is 60 secs (1 min).
 	DefaultMacAddressExpiration uint32 `json:"default_mac_address_expiration,omitempty"`
 	// Determines if the DHCP Fingerprint object is disabled or not.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The flag to enforce MAC address expiration of the DHCP MAC Address Filter
 	// object.
-	EnforceExpirationTimes bool `json:"enforce_expiration_times,omitempty"`
+	EnforceExpirationTimes *bool `json:"enforce_expiration_times,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -3254,7 +3254,7 @@ type Filtermac struct {
 	// The name of a DHCP MAC Filter object.
 	Name string `json:"name,omitempty"`
 	// Determines if DHCP MAC Filter never expires or automatically expires.
-	NeverExpires bool `json:"never_expires,omitempty"`
+	NeverExpires *bool `json:"never_expires,omitempty"`
 	// An array of DHCP option dhcpoption structs that lists the DHCP options
 	// associated with the object.
 	Options []*Dhcpoption `json:"options,omitempty"`
@@ -3320,7 +3320,7 @@ type Filteroption struct {
 	// Determines if apply as class is enabled or not. If this flag is set to
 	// "true" the filter is treated as global DHCP class, e.g it is written to
 	// dhcpd config file even if it is not present in any DHCP range.
-	ApplyAsClass bool `json:"apply_as_class,omitempty"`
+	ApplyAsClass *bool `json:"apply_as_class,omitempty"`
 	// A name of boot file of a DHCP filter option object.
 	Bootfile string `json:"bootfile,omitempty"`
 	// Determines the boot server of a DHCP filter option object. You can specify
@@ -3397,13 +3397,13 @@ type Filterrelayagent struct {
 	IsCircuitId string `json:"is_circuit_id,omitempty"`
 	// Determines if the substring of circuit ID, instead of the full circuit ID,
 	// is matched.
-	IsCircuitIdSubstring bool `json:"is_circuit_id_substring,omitempty"`
+	IsCircuitIdSubstring *bool `json:"is_circuit_id_substring,omitempty"`
 	// The remote ID matching rule of a DHCP relay agent filter object. The
 	// remote_id value takes effect only if the value is Matches_Value.
 	IsRemoteId string `json:"is_remote_id,omitempty"`
 	// Determines if the substring of remote ID, instead of the full remote ID, is
 	// matched.
-	IsRemoteIdSubstring bool `json:"is_remote_id_substring,omitempty"`
+	IsRemoteIdSubstring *bool `json:"is_remote_id_substring,omitempty"`
 	// The name of a DHCP relay agent filter object.
 	Name string `json:"name,omitempty"`
 	// The remote ID name attribute of a relay agent filter object. This filter
@@ -3441,7 +3441,7 @@ type Fingerprint struct {
 	// A class of DHCP Fingerprint object; maximum 256 characters.
 	DeviceClass string `json:"device_class,omitempty"`
 	// Determines if the DHCP Fingerprint object is disabled or not.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -3482,10 +3482,10 @@ type Ipv4FixedAddress struct {
 	AgentRemoteId string `json:"agent_remote_id,omitempty"`
 	// This field controls whether the credential is used for both the Telnet and
 	// SSH credentials. If set to False, the credential is used only for SSH.
-	AllowTelnet bool `json:"allow_telnet,omitempty"`
+	AllowTelnet *bool `json:"allow_telnet,omitempty"`
 	// This field controls whether only the DHCP server is allowed to update DNS,
 	// regardless of the DHCP client requests.
-	AlwaysUpdateDns bool `json:"always_update_dns,omitempty"`
+	AlwaysUpdateDns *bool `json:"always_update_dns,omitempty"`
 	// The bootfile name for the fixed address. You can configure the DHCP server
 	// to support clients that use the boot file name option in their DHCPREQUEST
 	// messages.
@@ -3498,7 +3498,7 @@ type Ipv4FixedAddress struct {
 	CliCredentials []*DiscoveryClicredential `json:"cli_credentials,omitempty"`
 	// This field controls whether there is a prepend for the
 	// dhcp-client-identifier of a fixed address.
-	ClientIdentifierPrependZero bool `json:"client_identifier_prepend_zero,omitempty"`
+	ClientIdentifierPrependZero *bool `json:"client_identifier_prepend_zero,omitempty"`
 	// Structure containing all cloud API related information for this object.
 	CloudInfo *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	// Comment for the fixed address; maximum 256 characters.
@@ -3510,7 +3510,7 @@ type Ipv4FixedAddress struct {
 	DdnsHostname string `json:"ddns_hostname,omitempty"`
 	// If set to true, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The description of the device.
 	DeviceDescription string `json:"device_description,omitempty"`
 	// The location of the device.
@@ -3523,10 +3523,10 @@ type Ipv4FixedAddress struct {
 	DhcpClientIdentifier string `json:"dhcp_client_identifier,omitempty"`
 	// Determines whether a fixed address is disabled or not. When this is set to
 	// False, the fixed address is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines if the discovery for this fixed address is disabled or not. False
 	// means that the discovery is enabled.
-	DisableDiscovery bool `json:"disable_discovery,omitempty"`
+	DisableDiscovery *bool `json:"disable_discovery,omitempty"`
 	// The discovery status of this fixed address.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovered data for this fixed address.
@@ -3534,20 +3534,20 @@ type Ipv4FixedAddress struct {
 	// The dynamic DNS updates flag of a DHCP Fixed Address object. If set to True,
 	// the DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if the discovery for the fixed address should be immediately
 	// enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// The IPv4 Address of the fixed address.
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
 	// This flag reflects whether the MAC address for this fixed address is
@@ -3601,7 +3601,7 @@ type Ipv4FixedAddress struct {
 	ReservedInterface string `json:"reserved_interface,omitempty"`
 	// Restarts the member service. The restart_if_needed flag can trigger a
 	// restart on DHCP services only when it is enabled on CP member.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The SNMPv3 credential for this fixed address.
 	Snmp3Credential *DiscoverySnmp3credential `json:"snmp3_credential,omitempty"`
 	// The SNMPv1 or SNMPv2 credential for this fixed address.
@@ -3610,33 +3610,33 @@ type Ipv4FixedAddress struct {
 	// values specified in the named template.
 	Template string `json:"template,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// If set to true, the CLI credential will override member-level settings.
-	UseCliCredentials bool `json:"use_cli_credentials,omitempty"`
+	UseCliCredentials *bool `json:"use_cli_credentials,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: ms_options
-	UseMsOptions bool `json:"use_ms_options,omitempty"`
+	UseMsOptions *bool `json:"use_ms_options,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Determines if the SNMPv3 credential should be used for the fixed address.
-	UseSnmp3Credential bool `json:"use_snmp3_credential,omitempty"`
+	UseSnmp3Credential *bool `json:"use_snmp3_credential,omitempty"`
 	// If set to true, the SNMP credential will override member-level settings.
-	UseSnmpCredential bool `json:"use_snmp_credential,omitempty"`
+	UseSnmpCredential *bool `json:"use_snmp_credential,omitempty"`
 }
 
 func (Ipv4FixedAddress) ObjectType() string {
@@ -3675,20 +3675,20 @@ type Fixedaddresstemplate struct {
 	// The DDNS host name for this fixed address.
 	DdnsHostname string `json:"ddns_hostname,omitempty"`
 	// Determines if BOOTP settings are disabled and BOOTP requests will be denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// Determines if the DHCP server sends DDNS updates to DNS servers in the same
 	// Grid, and to external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// This field contains the logic filters to be applied on this fixed address.
 	// This list corresponds to the match rules that are written to the dhcpd
 	// configuration file.
@@ -3715,25 +3715,25 @@ type Fixedaddresstemplate struct {
 	// the update is not cached.
 	PxeLeaseTime uint32 `json:"pxe_lease_time,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 }
 
 func (Fixedaddresstemplate) ObjectType() string {
@@ -3790,7 +3790,7 @@ type Grid struct {
 	// Determines the audit log format.
 	AuditLogFormat string `json:"audit_log_format,omitempty"`
 	// If set to True, audit log messages are also copied to the syslog.
-	AuditToSyslogEnable bool `json:"audit_to_syslog_enable,omitempty"`
+	AuditToSyslogEnable *bool `json:"audit_to_syslog_enable,omitempty"`
 	// The grid level settings for automated traffic capture.
 	AutomatedTrafficCaptureSetting *SettingAutomatedtrafficcapture `json:"automated_traffic_capture_setting,omitempty"`
 	// The Grid consent banner settings.
@@ -3801,7 +3801,7 @@ type Grid struct {
 	CspGridSetting *GridCspgridsetting `json:"csp_grid_setting,omitempty"`
 	// If set to True, the managed Grid will not send snapshots to the Multi-Grid
 	// Master.
-	DenyMgmSnapshots bool `json:"deny_mgm_snapshots,omitempty"`
+	DenyMgmSnapshots *bool `json:"deny_mgm_snapshots,omitempty"`
 	// The default actions for extensbile attributes that exist on descendants.
 	DescendantsAction *ExtensibleattributedefDescendants `json:"descendants_action,omitempty"`
 	// The DNS resolver setting.
@@ -3812,32 +3812,32 @@ type Grid struct {
 	EmailSetting *SettingEmail `json:"email_setting,omitempty"`
 	// If set to True, GUI and API access are enabled on the LAN/VIP port and MGMT
 	// port (if configured).
-	EnableGuiApiForLanVip bool `json:"enable_gui_api_for_lan_vip,omitempty"`
+	EnableGuiApiForLanVip *bool `json:"enable_gui_api_for_lan_vip,omitempty"`
 	// Determines if the LOM functionality is enabled or not.
-	EnableLom bool `json:"enable_lom,omitempty"`
+	EnableLom *bool `json:"enable_lom,omitempty"`
 	// Determines redirections is enabled or not for members.
-	EnableMemberRedirect bool `json:"enable_member_redirect,omitempty"`
+	EnableMemberRedirect *bool `json:"enable_member_redirect,omitempty"`
 	// Determines if the Recycle Bin is enabled or not.
-	EnableRecycleBin bool `json:"enable_recycle_bin,omitempty"`
+	EnableRecycleBin *bool `json:"enable_recycle_bin,omitempty"`
 	// Determines if the RIR/SWIP support is enabled or not.
-	EnableRirSwip bool `json:"enable_rir_swip,omitempty"`
+	EnableRirSwip *bool `json:"enable_rir_swip,omitempty"`
 	// The list of external backup syslog servers.
 	ExternalSyslogBackupServers []*Extsyslogbackupserver `json:"external_syslog_backup_servers,omitempty"`
 	// If set to True, external syslog servers are enabled.
-	ExternalSyslogServerEnable bool `json:"external_syslog_server_enable,omitempty"`
+	ExternalSyslogServerEnable *bool `json:"external_syslog_server_enable,omitempty"`
 	// The Grid HTTP proxy server settings.
 	HttpProxyServerSetting *SettingHttpproxyserver `json:"http_proxy_server_setting,omitempty"`
 	// The Grid informational level banner settings.
 	InformationalBannerSetting *GridInformationalbannersetting `json:"informational_banner_setting,omitempty"`
 	// If set to True, graphical visualization of the Grid is enabled.
-	IsGridVisualizationVisible bool `json:"is_grid_visualization_visible,omitempty"`
+	IsGridVisualizationVisible *bool `json:"is_grid_visualization_visible,omitempty"`
 	// Security Setting for Account lockout.
 	LockoutSetting *GridLockoutsetting `json:"lockout_setting,omitempty"`
 	// The list of LOM users.
 	LomUsers []*Lomuser `json:"lom_users,omitempty"`
 	// Determines if strict delegate mode for the Grid managed by the Master Grid
 	// is enabled or not.
-	MgmStrictDelegateMode bool `json:"mgm_strict_delegate_mode,omitempty"`
+	MgmStrictDelegateMode *bool `json:"mgm_strict_delegate_mode,omitempty"`
 	// The settings for all Microsoft servers in the Grid.
 	MsSetting *SettingMsserver `json:"ms_setting,omitempty"`
 	// The grid name.
@@ -3948,7 +3948,7 @@ type GridCloudapi struct {
 	AllowedApiAdmins []*GridCloudapiUser `json:"allowed_api_admins,omitempty"`
 	// Determines whether the recycle bin for deleted cloud objects is enabled or
 	// not on the Grid Master.
-	EnableRecycleBin bool `json:"enable_recycle_bin,omitempty"`
+	EnableRecycleBin *bool `json:"enable_recycle_bin,omitempty"`
 	// Structure containing all the information related to Gateway configuration
 	// for the Grid Master
 	GatewayConfig *GridCloudapiGatewayConfig `json:"gateway_config,omitempty"`
@@ -4275,7 +4275,7 @@ type GridDhcpproperties struct {
 	Ref    string `json:"_ref,omitempty"`
 	// The Grid-level authority flag. This flag specifies whether a DHCP server is
 	// authoritative for a domain.
-	Authority bool `json:"authority,omitempty"`
+	Authority *bool `json:"authority,omitempty"`
 	// The name of a file that DHCP clients need to boot. Some DHCP clients use
 	// BOOTP (bootstrap protocol) or include the boot file name option in their
 	// DHCPREQUEST messages.
@@ -4284,31 +4284,31 @@ type GridDhcpproperties struct {
 	Bootserver string `json:"bootserver,omitempty"`
 	// The Grid-level capture hostname flag. Set this flag to capture the hostname
 	// and lease time when assigning a fixed address.
-	CaptureHostname bool `json:"capture_hostname,omitempty"`
+	CaptureHostname *bool `json:"capture_hostname,omitempty"`
 	// The member DDNS domain name value.
 	DdnsDomainname string `json:"ddns_domainname,omitempty"`
 	// Determines if the ability of a DHCP server to generate a host name and
 	// update DNS with this host name when it receives a DHCP REQUEST message that
 	// does not include a host name is enabled or not.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// Determines the retry interval when the DHCP server makes repeated attempts
 	// to send DDNS updates to a DNS server.
 	DdnsRetryInterval uint32 `json:"ddns_retry_interval,omitempty"`
 	// Determines that only the DHCP server is allowed to update DNS, regardless of
 	// the requests from the DHCP clients.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DDNS TTL (Dynamic DNS Time To Live) value specifies the number of
 	// seconds an IP address for the name is cached.
 	DdnsTtl uint32 `json:"ddns_ttl,omitempty"`
 	// Determines if the Grid DHCP server's ability to update the A and PTR records
 	// with a fixed address is enabled or not.
-	DdnsUpdateFixedAddresses bool `json:"ddns_update_fixed_addresses,omitempty"`
+	DdnsUpdateFixedAddresses *bool `json:"ddns_update_fixed_addresses,omitempty"`
 	// Determines if support for option 81 is enabled or not.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// Determines if deny BOOTP is enabled or not.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// If set to True, NAC filters will be disabled on the Infoblox Grid.
-	DisableAllNacFilters bool `json:"disable_all_nac_filters,omitempty"`
+	DisableAllNacFilters *bool `json:"disable_all_nac_filters,omitempty"`
 	// The update style for dynamic DNS updates.
 	DnsUpdateStyle string `json:"dns_update_style,omitempty"`
 	// The Grid-level email_list value. Specify an e-mail address to which you want
@@ -4318,31 +4318,31 @@ type GridDhcpproperties struct {
 	EmailList []string `json:"email_list,omitempty"`
 	// Determines if the member DHCP server's ability to send DDNS updates is
 	// enabled or not.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Represents the watermarks above or below which address usage in a network is
 	// unexpected and might warrant your attention.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines if e-mail warnings are enabled or disabled. When DHCP threshold
 	// is enabled and DHCP address usage crosses a watermark threshold, the
 	// appliance sends an e-mail notification to an administrator.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Determines if the fingerprint feature is enabled or not. If you enable this
 	// feature, the server will match a fingerprint for incoming lease requests.
-	EnableFingerprint bool `json:"enable_fingerprint,omitempty"`
+	EnableFingerprint *bool `json:"enable_fingerprint,omitempty"`
 	// Determines whether all appliances are enabled to receive GSS-TSIG
 	// authenticated updates from DHCP clients.
-	EnableGssTsig bool `json:"enable_gss_tsig,omitempty"`
+	EnableGssTsig *bool `json:"enable_gss_tsig,omitempty"`
 	// Determines if the Grid-level host name rewrite feature is enabled or not.
-	EnableHostnameRewrite bool `json:"enable_hostname_rewrite,omitempty"`
+	EnableHostnameRewrite *bool `json:"enable_hostname_rewrite,omitempty"`
 	// Determines if lease query is allowed or not.
-	EnableLeasequery bool `json:"enable_leasequery,omitempty"`
+	EnableLeasequery *bool `json:"enable_leasequery,omitempty"`
 	// Determines if DHCP servers in a Grid support roaming hosts or not.
-	EnableRoamingHosts bool `json:"enable_roaming_hosts,omitempty"`
+	EnableRoamingHosts *bool `json:"enable_roaming_hosts,omitempty"`
 	// Determined if the SNMP warnings on Grid-level are enabled or not. When DHCP
 	// threshold is enabled and DHCP address usage crosses a watermark threshold,
 	// the appliance sends an SNMP trap to the trap receiver that you defined you
 	// defined at the Grid member level.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// The format option for Option 82 logging.
 	FormatLogOption82 string `json:"format_log_option_82,omitempty"`
 	// Determines the Grid that serves DHCP. This specifies a group of Infoblox
@@ -4369,7 +4369,7 @@ type GridDhcpproperties struct {
 	// Determines if the ignore DHCP option list request flag of a Grid DHCP is
 	// enabled or not. If this flag is set to true all available DHCP options will
 	// be returned to the client.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Indicates whether the appliance will ignore DHCP client IDs or MAC
 	// addresses. Valid values are "NONE", "CLIENT", or "MACADDR". The default is
 	// "NONE".
@@ -4378,18 +4378,18 @@ type GridDhcpproperties struct {
 	IgnoreMacAddresses []string `json:"ignore_mac_addresses,omitempty"`
 	// Determines if the fixed address configuration takes effect immediately
 	// without DHCP service restart or not.
-	ImmediateFaConfiguration bool `json:"immediate_fa_configuration,omitempty"`
+	ImmediateFaConfiguration *bool `json:"immediate_fa_configuration,omitempty"`
 	// Determines if the IPv6 host name and lease time is captured or not while
 	// assigning a fixed address.
-	Ipv6CaptureHostname bool `json:"ipv6_capture_hostname,omitempty"`
+	Ipv6CaptureHostname *bool `json:"ipv6_capture_hostname,omitempty"`
 	// The Grid-level DDNS domain name value.
 	Ipv6DdnsDomainname string `json:"ipv6_ddns_domainname,omitempty"`
 	// Controls whether the FQDN option sent by the client is to be used, or if the
 	// server can automatically generate the FQDN.
-	Ipv6DdnsEnableOptionFqdn bool `json:"ipv6_ddns_enable_option_fqdn,omitempty"`
+	Ipv6DdnsEnableOptionFqdn *bool `json:"ipv6_ddns_enable_option_fqdn,omitempty"`
 	// Determines if the server always updates DNS or updates only if requested by
 	// the client.
-	Ipv6DdnsServerAlwaysUpdates bool `json:"ipv6_ddns_server_always_updates,omitempty"`
+	Ipv6DdnsServerAlwaysUpdates *bool `json:"ipv6_ddns_server_always_updates,omitempty"`
 	// The Grid-level IPv6 DDNS TTL value.
 	Ipv6DdnsTtl uint32 `json:"ipv6_ddns_ttl,omitempty"`
 	// The Grid-level IPv6 default prefix.
@@ -4402,17 +4402,17 @@ type GridDhcpproperties struct {
 	// format.
 	Ipv6DomainNameServers []string `json:"ipv6_domain_name_servers,omitempty"`
 	// Determines if sending DDNS updates by the DHCPv6 server is enabled or not.
-	Ipv6EnableDdns bool `json:"ipv6_enable_ddns,omitempty"`
+	Ipv6EnableDdns *bool `json:"ipv6_enable_ddns,omitempty"`
 	// Determines whether the all appliances are enabled to receive GSS-TSIG
 	// authenticated updates from DHCPv6 clients.
-	Ipv6EnableGssTsig bool `json:"ipv6_enable_gss_tsig,omitempty"`
+	Ipv6EnableGssTsig *bool `json:"ipv6_enable_gss_tsig,omitempty"`
 	// Indicates whether DHCPv6 lease scavenging is enabled or disabled.
-	Ipv6EnableLeaseScavenging bool `json:"ipv6_enable_lease_scavenging,omitempty"`
+	Ipv6EnableLeaseScavenging *bool `json:"ipv6_enable_lease_scavenging,omitempty"`
 	// Determines if the DHCPv6 server retries failed dynamic DNS updates or not.
-	Ipv6EnableRetryUpdates bool `json:"ipv6_enable_retry_updates,omitempty"`
+	Ipv6EnableRetryUpdates *bool `json:"ipv6_enable_retry_updates,omitempty"`
 	// Determines if the server generates the hostname if it is not sent by the
 	// client.
-	Ipv6GenerateHostname bool `json:"ipv6_generate_hostname,omitempty"`
+	Ipv6GenerateHostname *bool `json:"ipv6_generate_hostname,omitempty"`
 	// The list of GSS-TSIG keys for a Grid DHCPv6 object.
 	Ipv6GssTsigKeys []*Kerberoskey `json:"ipv6_gss_tsig_keys,omitempty"`
 	// The IPv6 address or FQDN of the Kerberos server for DHCPv6 GSS-TSIG
@@ -4433,9 +4433,9 @@ type GridDhcpproperties struct {
 	// feature is enabled, leases are kept in the Recycle Bin until one week after
 	// expiration. When the feature is disabled, the leases are irrecoverably
 	// deleted.
-	Ipv6RecycleLeases bool `json:"ipv6_recycle_leases,omitempty"`
+	Ipv6RecycleLeases *bool `json:"ipv6_recycle_leases,omitempty"`
 	// Enable binding for expired DHCPv6 leases.
-	Ipv6RememberExpiredClientAssociation bool `json:"ipv6_remember_expired_client_association,omitempty"`
+	Ipv6RememberExpiredClientAssociation *bool `json:"ipv6_remember_expired_client_association,omitempty"`
 	// Determines the retry interval when the member DHCPv6 server makes repeated
 	// attempts to send DDNS updates to a DNS server.
 	Ipv6RetryUpdatesInterval uint32 `json:"ipv6_retry_updates_interval,omitempty"`
@@ -4444,7 +4444,7 @@ type GridDhcpproperties struct {
 	Ipv6TxtRecordHandling string `json:"ipv6_txt_record_handling,omitempty"`
 	// Controls whether the DHCPv6 server updates DNS when an IPv6 DHCP lease is
 	// renewed.
-	Ipv6UpdateDnsOnLeaseRenewal bool `json:"ipv6_update_dns_on_lease_renewal,omitempty"`
+	Ipv6UpdateDnsOnLeaseRenewal *bool `json:"ipv6_update_dns_on_lease_renewal,omitempty"`
 	// The IPv4 address or FQDN of the Kerberos server for DHCPv4 GSS-TSIG
 	// authentication.
 	KdcServer string `json:"kdc_server,omitempty"`
@@ -4465,7 +4465,7 @@ type GridDhcpproperties struct {
 	LeaseScavengeTime int `json:"lease_scavenge_time,omitempty"`
 	// This value specifies whether the Grid DHCP members log lease events is
 	// enabled or not.
-	LogLeaseEvents bool `json:"log_lease_events,omitempty"`
+	LogLeaseEvents *bool `json:"log_lease_events,omitempty"`
 	// This field contains the logic filters to be applied on the Infoblox Grid.
 	// This list corresponds to the match rules that are written to the dhcpd
 	// configuration file.
@@ -4515,12 +4515,12 @@ type GridDhcpproperties struct {
 	// Determines if the recycle leases feature is enabled or not. If you enabled
 	// this feature, and then delete a DHCP range, the appliance stores active
 	// leases from this range up to one week after the leases expires.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// The restart setting.
 	RestartSetting *GridServicerestart `json:"restart_setting,omitempty"`
 	// Indicates whether the DHCP server makes repeated attempts to send DDNS
 	// updates to a DNS server.
-	RetryDdnsUpdates bool `json:"retry_ddns_updates,omitempty"`
+	RetryDdnsUpdates *bool `json:"retry_ddns_updates,omitempty"`
 	// The syslog facility is the location on the syslog server to which you want
 	// to sort the syslog messages.
 	SyslogFacility string `json:"syslog_facility,omitempty"`
@@ -4528,7 +4528,7 @@ type GridDhcpproperties struct {
 	// should treat the TXT records when performing DNS updates.
 	TxtRecordHandling string `json:"txt_record_handling,omitempty"`
 	// Controls whether the DHCP server updates DNS when a DHCP lease is renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// The valid lifetime for the Grid members.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
 }
@@ -4558,17 +4558,17 @@ type GridDns struct {
 	Ref    string `json:"_ref,omitempty"`
 	// Add custom IP, MAC and DNS View name ENDS0 options to outgoing recursive
 	// queries.
-	AddClientIpMacOptions bool `json:"add_client_ip_mac_options,omitempty"`
+	AddClientIpMacOptions *bool `json:"add_client_ip_mac_options,omitempty"`
 	// Determines if DDNS bulk host is allowed or not.
 	AllowBulkhostDdns string `json:"allow_bulkhost_ddns,omitempty"`
 	// Determines whether GSS-TSIG zone update is enabled for all Grid members.
-	AllowGssTsigZoneUpdates bool `json:"allow_gss_tsig_zone_updates,omitempty"`
+	AllowGssTsigZoneUpdates *bool `json:"allow_gss_tsig_zone_updates,omitempty"`
 	// Determines if queries from the specified IPv4 or IPv6 addresses and networks
 	// are allowed or not. The appliance can also use Transaction Signature (TSIG)
 	// keys to authenticate the queries.
 	AllowQuery []*Addressac `json:"allow_query,omitempty"`
 	// Determines if the responses to recursive queries are enabled or not.
-	AllowRecursiveQuery bool `json:"allow_recursive_query,omitempty"`
+	AllowRecursiveQuery *bool `json:"allow_recursive_query,omitempty"`
 	// Determines if zone transfers from specified IPv4 or IPv6 addresses and
 	// networks or transfers from hosts authenticated by Transaction signature
 	// (TSIG) key are allowed or not.
@@ -4578,7 +4578,7 @@ type GridDns struct {
 	AllowUpdate []*Addressac `json:"allow_update,omitempty"`
 	// Determines if the anonymization of captured DNS responses is enabled or
 	// disabled.
-	AnonymizeResponseLogging bool `json:"anonymize_response_logging,omitempty"`
+	AnonymizeResponseLogging *bool `json:"anonymize_response_logging,omitempty"`
 	// Mitigation settings for DNS attacks.
 	AttackMitigation *GridAttackmitigation `json:"attack_mitigation,omitempty"`
 	// The auto blackhole settings.
@@ -4597,7 +4597,7 @@ type GridDns struct {
 	// rule that is specified by the blacklist ruleset.
 	BlacklistAction string `json:"blacklist_action,omitempty"`
 	// Determines if blacklist redirection queries are logged or not.
-	BlacklistLogQuery bool `json:"blacklist_log_query,omitempty"`
+	BlacklistLogQuery *bool `json:"blacklist_log_query,omitempty"`
 	// The IP addresses the appliance includes in the response it sends in place of
 	// a blacklisted IP address.
 	BlacklistRedirectAddresses []string `json:"blacklist_redirect_addresses,omitempty"`
@@ -4613,10 +4613,10 @@ type GridDns struct {
 	BulkHostNameTemplates []*Bulkhostnametemplate `json:"bulk_host_name_templates,omitempty"`
 	// Determines if the capture of DNS queries for all domains is enabled or
 	// disabled.
-	CaptureDnsQueriesOnAllDomains bool `json:"capture_dns_queries_on_all_domains,omitempty"`
+	CaptureDnsQueriesOnAllDomains *bool `json:"capture_dns_queries_on_all_domains,omitempty"`
 	// Determines whether the application of BIND check-names for zone transfers
 	// and DDNS updates are enabled.
-	CheckNamesForDdnsAndZoneTransfer bool `json:"check_names_for_ddns_and_zone_transfer,omitempty"`
+	CheckNamesForDdnsAndZoneTransfer *bool `json:"check_names_for_ddns_and_zone_transfer,omitempty"`
 	// The list of zone domain names that are allowed or forbidden for EDNS client
 	// subnet (ECS) recursion.
 	ClientSubnetDomains []*Clientsubnetdomain `json:"client_subnet_domains,omitempty"`
@@ -4628,35 +4628,35 @@ type GridDns struct {
 	ClientSubnetIpv6PrefixLength uint32 `json:"client_subnet_ipv6_prefix_length,omitempty"`
 	// Copy custom IP, MAC and DNS View name ENDS0 options from incoming to
 	// outgoing recursive queries.
-	CopyClientIpMacOptions bool `json:"copy_client_ip_mac_options,omitempty"`
+	CopyClientIpMacOptions *bool `json:"copy_client_ip_mac_options,omitempty"`
 	// The allowed IPs, from the zone transfer list, added to the also-notify
 	// statement in the named.conf file.
-	CopyXferToNotify bool `json:"copy_xfer_to_notify,omitempty"`
+	CopyXferToNotify *bool `json:"copy_xfer_to_notify,omitempty"`
 	// The list of customized root nameserver(s). You can use Internet root name
 	// servers or specify host names and IP addresses of custom root name servers.
 	CustomRootNameServers []NameServer `json:"custom_root_name_servers,omitempty"`
 	// Defines whether creation timestamp of RR should be updated ' when DDNS
 	// update happens even if there is no change to ' the RR.
-	DdnsForceCreationTimestampUpdate bool `json:"ddns_force_creation_timestamp_update,omitempty"`
+	DdnsForceCreationTimestampUpdate *bool `json:"ddns_force_creation_timestamp_update,omitempty"`
 	// The DDNS Principal cluster group name.
 	DdnsPrincipalGroup string `json:"ddns_principal_group,omitempty"`
 	// Determines if the DDNS principal track is enabled or disabled.
-	DdnsPrincipalTracking bool `json:"ddns_principal_tracking,omitempty"`
+	DdnsPrincipalTracking *bool `json:"ddns_principal_tracking,omitempty"`
 	// Determines if an option to restrict DDNS update request based on FQDN
 	// patterns is enabled or disabled.
-	DdnsRestrictPatterns bool `json:"ddns_restrict_patterns,omitempty"`
+	DdnsRestrictPatterns *bool `json:"ddns_restrict_patterns,omitempty"`
 	// The unordered list of restriction patterns for an option of to restrict DDNS
 	// updates based on FQDN patterns.
 	DdnsRestrictPatternsList []string `json:"ddns_restrict_patterns_list,omitempty"`
 	// Determines if an option to restrict DDNS update request to protected
 	// resource records is enabled or disabled.
-	DdnsRestrictProtected bool `json:"ddns_restrict_protected,omitempty"`
+	DdnsRestrictProtected *bool `json:"ddns_restrict_protected,omitempty"`
 	// Determines if DDNS update request for principal other than target resource
 	// record's principal is restricted.
-	DdnsRestrictSecure bool `json:"ddns_restrict_secure,omitempty"`
+	DdnsRestrictSecure *bool `json:"ddns_restrict_secure,omitempty"`
 	// Determines if an option to restrict DDNS update request to resource records
 	// which are marked as 'STATIC' is enabled or disabled.
-	DdnsRestrictStatic bool `json:"ddns_restrict_static,omitempty"`
+	DdnsRestrictStatic *bool `json:"ddns_restrict_static,omitempty"`
 	// Default bulk host name of a Grid DNS.
 	DefaultBulkHostNameTemplate string `json:"default_bulk_host_name_template,omitempty"`
 	// The default TTL value of a Grid DNS object. This interval tells the
@@ -4664,7 +4664,7 @@ type GridDns struct {
 	DefaultTtl uint32 `json:"default_ttl,omitempty"`
 	// Determines if the EDNS0 support for queries that require recursive
 	// resolution on Grid members is enabled or not.
-	DisableEdns bool `json:"disable_edns,omitempty"`
+	DisableEdns *bool `json:"disable_edns,omitempty"`
 	// The list of DNS64 synthesis groups associated with this Grid DNS object.
 	Dns64Groups []string `json:"dns64_groups,omitempty"`
 	// The minimum TTL value, in seconds, that a DNS record must have in order for
@@ -4673,13 +4673,13 @@ type GridDns struct {
 	DnsCacheAccelerationTtl uint32 `json:"dns_cache_acceleration_ttl,omitempty"`
 	// Determines if the anycast failure (BFD session down) is enabled on member
 	// failure or not.
-	DnsHealthCheckAnycastControl bool `json:"dns_health_check_anycast_control,omitempty"`
+	DnsHealthCheckAnycastControl *bool `json:"dns_health_check_anycast_control,omitempty"`
 	// The list of domain names for the DNS health check.
 	DnsHealthCheckDomainList []string `json:"dns_health_check_domain_list,omitempty"`
 	// The time interval (in seconds) for DNS health check.
 	DnsHealthCheckInterval uint32 `json:"dns_health_check_interval,omitempty"`
 	// Determines if the recursive DNS health check is enabled or not.
-	DnsHealthCheckRecursionFlag bool `json:"dns_health_check_recursion_flag,omitempty"`
+	DnsHealthCheckRecursionFlag *bool `json:"dns_health_check_recursion_flag,omitempty"`
 	// The number of DNS health check retries.
 	DnsHealthCheckRetries uint32 `json:"dns_health_check_retries,omitempty"`
 	// The DNS health check timeout interval (in seconds).
@@ -4688,28 +4688,28 @@ type GridDns struct {
 	DnsQueryCaptureFileTimeLimit uint32 `json:"dns_query_capture_file_time_limit,omitempty"`
 	// Determines if the blacklist rules for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecBlacklistEnabled bool `json:"dnssec_blacklist_enabled,omitempty"`
+	DnssecBlacklistEnabled *bool `json:"dnssec_blacklist_enabled,omitempty"`
 	// Determines if the DNS64 groups for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecDns64Enabled bool `json:"dnssec_dns64_enabled,omitempty"`
+	DnssecDns64Enabled *bool `json:"dnssec_dns64_enabled,omitempty"`
 	// Determines if the DNS security extension is enabled or not.
-	DnssecEnabled bool `json:"dnssec_enabled,omitempty"`
+	DnssecEnabled *bool `json:"dnssec_enabled,omitempty"`
 	// Determines when the DNS member accepts expired signatures.
-	DnssecExpiredSignaturesEnabled bool `json:"dnssec_expired_signatures_enabled,omitempty"`
+	DnssecExpiredSignaturesEnabled *bool `json:"dnssec_expired_signatures_enabled,omitempty"`
 	// This structure contains the DNSSEC key parameters for this zone.
 	DnssecKeyParams *Dnsseckeyparams `json:"dnssec_key_params,omitempty"`
 	// A list of zones for which the server does not perform DNSSEC validation.
 	DnssecNegativeTrustAnchors []string `json:"dnssec_negative_trust_anchors,omitempty"`
 	// Determines if the NXDOMAIN rules for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecNxdomainEnabled bool `json:"dnssec_nxdomain_enabled,omitempty"`
+	DnssecNxdomainEnabled *bool `json:"dnssec_nxdomain_enabled,omitempty"`
 	// Determines if the RPZ policies for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecRpzEnabled bool `json:"dnssec_rpz_enabled,omitempty"`
+	DnssecRpzEnabled *bool `json:"dnssec_rpz_enabled,omitempty"`
 	// The list of trusted keys for the DNSSEC feature.
 	DnssecTrustedKeys []*Dnssectrustedkey `json:"dnssec_trusted_keys,omitempty"`
 	// Determines if the DNS security validation is enabled or not.
-	DnssecValidationEnabled bool `json:"dnssec_validation_enabled,omitempty"`
+	DnssecValidationEnabled *bool `json:"dnssec_validation_enabled,omitempty"`
 	// The DNSTAP settings.
 	DnstapSetting *Dnstapsetting `json:"dnstap_setting,omitempty"`
 	// The list of domains for DNS query capture.
@@ -4721,7 +4721,7 @@ type GridDns struct {
 	DtcDnssecMode string `json:"dtc_dnssec_mode,omitempty"`
 	// Determines whether to prefer the client address from the edns-client-subnet
 	// option for DTC or not.
-	DtcEdnsPreferClientSubnet bool `json:"dtc_edns_prefer_client_subnet,omitempty"`
+	DtcEdnsPreferClientSubnet *bool `json:"dtc_edns_prefer_client_subnet,omitempty"`
 	// The scheduled backup configuration.
 	DtcScheduledBackup *Scheduledbackup `json:"dtc_scheduled_backup,omitempty"`
 	// The DTC topology extensible attribute definition list. When configuring a
@@ -4739,53 +4739,53 @@ type GridDns struct {
 	// The email address of a Grid DNS object.
 	Email string `json:"email,omitempty"`
 	// Determines if the blocking of DNS queries is enabled or not.
-	EnableBlackhole bool `json:"enable_blackhole,omitempty"`
+	EnableBlackhole *bool `json:"enable_blackhole,omitempty"`
 	// Determines if a blacklist is enabled or not.
-	EnableBlacklist bool `json:"enable_blacklist,omitempty"`
+	EnableBlacklist *bool `json:"enable_blacklist,omitempty"`
 	// Determines if the capture of DNS queries is enabled or disabled.
-	EnableCaptureDnsQueries bool `json:"enable_capture_dns_queries,omitempty"`
+	EnableCaptureDnsQueries *bool `json:"enable_capture_dns_queries,omitempty"`
 	// Determines if the capture of DNS responses is enabled or disabled.
-	EnableCaptureDnsResponses bool `json:"enable_capture_dns_responses,omitempty"`
+	EnableCaptureDnsResponses *bool `json:"enable_capture_dns_responses,omitempty"`
 	// Determines whether to enable forwarding EDNS client subnet options to
 	// upstream servers.
-	EnableClientSubnetForwarding bool `json:"enable_client_subnet_forwarding,omitempty"`
+	EnableClientSubnetForwarding *bool `json:"enable_client_subnet_forwarding,omitempty"`
 	// Determines whether to enable adding EDNS client subnet options in recursive
 	// resolution.
-	EnableClientSubnetRecursive bool `json:"enable_client_subnet_recursive,omitempty"`
+	EnableClientSubnetRecursive *bool `json:"enable_client_subnet_recursive,omitempty"`
 	// Determines if the ability to automatically remove associated PTR records
 	// while deleting A or AAAA records is enabled or not.
-	EnableDeleteAssociatedPtr bool `json:"enable_delete_associated_ptr,omitempty"`
+	EnableDeleteAssociatedPtr *bool `json:"enable_delete_associated_ptr,omitempty"`
 	// Determines if the DNS64 support is enabled or not.
-	EnableDns64 bool `json:"enable_dns64,omitempty"`
+	EnableDns64 *bool `json:"enable_dns64,omitempty"`
 	// Determines if the DNS health check is enabled or not.
-	EnableDnsHealthCheck bool `json:"enable_dns_health_check,omitempty"`
+	EnableDnsHealthCheck *bool `json:"enable_dns_health_check,omitempty"`
 	// Determines whether the query messages need to be forwarded to DNSTAP or not.
-	EnableDnstapQueries bool `json:"enable_dnstap_queries,omitempty"`
+	EnableDnstapQueries *bool `json:"enable_dnstap_queries,omitempty"`
 	// Determines whether the response messages need to be forwarded to DNSTAP or
 	// not.
-	EnableDnstapResponses bool `json:"enable_dnstap_responses,omitempty"`
+	EnableDnstapResponses *bool `json:"enable_dnstap_responses,omitempty"`
 	// Determines if excluding domain names from captured DNS queries and responses
 	// is enabled or disabled.
-	EnableExcludedDomainNames bool `json:"enable_excluded_domain_names,omitempty"`
+	EnableExcludedDomainNames *bool `json:"enable_excluded_domain_names,omitempty"`
 	// Determines if the fixed RRset order FQDN is enabled or not.
-	EnableFixedRrsetOrderFqdns bool `json:"enable_fixed_rrset_order_fqdns,omitempty"`
+	EnableFixedRrsetOrderFqdns *bool `json:"enable_fixed_rrset_order_fqdns,omitempty"`
 	// Determines whether Fault Tolerant Caching (FTC) is enabled.
-	EnableFtc bool `json:"enable_ftc,omitempty"`
+	EnableFtc *bool `json:"enable_ftc,omitempty"`
 	// Determines whether all appliances in the Grid are enabled to receive
 	// GSS-TSIG authenticated updates from DNS clients.
-	EnableGssTsig bool `json:"enable_gss_tsig,omitempty"`
+	EnableGssTsig *bool `json:"enable_gss_tsig,omitempty"`
 	// Determines if the host RRset order is enabled or not.
-	EnableHostRrsetOrder bool `json:"enable_host_rrset_order,omitempty"`
+	EnableHostRrsetOrder *bool `json:"enable_host_rrset_order,omitempty"`
 	// Determines whether Hardware Security Modules (HSMs) are enabled for key
 	// generation and signing. Note, that you must configure the HSM group with at
 	// least one enabled HSM.
-	EnableHsmSigning bool `json:"enable_hsm_signing,omitempty"`
+	EnableHsmSigning *bool `json:"enable_hsm_signing,omitempty"`
 	// Determines if the notify source port at the Grid Level is enabled or not.
-	EnableNotifySourcePort bool `json:"enable_notify_source_port,omitempty"`
+	EnableNotifySourcePort *bool `json:"enable_notify_source_port,omitempty"`
 	// Determines if the DNS query rewrite is enabled or not.
-	EnableQueryRewrite bool `json:"enable_query_rewrite,omitempty"`
+	EnableQueryRewrite *bool `json:"enable_query_rewrite,omitempty"`
 	// Determines if the query source port at the Grid Level is enabled or not.
-	EnableQuerySourcePort bool `json:"enable_query_source_port,omitempty"`
+	EnableQuerySourcePort *bool `json:"enable_query_source_port,omitempty"`
 	// The list of domains that are excluded from DNS query and response capture.
 	ExcludedDomainNames []string `json:"excluded_domain_names,omitempty"`
 	// The expiration time of a Grid DNS object. If the secondary DNS server fails
@@ -4808,10 +4808,10 @@ type GridDns struct {
 	// Determines if member sends queries to forwarders only. When the value is
 	// "true", the member sends queries to forwarders only, and not to other
 	// internal or Internet root servers.
-	ForwardOnly bool `json:"forward_only,omitempty"`
+	ForwardOnly *bool `json:"forward_only,omitempty"`
 	// Determines if secondary servers is allowed to forward updates to the DNS
 	// server or not.
-	ForwardUpdates bool `json:"forward_updates,omitempty"`
+	ForwardUpdates *bool `json:"forward_updates,omitempty"`
 	// The forwarders for the member. A forwarder is essentially a name server to
 	// which other name servers first send all of their off-site queries. The
 	// forwarder builds up a cache of information, avoiding the need for the other
@@ -4825,16 +4825,16 @@ type GridDns struct {
 	FtcExpiredRecordTtl uint32 `json:"ftc_expired_record_ttl,omitempty"`
 	// Flag for taking EA values from IPAM Hosts into consideration for the DTC
 	// topology EA database.
-	GenEadbFromHosts bool `json:"gen_eadb_from_hosts,omitempty"`
+	GenEadbFromHosts *bool `json:"gen_eadb_from_hosts,omitempty"`
 	// Flag for taking EA values from IPAM Network Containers into consideration
 	// for the DTC topology EA database.
-	GenEadbFromNetworkContainers bool `json:"gen_eadb_from_network_containers,omitempty"`
+	GenEadbFromNetworkContainers *bool `json:"gen_eadb_from_network_containers,omitempty"`
 	// Flag for taking EA values from IPAM Network into consideration for the DTC
 	// topology EA database.
-	GenEadbFromNetworks bool `json:"gen_eadb_from_networks,omitempty"`
+	GenEadbFromNetworks *bool `json:"gen_eadb_from_networks,omitempty"`
 	// Flag for taking EA values from IPAM Ranges into consideration for the DTC
 	// topology EA database.
-	GenEadbFromRanges bool `json:"gen_eadb_from_ranges,omitempty"`
+	GenEadbFromRanges *bool `json:"gen_eadb_from_ranges,omitempty"`
 	// The list of GSS-TSIG keys for a Grid DNS object.
 	GssTsigKeys []*Kerberoskey `json:"gss_tsig_keys,omitempty"`
 	// The number of seconds to cache lame delegations or lame servers.
@@ -4861,7 +4861,7 @@ type GridDns struct {
 	// Determines if Grid members that are authoritative secondary servers are
 	// allowed to send notification messages to external name servers, if the Grid
 	// member that is primary for a zone fails or loses connectivity.
-	MemberSecondaryNotify bool `json:"member_secondary_notify,omitempty"`
+	MemberSecondaryNotify *bool `json:"member_secondary_notify,omitempty"`
 	// The negative TTL value of a Grid DNS object. This interval tells the
 	// secondary how long data can be cached for "Does Not Respond" responses.
 	NegativeTtl uint32 `json:"negative_ttl,omitempty"`
@@ -4880,9 +4880,9 @@ type GridDns struct {
 	// more secondary DNS servers.
 	Nsgroups []string `json:"nsgroups,omitempty"`
 	// Determines if NXDOMAIN redirection queries are logged or not.
-	NxdomainLogQuery bool `json:"nxdomain_log_query,omitempty"`
+	NxdomainLogQuery *bool `json:"nxdomain_log_query,omitempty"`
 	// Determines if NXDOMAIN redirection is enabled or not.
-	NxdomainRedirect bool `json:"nxdomain_redirect,omitempty"`
+	NxdomainRedirect *bool `json:"nxdomain_redirect,omitempty"`
 	// The list of IPv4 NXDOMAIN redirection addresses.
 	NxdomainRedirectAddresses []string `json:"nxdomain_redirect_addresses,omitempty"`
 	// The list of IPv6 NXDOMAIN redirection addresses.
@@ -4894,7 +4894,7 @@ type GridDns struct {
 	// redirection.
 	NxdomainRulesets []string `json:"nxdomain_rulesets,omitempty"`
 	// Determines if the host RRset order on secondaries is preserved or not.
-	PreserveHostRrsetOrderOnSecondaries bool `json:"preserve_host_rrset_order_on_secondaries,omitempty"`
+	PreserveHostRrsetOrderOnSecondaries *bool `json:"preserve_host_rrset_order_on_secondaries,omitempty"`
 	// The list of record name policies.
 	ProtocolRecordNamePolicies []*Recordnamepolicy `json:"protocol_record_name_policies,omitempty"`
 	// The list of domain names that trigger DNS query rewrite.
@@ -4927,10 +4927,10 @@ type GridDns struct {
 	RootNameServerType string `json:"root_name_server_type,omitempty"`
 	// Determines if NSDNAME and NSIP resource records from RPZ feeds are enabled
 	// or not.
-	RpzDisableNsdnameNsip bool `json:"rpz_disable_nsdname_nsip,omitempty"`
+	RpzDisableNsdnameNsip *bool `json:"rpz_disable_nsdname_nsip,omitempty"`
 	// Enables the appliance to ignore RPZ-IP triggers with prefix lengths less
 	// than the specified minimum prefix length.
-	RpzDropIpRuleEnabled bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
+	RpzDropIpRuleEnabled *bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
 	// The minimum prefix length for IPv4 RPZ-IP triggers. The appliance ignores
 	// RPZ-IP triggers with prefix lengths less than the specified minimum IPv4
 	// prefix length.
@@ -4940,7 +4940,7 @@ type GridDns struct {
 	// prefix length.
 	RpzDropIpRuleMinPrefixLengthIpv6 uint32 `json:"rpz_drop_ip_rule_min_prefix_length_ipv6,omitempty"`
 	// Determines if recursive RPZ lookups are enabled.
-	RpzQnameWaitRecurse bool `json:"rpz_qname_wait_recurse,omitempty"`
+	RpzQnameWaitRecurse *bool `json:"rpz_qname_wait_recurse,omitempty"`
 	// The Grid level scavenging settings.
 	ScavengingSettings *SettingScavenging `json:"scavenging_settings,omitempty"`
 	// The number of maximum concurrent SOA queries per second. Valid values are
@@ -4953,7 +4953,7 @@ type GridDns struct {
 	Sortlist []*Sortlist `json:"sortlist,omitempty"`
 	// Determines if the storage of query capture reports on the appliance is
 	// enabled or disabled.
-	StoreLocally bool `json:"store_locally,omitempty"`
+	StoreLocally *bool `json:"store_locally,omitempty"`
 	// The syslog facility. This is the location on the syslog server to which you
 	// want to sort the DNS logging messages.
 	SyslogFacility string `json:"syslog_facility,omitempty"`
@@ -4973,7 +4973,7 @@ type GridDns struct {
 	TransfersPerNs uint32 `json:"transfers_per_ns,omitempty"`
 	// Determines if the double confirmation during zone deletion is enabled or
 	// not.
-	ZoneDeletionDoubleConfirm bool `json:"zone_deletion_double_confirm,omitempty"`
+	ZoneDeletionDoubleConfirm *bool `json:"zone_deletion_double_confirm,omitempty"`
 }
 
 func (GridDns) ObjectType() string {
@@ -4994,14 +4994,14 @@ type GridFiledistribution struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether the uploads to Grid members are allowed.
-	AllowUploads bool `json:"allow_uploads,omitempty"`
+	AllowUploads *bool `json:"allow_uploads,omitempty"`
 	// Determines whether to include distributed files in the backup.
-	BackupStorage bool `json:"backup_storage,omitempty"`
+	BackupStorage *bool `json:"backup_storage,omitempty"`
 	// The value is the percentage of the allocated TFTP storage space that is
 	// used, expressed in tenth of a percent. Valid values are from 0 to 1000.
 	CurrentUsage uint32 `json:"current_usage,omitempty"`
 	// Determines whether the FTP anonymous login is enabled.
-	EnableAnonymousFtp bool `json:"enable_anonymous_ftp,omitempty"`
+	EnableAnonymousFtp *bool `json:"enable_anonymous_ftp,omitempty"`
 	// The Grid file distribution global status.
 	GlobalStatus string `json:"global_status,omitempty"`
 	// The Grid name.
@@ -5132,7 +5132,7 @@ type GridMemberCloudapi struct {
 	// that member.
 	AllowedApiAdmins []*GridCloudapiUser `json:"allowed_api_admins,omitempty"`
 	// Controls whether the Cloud API service runs on the member or not.
-	EnableService bool `json:"enable_service,omitempty"`
+	EnableService *bool `json:"enable_service,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -5345,7 +5345,7 @@ type GridThreatanalytics struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Disable domain collapsing at grid level
-	ConfigureDomainCollapsing bool `json:"configure_domain_collapsing,omitempty"`
+	ConfigureDomainCollapsing *bool `json:"configure_domain_collapsing,omitempty"`
 	// The current threat analytics module set.
 	CurrentModuleset string `json:"current_moduleset,omitempty"`
 	// The Grid whitelist.
@@ -5356,15 +5356,15 @@ type GridThreatanalytics struct {
 	DomainCollapsingLevel uint32 `json:"domain_collapsing_level,omitempty"`
 	// Determines whether the automatic threat analytics module set download is
 	// enabled.
-	EnableAutoDownload bool `json:"enable_auto_download,omitempty"`
+	EnableAutoDownload *bool `json:"enable_auto_download,omitempty"`
 	// Determines whether the scheduled download of the threat analytics module set
 	// is enabled.
-	EnableScheduledDownload bool `json:"enable_scheduled_download,omitempty"`
+	EnableScheduledDownload *bool `json:"enable_scheduled_download,omitempty"`
 	// Indicates whether auto download service is enabled
-	EnableWhitelistAutoDownload bool `json:"enable_whitelist_auto_download,omitempty"`
+	EnableWhitelistAutoDownload *bool `json:"enable_whitelist_auto_download,omitempty"`
 	// Indicates whether the custom scheduled settings for auto download is
 	// enabled. If false then default frequency is once per 24 hours
-	EnableWhitelistScheduledDownload bool `json:"enable_whitelist_scheduled_download,omitempty"`
+	EnableWhitelistScheduledDownload *bool `json:"enable_whitelist_scheduled_download,omitempty"`
 	// The last time when the threat analytics module set was checked for the
 	// update.
 	LastCheckedForUpdate *UnixTime `json:"last_checked_for_update,omitempty"`
@@ -5409,19 +5409,19 @@ type GridThreatprotection struct {
 	// The current Grid ruleset.
 	CurrentRuleset string `json:"current_ruleset,omitempty"`
 	// Determines if multiple BIND responses via TCP connection are disabled.
-	DisableMultipleDnsTcpRequest bool `json:"disable_multiple_dns_tcp_request,omitempty"`
+	DisableMultipleDnsTcpRequest *bool `json:"disable_multiple_dns_tcp_request,omitempty"`
 	// Determines if DNS responses are sent from acceleration cache before applying
 	// Threat Protection rules. Recommended for better performance when using DNS
 	// Cache Acceleration.
-	EnableAccelRespBeforeThreatProtection bool `json:"enable_accel_resp_before_threat_protection,omitempty"`
+	EnableAccelRespBeforeThreatProtection *bool `json:"enable_accel_resp_before_threat_protection,omitempty"`
 	// Determines if auto download service is enabled.
-	EnableAutoDownload bool `json:"enable_auto_download,omitempty"`
+	EnableAutoDownload *bool `json:"enable_auto_download,omitempty"`
 	// Determines if NAT (Network Address Translation) mapping for threat
 	// protection is enabled or not.
-	EnableNatRules bool `json:"enable_nat_rules,omitempty"`
+	EnableNatRules *bool `json:"enable_nat_rules,omitempty"`
 	// Determines if scheduled download is enabled. The default frequency is once
 	// in every 24 hours if it is disabled.
-	EnableScheduledDownload bool `json:"enable_scheduled_download,omitempty"`
+	EnableScheduledDownload *bool `json:"enable_scheduled_download,omitempty"`
 	// The number of events logged per second per rule.
 	EventsPerSecondPerRule uint32 `json:"events_per_second_per_rule,omitempty"`
 	// The Grid name.
@@ -5853,7 +5853,7 @@ type Ipv6filteroption struct {
 	// Determines if apply as class is enabled or not. If this flag is set to
 	// "true" the filter is treated as global DHCP class, e.g it is written to
 	// DHCPv6 configuration file even if it is not present in any DHCP range.
-	ApplyAsClass bool `json:"apply_as_class,omitempty"`
+	ApplyAsClass *bool `json:"apply_as_class,omitempty"`
 	// The descriptive comment of a DHCP IPv6 filter option object.
 	Comment string `json:"comment,omitempty"`
 	// The conditional expression of a DHCP IPv6 filter option object.
@@ -5897,7 +5897,7 @@ type Ipv6FixedAddress struct {
 	AddressType string `json:"address_type,omitempty"`
 	// This field controls whether the credential is used for both the Telnet and
 	// SSH credentials. If set to False, the credential is used only for SSH.
-	AllowTelnet bool `json:"allow_telnet,omitempty"`
+	AllowTelnet *bool `json:"allow_telnet,omitempty"`
 	// The CLI credentials for the IPv6 fixed address.
 	CliCredentials []*DiscoveryClicredential `json:"cli_credentials,omitempty"`
 	// Structure containing all cloud API related information for this object.
@@ -5914,10 +5914,10 @@ type Ipv6FixedAddress struct {
 	DeviceVendor string `json:"device_vendor,omitempty"`
 	// Determines whether a fixed address is disabled or not. When this is set to
 	// False, the IPv6 fixed address is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines if the discovery for this IPv6 fixed address is disabled or not.
 	// False means that the discovery is enabled.
-	DisableDiscovery bool `json:"disable_discovery,omitempty"`
+	DisableDiscovery *bool `json:"disable_discovery,omitempty"`
 	// The discovery status of this IPv6 fixed address.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovered data for this IPv6 fixed address.
@@ -5933,7 +5933,7 @@ type Ipv6FixedAddress struct {
 	Duid string `json:"duid,omitempty"`
 	// Determines if the discovery for the IPv6 fixed address should be immediately
 	// enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -5965,7 +5965,7 @@ type Ipv6FixedAddress struct {
 	ReservedInterface string `json:"reserved_interface,omitempty"`
 	// Restarts the member service. The restart_if_needed flag can trigger a
 	// restart on DHCP services only when it is enabled on CP member.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The SNMPv3 credential for this IPv6 fixed address.
 	Snmp3Credential *DiscoverySnmp3credential `json:"snmp3_credential,omitempty"`
 	// The SNMPv1 or SNMPv2 credential for this IPv6 fixed address.
@@ -5974,24 +5974,24 @@ type Ipv6FixedAddress struct {
 	// values specified in the named template.
 	Template string `json:"template,omitempty"`
 	// If set to true, the CLI credential will override member-level settings.
-	UseCliCredentials bool `json:"use_cli_credentials,omitempty"`
+	UseCliCredentials *bool `json:"use_cli_credentials,omitempty"`
 	// Use flag for: domain_name
-	UseDomainName bool `json:"use_domain_name,omitempty"`
+	UseDomainName *bool `json:"use_domain_name,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
 	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Determines if the SNMPv3 credential should be used for the IPv6 fixed
 	// address.
-	UseSnmp3Credential bool `json:"use_snmp3_credential,omitempty"`
+	UseSnmp3Credential *bool `json:"use_snmp3_credential,omitempty"`
 	// If set to true, SNMP credential will override member level settings.
-	UseSnmpCredential bool `json:"use_snmp_credential,omitempty"`
+	UseSnmpCredential *bool `json:"use_snmp_credential,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// The valid lifetime value for this DHCP IPv6 Fixed Address object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
 }
@@ -6045,17 +6045,17 @@ type Ipv6fixedaddresstemplate struct {
 	// object.
 	PreferredLifetime uint32 `json:"preferred_lifetime,omitempty"`
 	// Use flag for: domain_name
-	UseDomainName bool `json:"use_domain_name,omitempty"`
+	UseDomainName *bool `json:"use_domain_name,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// The valid lifetime value for this DHCP IPv6 fixed address template object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
 }
@@ -6093,15 +6093,15 @@ type Ipv6Network struct {
 	// DHCP IPv6 Network object. This method controls whether the FQDN option sent
 	// by the client is to be used, or if the server can automatically generate the
 	// FQDN. This setting overrides the upper-level settings.
-	DdnsEnableOptionFqdn bool `json:"ddns_enable_option_fqdn,omitempty"`
+	DdnsEnableOptionFqdn *bool `json:"ddns_enable_option_fqdn,omitempty"`
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether only the DHCP server is allowed to update DNS,
 	// regardless of the DHCP clients requests. Note that changes for this field
 	// take effect only if ddns_enable_option_fqdn is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a DHCP network object. The TTL is
 	// a 32-bit unsigned integer that represents the duration, in seconds, for
 	// which the update is cached. Zero indicates that the update is not cached.
@@ -6110,7 +6110,7 @@ type Ipv6Network struct {
 	DeleteReason string `json:"delete_reason,omitempty"`
 	// Determines whether a network is disabled or not. When this is set to False,
 	// the network is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Discover now status for this network.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// Number of the discovered BGP AS. When multiple BGP autonomous systems are
@@ -6154,14 +6154,14 @@ type Ipv6Network struct {
 	// The dynamic DNS updates flag of a DHCP IPv6 network object. If set to True,
 	// the DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines whether a discovery is enabled or not for this network. When this
 	// is set to False, the network discovery is disabled.
-	EnableDiscovery bool `json:"enable_discovery,omitempty"`
+	EnableDiscovery *bool `json:"enable_discovery,omitempty"`
 	// Determines if IFMAP publishing is enabled for the network.
-	EnableIfmapPublishing bool `json:"enable_ifmap_publishing,omitempty"`
+	EnableIfmapPublishing *bool `json:"enable_ifmap_publishing,omitempty"`
 	// Determines if the discovery for the network should be immediately enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// The endpoints that provides data for the DHCP IPv6 Network object.
 	EndpointSources []*CiscoiseEndpoint `json:"endpoint_sources,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -6181,7 +6181,7 @@ type Ipv6Network struct {
 	Members []*Dhcpmember `json:"members,omitempty"`
 	// This field controls whether this object is synchronized with the Multi-Grid
 	// Master. If this field is set to True, objects are not synchronized.
-	MgmPrivate bool `json:"mgm_private,omitempty"`
+	MgmPrivate *bool `json:"mgm_private,omitempty"`
 	// This field is assumed to be True unless filled by any conforming objects,
 	// such as Network, IPv6 Network, Network Container, IPv6 Network Container,
 	// and Network View. This value is set to False if mgm_private is set to True
@@ -6209,9 +6209,9 @@ type Ipv6Network struct {
 	PreferredLifetime uint32 `json:"preferred_lifetime,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The registry (RIR) that allocated the IPv6 network address space.
 	Rir string `json:"rir,omitempty"`
 	// The RIR organization associated with the IPv6 network.
@@ -6222,62 +6222,62 @@ type Ipv6Network struct {
 	RirRegistrationStatus string `json:"rir_registration_status,omitempty"`
 	// If the field is set to True, the discovery blackout setting will be used for
 	// port control blackout setting.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// Determines whether to send the RIR registration request.
-	SendRirRequest bool `json:"send_rir_request,omitempty"`
+	SendRirRequest *bool `json:"send_rir_request,omitempty"`
 	// The DHCP IPv6 Network Cisco ISE subscribe settings.
 	SubscribeSettings *CiscoiseSubscribesetting `json:"subscribe_settings,omitempty"`
 	// If set on creation, the network is created according to the values specified
 	// in the selected template.
 	Template string `json:"template,omitempty"`
 	// Determines whether the DHCP IPv6 Network is unmanaged or not.
-	Unmanaged bool `json:"unmanaged,omitempty"`
+	Unmanaged *bool `json:"unmanaged,omitempty"`
 	// The number of unmanaged IP addresses as discovered by network discovery.
 	UnmanagedCount uint32 `json:"unmanaged_count,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: discovery_blackout_setting , port_control_blackout_setting,
 	// same_port_control_discovery_blackout
-	UseBlackoutSetting bool `json:"use_blackout_setting,omitempty"`
+	UseBlackoutSetting *bool `json:"use_blackout_setting,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_enable_option_fqdn
-	UseDdnsEnableOptionFqdn bool `json:"use_ddns_enable_option_fqdn,omitempty"`
+	UseDdnsEnableOptionFqdn *bool `json:"use_ddns_enable_option_fqdn,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: discovery_basic_poll_settings
-	UseDiscoveryBasicPollingSettings bool `json:"use_discovery_basic_polling_settings,omitempty"`
+	UseDiscoveryBasicPollingSettings *bool `json:"use_discovery_basic_polling_settings,omitempty"`
 	// Use flag for: domain_name
-	UseDomainName bool `json:"use_domain_name,omitempty"`
+	UseDomainName *bool `json:"use_domain_name,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: discovery_member , enable_discovery
-	UseEnableDiscovery bool `json:"use_enable_discovery,omitempty"`
+	UseEnableDiscovery *bool `json:"use_enable_discovery,omitempty"`
 	// Use flag for: enable_ifmap_publishing
-	UseEnableIfmapPublishing bool `json:"use_enable_ifmap_publishing,omitempty"`
+	UseEnableIfmapPublishing *bool `json:"use_enable_ifmap_publishing,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: mgm_private
-	UseMgmPrivate bool `json:"use_mgm_private,omitempty"`
+	UseMgmPrivate *bool `json:"use_mgm_private,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: subscribe_settings
-	UseSubscribeSettings bool `json:"use_subscribe_settings,omitempty"`
+	UseSubscribeSettings *bool `json:"use_subscribe_settings,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// Use flag for: zone_associations
-	UseZoneAssociations bool `json:"use_zone_associations,omitempty"`
+	UseZoneAssociations *bool `json:"use_zone_associations,omitempty"`
 	// Use this method to set or retrieve the valid lifetime value of a DHCP IPv6
 	// Network object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
@@ -6319,15 +6319,15 @@ type Ipv6NetworkContainer struct {
 	// DHCP IPv6 Network Container object. This method controls whether the FQDN
 	// option sent by the client is to be used, or if the server can automatically
 	// generate the FQDN. This setting overrides the upper-level settings.
-	DdnsEnableOptionFqdn bool `json:"ddns_enable_option_fqdn,omitempty"`
+	DdnsEnableOptionFqdn *bool `json:"ddns_enable_option_fqdn,omitempty"`
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether the DHCP server is allowed to update DNS,
 	// regardless of the DHCP client requests. Note that changes for this field
 	// take effect only if ddns_enable_option_fqdn is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a DHCP network container object.
 	// The TTL is a 32-bit unsigned integer that represents the duration, in
 	// seconds, for which the update is cached. Zero indicates that the update is
@@ -6353,13 +6353,13 @@ type Ipv6NetworkContainer struct {
 	// The dynamic DNS updates flag of a DHCP IPv6 network container object. If set
 	// to True, the DHCP server sends DDNS updates to DNS servers in the same Grid,
 	// and to external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines whether a discovery is enabled or not for this network container.
 	// When this is set to False, the network container discovery is disabled.
-	EnableDiscovery bool `json:"enable_discovery,omitempty"`
+	EnableDiscovery *bool `json:"enable_discovery,omitempty"`
 	// Determines if the discovery for the network container should be immediately
 	// enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// The endpoints that provides data for the DHCP IPv6 Network Container.
 	EndpointSources []*CiscoiseEndpoint `json:"endpoint_sources,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -6375,7 +6375,7 @@ type Ipv6NetworkContainer struct {
 	LogicFilterRules []*Logicfilterrule `json:"logic_filter_rules,omitempty"`
 	// This field controls whether this object is synchronized with the Multi-Grid
 	// Master. If this field is set to True, objects are not synchronized.
-	MgmPrivate bool `json:"mgm_private,omitempty"`
+	MgmPrivate *bool `json:"mgm_private,omitempty"`
 	// This field is assumed to be True unless filled by any conforming objects,
 	// such as Network, IPv6 Network, Network Container, IPv6 Network Container,
 	// and Network View. This value is set to False if mgm_private is set to True
@@ -6407,7 +6407,7 @@ type Ipv6NetworkContainer struct {
 	// with this network container.
 	RemoveSubnets bool `json:"remove_subnets,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The registry (RIR) that allocated the IPv6 network container address space.
 	Rir string `json:"rir,omitempty"`
 	// The RIR organization associated with the IPv6 network container.
@@ -6418,51 +6418,51 @@ type Ipv6NetworkContainer struct {
 	RirRegistrationStatus string `json:"rir_registration_status,omitempty"`
 	// If the field is set to True, the discovery blackout setting will be used for
 	// port control blackout setting.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// Determines whether to send the RIR registration request.
-	SendRirRequest bool `json:"send_rir_request,omitempty"`
+	SendRirRequest *bool `json:"send_rir_request,omitempty"`
 	// The DHCP IPv6 Network Container Cisco ISE subscribe settings.
 	SubscribeSettings *CiscoiseSubscribesetting `json:"subscribe_settings,omitempty"`
 	// Determines whether the network container is unmanaged or not.
-	Unmanaged bool `json:"unmanaged,omitempty"`
+	Unmanaged *bool `json:"unmanaged,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: discovery_blackout_setting , port_control_blackout_setting,
 	// same_port_control_discovery_blackout
-	UseBlackoutSetting bool `json:"use_blackout_setting,omitempty"`
+	UseBlackoutSetting *bool `json:"use_blackout_setting,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_enable_option_fqdn
-	UseDdnsEnableOptionFqdn bool `json:"use_ddns_enable_option_fqdn,omitempty"`
+	UseDdnsEnableOptionFqdn *bool `json:"use_ddns_enable_option_fqdn,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: discovery_basic_poll_settings
-	UseDiscoveryBasicPollingSettings bool `json:"use_discovery_basic_polling_settings,omitempty"`
+	UseDiscoveryBasicPollingSettings *bool `json:"use_discovery_basic_polling_settings,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: discovery_member , enable_discovery
-	UseEnableDiscovery bool `json:"use_enable_discovery,omitempty"`
+	UseEnableDiscovery *bool `json:"use_enable_discovery,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: mgm_private
-	UseMgmPrivate bool `json:"use_mgm_private,omitempty"`
+	UseMgmPrivate *bool `json:"use_mgm_private,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: subscribe_settings
-	UseSubscribeSettings bool `json:"use_subscribe_settings,omitempty"`
+	UseSubscribeSettings *bool `json:"use_subscribe_settings,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// Use flag for: zone_associations
-	UseZoneAssociations bool `json:"use_zone_associations,omitempty"`
+	UseZoneAssociations *bool `json:"use_zone_associations,omitempty"`
 	// The network container utilization in percentage.
 	Utilization uint32 `json:"utilization,omitempty"`
 	// Use this method to set or retrieve the valid lifetime value of a DHCP IPv6
@@ -6495,15 +6495,15 @@ type IPv6NetworkTemplate struct {
 	// a netmask when creating a network using this template. If you set this
 	// parameter to False, you must specify the "cidr" field for the network
 	// template object.
-	AllowAnyNetmask bool `json:"allow_any_netmask,omitempty"`
+	AllowAnyNetmask *bool `json:"allow_any_netmask,omitempty"`
 	// This flag controls whether reverse zones are automatically created when the
 	// network is added.
-	AutoCreateReversezone bool `json:"auto_create_reversezone,omitempty"`
+	AutoCreateReversezone *bool `json:"auto_create_reversezone,omitempty"`
 	// The CIDR of the network in CIDR format.
 	Cidr uint32 `json:"cidr,omitempty"`
 	// This flag controls whether this template can be used to create network
 	// objects in a cloud-computing deployment.
-	CloudApiCompatible bool `json:"cloud_api_compatible,omitempty"`
+	CloudApiCompatible *bool `json:"cloud_api_compatible,omitempty"`
 	// Comment for the network; maximum 256 characters.
 	Comment string `json:"comment,omitempty"`
 	// The dynamic DNS domain name the appliance uses specifically for DDNS updates
@@ -6513,15 +6513,15 @@ type IPv6NetworkTemplate struct {
 	// DHCP IPv6 Network object. This method controls whether the FQDN option sent
 	// by the client is to be used, or if the server can automatically generate the
 	// FQDN. This setting overrides the upper-level settings.
-	DdnsEnableOptionFqdn bool `json:"ddns_enable_option_fqdn,omitempty"`
+	DdnsEnableOptionFqdn *bool `json:"ddns_enable_option_fqdn,omitempty"`
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether the DHCP server is allowed to update DNS,
 	// regardless of the DHCP client requests. Note that changes for this field
 	// take effect only if ddns_enable_option_fqdn is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a DHCP network object. The TTL is
 	// a 32-bit unsigned integer that represents the duration, in seconds, for
 	// which the update is cached. Zero indicates that the update is not cached.
@@ -6540,7 +6540,7 @@ type IPv6NetworkTemplate struct {
 	// The dynamic DNS updates flag of a DHCP IPv6 network object. If set to True,
 	// the DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -6574,7 +6574,7 @@ type IPv6NetworkTemplate struct {
 	RangeTemplates []string `json:"range_templates,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// The registry (RIR) that allocated the IPv6 network address space.
 	Rir string `json:"rir,omitempty"`
 	// The RIR organization associated with the IPv6 network.
@@ -6584,36 +6584,36 @@ type IPv6NetworkTemplate struct {
 	// The registration status of the IPv6 network in RIR.
 	RirRegistrationStatus string `json:"rir_registration_status,omitempty"`
 	// Determines whether to send the RIR registration request.
-	SendRirRequest bool `json:"send_rir_request,omitempty"`
+	SendRirRequest *bool `json:"send_rir_request,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_enable_option_fqdn
-	UseDdnsEnableOptionFqdn bool `json:"use_ddns_enable_option_fqdn,omitempty"`
+	UseDdnsEnableOptionFqdn *bool `json:"use_ddns_enable_option_fqdn,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: domain_name
-	UseDomainName bool `json:"use_domain_name,omitempty"`
+	UseDomainName *bool `json:"use_domain_name,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// Use this method to set or retrieve the valid lifetime value of a DHCP IPv6
 	// Network object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
@@ -6658,7 +6658,7 @@ type IPv6Range struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a range is disabled or not. When this is set to False,
 	// the range is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Discover now status for this range.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovery basic poll settings for this range.
@@ -6669,9 +6669,9 @@ type IPv6Range struct {
 	DiscoveryMember string `json:"discovery_member,omitempty"`
 	// Determines whether a discovery is enabled or not for this range. When this
 	// is set to False, the discovery for this range is disabled.
-	EnableDiscovery bool `json:"enable_discovery,omitempty"`
+	EnableDiscovery *bool `json:"enable_discovery,omitempty"`
 	// Determines if the discovery for the range should be immediately enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// The IPv6 Address end address of the DHCP IPv6 range.
 	EndAddr string `json:"end_addr,omitempty"`
 	// The endpoints that provides data for the DHCP IPv6 Range object.
@@ -6714,12 +6714,12 @@ type IPv6Range struct {
 	PortControlBlackoutSetting *PropertiesBlackoutsetting `json:"port_control_blackout_setting,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// If the field is set to True, the discovery blackout setting will be used for
 	// port control blackout setting.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// The type of server that is going to serve the range. Valid values are: *
 	// MEMBER * NONE
 	ServerAssociationType string `json:"server_association_type,omitempty"`
@@ -6732,17 +6732,17 @@ type IPv6Range struct {
 	Template string `json:"template,omitempty"`
 	// Use flag for: discovery_blackout_setting , port_control_blackout_setting,
 	// same_port_control_discovery_blackout
-	UseBlackoutSetting bool `json:"use_blackout_setting,omitempty"`
+	UseBlackoutSetting *bool `json:"use_blackout_setting,omitempty"`
 	// Use flag for: discovery_basic_poll_settings
-	UseDiscoveryBasicPollingSettings bool `json:"use_discovery_basic_polling_settings,omitempty"`
+	UseDiscoveryBasicPollingSettings *bool `json:"use_discovery_basic_polling_settings,omitempty"`
 	// Use flag for: discovery_member , enable_discovery
-	UseEnableDiscovery bool `json:"use_enable_discovery,omitempty"`
+	UseEnableDiscovery *bool `json:"use_enable_discovery,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: subscribe_settings
-	UseSubscribeSettings bool `json:"use_subscribe_settings,omitempty"`
+	UseSubscribeSettings *bool `json:"use_subscribe_settings,omitempty"`
 }
 
 func (IPv6Range) ObjectType() string {
@@ -6765,7 +6765,7 @@ type Ipv6rangetemplate struct {
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether the IPv6 DHCP range template can be used to create
 	// network objects in a cloud-computing deployment.
-	CloudApiCompatible bool `json:"cloud_api_compatible,omitempty"`
+	CloudApiCompatible *bool `json:"cloud_api_compatible,omitempty"`
 	// The IPv6 DHCP range template descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// The vConnector member that the object should be delegated to when created
@@ -6799,13 +6799,13 @@ type Ipv6rangetemplate struct {
 	OptionFilterRules []*Filterrule `json:"option_filter_rules,omitempty"`
 	// Determines whether the leases are kept in Recycle Bin until one week after
 	// expiry. If this is set to False, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// The type of server that is going to serve the IPv6 DHCP range.
 	ServerAssociationType string `json:"server_association_type,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 }
 
 func (Ipv6rangetemplate) ObjectType() string {
@@ -6837,21 +6837,21 @@ type IPv6SharedNetwork struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether only the DHCP server is allowed to update DNS,
 	// regardless of the DHCP clients requests. Note that changes for this field
 	// take effect only if ddns_use_option81 is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of an IPv6 shared network object.
 	// The TTL is a 32-bit unsigned integer that represents the duration, in
 	// seconds, for which the update is cached. Zero indicates that the update is
 	// not cached.
 	DdnsTtl uint32 `json:"ddns_ttl,omitempty"`
 	// The support for DHCP Option 81 at the IPv6 shared network level.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// Determines whether an IPv6 shared network is disabled or not. When this is
 	// set to False, the IPv6 shared network is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Use this method to set or retrieve the domain_name value of a DHCP IPv6
 	// Shared Network object.
 	DomainName string `json:"domain_name,omitempty"`
@@ -6863,7 +6863,7 @@ type IPv6SharedNetwork struct {
 	// The dynamic DNS updates flag of an IPv6 shared network object. If set to
 	// True, the DHCP server sends DDNS updates to DNS servers in the same Grid,
 	// and to external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -6892,31 +6892,31 @@ type IPv6SharedNetwork struct {
 	PreferredLifetime uint32 `json:"preferred_lifetime,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: ddns_use_option81
-	UseDdnsUseOption81 bool `json:"use_ddns_use_option81,omitempty"`
+	UseDdnsUseOption81 *bool `json:"use_ddns_use_option81,omitempty"`
 	// Use flag for: domain_name
-	UseDomainName bool `json:"use_domain_name,omitempty"`
+	UseDomainName *bool `json:"use_domain_name,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// Use this method to set or retrieve the valid lifetime value of a DHCP IPv6
 	// Shared Network object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
@@ -6979,7 +6979,7 @@ type LdapAuthService struct {
 	// The LDAP descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// Determines if the LDAP authentication service is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The mapping LDAP fields to extensible attributes.
 	EaMapping []*LdapEamapping `json:"ea_mapping,omitempty"`
 	// The name of the LDAP attribute that defines group membership.
@@ -7306,7 +7306,7 @@ type MACFilterAddress struct {
 	// MAC Address.
 	Mac string `json:"mac,omitempty"`
 	// Determines if MAC address expiration is enabled or disabled.
-	NeverExpires bool `json:"never_expires,omitempty"`
+	NeverExpires *bool `json:"never_expires,omitempty"`
 	// Reserved for future use.
 	ReservedForInfoblox string `json:"reserved_for_infoblox,omitempty"`
 	// Username for authenticated DHCP purposes.
@@ -7340,7 +7340,7 @@ type Mastergrid struct {
 	// The detached flag for the Master Grid.
 	Detached bool `json:"detached,omitempty"`
 	// Determines if the Master Grid is enabled.
-	Enable bool `json:"enable,omitempty"`
+	Enable *bool `json:"enable,omitempty"`
 	// The flag shows if the Grid has joined the Master Grid.
 	Joined bool `json:"joined,omitempty"`
 	// The Master Grid's last event.
@@ -7398,22 +7398,22 @@ type Member struct {
 	// The email setting for member.
 	EmailSetting *SettingEmail `json:"email_setting,omitempty"`
 	// If set to True, the member has two physical nodes (HA pair).
-	EnableHa bool `json:"enable_ha,omitempty"`
+	EnableHa *bool `json:"enable_ha,omitempty"`
 	// Determines if the LOM functionality is enabled or not.
-	EnableLom bool `json:"enable_lom,omitempty"`
+	EnableLom *bool `json:"enable_lom,omitempty"`
 	// Determines if the member will redirect GUI connections to the Grid Master or
 	// not.
-	EnableMemberRedirect bool `json:"enable_member_redirect,omitempty"`
+	EnableMemberRedirect *bool `json:"enable_member_redirect,omitempty"`
 	// If set to True and the member object is a Grid Master Candidate, then
 	// read-only API access is enabled.
-	EnableRoApiAccess bool `json:"enable_ro_api_access,omitempty"`
+	EnableRoApiAccess *bool `json:"enable_ro_api_access,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// The list of external syslog backup servers.
 	ExternalSyslogBackupServers []*Extsyslogbackupserver `json:"external_syslog_backup_servers,omitempty"`
 	// Determines if external syslog servers should be enabled.
-	ExternalSyslogServerEnable bool `json:"external_syslog_server_enable,omitempty"`
+	ExternalSyslogServerEnable *bool `json:"external_syslog_server_enable,omitempty"`
 	// The host name of the Grid member.
 	HostName string `json:"host_name,omitempty"`
 	// IPV6 setting for member.
@@ -7425,12 +7425,12 @@ type Member struct {
 	IsDscpCapable bool `json:"is_dscp_capable,omitempty"`
 	// If this is set to "true", the LAN2 port is enabled as an independent port or
 	// as a port for failover purposes.
-	Lan2Enabled bool `json:"lan2_enabled,omitempty"`
+	Lan2Enabled *bool `json:"lan2_enabled,omitempty"`
 	// Settings for the Grid member LAN2 port if 'lan2_enabled' is set to "true".
 	Lan2PortSetting *Lan2portsetting `json:"lan2_port_setting,omitempty"`
 	// Determines if the Liquid Crystal Display (LCD) input buttons on the front
 	// panel of the appliance are enabled or not.
-	LcdInput bool `json:"lcd_input,omitempty"`
+	LcdInput *bool `json:"lcd_input,omitempty"`
 	// The Network configurations for LOM.
 	LomNetworkConfig []*Lomnetworkconfig `json:"lom_network_config,omitempty"`
 	// The list of LOM users.
@@ -7438,7 +7438,7 @@ type Member struct {
 	// Determines if a Grid member is a Grid Master Candidate or not. This flag
 	// enables the Grid member to assume the role of the Grid Master as a disaster
 	// recovery measure.
-	MasterCandidate bool `json:"master_candidate,omitempty"`
+	MasterCandidate *bool `json:"master_candidate,omitempty"`
 	// Configure communication type for various services.
 	MemberServiceCommunication []*Memberservicecommunication `json:"member_service_communication,omitempty"`
 	// Settings for the member MGMT port.
@@ -7459,17 +7459,17 @@ type Member struct {
 	// The ARP protocol setting on the passive node of an HA pair. If you do not
 	// specify a value, the default value is "false". You can only set this value
 	// to "true" if the member is an HA pair.
-	PassiveHaArpEnabled bool `json:"passive_ha_arp_enabled,omitempty"`
+	PassiveHaArpEnabled *bool `json:"passive_ha_arp_enabled,omitempty"`
 	// Hardware Platform.
 	Platform string `json:"platform,omitempty"`
 	// Pre-provisioning information.
 	PreProvisioning *Preprovision `json:"pre_provisioning,omitempty"`
 	// Set this flag to "true" to prevent the deletion of the member if any
 	// delegated object remains attached to it.
-	PreserveIfOwnsDelegation bool `json:"preserve_if_owns_delegation,omitempty"`
+	PreserveIfOwnsDelegation *bool `json:"preserve_if_owns_delegation,omitempty"`
 	// If set to True, superuser admins can access the Infoblox CLI from a remote
 	// location using an SSH (Secure Shell) v2 client.
-	RemoteConsoleAccessEnable bool `json:"remote_console_access_enable,omitempty"`
+	RemoteConsoleAccessEnable *bool `json:"remote_console_access_enable,omitempty"`
 	// Virutal router identifier. Provide this ID if "ha_enabled" is set to "true".
 	// This is a unique VRID number (from 1 to 255) for the local subnet.
 	RouterId uint32 `json:"router_id,omitempty"`
@@ -7482,7 +7482,7 @@ type Member struct {
 	// List of static routes.
 	StaticRoutes []*SettingNetwork `json:"static_routes,omitempty"`
 	// Determines if support access for the Grid member should be enabled.
-	SupportAccessEnable bool `json:"support_access_enable,omitempty"`
+	SupportAccessEnable *bool `json:"support_access_enable,omitempty"`
 	// The information string for support access.
 	SupportAccessInfo string `json:"support_access_info,omitempty"`
 	// The Grid Member syslog proxy settings.
@@ -7518,53 +7518,53 @@ type Member struct {
 	UpgradeGroup string `json:"upgrade_group,omitempty"`
 	// This flag is the use flag for enabling automated traffic capture based on
 	// DNS cache ratio thresholds.
-	UseAutomatedTrafficCapture bool `json:"use_automated_traffic_capture,omitempty"`
+	UseAutomatedTrafficCapture *bool `json:"use_automated_traffic_capture,omitempty"`
 	// Use flag for: dns_resolver_setting
-	UseDnsResolverSetting bool `json:"use_dns_resolver_setting,omitempty"`
+	UseDnsResolverSetting *bool `json:"use_dns_resolver_setting,omitempty"`
 	// Use flag for: dscp
-	UseDscp bool `json:"use_dscp,omitempty"`
+	UseDscp *bool `json:"use_dscp,omitempty"`
 	// Use flag for: email_setting
-	UseEmailSetting bool `json:"use_email_setting,omitempty"`
+	UseEmailSetting *bool `json:"use_email_setting,omitempty"`
 	// Use flag for: enable_lom
-	UseEnableLom bool `json:"use_enable_lom,omitempty"`
+	UseEnableLom *bool `json:"use_enable_lom,omitempty"`
 	// Use flag for: enable_member_redirect
-	UseEnableMemberRedirect bool `json:"use_enable_member_redirect,omitempty"`
+	UseEnableMemberRedirect *bool `json:"use_enable_member_redirect,omitempty"`
 	// Use flag for: external_syslog_backup_servers
-	UseExternalSyslogBackupServers bool `json:"use_external_syslog_backup_servers,omitempty"`
+	UseExternalSyslogBackupServers *bool `json:"use_external_syslog_backup_servers,omitempty"`
 	// Use flag for: lcd_input
-	UseLcdInput bool `json:"use_lcd_input,omitempty"`
+	UseLcdInput *bool `json:"use_lcd_input,omitempty"`
 	// Use flag for: remote_console_access_enable
-	UseRemoteConsoleAccessEnable bool `json:"use_remote_console_access_enable,omitempty"`
+	UseRemoteConsoleAccessEnable *bool `json:"use_remote_console_access_enable,omitempty"`
 	// Use flag for: snmp_setting
-	UseSnmpSetting bool `json:"use_snmp_setting,omitempty"`
+	UseSnmpSetting *bool `json:"use_snmp_setting,omitempty"`
 	// Use flag for: support_access_enable
-	UseSupportAccessEnable bool `json:"use_support_access_enable,omitempty"`
+	UseSupportAccessEnable *bool `json:"use_support_access_enable,omitempty"`
 	// Use flag for: external_syslog_server_enable , syslog_servers,
 	// syslog_proxy_setting, syslog_size
-	UseSyslogProxySetting bool `json:"use_syslog_proxy_setting,omitempty"`
+	UseSyslogProxySetting *bool `json:"use_syslog_proxy_setting,omitempty"`
 	// Use flag for: threshold_traps
-	UseThresholdTraps bool `json:"use_threshold_traps,omitempty"`
+	UseThresholdTraps *bool `json:"use_threshold_traps,omitempty"`
 	// Use flag for: time_zone
-	UseTimeZone bool `json:"use_time_zone,omitempty"`
+	UseTimeZone *bool `json:"use_time_zone,omitempty"`
 	// This flag is the use flag for enabling automated traffic capture based on
 	// authorative DNS latency.
-	UseTrafficCaptureAuthDns bool `json:"use_traffic_capture_auth_dns,omitempty"`
+	UseTrafficCaptureAuthDns *bool `json:"use_traffic_capture_auth_dns,omitempty"`
 	// This flag is the use flag for automated traffic capture settings at member
 	// level.
-	UseTrafficCaptureChr bool `json:"use_traffic_capture_chr,omitempty"`
+	UseTrafficCaptureChr *bool `json:"use_traffic_capture_chr,omitempty"`
 	// This flag is the use flag for enabling automated traffic capture based on
 	// DNS querie per second thresholds.
-	UseTrafficCaptureQps bool `json:"use_traffic_capture_qps,omitempty"`
+	UseTrafficCaptureQps *bool `json:"use_traffic_capture_qps,omitempty"`
 	// This flag is the use flag for enabling automated traffic capture based on
 	// recursive DNS latency.
-	UseTrafficCaptureRecDns bool `json:"use_traffic_capture_rec_dns,omitempty"`
+	UseTrafficCaptureRecDns *bool `json:"use_traffic_capture_rec_dns,omitempty"`
 	// This flag is the use flag for enabling automated traffic capture based on
 	// outgoing recursive queries.
-	UseTrafficCaptureRecQueries bool `json:"use_traffic_capture_rec_queries,omitempty"`
+	UseTrafficCaptureRecQueries *bool `json:"use_traffic_capture_rec_queries,omitempty"`
 	// Use flag for: trap_notifications
-	UseTrapNotifications bool `json:"use_trap_notifications,omitempty"`
+	UseTrapNotifications *bool `json:"use_trap_notifications,omitempty"`
 	// Specify "true" to use VRRPv4 or "false" to use VRRPv6.
-	UseV4Vrrp bool `json:"use_v4_vrrp,omitempty"`
+	UseV4Vrrp *bool `json:"use_v4_vrrp,omitempty"`
 	// The network settings for the Grid member.
 	VipSetting *SettingNetwork `json:"vip_setting,omitempty"`
 	// The VPN maximum transmission unit (MTU).
@@ -7602,15 +7602,15 @@ type MemberDHCPProperties struct {
 	AuthnCaptivePortalAuthenticatedFilter string `json:"authn_captive_portal_authenticated_filter,omitempty"`
 	// The flag that controls if this DHCP member is enabled for captive portal
 	// authentication.
-	AuthnCaptivePortalEnabled bool `json:"authn_captive_portal_enabled,omitempty"`
+	AuthnCaptivePortalEnabled *bool `json:"authn_captive_portal_enabled,omitempty"`
 	// The MAC filter representing the guest range.
 	AuthnCaptivePortalGuestFilter string `json:"authn_captive_portal_guest_filter,omitempty"`
 	// The flag that controls if this DHCP member can send authentication requests
 	// to an authentication server group.
-	AuthnServerGroupEnabled bool `json:"authn_server_group_enabled,omitempty"`
+	AuthnServerGroupEnabled *bool `json:"authn_server_group_enabled,omitempty"`
 	// The authority flag of a Grid member. This flag specifies if a DHCP server is
 	// authoritative for a domain.
-	Authority bool `json:"authority,omitempty"`
+	Authority *bool `json:"authority,omitempty"`
 	// The name of a file that DHCP clients need to boot. This setting overrides
 	// the Grid level setting.
 	Bootfile string `json:"bootfile,omitempty"`
@@ -7622,27 +7622,27 @@ type MemberDHCPProperties struct {
 	// Determines the ability of a member DHCP server to generate a host name and
 	// update DNS with this host name when it receives a DHCP REQUEST message that
 	// does not include a host name.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// Determines the retry interval when the member DHCP server makes repeated
 	// attempts to send DDNS updates to a DNS server.
 	DdnsRetryInterval uint32 `json:"ddns_retry_interval,omitempty"`
 	// Determines that only the DHCP server is allowed to update DNS, regardless of
 	// the requests from the DHCP clients. This setting overrides the Grid level
 	// setting.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DDNS TTL (Dynamic DNS Time To Live) value specifies the number of
 	// seconds an IP address for the name is cached.
 	DdnsTtl uint32 `json:"ddns_ttl,omitempty"`
 	// Determines if the member DHCP server's ability to update the A and PTR
 	// records with a fixed address is enabled or not.
-	DdnsUpdateFixedAddresses bool `json:"ddns_update_fixed_addresses,omitempty"`
+	DdnsUpdateFixedAddresses *bool `json:"ddns_update_fixed_addresses,omitempty"`
 	// Determines if support for option 81 is enabled or not.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// An ordered list of zone primaries that will receive DDNS updates.
 	DdnsZonePrimaries []*Dhcpddns `json:"ddns_zone_primaries,omitempty"`
 	// Determines if a BOOTP server denies BOOTP request or not. This setting
 	// overrides the Grid level setting.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The percentage of the total DHCP utilization of DHCP objects belonging to
 	// the Grid Member multiplied by 1000. This is the percentage of the total
 	// number of available IP addresses from all the DHCP objects belonging to the
@@ -7661,40 +7661,40 @@ type MemberDHCPProperties struct {
 	EmailList []string `json:"email_list,omitempty"`
 	// Determines if the member DHCP server's ability to send DDNS updates is
 	// enabled or not.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if the DHCP service of a member is enabled or not.
-	EnableDhcp bool `json:"enable_dhcp,omitempty"`
+	EnableDhcp *bool `json:"enable_dhcp,omitempty"`
 	// Determines if the DHCP service on the IPv6 LAN2 interface is enabled or not.
-	EnableDhcpOnIpv6Lan2 bool `json:"enable_dhcp_on_ipv6_lan2,omitempty"`
+	EnableDhcpOnIpv6Lan2 *bool `json:"enable_dhcp_on_ipv6_lan2,omitempty"`
 	// Determines if the DHCP service on the LAN2 interface is enabled or not.
-	EnableDhcpOnLan2 bool `json:"enable_dhcp_on_lan2,omitempty"`
+	EnableDhcpOnLan2 *bool `json:"enable_dhcp_on_lan2,omitempty"`
 	// Represents the watermarks above or below which address usage in a network is
 	// unexpected and might warrant your attention. This setting overrides the Grid
 	// level setting.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines if DHCPv6 service for the member is enabled or not.
-	EnableDhcpv6Service bool `json:"enable_dhcpv6_service,omitempty"`
+	EnableDhcpv6Service *bool `json:"enable_dhcpv6_service,omitempty"`
 	// Determines if e-mail warnings are enabled or disabled. When DHCP threshold
 	// is enabled and DHCP address usage crosses a watermark threshold, the
 	// appliance sends an e-mail notification to an administrator.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Determines if fingerprint feature is enabled on this member. If you enable
 	// this feature, the server will match a fingerprint for incoming lease
 	// requests.
-	EnableFingerprint bool `json:"enable_fingerprint,omitempty"`
+	EnableFingerprint *bool `json:"enable_fingerprint,omitempty"`
 	// Determines whether the appliance is enabled to receive GSS-TSIG
 	// authenticated updates from DHCP clients.
-	EnableGssTsig bool `json:"enable_gss_tsig,omitempty"`
+	EnableGssTsig *bool `json:"enable_gss_tsig,omitempty"`
 	// Determines if the Grid member's host name rewrite feature is enabled or not.
-	EnableHostnameRewrite bool `json:"enable_hostname_rewrite,omitempty"`
+	EnableHostnameRewrite *bool `json:"enable_hostname_rewrite,omitempty"`
 	// Determines if lease query is allowed or not. This setting overrides the
 	// Grid-level setting.
-	EnableLeasequery bool `json:"enable_leasequery,omitempty"`
+	EnableLeasequery *bool `json:"enable_leasequery,omitempty"`
 	// Determines if SNMP warnings are enabled or disabled on this DHCP member.
 	// When DHCP threshold is enabled and DHCP address usage crosses a watermark
 	// threshold, the appliance sends an SNMP trap to the trap receiver that was
 	// defined for the Grid member level.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -7720,7 +7720,7 @@ type MemberDHCPProperties struct {
 	// Determines if the ignore DHCP option list request flag of a Grid member DHCP
 	// is enabled or not. If this flag is set to true all available DHCP options
 	// will be returned to the client.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Indicates whether the appliance will ignore DHCP client IDs or MAC
 	// addresses. Valid values are "NONE", "CLIENT", or "MACADDR". The default is
 	// "NONE".
@@ -7729,19 +7729,19 @@ type MemberDHCPProperties struct {
 	IgnoreMacAddresses []string `json:"ignore_mac_addresses,omitempty"`
 	// Determines if the Immediate Fixed address configuration apply feature for
 	// the DHCP member is enabled or not.
-	ImmediateFaConfiguration bool `json:"immediate_fa_configuration,omitempty"`
+	ImmediateFaConfiguration *bool `json:"immediate_fa_configuration,omitempty"`
 	// The IPv4 Address of the Grid member.
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
 	// The member DDNS IPv6 domain name value.
 	Ipv6DdnsDomainname string `json:"ipv6_ddns_domainname,omitempty"`
 	// Controls whether the FQDN option sent by the DHCPv6 client is to be used, or
 	// if the server can automatically generate the FQDN.
-	Ipv6DdnsEnableOptionFqdn bool `json:"ipv6_ddns_enable_option_fqdn,omitempty"`
+	Ipv6DdnsEnableOptionFqdn *bool `json:"ipv6_ddns_enable_option_fqdn,omitempty"`
 	// The member IPv6 DDNS hostname value.
 	Ipv6DdnsHostname string `json:"ipv6_ddns_hostname,omitempty"`
 	// Determines if the server always updates DNS or updates only if requested by
 	// the client.
-	Ipv6DdnsServerAlwaysUpdates bool `json:"ipv6_ddns_server_always_updates,omitempty"`
+	Ipv6DdnsServerAlwaysUpdates *bool `json:"ipv6_ddns_server_always_updates,omitempty"`
 	// The member IPv6 DDNS TTL value.
 	Ipv6DdnsTtl uint32 `json:"ipv6_ddns_ttl,omitempty"`
 	// The update style for dynamic DHCPv6 DNS updates.
@@ -7753,17 +7753,17 @@ type MemberDHCPProperties struct {
 	Ipv6DomainNameServers []string `json:"ipv6_domain_name_servers,omitempty"`
 	// Determines if sending DDNS updates by the member DHCPv6 server is enabled or
 	// not.
-	Ipv6EnableDdns bool `json:"ipv6_enable_ddns,omitempty"`
+	Ipv6EnableDdns *bool `json:"ipv6_enable_ddns,omitempty"`
 	// Determines whether the appliance is enabled to receive GSS-TSIG
 	// authenticated updates from DHCPv6 clients.
-	Ipv6EnableGssTsig bool `json:"ipv6_enable_gss_tsig,omitempty"`
+	Ipv6EnableGssTsig *bool `json:"ipv6_enable_gss_tsig,omitempty"`
 	// Indicates whether DHCPv6 lease scavenging is enabled or disabled.
-	Ipv6EnableLeaseScavenging bool `json:"ipv6_enable_lease_scavenging,omitempty"`
+	Ipv6EnableLeaseScavenging *bool `json:"ipv6_enable_lease_scavenging,omitempty"`
 	// Determines if the DHCPv6 server retries failed dynamic DNS updates or not.
-	Ipv6EnableRetryUpdates bool `json:"ipv6_enable_retry_updates,omitempty"`
+	Ipv6EnableRetryUpdates *bool `json:"ipv6_enable_retry_updates,omitempty"`
 	// Determines if the server generates the hostname if it is not sent by the
 	// client.
-	Ipv6GenerateHostname bool `json:"ipv6_generate_hostname,omitempty"`
+	Ipv6GenerateHostname *bool `json:"ipv6_generate_hostname,omitempty"`
 	// The list of GSS-TSIG keys for a member DHCPv6 object.
 	Ipv6GssTsigKeys []*Kerberoskey `json:"ipv6_gss_tsig_keys,omitempty"`
 	// Determines the IPv6 address or FQDN of the Kerberos server for DHCPv6
@@ -7783,9 +7783,9 @@ type MemberDHCPProperties struct {
 	// feature is enabled, leases are kept in the Recycle Bin until one week after
 	// lease expiration. When the feature is disabled, the leases are irrecoverably
 	// deleted.
-	Ipv6RecycleLeases bool `json:"ipv6_recycle_leases,omitempty"`
+	Ipv6RecycleLeases *bool `json:"ipv6_recycle_leases,omitempty"`
 	// Enable binding for expired DHCPv6 leases.
-	Ipv6RememberExpiredClientAssociation bool `json:"ipv6_remember_expired_client_association,omitempty"`
+	Ipv6RememberExpiredClientAssociation *bool `json:"ipv6_remember_expired_client_association,omitempty"`
 	// Determines the retry interval when the member DHCPv6 server makes repeated
 	// attempts to send DDNS updates to a DNS server.
 	Ipv6RetryUpdatesInterval uint32 `json:"ipv6_retry_updates_interval,omitempty"`
@@ -7793,7 +7793,7 @@ type MemberDHCPProperties struct {
 	Ipv6ServerDuid string `json:"ipv6_server_duid,omitempty"`
 	// Controls whether the DHCPv6 server updates DNS when an IPv6 DHCP lease is
 	// renewed.
-	Ipv6UpdateDnsOnLeaseRenewal bool `json:"ipv6_update_dns_on_lease_renewal,omitempty"`
+	Ipv6UpdateDnsOnLeaseRenewal *bool `json:"ipv6_update_dns_on_lease_renewal,omitempty"`
 	// The IPv6 Address of the Grid member.
 	Ipv6Addr string `json:"ipv6addr,omitempty"`
 	// The IPv4 address or FQDN of the Kerberos server for DHCPv4 GSS-TSIG
@@ -7811,7 +7811,7 @@ type MemberDHCPProperties struct {
 	LeaseScavengeTime int `json:"lease_scavenge_time,omitempty"`
 	// This value specifies whether the grid member logs lease events. This setting
 	// overrides the Grid level setting.
-	LogLeaseEvents bool `json:"log_lease_events,omitempty"`
+	LogLeaseEvents *bool `json:"log_lease_events,omitempty"`
 	// This field contains the logic filters to be applied on the Grid member. This
 	// list corresponds to the match rules that are written to the dhcpd
 	// configuration file.
@@ -7858,10 +7858,10 @@ type MemberDHCPProperties struct {
 	// Determines if the recycle leases feature is enabled or not. If you enabled
 	// this feature and then delete a DHCP range, the appliance stores active
 	// leases from this range up to one week after the leases expires.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// Indicates whether the DHCP server makes repeated attempts to send DDNS
 	// updates to a DNS server.
-	RetryDdnsUpdates bool `json:"retry_ddns_updates,omitempty"`
+	RetryDdnsUpdates *bool `json:"retry_ddns_updates,omitempty"`
 	// The number of static DHCP addresses configured in DHCP objects that belong
 	// to the Grid Member.
 	StaticHosts uint32 `json:"static_hosts,omitempty"`
@@ -7872,121 +7872,121 @@ type MemberDHCPProperties struct {
 	// the Grid Member.
 	TotalHosts uint32 `json:"total_hosts,omitempty"`
 	// Controls whether the DHCP server updates DNS when a DHCP lease is renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: authority
-	UseAuthority bool `json:"use_authority,omitempty"`
+	UseAuthority *bool `json:"use_authority,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: ddns_update_fixed_addresses
-	UseDdnsUpdateFixedAddresses bool `json:"use_ddns_update_fixed_addresses,omitempty"`
+	UseDdnsUpdateFixedAddresses *bool `json:"use_ddns_update_fixed_addresses,omitempty"`
 	// Use flag for: ddns_use_option81
-	UseDdnsUseOption81 bool `json:"use_ddns_use_option81,omitempty"`
+	UseDdnsUseOption81 *bool `json:"use_ddns_use_option81,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: dns_update_style
-	UseDnsUpdateStyle bool `json:"use_dns_update_style,omitempty"`
+	UseDnsUpdateStyle *bool `json:"use_dns_update_style,omitempty"`
 	// Use flag for: email_list
-	UseEmailList bool `json:"use_email_list,omitempty"`
+	UseEmailList *bool `json:"use_email_list,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: enable_dhcp_thresholds , high_water_mark,
 	// high_water_mark_reset, low_water_mark, low_water_mark_reset
-	UseEnableDhcpThresholds bool `json:"use_enable_dhcp_thresholds,omitempty"`
+	UseEnableDhcpThresholds *bool `json:"use_enable_dhcp_thresholds,omitempty"`
 	// Use flag for: enable_fingerprint
-	UseEnableFingerprint bool `json:"use_enable_fingerprint,omitempty"`
+	UseEnableFingerprint *bool `json:"use_enable_fingerprint,omitempty"`
 	// Use flag for: kdc_server , enable_gss_tsig
-	UseEnableGssTsig bool `json:"use_enable_gss_tsig,omitempty"`
+	UseEnableGssTsig *bool `json:"use_enable_gss_tsig,omitempty"`
 	// Use flag for: enable_hostname_rewrite , hostname_rewrite_policy
-	UseEnableHostnameRewrite bool `json:"use_enable_hostname_rewrite,omitempty"`
+	UseEnableHostnameRewrite *bool `json:"use_enable_hostname_rewrite,omitempty"`
 	// Use flag for: enable_leasequery
-	UseEnableLeasequery bool `json:"use_enable_leasequery,omitempty"`
+	UseEnableLeasequery *bool `json:"use_enable_leasequery,omitempty"`
 	// Use flag for: enable_one_lease_per_client
-	UseEnableOneLeasePerClient bool `json:"use_enable_one_lease_per_client,omitempty"`
+	UseEnableOneLeasePerClient *bool `json:"use_enable_one_lease_per_client,omitempty"`
 	// Use flag for: gss_tsig_keys
-	UseGssTsigKeys bool `json:"use_gss_tsig_keys,omitempty"`
+	UseGssTsigKeys *bool `json:"use_gss_tsig_keys,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ignore_id
-	UseIgnoreId bool `json:"use_ignore_id,omitempty"`
+	UseIgnoreId *bool `json:"use_ignore_id,omitempty"`
 	// Use flag for: immediate_fa_configuration
-	UseImmediateFaConfiguration bool `json:"use_immediate_fa_configuration,omitempty"`
+	UseImmediateFaConfiguration *bool `json:"use_immediate_fa_configuration,omitempty"`
 	// Use flag for: ipv6_ddns_domainname
-	UseIpv6DdnsDomainname bool `json:"use_ipv6_ddns_domainname,omitempty"`
+	UseIpv6DdnsDomainname *bool `json:"use_ipv6_ddns_domainname,omitempty"`
 	// Use flag for: ipv6_ddns_enable_option_fqdn
-	UseIpv6DdnsEnableOptionFqdn bool `json:"use_ipv6_ddns_enable_option_fqdn,omitempty"`
+	UseIpv6DdnsEnableOptionFqdn *bool `json:"use_ipv6_ddns_enable_option_fqdn,omitempty"`
 	// Use flag for: ipv6_ddns_hostname
-	UseIpv6DdnsHostname bool `json:"use_ipv6_ddns_hostname,omitempty"`
+	UseIpv6DdnsHostname *bool `json:"use_ipv6_ddns_hostname,omitempty"`
 	// Use flag for: ipv6_ddns_ttl
-	UseIpv6DdnsTtl bool `json:"use_ipv6_ddns_ttl,omitempty"`
+	UseIpv6DdnsTtl *bool `json:"use_ipv6_ddns_ttl,omitempty"`
 	// Use flag for: ipv6_dns_update_style
-	UseIpv6DnsUpdateStyle bool `json:"use_ipv6_dns_update_style,omitempty"`
+	UseIpv6DnsUpdateStyle *bool `json:"use_ipv6_dns_update_style,omitempty"`
 	// Use flag for: ipv6_domain_name
-	UseIpv6DomainName bool `json:"use_ipv6_domain_name,omitempty"`
+	UseIpv6DomainName *bool `json:"use_ipv6_domain_name,omitempty"`
 	// Use flag for: ipv6_domain_name_servers
-	UseIpv6DomainNameServers bool `json:"use_ipv6_domain_name_servers,omitempty"`
+	UseIpv6DomainNameServers *bool `json:"use_ipv6_domain_name_servers,omitempty"`
 	// Use flag for: ipv6_enable_ddns
-	UseIpv6EnableDdns bool `json:"use_ipv6_enable_ddns,omitempty"`
+	UseIpv6EnableDdns *bool `json:"use_ipv6_enable_ddns,omitempty"`
 	// Use flag for: ipv6_kdc_server , ipv6_enable_gss_tsig
-	UseIpv6EnableGssTsig bool `json:"use_ipv6_enable_gss_tsig,omitempty"`
+	UseIpv6EnableGssTsig *bool `json:"use_ipv6_enable_gss_tsig,omitempty"`
 	// Use flag for: ipv6_enable_retry_updates , ipv6_retry_updates_interval
-	UseIpv6EnableRetryUpdates bool `json:"use_ipv6_enable_retry_updates,omitempty"`
+	UseIpv6EnableRetryUpdates *bool `json:"use_ipv6_enable_retry_updates,omitempty"`
 	// Use flag for: ipv6_generate_hostname
-	UseIpv6GenerateHostname bool `json:"use_ipv6_generate_hostname,omitempty"`
+	UseIpv6GenerateHostname *bool `json:"use_ipv6_generate_hostname,omitempty"`
 	// Use flag for: ipv6_gss_tsig_keys
-	UseIpv6GssTsigKeys bool `json:"use_ipv6_gss_tsig_keys,omitempty"`
+	UseIpv6GssTsigKeys *bool `json:"use_ipv6_gss_tsig_keys,omitempty"`
 	// Use flag for: ipv6_enable_lease_scavenging , ipv6_lease_scavenging_time,
 	// ipv6_remember_expired_client_association
-	UseIpv6LeaseScavenging bool `json:"use_ipv6_lease_scavenging,omitempty"`
+	UseIpv6LeaseScavenging *bool `json:"use_ipv6_lease_scavenging,omitempty"`
 	// Use flag for: ipv6_microsoft_code_page
-	UseIpv6MicrosoftCodePage bool `json:"use_ipv6_microsoft_code_page,omitempty"`
+	UseIpv6MicrosoftCodePage *bool `json:"use_ipv6_microsoft_code_page,omitempty"`
 	// Use flag for: ipv6_options
-	UseIpv6Options bool `json:"use_ipv6_options,omitempty"`
+	UseIpv6Options *bool `json:"use_ipv6_options,omitempty"`
 	// Use flag for: ipv6_recycle_leases
-	UseIpv6RecycleLeases bool `json:"use_ipv6_recycle_leases,omitempty"`
+	UseIpv6RecycleLeases *bool `json:"use_ipv6_recycle_leases,omitempty"`
 	// Use flag for: ipv6_update_dns_on_lease_renewal
-	UseIpv6UpdateDnsOnLeaseRenewal bool `json:"use_ipv6_update_dns_on_lease_renewal,omitempty"`
+	UseIpv6UpdateDnsOnLeaseRenewal *bool `json:"use_ipv6_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: lease_per_client_settings
-	UseLeasePerClientSettings bool `json:"use_lease_per_client_settings,omitempty"`
+	UseLeasePerClientSettings *bool `json:"use_lease_per_client_settings,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: log_lease_events
-	UseLogLeaseEvents bool `json:"use_log_lease_events,omitempty"`
+	UseLogLeaseEvents *bool `json:"use_log_lease_events,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: microsoft_code_page
-	UseMicrosoftCodePage bool `json:"use_microsoft_code_page,omitempty"`
+	UseMicrosoftCodePage *bool `json:"use_microsoft_code_page,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: ping_count
-	UsePingCount bool `json:"use_ping_count,omitempty"`
+	UsePingCount *bool `json:"use_ping_count,omitempty"`
 	// Use flag for: ping_timeout
-	UsePingTimeout bool `json:"use_ping_timeout,omitempty"`
+	UsePingTimeout *bool `json:"use_ping_timeout,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: prefix_length_mode
-	UsePrefixLengthMode bool `json:"use_prefix_length_mode,omitempty"`
+	UsePrefixLengthMode *bool `json:"use_prefix_length_mode,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: ddns_retry_interval , retry_ddns_updates
-	UseRetryDdnsUpdates bool `json:"use_retry_ddns_updates,omitempty"`
+	UseRetryDdnsUpdates *bool `json:"use_retry_ddns_updates,omitempty"`
 	// Use flag for: syslog_facility
-	UseSyslogFacility bool `json:"use_syslog_facility,omitempty"`
+	UseSyslogFacility *bool `json:"use_syslog_facility,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// The valid lifetime for Grid Member DHCP. Specifies the length of time
 	// addresses that are assigned to DHCPv6 clients remain in the valid state.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
@@ -8013,7 +8013,7 @@ type MemberDns struct {
 	Ref    string `json:"_ref,omitempty"`
 	// Add custom IP, MAC and DNS View name ENDS0 options to outgoing recursive
 	// queries.
-	AddClientIpMacOptions bool `json:"add_client_ip_mac_options,omitempty"`
+	AddClientIpMacOptions *bool `json:"add_client_ip_mac_options,omitempty"`
 	// The list of additional IP addresses on which DNS is enabled for a Grid
 	// member. Only one of "additional_ip_list" or "additional_ip_list_struct"
 	// should be set when modifying the object.
@@ -8023,14 +8023,14 @@ type MemberDns struct {
 	// or "additional_ip_list_struct" should be set when modifying the object.
 	AdditionalIpListStruct []*MemberDnsip `json:"additional_ip_list_struct,omitempty"`
 	// Determines whether the GSS-TSIG zone updates is enabled for the Grid member.
-	AllowGssTsigZoneUpdates bool `json:"allow_gss_tsig_zone_updates,omitempty"`
+	AllowGssTsigZoneUpdates *bool `json:"allow_gss_tsig_zone_updates,omitempty"`
 	// Determines if queries from specified IPv4 or IPv6 addresses and networks are
 	// enabled or not. The appliance can also use Transaction Signature (TSIG) keys
 	// to authenticate the queries. This setting overrides the Grid query settings.
 	AllowQuery []*Addressac `json:"allow_query,omitempty"`
 	// Determines if the responses to recursive queries is enabled or not. This
 	// setting overrides Grid recursive query settings.
-	AllowRecursiveQuery bool `json:"allow_recursive_query,omitempty"`
+	AllowRecursiveQuery *bool `json:"allow_recursive_query,omitempty"`
 	// Allows or rejects zone transfers from specified IPv4 or IPv6 addresses and
 	// networks or allows transfers from hosts authenticated by Transaction
 	// signature (TSIG) key. This setting overrides the Grid zone transfer
@@ -8042,23 +8042,23 @@ type MemberDns struct {
 	AllowUpdate []*Addressac `json:"allow_update,omitempty"`
 	// The flag that indicates whether the anonymization of captured DNS responses
 	// is enabled or disabled.
-	AnonymizeResponseLogging bool `json:"anonymize_response_logging,omitempty"`
+	AnonymizeResponseLogging *bool `json:"anonymize_response_logging,omitempty"`
 	// Enable DNS recursive query forwarding to Active Trust Cloud.
-	AtcFwdEnable bool `json:"atc_fwd_enable,omitempty"`
+	AtcFwdEnable *bool `json:"atc_fwd_enable,omitempty"`
 	// Mitigation settings for DNS attacks.
 	AttackMitigation *GridAttackmitigation `json:"attack_mitigation,omitempty"`
 	// The auto blackhole settings.
 	AutoBlackhole *GridAutoblackhole `json:"auto_blackhole,omitempty"`
 	// Determines if the auto-generation of A and PTR records for the LAN2 IP
 	// address is enabled or not, if DNS service is enabled on LAN2.
-	AutoCreateAAndPtrForLan2 bool `json:"auto_create_a_and_ptr_for_lan2,omitempty"`
+	AutoCreateAAndPtrForLan2 *bool `json:"auto_create_a_and_ptr_for_lan2,omitempty"`
 	// Determines if auto-generation of AAAA and IPv6 PTR records for LAN2 IPv6
 	// address is enabled or not.
-	AutoCreateAaaaAndIpv6ptrForLan2 bool `json:"auto_create_aaaa_and_ipv6ptr_for_lan2,omitempty"`
+	AutoCreateAaaaAndIpv6ptrForLan2 *bool `json:"auto_create_aaaa_and_ipv6ptr_for_lan2,omitempty"`
 	// Determines if a Grid member to automatically sort DNS views is enabled or
 	// not. The order of the DNS views determines the order in which the appliance
 	// checks the match lists.
-	AutoSortViews bool `json:"auto_sort_views,omitempty"`
+	AutoSortViews *bool `json:"auto_sort_views,omitempty"`
 	// The BIND check names policy, which indicates the action the appliance takes
 	// when it encounters host names that do not comply with the Strict Hostname
 	// Checking policy. This method applies only if the host name restriction
@@ -8077,7 +8077,7 @@ type MemberDns struct {
 	// rule that is specified by the blacklist_ruleset method.
 	BlacklistAction string `json:"blacklist_action,omitempty"`
 	// Determines if blacklist redirection queries are logged or not.
-	BlacklistLogQuery bool `json:"blacklist_log_query,omitempty"`
+	BlacklistLogQuery *bool `json:"blacklist_log_query,omitempty"`
 	// The IP addresses the appliance includes in the response it sends in place of
 	// a blacklisted IP address.
 	BlacklistRedirectAddresses []string `json:"blacklist_redirect_addresses,omitempty"`
@@ -8089,23 +8089,23 @@ type MemberDns struct {
 	BlacklistRulesets []string `json:"blacklist_rulesets,omitempty"`
 	// The flag that indicates whether the capture of DNS queries for all domains
 	// is enabled or disabled.
-	CaptureDnsQueriesOnAllDomains bool `json:"capture_dns_queries_on_all_domains,omitempty"`
+	CaptureDnsQueriesOnAllDomains *bool `json:"capture_dns_queries_on_all_domains,omitempty"`
 	// Determines whether the application of BIND check-names for zone transfers
 	// and DDNS updates are enabled.
-	CheckNamesForDdnsAndZoneTransfer bool `json:"check_names_for_ddns_and_zone_transfer,omitempty"`
+	CheckNamesForDdnsAndZoneTransfer *bool `json:"check_names_for_ddns_and_zone_transfer,omitempty"`
 	// Copy custom IP, MAC and DNS View name ENDS0 options from incoming to
 	// outgoing recursive queries.
-	CopyClientIpMacOptions bool `json:"copy_client_ip_mac_options,omitempty"`
+	CopyClientIpMacOptions *bool `json:"copy_client_ip_mac_options,omitempty"`
 	// Copies the allowed IPs from the zone transfer list into the also-notify
 	// statement in the named.conf file.
-	CopyXferToNotify bool `json:"copy_xfer_to_notify,omitempty"`
+	CopyXferToNotify *bool `json:"copy_xfer_to_notify,omitempty"`
 	// The list of custom root name servers. You can either select and use Internet
 	// root name servers or specify custom root name servers by providing a host
 	// name and IP address to which the Infoblox appliance can send queries.
 	CustomRootNameServers []NameServer `json:"custom_root_name_servers,omitempty"`
 	// The EDNS0 support for queries that require recursive resolution on Grid
 	// members.
-	DisableEdns bool `json:"disable_edns,omitempty"`
+	DisableEdns *bool `json:"disable_edns,omitempty"`
 	// The list of DNS64 synthesis groups associated with this member.
 	Dns64Groups []string `json:"dns64_groups,omitempty"`
 	// The DNS cache acceleration status.
@@ -8116,14 +8116,14 @@ type MemberDns struct {
 	DnsCacheAccelerationTtl uint32 `json:"dns_cache_acceleration_ttl,omitempty"`
 	// The flag that indicates whether the anycast failure (BFD session down) is
 	// enabled on member failure or not.
-	DnsHealthCheckAnycastControl bool `json:"dns_health_check_anycast_control,omitempty"`
+	DnsHealthCheckAnycastControl *bool `json:"dns_health_check_anycast_control,omitempty"`
 	// The list of domain names for the DNS health check.
 	DnsHealthCheckDomainList []string `json:"dns_health_check_domain_list,omitempty"`
 	// The time interval (in seconds) for DNS health check.
 	DnsHealthCheckInterval uint32 `json:"dns_health_check_interval,omitempty"`
 	// The flag that indicates whether the recursive DNS health check is enabled or
 	// not.
-	DnsHealthCheckRecursionFlag bool `json:"dns_health_check_recursion_flag,omitempty"`
+	DnsHealthCheckRecursionFlag *bool `json:"dns_health_check_recursion_flag,omitempty"`
 	// The number of DNS health check retries.
 	DnsHealthCheckRetries uint32 `json:"dns_health_check_retries,omitempty"`
 	// The DNS health check timeout interval (in seconds).
@@ -8134,7 +8134,7 @@ type MemberDns struct {
 	// The source address used if dns_notify_transfer_source type is "IP".
 	DnsNotifyTransferSourceAddress string `json:"dns_notify_transfer_source_address,omitempty"`
 	// Enables DNS over TLS service.
-	DnsOverTlsService bool `json:"dns_over_tls_service,omitempty"`
+	DnsOverTlsService *bool `json:"dns_over_tls_service,omitempty"`
 	// The time limit (in minutes) for the DNS query capture file.
 	DnsQueryCaptureFileTimeLimit uint32 `json:"dns_query_capture_file_time_limit,omitempty"`
 	// The source address used if dns_query_source_interface type is "IP".
@@ -8145,32 +8145,32 @@ type MemberDns struct {
 	DnsViewAddressSettings []*SettingViewaddress `json:"dns_view_address_settings,omitempty"`
 	// Determines if the blacklist rules for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecBlacklistEnabled bool `json:"dnssec_blacklist_enabled,omitempty"`
+	DnssecBlacklistEnabled *bool `json:"dnssec_blacklist_enabled,omitempty"`
 	// Determines if the DNS64 groups for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecDns64Enabled bool `json:"dnssec_dns64_enabled,omitempty"`
+	DnssecDns64Enabled *bool `json:"dnssec_dns64_enabled,omitempty"`
 	// Determines if the DNS security extension is enabled or not.
-	DnssecEnabled bool `json:"dnssec_enabled,omitempty"`
+	DnssecEnabled *bool `json:"dnssec_enabled,omitempty"`
 	// Determines when the DNS member accepts expired signatures.
-	DnssecExpiredSignaturesEnabled bool `json:"dnssec_expired_signatures_enabled,omitempty"`
+	DnssecExpiredSignaturesEnabled *bool `json:"dnssec_expired_signatures_enabled,omitempty"`
 	// A list of zones for which the server does not perform DNSSEC validation.
 	DnssecNegativeTrustAnchors []string `json:"dnssec_negative_trust_anchors,omitempty"`
 	// Determines if the NXDOMAIN rules for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecNxdomainEnabled bool `json:"dnssec_nxdomain_enabled,omitempty"`
+	DnssecNxdomainEnabled *bool `json:"dnssec_nxdomain_enabled,omitempty"`
 	// Determines if the RPZ policies for DNSSEC-enabled clients are enabled or
 	// not.
-	DnssecRpzEnabled bool `json:"dnssec_rpz_enabled,omitempty"`
+	DnssecRpzEnabled *bool `json:"dnssec_rpz_enabled,omitempty"`
 	// The list of trusted keys for the DNSSEC feature.
 	DnssecTrustedKeys []*Dnssectrustedkey `json:"dnssec_trusted_keys,omitempty"`
 	// Determines if the DNS security validation is enabled or not.
-	DnssecValidationEnabled bool `json:"dnssec_validation_enabled,omitempty"`
+	DnssecValidationEnabled *bool `json:"dnssec_validation_enabled,omitempty"`
 	// The DNSTAP settings.
 	DnstapSetting *Dnstapsetting `json:"dnstap_setting,omitempty"`
 	// DNS over HTTPS sessions duration.
 	DohHttpsSessionDuration uint32 `json:"doh_https_session_duration,omitempty"`
 	// Enables DNS over HTTPS service.
-	DohService bool `json:"doh_service,omitempty"`
+	DohService *bool `json:"doh_service,omitempty"`
 	// The list of domains for DNS query capture.
 	DomainsToCaptureDnsQueries []string `json:"domains_to_capture_dns_queries,omitempty"`
 	// Setting to control specific behavior for DTC DNS responses for incoming lbdn
@@ -8178,7 +8178,7 @@ type MemberDns struct {
 	DtcDnsQueriesSpecificBehavior string `json:"dtc_dns_queries_specific_behavior,omitempty"`
 	// Determines whether to prefer the client address from the edns-client-subnet
 	// option for DTC or not.
-	DtcEdnsPreferClientSubnet bool `json:"dtc_edns_prefer_client_subnet,omitempty"`
+	DtcEdnsPreferClientSubnet *bool `json:"dtc_edns_prefer_client_subnet,omitempty"`
 	// The health check source type.
 	DtcHealthSource string `json:"dtc_health_source,omitempty"`
 	// The source address used if dtc_health_source type is "IP".
@@ -8189,45 +8189,45 @@ type MemberDns struct {
 	EdnsUdpSize uint32 `json:"edns_udp_size,omitempty"`
 	// Determines if the blocking of DNS queries is enabled or not. This setting
 	// overrides the Grid enable_blackhole settings.
-	EnableBlackhole bool `json:"enable_blackhole,omitempty"`
+	EnableBlackhole *bool `json:"enable_blackhole,omitempty"`
 	// Determines if a blacklist is enabled or not on the Grid member.
-	EnableBlacklist bool `json:"enable_blacklist,omitempty"`
+	EnableBlacklist *bool `json:"enable_blacklist,omitempty"`
 	// The flag that indicates whether the capture of DNS queries is enabled or
 	// disabled.
-	EnableCaptureDnsQueries bool `json:"enable_capture_dns_queries,omitempty"`
+	EnableCaptureDnsQueries *bool `json:"enable_capture_dns_queries,omitempty"`
 	// The flag that indicates whether the capture of DNS responses is enabled or
 	// disabled.
-	EnableCaptureDnsResponses bool `json:"enable_capture_dns_responses,omitempty"`
+	EnableCaptureDnsResponses *bool `json:"enable_capture_dns_responses,omitempty"`
 	// Determines if the DNS service of a member is enabled or not.
-	EnableDns bool `json:"enable_dns,omitempty"`
+	EnableDns *bool `json:"enable_dns,omitempty"`
 	// Determines if the DNS64 support is enabled or not for this member.
-	EnableDns64 bool `json:"enable_dns64,omitempty"`
+	EnableDns64 *bool `json:"enable_dns64,omitempty"`
 	// Determines if the DNS Cache Acceleration service is enabled or not for a
 	// member.
-	EnableDnsCacheAcceleration bool `json:"enable_dns_cache_acceleration,omitempty"`
+	EnableDnsCacheAcceleration *bool `json:"enable_dns_cache_acceleration,omitempty"`
 	// The flag that indicates whether the DNS health check is enabled or not.
-	EnableDnsHealthCheck bool `json:"enable_dns_health_check,omitempty"`
+	EnableDnsHealthCheck *bool `json:"enable_dns_health_check,omitempty"`
 	// Determines whether the query messages need to be forwarded to DNSTAP or not.
-	EnableDnstapQueries bool `json:"enable_dnstap_queries,omitempty"`
+	EnableDnstapQueries *bool `json:"enable_dnstap_queries,omitempty"`
 	// Determines whether the response messages need to be forwarded to DNSTAP or
 	// not.
-	EnableDnstapResponses bool `json:"enable_dnstap_responses,omitempty"`
+	EnableDnstapResponses *bool `json:"enable_dnstap_responses,omitempty"`
 	// The flag that indicates whether excluding domain names from captured DNS
 	// queries and responses is enabled or disabled.
-	EnableExcludedDomainNames bool `json:"enable_excluded_domain_names,omitempty"`
+	EnableExcludedDomainNames *bool `json:"enable_excluded_domain_names,omitempty"`
 	// Determines if the fixed RRset order FQDN is enabled or not.
-	EnableFixedRrsetOrderFqdns bool `json:"enable_fixed_rrset_order_fqdns,omitempty"`
+	EnableFixedRrsetOrderFqdns *bool `json:"enable_fixed_rrset_order_fqdns,omitempty"`
 	// Determines whether Fault Tolerant Caching (FTC) is enabled.
-	EnableFtc bool `json:"enable_ftc,omitempty"`
+	EnableFtc *bool `json:"enable_ftc,omitempty"`
 	// Determines whether the appliance is enabled to receive GSS-TSIG
 	// authenticated updates from DHCP clients.
-	EnableGssTsig bool `json:"enable_gss_tsig,omitempty"`
+	EnableGssTsig *bool `json:"enable_gss_tsig,omitempty"`
 	// Determines if the notify source port for a member is enabled or not.
-	EnableNotifySourcePort bool `json:"enable_notify_source_port,omitempty"`
+	EnableNotifySourcePort *bool `json:"enable_notify_source_port,omitempty"`
 	// Determines if the DNS query rewrite is enabled or not for this member.
-	EnableQueryRewrite bool `json:"enable_query_rewrite,omitempty"`
+	EnableQueryRewrite *bool `json:"enable_query_rewrite,omitempty"`
 	// Determines if the query source port for a memer is enabled or not.
-	EnableQuerySourcePort bool `json:"enable_query_source_port,omitempty"`
+	EnableQuerySourcePort *bool `json:"enable_query_source_port,omitempty"`
 	// The list of domains that are excluded from DNS query and response capture.
 	ExcludedDomainNames []string `json:"excluded_domain_names,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -8248,10 +8248,10 @@ type MemberDns struct {
 	// Permits this member to send queries to forwarders only. When the value is
 	// "true", the member sends queries to forwarders only, and not to other
 	// internal or Internet root servers.
-	ForwardOnly bool `json:"forward_only,omitempty"`
+	ForwardOnly *bool `json:"forward_only,omitempty"`
 	// Allows secondary servers to forward updates to the DNS server. This setting
 	// overrides grid update settings.
-	ForwardUpdates bool `json:"forward_updates,omitempty"`
+	ForwardUpdates *bool `json:"forward_updates,omitempty"`
 	// The forwarders for the member. A forwarder is essentially a name server to
 	// which other name servers first send all of their off-site queries. The
 	// forwarder builds up a cache of information, avoiding the need for the other
@@ -8299,7 +8299,7 @@ type MemberDns struct {
 	MaxUdpSize uint32 `json:"max_udp_size,omitempty"`
 	// Enables the ability to return a minimal amount of data in response to a
 	// query. This capability speeds up the DNS services provided by the appliance.
-	MinimalResp bool `json:"minimal_resp,omitempty"`
+	MinimalResp *bool `json:"minimal_resp,omitempty"`
 	// Specifies the number of seconds of delay the notify messages are sent to
 	// secondaries.
 	NotifyDelay uint32 `json:"notify_delay,omitempty"`
@@ -8311,9 +8311,9 @@ type MemberDns struct {
 	// selected by BIND.
 	NotifySourcePort uint32 `json:"notify_source_port,omitempty"`
 	// Determines if NXDOMAIN redirection queries are logged or not.
-	NxdomainLogQuery bool `json:"nxdomain_log_query,omitempty"`
+	NxdomainLogQuery *bool `json:"nxdomain_log_query,omitempty"`
 	// Enables NXDOMAIN redirection.
-	NxdomainRedirect bool `json:"nxdomain_redirect,omitempty"`
+	NxdomainRedirect *bool `json:"nxdomain_redirect,omitempty"`
 	// The IPv4 NXDOMAIN redirection addresses.
 	NxdomainRedirectAddresses []string `json:"nxdomain_redirect_addresses,omitempty"`
 	// The IPv6 NXDOMAIN redirection addresses.
@@ -8346,10 +8346,10 @@ type MemberDns struct {
 	// Determines the type of root name servers.
 	RootNameServerType string `json:"root_name_server_type,omitempty"`
 	// Enables NSDNAME and NSIP resource records from RPZ feeds at member level.
-	RpzDisableNsdnameNsip bool `json:"rpz_disable_nsdname_nsip,omitempty"`
+	RpzDisableNsdnameNsip *bool `json:"rpz_disable_nsdname_nsip,omitempty"`
 	// Enables the appliance to ignore RPZ-IP triggers with prefix lengths less
 	// than the specified minimum prefix length.
-	RpzDropIpRuleEnabled bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
+	RpzDropIpRuleEnabled *bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
 	// The minimum prefix length for IPv4 RPZ-IP triggers. The appliance ignores
 	// RPZ-IP triggers with prefix lengths less than the specified minimum IPv4
 	// prefix length.
@@ -8359,7 +8359,7 @@ type MemberDns struct {
 	// prefix length.
 	RpzDropIpRuleMinPrefixLengthIpv6 uint32 `json:"rpz_drop_ip_rule_min_prefix_length_ipv6,omitempty"`
 	// The flag that indicates whether recursive RPZ lookups are enabled.
-	RpzQnameWaitRecurse bool `json:"rpz_qname_wait_recurse,omitempty"`
+	RpzQnameWaitRecurse *bool `json:"rpz_qname_wait_recurse,omitempty"`
 	// The number of maximum concurrent SOA queries per second for the member.
 	SerialQueryRate uint32 `json:"serial_query_rate,omitempty"`
 	// The value of the server-id directive for BIND and Unbound DNS.
@@ -8370,13 +8370,13 @@ type MemberDns struct {
 	ServerIdDirectiveString string `json:"server_id_directive_string,omitempty"`
 	// Determines if RPZ rules are applied to queries originated from this member
 	// and received by other Grid members.
-	SkipInGridRpzQueries bool `json:"skip_in_grid_rpz_queries,omitempty"`
+	SkipInGridRpzQueries *bool `json:"skip_in_grid_rpz_queries,omitempty"`
 	// A sort list determines the order of addresses in responses made to DNS
 	// queries. This setting overrides Grid sort list settings.
 	Sortlist []*Sortlist `json:"sortlist,omitempty"`
 	// The flag that indicates whether the storage of query capture reports on the
 	// appliance is enabled or disabled.
-	StoreLocally bool `json:"store_locally,omitempty"`
+	StoreLocally *bool `json:"store_locally,omitempty"`
 	// The syslog facility. This is the location on the syslog server to which you
 	// want to sort the DNS logging messages. This setting overrides the Grid
 	// logging facility settings.
@@ -8399,148 +8399,148 @@ type MemberDns struct {
 	// Logging level for the Unbound recursive resolver.
 	UnboundLoggingLevel string `json:"unbound_logging_level,omitempty"`
 	// Use flag for: add_client_ip_mac_options
-	UseAddClientIpMacOptions bool `json:"use_add_client_ip_mac_options,omitempty"`
+	UseAddClientIpMacOptions *bool `json:"use_add_client_ip_mac_options,omitempty"`
 	// Use flag for: allow_query
-	UseAllowQuery bool `json:"use_allow_query,omitempty"`
+	UseAllowQuery *bool `json:"use_allow_query,omitempty"`
 	// Use flag for: allow_transfer
-	UseAllowTransfer bool `json:"use_allow_transfer,omitempty"`
+	UseAllowTransfer *bool `json:"use_allow_transfer,omitempty"`
 	// Use flag for: attack_mitigation
-	UseAttackMitigation bool `json:"use_attack_mitigation,omitempty"`
+	UseAttackMitigation *bool `json:"use_attack_mitigation,omitempty"`
 	// Use flag for: auto_blackhole
-	UseAutoBlackhole bool `json:"use_auto_blackhole,omitempty"`
+	UseAutoBlackhole *bool `json:"use_auto_blackhole,omitempty"`
 	// Use flag for: bind_hostname_directive
-	UseBindHostnameDirective bool `json:"use_bind_hostname_directive,omitempty"`
+	UseBindHostnameDirective *bool `json:"use_bind_hostname_directive,omitempty"`
 	// Use flag for: enable_blackhole
-	UseBlackhole bool `json:"use_blackhole,omitempty"`
+	UseBlackhole *bool `json:"use_blackhole,omitempty"`
 	// Use flag for: blackhole_list , blacklist_action, blacklist_log_query,
 	// blacklist_redirect_addresses, blacklist_redirect_ttl, blacklist_rulesets,
 	// enable_blacklist
-	UseBlacklist bool `json:"use_blacklist,omitempty"`
+	UseBlacklist *bool `json:"use_blacklist,omitempty"`
 	// Use flag for: capture_dns_queries_on_all_domains
-	UseCaptureDnsQueriesOnAllDomains bool `json:"use_capture_dns_queries_on_all_domains,omitempty"`
+	UseCaptureDnsQueriesOnAllDomains *bool `json:"use_capture_dns_queries_on_all_domains,omitempty"`
 	// Use flag for: copy_client_ip_mac_options
-	UseCopyClientIpMacOptions bool `json:"use_copy_client_ip_mac_options,omitempty"`
+	UseCopyClientIpMacOptions *bool `json:"use_copy_client_ip_mac_options,omitempty"`
 	// Use flag for: copy_xfer_to_notify
-	UseCopyXferToNotify bool `json:"use_copy_xfer_to_notify,omitempty"`
+	UseCopyXferToNotify *bool `json:"use_copy_xfer_to_notify,omitempty"`
 	// Use flag for: disable_edns
-	UseDisableEdns bool `json:"use_disable_edns,omitempty"`
+	UseDisableEdns *bool `json:"use_disable_edns,omitempty"`
 	// Use flag for: enable_dns64 , dns64_groups
-	UseDns64 bool `json:"use_dns64,omitempty"`
+	UseDns64 *bool `json:"use_dns64,omitempty"`
 	// Use flag for: dns_cache_acceleration_ttl
-	UseDnsCacheAccelerationTtl bool `json:"use_dns_cache_acceleration_ttl,omitempty"`
+	UseDnsCacheAccelerationTtl *bool `json:"use_dns_cache_acceleration_ttl,omitempty"`
 	// Use flag for: dns_health_check_domain_list ,
 	// dns_health_check_recursion_flag, dns_health_check_anycast_control,
 	// enable_dns_health_check, dns_health_check_interval,
 	// dns_health_check_timeout, dns_health_check_retries
-	UseDnsHealthCheck bool `json:"use_dns_health_check,omitempty"`
+	UseDnsHealthCheck *bool `json:"use_dns_health_check,omitempty"`
 	// Use flag for: dnssec_enabled , dnssec_expired_signatures_enabled,
 	// dnssec_validation_enabled, dnssec_trusted_keys
-	UseDnssec bool `json:"use_dnssec,omitempty"`
+	UseDnssec *bool `json:"use_dnssec,omitempty"`
 	// Use flag for: enable_dnstap_queries , enable_dnstap_responses,
 	// dnstap_setting
-	UseDnstapSetting bool `json:"use_dnstap_setting,omitempty"`
+	UseDnstapSetting *bool `json:"use_dnstap_setting,omitempty"`
 	// Use flag for: dtc_dns_queries_specific_behavior
-	UseDtcDnsQueriesSpecificBehavior bool `json:"use_dtc_dns_queries_specific_behavior,omitempty"`
+	UseDtcDnsQueriesSpecificBehavior *bool `json:"use_dtc_dns_queries_specific_behavior,omitempty"`
 	// Use flag for: dtc_edns_prefer_client_subnet
-	UseDtcEdnsPreferClientSubnet bool `json:"use_dtc_edns_prefer_client_subnet,omitempty"`
+	UseDtcEdnsPreferClientSubnet *bool `json:"use_dtc_edns_prefer_client_subnet,omitempty"`
 	// Use flag for: edns_udp_size
-	UseEdnsUdpSize bool `json:"use_edns_udp_size,omitempty"`
+	UseEdnsUdpSize *bool `json:"use_edns_udp_size,omitempty"`
 	// Use flag for: enable_capture_dns_queries , enable_capture_dns_responses
-	UseEnableCaptureDns bool `json:"use_enable_capture_dns,omitempty"`
+	UseEnableCaptureDns *bool `json:"use_enable_capture_dns,omitempty"`
 	// Use flag for: enable_excluded_domain_names
-	UseEnableExcludedDomainNames bool `json:"use_enable_excluded_domain_names,omitempty"`
+	UseEnableExcludedDomainNames *bool `json:"use_enable_excluded_domain_names,omitempty"`
 	// Use flag for: enable_gss_tsig
-	UseEnableGssTsig bool `json:"use_enable_gss_tsig,omitempty"`
+	UseEnableGssTsig *bool `json:"use_enable_gss_tsig,omitempty"`
 	// Use flag for: enable_query_rewrite
-	UseEnableQueryRewrite bool `json:"use_enable_query_rewrite,omitempty"`
+	UseEnableQueryRewrite *bool `json:"use_enable_query_rewrite,omitempty"`
 	// Use flag for: filter_aaaa , filter_aaaa_list
-	UseFilterAaaa bool `json:"use_filter_aaaa,omitempty"`
+	UseFilterAaaa *bool `json:"use_filter_aaaa,omitempty"`
 	// Use flag for: fixed_rrset_order_fqdns , enable_fixed_rrset_order_fqdns
-	UseFixedRrsetOrderFqdns bool `json:"use_fixed_rrset_order_fqdns,omitempty"`
+	UseFixedRrsetOrderFqdns *bool `json:"use_fixed_rrset_order_fqdns,omitempty"`
 	// Use flag for: forward_updates
-	UseForwardUpdates bool `json:"use_forward_updates,omitempty"`
+	UseForwardUpdates *bool `json:"use_forward_updates,omitempty"`
 	// Use flag for: forwarders , forward_only
-	UseForwarders bool `json:"use_forwarders,omitempty"`
+	UseForwarders *bool `json:"use_forwarders,omitempty"`
 	// Use flag for: enable_ftc , ftc_expired_record_ttl,
 	// ftc_expired_record_timeout
-	UseFtc bool `json:"use_ftc,omitempty"`
+	UseFtc *bool `json:"use_ftc,omitempty"`
 	// Use flag for: gss_tsig_keys
-	UseGssTsigKeys bool `json:"use_gss_tsig_keys,omitempty"`
+	UseGssTsigKeys *bool `json:"use_gss_tsig_keys,omitempty"`
 	// Use flag for: lame_ttl
-	UseLameTtl bool `json:"use_lame_ttl,omitempty"`
+	UseLameTtl *bool `json:"use_lame_ttl,omitempty"`
 	// Determines if the DNS service on the IPv6 LAN2 port is enabled or not.
-	UseLan2Ipv6Port bool `json:"use_lan2_ipv6_port,omitempty"`
+	UseLan2Ipv6Port *bool `json:"use_lan2_ipv6_port,omitempty"`
 	// Determines if the DNS service on the LAN2 port is enabled or not.
-	UseLan2Port bool `json:"use_lan2_port,omitempty"`
+	UseLan2Port *bool `json:"use_lan2_port,omitempty"`
 	// Determines if the DNS service on the IPv6 LAN port is enabled or not.
-	UseLanIpv6Port bool `json:"use_lan_ipv6_port,omitempty"`
+	UseLanIpv6Port *bool `json:"use_lan_ipv6_port,omitempty"`
 	// Determines the status of the use of DNS services on the IPv4 LAN1 port.
-	UseLanPort bool `json:"use_lan_port,omitempty"`
+	UseLanPort *bool `json:"use_lan_port,omitempty"`
 	// Use flag for: logging_categories
-	UseLoggingCategories bool `json:"use_logging_categories,omitempty"`
+	UseLoggingCategories *bool `json:"use_logging_categories,omitempty"`
 	// Use flag for: max_cache_ttl
-	UseMaxCacheTtl bool `json:"use_max_cache_ttl,omitempty"`
+	UseMaxCacheTtl *bool `json:"use_max_cache_ttl,omitempty"`
 	// Use flag for: max_cached_lifetime
-	UseMaxCachedLifetime bool `json:"use_max_cached_lifetime,omitempty"`
+	UseMaxCachedLifetime *bool `json:"use_max_cached_lifetime,omitempty"`
 	// Use flag for: max_ncache_ttl
-	UseMaxNcacheTtl bool `json:"use_max_ncache_ttl,omitempty"`
+	UseMaxNcacheTtl *bool `json:"use_max_ncache_ttl,omitempty"`
 	// Use flag for: max_udp_size
-	UseMaxUdpSize bool `json:"use_max_udp_size,omitempty"`
+	UseMaxUdpSize *bool `json:"use_max_udp_size,omitempty"`
 	// Determines if the DNS services on the IPv6 MGMT port is enabled or not.
-	UseMgmtIpv6Port bool `json:"use_mgmt_ipv6_port,omitempty"`
+	UseMgmtIpv6Port *bool `json:"use_mgmt_ipv6_port,omitempty"`
 	// Determines if the DNS services on the MGMT port is enabled or not.
-	UseMgmtPort bool `json:"use_mgmt_port,omitempty"`
+	UseMgmtPort *bool `json:"use_mgmt_port,omitempty"`
 	// Use flag for: notify_delay
-	UseNotifyDelay bool `json:"use_notify_delay,omitempty"`
+	UseNotifyDelay *bool `json:"use_notify_delay,omitempty"`
 	// Use flag for: nxdomain_redirect , nxdomain_redirect_addresses,
 	// nxdomain_redirect_addresses_v6, nxdomain_redirect_ttl, nxdomain_log_query,
 	// nxdomain_rulesets
-	UseNxdomainRedirect bool `json:"use_nxdomain_redirect,omitempty"`
+	UseNxdomainRedirect *bool `json:"use_nxdomain_redirect,omitempty"`
 	// Use flag for: record_name_policy
-	UseRecordNamePolicy bool `json:"use_record_name_policy,omitempty"`
+	UseRecordNamePolicy *bool `json:"use_record_name_policy,omitempty"`
 	// Use flag for: recursive_client_limit
-	UseRecursiveClientLimit bool `json:"use_recursive_client_limit,omitempty"`
+	UseRecursiveClientLimit *bool `json:"use_recursive_client_limit,omitempty"`
 	// Use flag for: allow_recursive_query , recursive_query_list
-	UseRecursiveQuerySetting bool `json:"use_recursive_query_setting,omitempty"`
+	UseRecursiveQuerySetting *bool `json:"use_recursive_query_setting,omitempty"`
 	// Use flag for: resolver_query_timeout
-	UseResolverQueryTimeout bool `json:"use_resolver_query_timeout,omitempty"`
+	UseResolverQueryTimeout *bool `json:"use_resolver_query_timeout,omitempty"`
 	// Use flag for: response_rate_limiting
-	UseResponseRateLimiting bool `json:"use_response_rate_limiting,omitempty"`
+	UseResponseRateLimiting *bool `json:"use_response_rate_limiting,omitempty"`
 	// Use flag for: root_name_server_type , custom_root_name_servers,
 	// use_root_server_for_all_views
-	UseRootNameServer bool `json:"use_root_name_server,omitempty"`
+	UseRootNameServer *bool `json:"use_root_name_server,omitempty"`
 	// Determines if root name servers should be applied to all views or only to
 	// Default view.
-	UseRootServerForAllViews bool `json:"use_root_server_for_all_views,omitempty"`
+	UseRootServerForAllViews *bool `json:"use_root_server_for_all_views,omitempty"`
 	// Use flag for: rpz_disable_nsdname_nsip
-	UseRpzDisableNsdnameNsip bool `json:"use_rpz_disable_nsdname_nsip,omitempty"`
+	UseRpzDisableNsdnameNsip *bool `json:"use_rpz_disable_nsdname_nsip,omitempty"`
 	// Use flag for: rpz_drop_ip_rule_enabled ,
 	// rpz_drop_ip_rule_min_prefix_length_ipv4,
 	// rpz_drop_ip_rule_min_prefix_length_ipv6
-	UseRpzDropIpRule bool `json:"use_rpz_drop_ip_rule,omitempty"`
+	UseRpzDropIpRule *bool `json:"use_rpz_drop_ip_rule,omitempty"`
 	// Use flag for: rpz_qname_wait_recurse
-	UseRpzQnameWaitRecurse bool `json:"use_rpz_qname_wait_recurse,omitempty"`
+	UseRpzQnameWaitRecurse *bool `json:"use_rpz_qname_wait_recurse,omitempty"`
 	// Use flag for: serial_query_rate
-	UseSerialQueryRate bool `json:"use_serial_query_rate,omitempty"`
+	UseSerialQueryRate *bool `json:"use_serial_query_rate,omitempty"`
 	// Use flag for: server_id_directive
-	UseServerIdDirective bool `json:"use_server_id_directive,omitempty"`
+	UseServerIdDirective *bool `json:"use_server_id_directive,omitempty"`
 	// Use flag for: sortlist
-	UseSortlist bool `json:"use_sortlist,omitempty"`
+	UseSortlist *bool `json:"use_sortlist,omitempty"`
 	// Use flag for: enable_notify_source_port , notify_source_port,
 	// enable_query_source_port, query_source_port
-	UseSourcePorts bool `json:"use_source_ports,omitempty"`
+	UseSourcePorts *bool `json:"use_source_ports,omitempty"`
 	// Use flag for: syslog_facility
-	UseSyslogFacility bool `json:"use_syslog_facility,omitempty"`
+	UseSyslogFacility *bool `json:"use_syslog_facility,omitempty"`
 	// Use flag for: transfers_in
-	UseTransfersIn bool `json:"use_transfers_in,omitempty"`
+	UseTransfersIn *bool `json:"use_transfers_in,omitempty"`
 	// Use flag for: transfers_out
-	UseTransfersOut bool `json:"use_transfers_out,omitempty"`
+	UseTransfersOut *bool `json:"use_transfers_out,omitempty"`
 	// Use flag for: transfers_per_ns
-	UseTransfersPerNs bool `json:"use_transfers_per_ns,omitempty"`
+	UseTransfersPerNs *bool `json:"use_transfers_per_ns,omitempty"`
 	// Use flag for: allow_update , allow_gss_tsig_zone_updates
-	UseUpdateSetting bool `json:"use_update_setting,omitempty"`
+	UseUpdateSetting *bool `json:"use_update_setting,omitempty"`
 	// Use flag for: transfer_excluded_servers , transfer_format
-	UseZoneTransferFormat bool `json:"use_zone_transfer_format,omitempty"`
+	UseZoneTransferFormat *bool `json:"use_zone_transfer_format,omitempty"`
 	// The list of views associated with this member.
 	Views []string `json:"views,omitempty"`
 }
@@ -8565,22 +8565,22 @@ type MemberFiledistribution struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether uploads to the Grid member are allowed.
-	AllowUploads bool `json:"allow_uploads,omitempty"`
+	AllowUploads *bool `json:"allow_uploads,omitempty"`
 	// The Grid member descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the FTP prtocol is enabled for file distribution.
-	EnableFtp bool `json:"enable_ftp,omitempty"`
+	EnableFtp *bool `json:"enable_ftp,omitempty"`
 	// Determines whether the LIST command for FTP is enabled.
-	EnableFtpFilelist bool `json:"enable_ftp_filelist,omitempty"`
+	EnableFtpFilelist *bool `json:"enable_ftp_filelist,omitempty"`
 	// Determines whether the passive mode for FTP is enabled.
-	EnableFtpPassive bool `json:"enable_ftp_passive,omitempty"`
+	EnableFtpPassive *bool `json:"enable_ftp_passive,omitempty"`
 	// Determines whether the HTTP prtocol is enabled for file distribution.
-	EnableHttp bool `json:"enable_http,omitempty"`
+	EnableHttp *bool `json:"enable_http,omitempty"`
 	// Determines whether the HTTP prtocol access control (AC) settings are
 	// enabled.
-	EnableHttpAcl bool `json:"enable_http_acl,omitempty"`
+	EnableHttpAcl *bool `json:"enable_http_acl,omitempty"`
 	// Determines whether the TFTP prtocol is enabled for file distribution.
-	EnableTftp bool `json:"enable_tftp,omitempty"`
+	EnableTftp *bool `json:"enable_tftp,omitempty"`
 	// Access control (AC) settings for the FTP protocol.
 	FtpAcls []*Addressac `json:"ftp_acls,omitempty"`
 	// The network port used by the FTP protocol.
@@ -8606,7 +8606,7 @@ type MemberFiledistribution struct {
 	// The TFTP protocol status.
 	TftpStatus string `json:"tftp_status,omitempty"`
 	// Use flag for: allow_uploads
-	UseAllowUploads bool `json:"use_allow_uploads,omitempty"`
+	UseAllowUploads *bool `json:"use_allow_uploads,omitempty"`
 }
 
 func (MemberFiledistribution) ObjectType() string {
@@ -8661,7 +8661,7 @@ type MemberParentalcontrol struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines if the parental control service is enabled.
-	EnableService bool `json:"enable_service,omitempty"`
+	EnableService *bool `json:"enable_service,omitempty"`
 	// The parental control member hostname.
 	Name string `json:"name,omitempty"`
 }
@@ -8687,7 +8687,7 @@ type MemberThreatanalytics struct {
 	// The Grid member descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the threat analytics service is enabled.
-	EnableService bool `json:"enable_service,omitempty"`
+	EnableService *bool `json:"enable_service,omitempty"`
 	// The Grid member host name.
 	HostName string `json:"host_name,omitempty"`
 	// The IPv4 Address address of the Grid member.
@@ -8720,16 +8720,16 @@ type MemberThreatprotection struct {
 	// The ruleset used for threat protection.
 	CurrentRuleset string `json:"current_ruleset,omitempty"`
 	// Determines if multiple BIND responses via TCP connection is enabled or not.
-	DisableMultipleDnsTcpRequest bool `json:"disable_multiple_dns_tcp_request,omitempty"`
+	DisableMultipleDnsTcpRequest *bool `json:"disable_multiple_dns_tcp_request,omitempty"`
 	// Determines if DNS responses are sent from acceleration cache before applying
 	// Threat Protection rules. Recommended for better performance when using DNS
 	// Cache Acceleration.
-	EnableAccelRespBeforeThreatProtection bool `json:"enable_accel_resp_before_threat_protection,omitempty"`
+	EnableAccelRespBeforeThreatProtection *bool `json:"enable_accel_resp_before_threat_protection,omitempty"`
 	// Determines if NAT (Network Address Translation) mapping for threat
 	// protection is enabled or not.
-	EnableNatRules bool `json:"enable_nat_rules,omitempty"`
+	EnableNatRules *bool `json:"enable_nat_rules,omitempty"`
 	// Determines if the Threat protection service is enabled or not.
-	EnableService bool `json:"enable_service,omitempty"`
+	EnableService *bool `json:"enable_service,omitempty"`
 	// The number of events logged per second per rule.
 	EventsPerSecondPerRule uint32 `json:"events_per_second_per_rule,omitempty"`
 	// The hardware model of the member.
@@ -8749,17 +8749,17 @@ type MemberThreatprotection struct {
 	// The Threat Protection profile associated with the member.
 	Profile string `json:"profile,omitempty"`
 	// Use flag for: current_ruleset
-	UseCurrentRuleset bool `json:"use_current_ruleset,omitempty"`
+	UseCurrentRuleset *bool `json:"use_current_ruleset,omitempty"`
 	// Use flag for: disable_multiple_dns_tcp_request
-	UseDisableMultipleDnsTcpRequest bool `json:"use_disable_multiple_dns_tcp_request,omitempty"`
+	UseDisableMultipleDnsTcpRequest *bool `json:"use_disable_multiple_dns_tcp_request,omitempty"`
 	// Use flag for: enable_accel_resp_before_threat_protection
-	UseEnableAccelRespBeforeThreatProtection bool `json:"use_enable_accel_resp_before_threat_protection,omitempty"`
+	UseEnableAccelRespBeforeThreatProtection *bool `json:"use_enable_accel_resp_before_threat_protection,omitempty"`
 	// Use flag for: enable_nat_rules
-	UseEnableNatRules bool `json:"use_enable_nat_rules,omitempty"`
+	UseEnableNatRules *bool `json:"use_enable_nat_rules,omitempty"`
 	// Use flag for: events_per_second_per_rule
-	UseEventsPerSecondPerRule bool `json:"use_events_per_second_per_rule,omitempty"`
+	UseEventsPerSecondPerRule *bool `json:"use_events_per_second_per_rule,omitempty"`
 	// Use flag for: outbound_settings
-	UseOutboundSettings bool `json:"use_outbound_settings,omitempty"`
+	UseOutboundSettings *bool `json:"use_outbound_settings,omitempty"`
 }
 
 func (MemberThreatprotection) ObjectType() string {
@@ -8779,14 +8779,14 @@ type Memberdfp struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Option to resolve DNS query if resolution over Active Trust Cloud failed.
-	DfpForwardFirst bool `json:"dfp_forward_first,omitempty"`
+	DfpForwardFirst *bool `json:"dfp_forward_first,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Host name of the parent Member
 	HostName string `json:"host_name,omitempty"`
 	// DFP override lock'.
-	IsDfpOverride bool `json:"is_dfp_override,omitempty"`
+	IsDfpOverride *bool `json:"is_dfp_override,omitempty"`
 }
 
 func (Memberdfp) ObjectType() string {
@@ -8822,7 +8822,7 @@ type Msserver struct {
 	// RW fields needed for DHCP purposes at Microsoft Server level
 	DhcpServer *Dhcpserver `json:"dhcp_server,omitempty"`
 	// Allow/forbids usage of this Microsoft Server
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// Structure containing DNS information
 	DnsServer *Dnsserver `json:"dns_server,omitempty"`
 	// Reference to the DNS view
@@ -8851,7 +8851,7 @@ type Msserver struct {
 	// Reference to the network view
 	NetworkView string `json:"network_view,omitempty"`
 	// Enable read-only management for this Microsoft Server
-	ReadOnly bool `json:"read_only,omitempty"`
+	ReadOnly *bool `json:"read_only,omitempty"`
 	// The root Active Directory domain to which this server belongs (if
 	// applicable).
 	RootAdDomain string `json:"root_ad_domain,omitempty"`
@@ -8864,11 +8864,11 @@ type Msserver struct {
 	// Detail status if synchronization_status is ERROR
 	SynchronizationStatusDetail string `json:"synchronization_status_detail,omitempty"`
 	// Override log_destination inherited from grid level
-	UseLogDestination bool `json:"use_log_destination,omitempty"`
+	UseLogDestination *bool `json:"use_log_destination,omitempty"`
 	// Override grid ms_max_connection setting
-	UseMsMaxConnection bool `json:"use_ms_max_connection,omitempty"`
+	UseMsMaxConnection *bool `json:"use_ms_max_connection,omitempty"`
 	// Flag to override cluster RPC timeout
-	UseMsRpcTimeoutInSeconds bool `json:"use_ms_rpc_timeout_in_seconds,omitempty"`
+	UseMsRpcTimeoutInSeconds *bool `json:"use_ms_rpc_timeout_in_seconds,omitempty"`
 	// Version of the Microsoft Server
 	Version string `json:"version,omitempty"`
 }
@@ -8993,9 +8993,9 @@ type MsserverDhcp struct {
 	// the DHCP Microsoft Server.
 	TotalHosts uint32 `json:"total_hosts,omitempty"`
 	// Use flag for: login_name , login_password
-	UseLogin bool `json:"use_login,omitempty"`
+	UseLogin *bool `json:"use_login,omitempty"`
 	// Use flag for: synchronization_interval
-	UseSynchronizationInterval bool `json:"use_synchronization_interval,omitempty"`
+	UseSynchronizationInterval *bool `json:"use_synchronization_interval,omitempty"`
 }
 
 func (MsserverDhcp) ObjectType() string {
@@ -9018,7 +9018,7 @@ type MsserverDns struct {
 	Address string `json:"address,omitempty"`
 	// Determines if synchronization of DNS reporting data from the Microsoft
 	// server is enabled or not.
-	EnableDnsReportsSync bool `json:"enable_dns_reports_sync,omitempty"`
+	EnableDnsReportsSync *bool `json:"enable_dns_reports_sync,omitempty"`
 	// The login name of the DNS Microsoft Server.
 	LoginName string `json:"login_name,omitempty"`
 	// The login password of the DNS Microsoft Server.
@@ -9026,11 +9026,11 @@ type MsserverDns struct {
 	// The minimum number of minutes between two synchronizations.
 	SynchronizationInterval uint32 `json:"synchronization_interval,omitempty"`
 	// Use flag for: enable_dns_reports_sync
-	UseEnableDnsReportsSync bool `json:"use_enable_dns_reports_sync,omitempty"`
+	UseEnableDnsReportsSync *bool `json:"use_enable_dns_reports_sync,omitempty"`
 	// Use flag for: login_name , login_password
-	UseLogin bool `json:"use_login,omitempty"`
+	UseLogin *bool `json:"use_login,omitempty"`
 	// Use flag for: synchronization_interval
-	UseSynchronizationInterval bool `json:"use_synchronization_interval,omitempty"`
+	UseSynchronizationInterval *bool `json:"use_synchronization_interval,omitempty"`
 }
 
 func (MsserverDns) ObjectType() string {
@@ -9058,7 +9058,7 @@ type Mssuperscope struct {
 	// Utilization level of the DHCP range objects that belong to the superscope.
 	DhcpUtilizationStatus string `json:"dhcp_utilization_status,omitempty"`
 	// Determines whether the superscope is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The total number of DHCP leases issued for the DHCP range objects that
 	// belong to the superscope.
 	DynamicHosts uint32 `json:"dynamic_hosts,omitempty"`
@@ -9173,7 +9173,7 @@ type Ipv4Network struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Authority for the DHCP network.
-	Authority bool `json:"authority,omitempty"`
+	Authority *bool `json:"authority,omitempty"`
 	// This flag controls whether reverse zones are automatically created when the
 	// network is added.
 	AutoCreateReversezone bool `json:"auto_create_reversezone,omitempty"`
@@ -9197,11 +9197,11 @@ type Ipv4Network struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether only the DHCP server is allowed to update DNS,
 	// regardless of the DHCP clients requests. Note that changes for this field
 	// take effect only if ddns_use_option81 is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a DHCP network object. The TTL is
 	// a 32-bit unsigned integer that represents the duration, in seconds, for
 	// which the update is cached. Zero indicates that the update is not cached.
@@ -9211,14 +9211,14 @@ type Ipv4Network struct {
 	// PTR records of a client with a fixed address. When this feature is enabled
 	// and the DHCP server adds A and PTR records for a fixed address, the DHCP
 	// server never discards the records.
-	DdnsUpdateFixedAddresses bool `json:"ddns_update_fixed_addresses,omitempty"`
+	DdnsUpdateFixedAddresses *bool `json:"ddns_update_fixed_addresses,omitempty"`
 	// The support for DHCP Option 81 at the network level.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// The reason for deleting the RIR registration request.
 	DeleteReason string `json:"delete_reason,omitempty"`
 	// If set to true, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The percentage of the total DHCP utilization of the network multiplied by
 	// 1000. This is the percentage of the total number of available IP addresses
 	// belonging to the network versus the total number of all IP addresses in
@@ -9228,7 +9228,7 @@ type Ipv4Network struct {
 	DhcpUtilizationStatus string `json:"dhcp_utilization_status,omitempty"`
 	// Determines whether a network is disabled or not. When this is set to False,
 	// the network is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Discover now status for this network.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// Number of the discovered BGP AS. When multiple BGP autonomous systems are
@@ -9269,23 +9269,23 @@ type Ipv4Network struct {
 	// The dynamic DNS updates flag of a DHCP network object. If set to True, the
 	// DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if DHCP thresholds are enabled for the network.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines whether a discovery is enabled or not for this network. When this
 	// is set to False, the network discovery is disabled.
-	EnableDiscovery bool `json:"enable_discovery,omitempty"`
+	EnableDiscovery *bool `json:"enable_discovery,omitempty"`
 	// Determines if DHCP threshold warnings are sent through email.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Determines if IFMAP publishing is enabled for the network.
-	EnableIfmapPublishing bool `json:"enable_ifmap_publishing,omitempty"`
+	EnableIfmapPublishing *bool `json:"enable_ifmap_publishing,omitempty"`
 	// Determines if the discovery for the network should be immediately enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Determines if DHCP threshold warnings are send through SNMP.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// The endpoints that provides data for the DHCP Network object.
 	EndpointSources []*CiscoiseEndpoint `json:"endpoint_sources,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -9305,7 +9305,7 @@ type Ipv4Network struct {
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Indicates whether the appliance will ignore DHCP client IDs or MAC
 	// addresses. Valid values are "NONE", "CLIENT", or "MACADDR". The default is
 	// "NONE".
@@ -9352,7 +9352,7 @@ type Ipv4Network struct {
 	Members []*Msdhcpserver `json:"members,omitempty"`
 	// This field controls whether this object is synchronized with the Multi-Grid
 	// Master. If this field is set to True, objects are not synchronized.
-	MgmPrivate bool `json:"mgm_private,omitempty"`
+	MgmPrivate *bool `json:"mgm_private,omitempty"`
 	// This field is assumed to be True unless filled by any conforming objects,
 	// such as Network, IPv6 Network, Network Container, IPv6 Network Container,
 	// and Network View. This value is set to False if mgm_private is set to True
@@ -9391,9 +9391,9 @@ type Ipv4Network struct {
 	PxeLeaseTime uint32 `json:"pxe_lease_time,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The registry (RIR) that allocated the network address space.
 	Rir string `json:"rir,omitempty"`
 	// The RIR organization assoicated with the network.
@@ -9404,9 +9404,9 @@ type Ipv4Network struct {
 	RirRegistrationStatus string `json:"rir_registration_status,omitempty"`
 	// If the field is set to True, the discovery blackout setting will be used for
 	// port control blackout setting.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// Determines whether to send the RIR registration request.
-	SendRirRequest bool `json:"send_rir_request,omitempty"`
+	SendRirRequest *bool `json:"send_rir_request,omitempty"`
 	// The number of static DHCP addresses configured in the network.
 	StaticHosts uint32 `json:"static_hosts,omitempty"`
 	// The DHCP Network Cisco ISE subscribe settings.
@@ -9417,75 +9417,75 @@ type Ipv4Network struct {
 	// The total number of DHCP addresses configured in the network.
 	TotalHosts uint32 `json:"total_hosts,omitempty"`
 	// Determines whether the DHCP IPv4 Network is unmanaged or not.
-	Unmanaged bool `json:"unmanaged,omitempty"`
+	Unmanaged *bool `json:"unmanaged,omitempty"`
 	// The number of unmanaged IP addresses as discovered by network discovery.
 	UnmanagedCount uint32 `json:"unmanaged_count,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: authority
-	UseAuthority bool `json:"use_authority,omitempty"`
+	UseAuthority *bool `json:"use_authority,omitempty"`
 	// Use flag for: discovery_blackout_setting , port_control_blackout_setting,
 	// same_port_control_discovery_blackout
-	UseBlackoutSetting bool `json:"use_blackout_setting,omitempty"`
+	UseBlackoutSetting *bool `json:"use_blackout_setting,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: ddns_update_fixed_addresses
-	UseDdnsUpdateFixedAddresses bool `json:"use_ddns_update_fixed_addresses,omitempty"`
+	UseDdnsUpdateFixedAddresses *bool `json:"use_ddns_update_fixed_addresses,omitempty"`
 	// Use flag for: ddns_use_option81
-	UseDdnsUseOption81 bool `json:"use_ddns_use_option81,omitempty"`
+	UseDdnsUseOption81 *bool `json:"use_ddns_use_option81,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: discovery_basic_poll_settings
-	UseDiscoveryBasicPollingSettings bool `json:"use_discovery_basic_polling_settings,omitempty"`
+	UseDiscoveryBasicPollingSettings *bool `json:"use_discovery_basic_polling_settings,omitempty"`
 	// Use flag for: email_list
-	UseEmailList bool `json:"use_email_list,omitempty"`
+	UseEmailList *bool `json:"use_email_list,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: enable_dhcp_thresholds
-	UseEnableDhcpThresholds bool `json:"use_enable_dhcp_thresholds,omitempty"`
+	UseEnableDhcpThresholds *bool `json:"use_enable_dhcp_thresholds,omitempty"`
 	// Use flag for: discovery_member , enable_discovery
-	UseEnableDiscovery bool `json:"use_enable_discovery,omitempty"`
+	UseEnableDiscovery *bool `json:"use_enable_discovery,omitempty"`
 	// Use flag for: enable_ifmap_publishing
-	UseEnableIfmapPublishing bool `json:"use_enable_ifmap_publishing,omitempty"`
+	UseEnableIfmapPublishing *bool `json:"use_enable_ifmap_publishing,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ignore_id
-	UseIgnoreId bool `json:"use_ignore_id,omitempty"`
+	UseIgnoreId *bool `json:"use_ignore_id,omitempty"`
 	// Use flag for: ipam_email_addresses
-	UseIpamEmailAddresses bool `json:"use_ipam_email_addresses,omitempty"`
+	UseIpamEmailAddresses *bool `json:"use_ipam_email_addresses,omitempty"`
 	// Use flag for: ipam_threshold_settings
-	UseIpamThresholdSettings bool `json:"use_ipam_threshold_settings,omitempty"`
+	UseIpamThresholdSettings *bool `json:"use_ipam_threshold_settings,omitempty"`
 	// Use flag for: ipam_trap_settings
-	UseIpamTrapSettings bool `json:"use_ipam_trap_settings,omitempty"`
+	UseIpamTrapSettings *bool `json:"use_ipam_trap_settings,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: mgm_private
-	UseMgmPrivate bool `json:"use_mgm_private,omitempty"`
+	UseMgmPrivate *bool `json:"use_mgm_private,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: subscribe_settings
-	UseSubscribeSettings bool `json:"use_subscribe_settings,omitempty"`
+	UseSubscribeSettings *bool `json:"use_subscribe_settings,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: zone_associations
-	UseZoneAssociations bool `json:"use_zone_associations,omitempty"`
+	UseZoneAssociations *bool `json:"use_zone_associations,omitempty"`
 	// The network utilization in percentage.
 	Utilization uint32 `json:"utilization,omitempty"`
 	// The timestamp when the utilization statistics were last updated.
@@ -9533,7 +9533,7 @@ type Ipv4NetworkContainer struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Authority for the DHCP network container.
-	Authority bool `json:"authority,omitempty"`
+	Authority *bool `json:"authority,omitempty"`
 	// This flag controls whether reverse zones are automatically created when the
 	// network is added.
 	AutoCreateReversezone bool `json:"auto_create_reversezone,omitempty"`
@@ -9555,11 +9555,11 @@ type Ipv4NetworkContainer struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether the DHCP server is allowed to update DNS,
 	// regardless of the DHCP client requests. Note that changes for this field
 	// take effect only if ddns_use_option81 is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a DHCP network container object.
 	// The TTL is a 32-bit unsigned integer that represents the duration, in
 	// seconds, for which the update is cached. Zero indicates that the update is
@@ -9570,14 +9570,14 @@ type Ipv4NetworkContainer struct {
 	// PTR records of a client with a fixed address. When this feature is enabled
 	// and the DHCP server adds A and PTR records for a fixed address, the DHCP
 	// server never discards the records.
-	DdnsUpdateFixedAddresses bool `json:"ddns_update_fixed_addresses,omitempty"`
+	DdnsUpdateFixedAddresses *bool `json:"ddns_update_fixed_addresses,omitempty"`
 	// The support for DHCP Option 81 at the network container level.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// The reason for deleting the RIR registration request.
 	DeleteReason string `json:"delete_reason,omitempty"`
 	// If set to True, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// Discover now status for this network container.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovery basic poll settings for this network container.
@@ -9594,22 +9594,22 @@ type Ipv4NetworkContainer struct {
 	// The dynamic DNS updates flag of a DHCP network container object. If set to
 	// True, the DHCP server sends DDNS updates to DNS servers in the same Grid,
 	// and to external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if DHCP thresholds are enabled for the network container.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines whether a discovery is enabled or not for this network container.
 	// When this is set to False, the network container discovery is disabled.
-	EnableDiscovery bool `json:"enable_discovery,omitempty"`
+	EnableDiscovery *bool `json:"enable_discovery,omitempty"`
 	// Determines if DHCP threshold warnings are sent through email.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Determines if the discovery for the network container should be immediately
 	// enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Determines if DHCP threshold warnings are send through SNMP.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// The endpoints that provides data for the DHCP Network Container object.
 	EndpointSources []*CiscoiseEndpoint `json:"endpoint_sources,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -9629,7 +9629,7 @@ type Ipv4NetworkContainer struct {
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Indicates whether the appliance will ignore DHCP client IDs or MAC
 	// addresses.
 	IgnoreId string `json:"ignore_id,omitempty"`
@@ -9669,7 +9669,7 @@ type Ipv4NetworkContainer struct {
 	LowWaterMarkReset uint32 `json:"low_water_mark_reset,omitempty"`
 	// This field controls whether this object is synchronized with the Multi-Grid
 	// Master. If this field is set to True, objects are not synchronized.
-	MgmPrivate bool `json:"mgm_private,omitempty"`
+	MgmPrivate *bool `json:"mgm_private,omitempty"`
 	// This field is assumed to be True unless filled by any conforming objects,
 	// such as Network, IPv6 Network, Network Container, IPv6 Network Container,
 	// and Network View. This value is set to False if mgm_private is set to True
@@ -9706,14 +9706,14 @@ type Ipv4NetworkContainer struct {
 	PxeLeaseTime uint32 `json:"pxe_lease_time,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// Remove subnets delete option. Determines whether all child objects should be
 	// removed alongside with the network container or child objects should be
 	// assigned to another parental container. By default child objects are deleted
 	// with the network container.
 	RemoveSubnets bool `json:"remove_subnets,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The registry (RIR) that allocated the network container address space.
 	Rir string `json:"rir,omitempty"`
 	// The RIR organization assoicated with the network container.
@@ -9724,77 +9724,77 @@ type Ipv4NetworkContainer struct {
 	RirRegistrationStatus string `json:"rir_registration_status,omitempty"`
 	// If the field is set to True, the discovery blackout setting will be used for
 	// port control blackout setting.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// Determines whether to send the RIR registration request.
-	SendRirRequest bool `json:"send_rir_request,omitempty"`
+	SendRirRequest *bool `json:"send_rir_request,omitempty"`
 	// The DHCP Network Container Cisco ISE subscribe settings.
 	SubscribeSettings *CiscoiseSubscribesetting `json:"subscribe_settings,omitempty"`
 	// Determines whether the network container is unmanaged or not.
-	Unmanaged bool `json:"unmanaged,omitempty"`
+	Unmanaged *bool `json:"unmanaged,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: authority
-	UseAuthority bool `json:"use_authority,omitempty"`
+	UseAuthority *bool `json:"use_authority,omitempty"`
 	// Use flag for: discovery_blackout_setting , port_control_blackout_setting,
 	// same_port_control_discovery_blackout
-	UseBlackoutSetting bool `json:"use_blackout_setting,omitempty"`
+	UseBlackoutSetting *bool `json:"use_blackout_setting,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: ddns_update_fixed_addresses
-	UseDdnsUpdateFixedAddresses bool `json:"use_ddns_update_fixed_addresses,omitempty"`
+	UseDdnsUpdateFixedAddresses *bool `json:"use_ddns_update_fixed_addresses,omitempty"`
 	// Use flag for: ddns_use_option81
-	UseDdnsUseOption81 bool `json:"use_ddns_use_option81,omitempty"`
+	UseDdnsUseOption81 *bool `json:"use_ddns_use_option81,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: discovery_basic_poll_settings
-	UseDiscoveryBasicPollingSettings bool `json:"use_discovery_basic_polling_settings,omitempty"`
+	UseDiscoveryBasicPollingSettings *bool `json:"use_discovery_basic_polling_settings,omitempty"`
 	// Use flag for: email_list
-	UseEmailList bool `json:"use_email_list,omitempty"`
+	UseEmailList *bool `json:"use_email_list,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: enable_dhcp_thresholds
-	UseEnableDhcpThresholds bool `json:"use_enable_dhcp_thresholds,omitempty"`
+	UseEnableDhcpThresholds *bool `json:"use_enable_dhcp_thresholds,omitempty"`
 	// Use flag for: discovery_member , enable_discovery
-	UseEnableDiscovery bool `json:"use_enable_discovery,omitempty"`
+	UseEnableDiscovery *bool `json:"use_enable_discovery,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ignore_id
-	UseIgnoreId bool `json:"use_ignore_id,omitempty"`
+	UseIgnoreId *bool `json:"use_ignore_id,omitempty"`
 	// Use flag for: ipam_email_addresses
-	UseIpamEmailAddresses bool `json:"use_ipam_email_addresses,omitempty"`
+	UseIpamEmailAddresses *bool `json:"use_ipam_email_addresses,omitempty"`
 	// Use flag for: ipam_threshold_settings
-	UseIpamThresholdSettings bool `json:"use_ipam_threshold_settings,omitempty"`
+	UseIpamThresholdSettings *bool `json:"use_ipam_threshold_settings,omitempty"`
 	// Use flag for: ipam_trap_settings
-	UseIpamTrapSettings bool `json:"use_ipam_trap_settings,omitempty"`
+	UseIpamTrapSettings *bool `json:"use_ipam_trap_settings,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: mgm_private
-	UseMgmPrivate bool `json:"use_mgm_private,omitempty"`
+	UseMgmPrivate *bool `json:"use_mgm_private,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: subscribe_settings
-	UseSubscribeSettings bool `json:"use_subscribe_settings,omitempty"`
+	UseSubscribeSettings *bool `json:"use_subscribe_settings,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: zone_associations
-	UseZoneAssociations bool `json:"use_zone_associations,omitempty"`
+	UseZoneAssociations *bool `json:"use_zone_associations,omitempty"`
 	// The network container utilization in percentage.
 	Utilization uint32 `json:"utilization,omitempty"`
 	// The list of zones associated with this network.
@@ -9824,12 +9824,12 @@ type NetworkTemplate struct {
 	// a netmask when creating a network using this template. If you set this
 	// parameter to false, you must specify the "netmask" field for the network
 	// template object.
-	AllowAnyNetmask bool `json:"allow_any_netmask,omitempty"`
+	AllowAnyNetmask *bool `json:"allow_any_netmask,omitempty"`
 	// Authority for the DHCP network.
-	Authority bool `json:"authority,omitempty"`
+	Authority *bool `json:"authority,omitempty"`
 	// This flag controls whether reverse zones are automatically created when the
 	// network is added.
-	AutoCreateReversezone bool `json:"auto_create_reversezone,omitempty"`
+	AutoCreateReversezone *bool `json:"auto_create_reversezone,omitempty"`
 	// The boot server IPv4 Address or name in FQDN format for the network. You can
 	// specify the name and/or IP address of the boot server that the host needs to
 	// boot.
@@ -9840,7 +9840,7 @@ type NetworkTemplate struct {
 	Bootserver string `json:"bootserver,omitempty"`
 	// This flag controls whether this template can be used to create network
 	// objects in a cloud-computing deployment.
-	CloudApiCompatible bool `json:"cloud_api_compatible,omitempty"`
+	CloudApiCompatible *bool `json:"cloud_api_compatible,omitempty"`
 	// Comment for the network; maximum 256 characters.
 	Comment string `json:"comment,omitempty"`
 	// The dynamic DNS domain name the appliance uses specifically for DDNS updates
@@ -9849,11 +9849,11 @@ type NetworkTemplate struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether the DHCP server is allowed to update DNS,
 	// regardless of the DHCP client requests. Note that changes for this field
 	// take effect only if ddns_use_option81 is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a DHCP network object. The TTL is
 	// a 32-bit unsigned integer that represents the duration, in seconds, for
 	// which the update is cached. Zero indicates that the update is not cached.
@@ -9863,31 +9863,31 @@ type NetworkTemplate struct {
 	// PTR records of a client with a fixed address. When this feature is enabled
 	// and the DHCP server adds A and PTR records for a fixed address, the DHCP
 	// server never discards the records.
-	DdnsUpdateFixedAddresses bool `json:"ddns_update_fixed_addresses,omitempty"`
+	DdnsUpdateFixedAddresses *bool `json:"ddns_update_fixed_addresses,omitempty"`
 	// The support for DHCP Option 81 at the network level.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// Reference the Cloud Platform Appliance to which authority of the object
 	// should be delegated when the object is created using the template.
 	DelegatedMember *Dhcpmember `json:"delegated_member,omitempty"`
 	// If set to True, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The e-mail lists to which the appliance sends DHCP threshold alarm e-mail
 	// messages.
 	EmailList []string `json:"email_list,omitempty"`
 	// The dynamic DNS updates flag of a DHCP network object. If set to True, the
 	// DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if DHCP thresholds are enabled for the network.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines if DHCP threshold warnings are sent through email.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Determines if DHCP threshold warnings are send through SNMP.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -9910,7 +9910,7 @@ type NetworkTemplate struct {
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// The e-mail lists to which the appliance sends IPAM threshold alarm e-mail
 	// messages.
 	IpamEmailAddresses []string `json:"ipam_email_addresses,omitempty"`
@@ -9969,7 +9969,7 @@ type NetworkTemplate struct {
 	RangeTemplates []string `json:"range_templates,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// THe registry (RIR) that allocated the network address space.
 	Rir string `json:"rir,omitempty"`
 	// The RIR organization assoicated with the network.
@@ -9979,56 +9979,56 @@ type NetworkTemplate struct {
 	// The registration status of the network in RIR.
 	RirRegistrationStatus string `json:"rir_registration_status,omitempty"`
 	// Determines whether to send the RIR registration request.
-	SendRirRequest bool `json:"send_rir_request,omitempty"`
+	SendRirRequest *bool `json:"send_rir_request,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: authority
-	UseAuthority bool `json:"use_authority,omitempty"`
+	UseAuthority *bool `json:"use_authority,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: ddns_update_fixed_addresses
-	UseDdnsUpdateFixedAddresses bool `json:"use_ddns_update_fixed_addresses,omitempty"`
+	UseDdnsUpdateFixedAddresses *bool `json:"use_ddns_update_fixed_addresses,omitempty"`
 	// Use flag for: ddns_use_option81
-	UseDdnsUseOption81 bool `json:"use_ddns_use_option81,omitempty"`
+	UseDdnsUseOption81 *bool `json:"use_ddns_use_option81,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: email_list
-	UseEmailList bool `json:"use_email_list,omitempty"`
+	UseEmailList *bool `json:"use_email_list,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: enable_dhcp_thresholds
-	UseEnableDhcpThresholds bool `json:"use_enable_dhcp_thresholds,omitempty"`
+	UseEnableDhcpThresholds *bool `json:"use_enable_dhcp_thresholds,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ipam_email_addresses
-	UseIpamEmailAddresses bool `json:"use_ipam_email_addresses,omitempty"`
+	UseIpamEmailAddresses *bool `json:"use_ipam_email_addresses,omitempty"`
 	// Use flag for: ipam_threshold_settings
-	UseIpamThresholdSettings bool `json:"use_ipam_threshold_settings,omitempty"`
+	UseIpamThresholdSettings *bool `json:"use_ipam_threshold_settings,omitempty"`
 	// Use flag for: ipam_trap_settings
-	UseIpamTrapSettings bool `json:"use_ipam_trap_settings,omitempty"`
+	UseIpamTrapSettings *bool `json:"use_ipam_trap_settings,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 }
 
 func (NetworkTemplate) ObjectType() string {
@@ -10125,7 +10125,7 @@ type NetworkView struct {
 	IsDefault bool `json:"is_default,omitempty"`
 	// This field controls whether this object is synchronized with the Multi-Grid
 	// Master. If this field is set to True, objects are not synchronized.
-	MgmPrivate bool `json:"mgm_private,omitempty"`
+	MgmPrivate *bool `json:"mgm_private,omitempty"`
 	// The Microsoft Active Directory user related information.
 	MsAdUserData *MsserverAduserData `json:"ms_ad_user_data,omitempty"`
 	// Name of the network view.
@@ -10199,7 +10199,7 @@ type NotificationRestEndpoint struct {
 	// The server certificate validation type.
 	ServerCertValidation string `json:"server_cert_validation,omitempty"`
 	// Determines if the sync process is disabled for a notification REST endpoint.
-	SyncDisabled bool `json:"sync_disabled,omitempty"`
+	SyncDisabled *bool `json:"sync_disabled,omitempty"`
 	// The notification REST template instance. The parameters of REST API endpoint
 	// template instance are prohibited to change.
 	TemplateInstance *NotificationRestTemplateinstance `json:"template_instance,omitempty"`
@@ -10278,19 +10278,19 @@ type NotificationRule struct {
 	// Determines whether the notification rule is applied on all members or not.
 	// When this is set to False, the notification rule is applied only on
 	// selected_members.
-	AllMembers bool `json:"all_members,omitempty"`
+	AllMembers *bool `json:"all_members,omitempty"`
 	// The notification rule descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a notification rule is disabled or not. When this is set
 	// to False, the notification rule is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines whether the notification rule for event deduplication is enabled.
 	// Note that to enable event deduplication, you must set at least one
 	// deduplication field.
-	EnableEventDeduplication bool `json:"enable_event_deduplication,omitempty"`
+	EnableEventDeduplication *bool `json:"enable_event_deduplication,omitempty"`
 	// Determines whether the notification rule for the event deduplication syslog
 	// is enabled.
-	EnableEventDeduplicationLog bool `json:"enable_event_deduplication_log,omitempty"`
+	EnableEventDeduplicationLog *bool `json:"enable_event_deduplication_log,omitempty"`
 	// The list of fields that must be used in the notification rule for event
 	// deduplication.
 	EventDeduplicationFields []string `json:"event_deduplication_fields,omitempty"`
@@ -10318,7 +10318,7 @@ type NotificationRule struct {
 	// The notification REST template instance.
 	TemplateInstance *NotificationRestTemplateinstance `json:"template_instance,omitempty"`
 	// Use flag for: publish_settings
-	UsePublishSettings bool `json:"use_publish_settings,omitempty"`
+	UsePublishSettings *bool `json:"use_publish_settings,omitempty"`
 }
 
 func (NotificationRule) ObjectType() string {
@@ -10355,7 +10355,7 @@ type Nsgroup struct {
 	// The list with Grid members that are secondary servers for this group.
 	GridSecondaries []*Memberserver `json:"grid_secondaries,omitempty"`
 	// Determines if this name server group is the Grid default.
-	IsGridDefault bool `json:"is_grid_default,omitempty"`
+	IsGridDefault *bool `json:"is_grid_default,omitempty"`
 	// Determines if the "multiple DNS primaries" feature is enabled for the group.
 	IsMultimaster bool `json:"is_multimaster,omitempty"`
 	// The name of this name server group.
@@ -10363,7 +10363,7 @@ type Nsgroup struct {
 	// This flag controls whether the group is using an external primary. Note that
 	// modification of this field requires passing values for "grid_secondaries"
 	// and "external_primaries".
-	UseExternalPrimary bool `json:"use_external_primary,omitempty"`
+	UseExternalPrimary *bool `json:"use_external_primary,omitempty"`
 }
 
 func (Nsgroup) ObjectType() string {
@@ -10551,7 +10551,7 @@ type OutboundCloudclient struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether the OutBound Cloud Client is enabled.
-	Enable bool `json:"enable,omitempty"`
+	Enable *bool `json:"enable,omitempty"`
 	// The Grid member where our outbound is running.
 	GridMember string `json:"grid_member,omitempty"`
 	// The time interval (in seconds) for requesting newly detected domains by the
@@ -10584,7 +10584,7 @@ type ParentalcontrolAvp struct {
 	// The list of domains applicable to AVP.
 	DomainTypes []string `json:"domain_types,omitempty"`
 	// Determines if AVP is restricted to domains.
-	IsRestricted bool `json:"is_restricted,omitempty"`
+	IsRestricted *bool `json:"is_restricted,omitempty"`
 	// The name of AVP.
 	Name string `json:"name,omitempty"`
 	// The type of AVP as per RFC 2865/2866.
@@ -10661,9 +10661,9 @@ type ParentalcontrolSubscriber struct {
 	// feedback to, configure for parental control.
 	CategoryUrl string `json:"category_url,omitempty"`
 	// Determines if NAS RADIUS traffic is accepted over MGMT only.
-	EnableMgmtOnlyNas bool `json:"enable_mgmt_only_nas,omitempty"`
+	EnableMgmtOnlyNas *bool `json:"enable_mgmt_only_nas,omitempty"`
 	// Determines if parental control is enabled.
-	EnableParentalControl bool `json:"enable_parental_control,omitempty"`
+	EnableParentalControl *bool `json:"enable_parental_control,omitempty"`
 	// The time for collector to be fully populated. Valid values are from 1 to
 	// 65535.
 	InterimAccountingInterval uint32 `json:"interim_accounting_interval,omitempty"`
@@ -10689,7 +10689,7 @@ type ParentalcontrolSubscriber struct {
 	// takes values from 0 to 8.
 	LocalIdSubexpression uint32 `json:"local_id_subexpression,omitempty"`
 	// CEF log all guest lookups, will produce two logs in case of a violation.
-	LogGuestLookups bool `json:"log_guest_lookups,omitempty"`
+	LogGuestLookups *bool `json:"log_guest_lookups,omitempty"`
 	// NAS contextual information AVP.
 	NasContextInfo string `json:"nas_context_info,omitempty"`
 	// The SOA to store parental control records.
@@ -10749,9 +10749,9 @@ type ParentalcontrolSubscriberrecord struct {
 	// black_list
 	BlackList string `json:"black_list,omitempty"`
 	// bwflag
-	Bwflag bool `json:"bwflag,omitempty"`
+	Bwflag *bool `json:"bwflag,omitempty"`
 	// dynamic_category_policy
-	DynamicCategoryPolicy bool `json:"dynamic_category_policy,omitempty"`
+	DynamicCategoryPolicy *bool `json:"dynamic_category_policy,omitempty"`
 	// flags
 	Flags string `json:"flags,omitempty"`
 	// ip_addr
@@ -10767,7 +10767,7 @@ type ParentalcontrolSubscriberrecord struct {
 	// prefix
 	Prefix uint32 `json:"prefix,omitempty"`
 	// proxy_all
-	ProxyAll bool `json:"proxy_all,omitempty"`
+	ProxyAll *bool `json:"proxy_all,omitempty"`
 	// site
 	Site string `json:"site,omitempty"`
 	// subscriber_id
@@ -10775,7 +10775,7 @@ type ParentalcontrolSubscriberrecord struct {
 	// subscriber_secure_policy
 	SubscriberSecurePolicy string `json:"subscriber_secure_policy,omitempty"`
 	// unknown_category_policy
-	UnknownCategoryPolicy bool `json:"unknown_category_policy,omitempty"`
+	UnknownCategoryPolicy *bool `json:"unknown_category_policy,omitempty"`
 	// white_list
 	WhiteList string `json:"white_list,omitempty"`
 	// wpc_category_policy
@@ -10814,9 +10814,9 @@ type ParentalcontrolSubscribersite struct {
 	// The human readable comment for the site.
 	Comment string `json:"comment,omitempty"`
 	// Enable/disable the DCA subscriber B/W list support.
-	DcaSubBwList bool `json:"dca_sub_bw_list,omitempty"`
+	DcaSubBwList *bool `json:"dca_sub_bw_list,omitempty"`
 	// Enable/disable the DCA subscriber query count.
-	DcaSubQueryCount bool `json:"dca_sub_query_count,omitempty"`
+	DcaSubQueryCount *bool `json:"dca_sub_query_count,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -10836,14 +10836,14 @@ type ParentalcontrolSubscribersite struct {
 	// The port number to reach the collector.
 	NasPort uint32 `json:"nas_port,omitempty"`
 	// Enables Proxy RPZ PASSTGHRU.
-	ProxyRpzPassthru bool `json:"proxy_rpz_passthru,omitempty"`
+	ProxyRpzPassthru *bool `json:"proxy_rpz_passthru,omitempty"`
 	// The list of SPM for the site.
 	Spms []*ParentalcontrolSpm `json:"spms,omitempty"`
 	// Stop the anycast service when the subscriber service is in the interim
 	// state.
-	StopAnycast bool `json:"stop_anycast,omitempty"`
+	StopAnycast *bool `json:"stop_anycast,omitempty"`
 	// Restrict subscriber cache entries to NATed clients.
-	StrictNat bool `json:"strict_nat,omitempty"`
+	StrictNat *bool `json:"strict_nat,omitempty"`
 }
 
 func (ParentalcontrolSubscribersite) ObjectType() string {
@@ -10916,7 +10916,7 @@ type PxgridEndpoint struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a Cisco ISE endpoint is disabled or not. When this is set
 	// to False, the Cisco ISE endpoint is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -10976,9 +10976,9 @@ type RadiusAuthservice struct {
 	// The RADIUS descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the RADIUS authentication service is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines whether the authentication cache is enabled.
-	EnableCache bool `json:"enable_cache,omitempty"`
+	EnableCache *bool `json:"enable_cache,omitempty"`
 	// The way to contact the RADIUS server.
 	Mode string `json:"mode,omitempty"`
 	// The RADIUS authentication service name.
@@ -11017,7 +11017,7 @@ type Range struct {
 	Ref    string `json:"_ref,omitempty"`
 	// This field controls whether only the DHCP server is allowed to update DNS,
 	// regardless of the DHCP clients requests.
-	AlwaysUpdateDns bool `json:"always_update_dns,omitempty"`
+	AlwaysUpdateDns *bool `json:"always_update_dns,omitempty"`
 	// The bootfile name for the range. You can configure the DHCP server to
 	// support clients that use the boot file name option in their DHCPREQUEST
 	// messages.
@@ -11036,12 +11036,12 @@ type Range struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// If True, send NAK forcing the client to take the new address.
-	DenyAllClients bool `json:"deny_all_clients,omitempty"`
+	DenyAllClients *bool `json:"deny_all_clients,omitempty"`
 	// If set to true, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The percentage of the total DHCP utilization of the range multiplied by
 	// 1000. This is the percentage of the total number of available IP addresses
 	// belonging to the range versus the total number of all IP addresses in the
@@ -11051,7 +11051,7 @@ type Range struct {
 	DhcpUtilizationStatus string `json:"dhcp_utilization_status,omitempty"`
 	// Determines whether a range is disabled or not. When this is set to False,
 	// the range is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Discover now status for this range.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovery basic poll settings for this range.
@@ -11068,23 +11068,23 @@ type Range struct {
 	// The dynamic DNS updates flag of a DHCP range object. If set to True, the
 	// DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if DHCP thresholds are enabled for the range.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines whether a discovery is enabled or not for this range. When this
 	// is set to False, the discovery for this range is disabled.
-	EnableDiscovery bool `json:"enable_discovery,omitempty"`
+	EnableDiscovery *bool `json:"enable_discovery,omitempty"`
 	// Determines if DHCP threshold warnings are sent through email.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Determines if IFMAP publishing is enabled for the range.
-	EnableIfmapPublishing bool `json:"enable_ifmap_publishing,omitempty"`
+	EnableIfmapPublishing *bool `json:"enable_ifmap_publishing,omitempty"`
 	// Determines if the discovery for the range should be immediately enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Determines if DHCP threshold warnings are send through SNMP.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// The IPv4 Address end address of the range.
 	EndAddr string `json:"end_addr,omitempty"`
 	// The endpoints that provides data for the DHCP Range object.
@@ -11120,7 +11120,7 @@ type Range struct {
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Indicates whether the appliance will ignore DHCP client IDs or MAC
 	// addresses. Valid values are "NONE", "CLIENT", or "MACADDR". The default is
 	// "NONE".
@@ -11208,16 +11208,16 @@ type Range struct {
 	PxeLeaseTime uint32 `json:"pxe_lease_time,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// This field contains the Relay Agent filters to be applied to this range. The
 	// appliance uses the matching rules of these filters to select the address
 	// range from which it assigns a lease.
 	RelayAgentFilterRules []*Filterrule `json:"relay_agent_filter_rules,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// If the field is set to True, the discovery blackout setting will be used for
 	// port control blackout setting.
-	SamePortControlDiscoveryBlackout bool `json:"same_port_control_discovery_blackout,omitempty"`
+	SamePortControlDiscoveryBlackout *bool `json:"same_port_control_discovery_blackout,omitempty"`
 	// The type of server that is going to serve the range.
 	ServerAssociationType string `json:"server_association_type,omitempty"`
 	// The Microsoft member to which the split scope is assigned. See
@@ -11248,58 +11248,58 @@ type Range struct {
 	UnknownClients string `json:"unknown_clients,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: discovery_blackout_setting , port_control_blackout_setting,
 	// same_port_control_discovery_blackout
-	UseBlackoutSetting bool `json:"use_blackout_setting,omitempty"`
+	UseBlackoutSetting *bool `json:"use_blackout_setting,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: discovery_basic_poll_settings
-	UseDiscoveryBasicPollingSettings bool `json:"use_discovery_basic_polling_settings,omitempty"`
+	UseDiscoveryBasicPollingSettings *bool `json:"use_discovery_basic_polling_settings,omitempty"`
 	// Use flag for: email_list
-	UseEmailList bool `json:"use_email_list,omitempty"`
+	UseEmailList *bool `json:"use_email_list,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: enable_dhcp_thresholds
-	UseEnableDhcpThresholds bool `json:"use_enable_dhcp_thresholds,omitempty"`
+	UseEnableDhcpThresholds *bool `json:"use_enable_dhcp_thresholds,omitempty"`
 	// Use flag for: discovery_member , enable_discovery
-	UseEnableDiscovery bool `json:"use_enable_discovery,omitempty"`
+	UseEnableDiscovery *bool `json:"use_enable_discovery,omitempty"`
 	// Use flag for: enable_ifmap_publishing
-	UseEnableIfmapPublishing bool `json:"use_enable_ifmap_publishing,omitempty"`
+	UseEnableIfmapPublishing *bool `json:"use_enable_ifmap_publishing,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ignore_id
-	UseIgnoreId bool `json:"use_ignore_id,omitempty"`
+	UseIgnoreId *bool `json:"use_ignore_id,omitempty"`
 	// Use flag for: known_clients
-	UseKnownClients bool `json:"use_known_clients,omitempty"`
+	UseKnownClients *bool `json:"use_known_clients,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: ms_options
-	UseMsOptions bool `json:"use_ms_options,omitempty"`
+	UseMsOptions *bool `json:"use_ms_options,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: subscribe_settings
-	UseSubscribeSettings bool `json:"use_subscribe_settings,omitempty"`
+	UseSubscribeSettings *bool `json:"use_subscribe_settings,omitempty"`
 	// Use flag for: unknown_clients
-	UseUnknownClients bool `json:"use_unknown_clients,omitempty"`
+	UseUnknownClients *bool `json:"use_unknown_clients,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 }
 
 func (Range) ObjectType() string {
@@ -11331,7 +11331,7 @@ type Rangetemplate struct {
 	Bootserver string `json:"bootserver,omitempty"`
 	// This flag controls whether this template can be used to create network
 	// objects in a cloud-computing deployment.
-	CloudApiCompatible bool `json:"cloud_api_compatible,omitempty"`
+	CloudApiCompatible *bool `json:"cloud_api_compatible,omitempty"`
 	// A descriptive comment of a range template object.
 	Comment string `json:"comment,omitempty"`
 	// The dynamic DNS domain name the appliance uses specifically for DDNS updates
@@ -11340,29 +11340,29 @@ type Rangetemplate struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// The vconnector member that the object should be delegated to when created
 	// from this range template.
 	DelegatedMember *Dhcpmember `json:"delegated_member,omitempty"`
 	// If True, send NAK forcing the client to take the new address.
-	DenyAllClients bool `json:"deny_all_clients,omitempty"`
+	DenyAllClients *bool `json:"deny_all_clients,omitempty"`
 	// Determines if BOOTP settings are disabled and BOOTP requests will be denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The e-mail lists to which the appliance sends DHCP threshold alarm e-mail
 	// messages.
 	EmailList []string `json:"email_list,omitempty"`
 	// Determines if the DHCP server sends DDNS updates to DNS servers in the same
 	// Grid, and to external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Determines if DHCP thresholds are enabled for the range.
-	EnableDhcpThresholds bool `json:"enable_dhcp_thresholds,omitempty"`
+	EnableDhcpThresholds *bool `json:"enable_dhcp_thresholds,omitempty"`
 	// Determines if DHCP threshold warnings are sent through email.
-	EnableEmailWarnings bool `json:"enable_email_warnings,omitempty"`
+	EnableEmailWarnings *bool `json:"enable_email_warnings,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Determines if DHCP threshold warnings are sent through SNMP.
-	EnableSnmpWarnings bool `json:"enable_snmp_warnings,omitempty"`
+	EnableSnmpWarnings *bool `json:"enable_snmp_warnings,omitempty"`
 	// These are ranges of IP addresses that the appliance does not use to assign
 	// to clients. You can use these exclusion addresses as static IP addresses.
 	// They contain the start and end addresses of the exclusion range, and
@@ -11395,7 +11395,7 @@ type Rangetemplate struct {
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Permission for known clients. If set to 'Deny' known clients will be denied
 	// IP addresses. Known clients include roaming hosts and clients with fixed
 	// addresses or DHCP host entries. Unknown clients include clients that are not
@@ -11472,7 +11472,7 @@ type Rangetemplate struct {
 	PxeLeaseTime uint32 `json:"pxe_lease_time,omitempty"`
 	// If the field is set to True, the leases are kept in the Recycle Bin until
 	// one week after expiration. Otherwise, the leases are permanently deleted.
-	RecycleLeases bool `json:"recycle_leases,omitempty"`
+	RecycleLeases *bool `json:"recycle_leases,omitempty"`
 	// This field contains the Relay Agent filters to be applied to this range. The
 	// appliance uses the matching rules of these filters to select the address
 	// range from which it assigns a lease.
@@ -11487,45 +11487,45 @@ type Rangetemplate struct {
 	UnknownClients string `json:"unknown_clients,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: email_list
-	UseEmailList bool `json:"use_email_list,omitempty"`
+	UseEmailList *bool `json:"use_email_list,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: enable_dhcp_thresholds
-	UseEnableDhcpThresholds bool `json:"use_enable_dhcp_thresholds,omitempty"`
+	UseEnableDhcpThresholds *bool `json:"use_enable_dhcp_thresholds,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: known_clients
-	UseKnownClients bool `json:"use_known_clients,omitempty"`
+	UseKnownClients *bool `json:"use_known_clients,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: ms_options
-	UseMsOptions bool `json:"use_ms_options,omitempty"`
+	UseMsOptions *bool `json:"use_ms_options,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: recycle_leases
-	UseRecycleLeases bool `json:"use_recycle_leases,omitempty"`
+	UseRecycleLeases *bool `json:"use_recycle_leases,omitempty"`
 	// Use flag for: unknown_clients
-	UseUnknownClients bool `json:"use_unknown_clients,omitempty"`
+	UseUnknownClients *bool `json:"use_unknown_clients,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 }
 
 func (Rangetemplate) ObjectType() string {
@@ -11560,10 +11560,10 @@ type RecordA struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The discovered data for this A record.
 	DiscoveredData *Discoverydata `json:"discovered_data,omitempty"`
 	// The name for an A record in punycode format.
@@ -11572,7 +11572,7 @@ type RecordA struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The IPv4 Address of the record.
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
@@ -11667,10 +11667,10 @@ type RecordAAAA struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The discovered data for this AAAA record.
 	DiscoveredData *Discoverydata `json:"discovered_data,omitempty"`
 	// The name for an AAAA record in punycode format.
@@ -11679,7 +11679,7 @@ type RecordAAAA struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The IPv6 Address of the record.
 	Ipv6Addr string `json:"ipv6addr,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
@@ -11768,7 +11768,7 @@ type RecordAlias struct {
 	Creator string `json:"creator,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for an Alias record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Target name in punycode format.
@@ -11790,7 +11790,7 @@ type RecordAlias struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -11834,17 +11834,17 @@ type RecordCaa struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the CAA record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// The CAA record name in FQDN format. This value can be in unicode format.
@@ -11856,7 +11856,7 @@ type RecordCaa struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -11899,10 +11899,10 @@ type RecordCNAME struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Canonical name in punycode format.
 	DnsCanonical string `json:"dns_canonical,omitempty"`
 	// The name for the CNAME record in punycode format.
@@ -11911,7 +11911,7 @@ type RecordCNAME struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// The name for a CNAME record in FQDN format. This value can be in unicode
@@ -11927,7 +11927,7 @@ type RecordCNAME struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -11966,7 +11966,7 @@ func NewRecordCNAME(dnsView string,
 	res.View = dnsView
 	res.Canonical = canonical
 	res.Name = recordName
-	res.UseTtl = useTtl
+	res.UseTtl = utils.Bool(useTtl)
 	res.Ttl = ttl
 	res.Comment = comment
 	res.Ea = ea
@@ -12032,9 +12032,9 @@ type RecordDname struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Name of a DNS DNAME record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// The target domain name of the DNS DNAME record in punycode format.
@@ -12043,7 +12043,7 @@ type RecordDname struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if reclamation is allowed for the record.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// The name of the DNS DNAME record in FQDN format.
@@ -12060,7 +12060,7 @@ type RecordDname struct {
 	// indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides, for example
 	// "external".
 	View string `json:"view,omitempty"`
@@ -12256,7 +12256,7 @@ type HostRecord struct {
 	Aliases []string `json:"aliases,omitempty"`
 	// This field controls whether the credential is used for both the Telnet and
 	// SSH credentials. If set to False, the credential is used only for SSH.
-	AllowTelnet bool `json:"allow_telnet,omitempty"`
+	AllowTelnet *bool `json:"allow_telnet,omitempty"`
 	// The CLI credentials for the host record.
 	CliCredentials []*DiscoveryClicredential `json:"cli_credentials,omitempty"`
 	// Structure containing all cloud API related information for this object.
@@ -12265,11 +12265,11 @@ type HostRecord struct {
 	Comment string `json:"comment,omitempty"`
 	// When configure_for_dns is false, the host does not have parent zone
 	// information.
-	EnableDns bool `json:"configure_for_dns,omitempty"`
+	EnableDns *bool `json:"configure_for_dns,omitempty"`
 	// The time of the record creation in Epoch seconds format.
 	CreationTime *UnixTime `json:"creation_time,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// The description of the device.
 	DeviceDescription string `json:"device_description,omitempty"`
 	// The location of the device.
@@ -12280,16 +12280,16 @@ type HostRecord struct {
 	DeviceVendor string `json:"device_vendor,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines if the discovery for the record is disabled or not. False means
 	// that the discovery is enabled.
-	DisableDiscovery bool `json:"disable_discovery,omitempty"`
+	DisableDiscovery *bool `json:"disable_discovery,omitempty"`
 	// The list of aliases for the host in punycode format.
 	DnsAliases []string `json:"dns_aliases,omitempty"`
 	// The name for a host record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Determines if the discovery for the record should be immediately enabled.
-	EnableImmediateDiscovery bool `json:"enable_immediate_discovery,omitempty"`
+	EnableImmediateDiscovery *bool `json:"enable_immediate_discovery,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -12307,7 +12307,7 @@ type HostRecord struct {
 	// The name of the network view in which the host record resides.
 	NetworkView string `json:"network_view,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The value of this field specifies the order in which resource record sets
 	// are returned. The possible values are "cyclic", "random" and "fixed".
 	RrsetOrder string `json:"rrset_order,omitempty"`
@@ -12320,13 +12320,13 @@ type HostRecord struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// If set to true, the CLI credential will override member-level settings.
-	UseCliCredentials bool `json:"use_cli_credentials,omitempty"`
+	UseCliCredentials *bool `json:"use_cli_credentials,omitempty"`
 	// Determines if the SNMPv3 credential should be used for the record.
-	UseSnmp3Credential bool `json:"use_snmp3_credential,omitempty"`
+	UseSnmp3Credential *bool `json:"use_snmp3_credential,omitempty"`
 	// If set to true, the SNMP credential will override member-level settings.
-	UseSnmpCredential bool `json:"use_snmp_credential,omitempty"`
+	UseSnmpCredential *bool `json:"use_snmp_credential,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -12380,10 +12380,10 @@ func NewHostRecord(
 	//res.Ipv6Addr = ipv6Addr
 	res.Ipv4Addrs = ipv4AddrList
 	res.Ipv6Addrs = ipv6AddrList
-	res.UseTtl = useTtl
+	res.UseTtl = utils.Bool(useTtl)
 	res.Ttl = ttl
 	res.Aliases = aliases
-	res.EnableDns = enableDNS
+	res.EnableDns = utils.Bool(enableDNS)
 
 	return res
 }
@@ -12400,9 +12400,9 @@ type HostRecordIpv4Addr struct {
 	// stored.
 	Bootserver string `json:"bootserver,omitempty"`
 	// Set this to True to enable the DHCP configuration for this host address.
-	EnableDhcp bool `json:"configure_for_dhcp,omitempty"`
+	EnableDhcp *bool `json:"configure_for_dhcp,omitempty"`
 	// Set this to True to disable the BOOTP settings and deny BOOTP boot requests.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The discovery status of this Host Address.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovered data for this Host Address.
@@ -12414,14 +12414,14 @@ type HostRecordIpv4Addr struct {
 	// an OS (operating system) or configuration file, or set a shorter lease time
 	// if the client downloads only configuration changes. Enter the lease time for
 	// the preboot execution environment for hosts to boot remotely from a server.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// The host to which the host address belongs, in FQDN format. It is only
 	// present when the host address object is not returned as part of a host.
 	Host string `json:"host,omitempty"`
 	// If this field is set to false, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreClientRequestedOptions bool `json:"ignore_client_requested_options,omitempty"`
+	IgnoreClientRequestedOptions *bool `json:"ignore_client_requested_options,omitempty"`
 	// The IPv4 Address of the host.
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
 	// This flag reflects whether the MAC address for this host address is invalid.
@@ -12459,23 +12459,23 @@ type HostRecordIpv4Addr struct {
 	// The reference to the reserved interface to which the device belongs.
 	ReservedInterface string `json:"reserved_interface,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Set this to True when using this host address for EA inheritance.
-	UseForEaInheritance bool `json:"use_for_ea_inheritance,omitempty"`
+	UseForEaInheritance *bool `json:"use_for_ea_inheritance,omitempty"`
 	// Use flag for: ignore_client_requested_options
-	UseIgnoreClientRequestedOptions bool `json:"use_ignore_client_requested_options,omitempty"`
+	UseIgnoreClientRequestedOptions *bool `json:"use_ignore_client_requested_options,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 }
 
 func (HostRecordIpv4Addr) ObjectType() string {
@@ -12503,7 +12503,7 @@ func NewHostRecordIpv4Addr(
 	res.Ipv4Addr = ipAddr
 	res.Mac = macAddr
 	res.Ref = ref
-	res.EnableDhcp = enableDhcp
+	res.EnableDhcp = utils.Bool(enableDhcp)
 
 	return res
 }
@@ -12518,7 +12518,7 @@ type HostRecordIpv6Addr struct {
 	AddressType string `json:"address_type,omitempty"`
 	// Set this to True to enable the DHCP configuration for this IPv6 host
 	// address.
-	EnableDhcp bool `json:"configure_for_dhcp,omitempty"`
+	EnableDhcp *bool `json:"configure_for_dhcp,omitempty"`
 	// The discovery status of this IPv6 Host Address.
 	DiscoverNowStatus string `json:"discover_now_status,omitempty"`
 	// The discovered data for this host address.
@@ -12569,19 +12569,19 @@ type HostRecordIpv6Addr struct {
 	// The reference to the reserved interface to which the device belongs.
 	ReservedInterface string `json:"reserved_interface,omitempty"`
 	// Use flag for: domain_name
-	UseDomainName bool `json:"use_domain_name,omitempty"`
+	UseDomainName *bool `json:"use_domain_name,omitempty"`
 	// Use flag for: domain_name_servers
-	UseDomainNameServers bool `json:"use_domain_name_servers,omitempty"`
+	UseDomainNameServers *bool `json:"use_domain_name_servers,omitempty"`
 	// Set this to True when using this host address for EA inheritance.
-	UseForEaInheritance bool `json:"use_for_ea_inheritance,omitempty"`
+	UseForEaInheritance *bool `json:"use_for_ea_inheritance,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// Use this method to set or retrieve the valid lifetime value of the DHCP IPv6
 	// Host Address object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
@@ -12612,7 +12612,7 @@ func NewHostRecordIpv6Addr(
 	res.Ipv6Addr = ipAddr
 	res.Duid = duid
 	res.Ref = ref
-	res.EnableDhcp = enableDhcp
+	res.EnableDhcp = utils.Bool(enableDhcp)
 
 	return res
 }
@@ -12640,10 +12640,10 @@ type RecordMX struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The Mail exchanger name in punycode format.
 	DnsMailExchanger string `json:"dns_mail_exchanger,omitempty"`
 	// The name for a MX record in punycode format.
@@ -12652,7 +12652,7 @@ type RecordMX struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// Mail exchanger name in FQDN format. This value can be in unicode format.
@@ -12710,10 +12710,10 @@ type RecordNaptr struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the NAPTR record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// The replacement field of the NAPTR record in punycode format.
@@ -12726,7 +12726,7 @@ type RecordNaptr struct {
 	// "A".
 	Flags string `json:"flags,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// The name of the NAPTR record in FQDN format. This value can be in unicode
@@ -12760,7 +12760,7 @@ type RecordNaptr struct {
 	// (cached). Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13025,10 +13025,10 @@ type RecordPTR struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The discovered data for this PTR record.
 	DiscoveredData *Discoverydata `json:"discovered_data,omitempty"`
 	// The name for a DNS PTR record in punycode format.
@@ -13039,7 +13039,7 @@ type RecordPTR struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The IPv4 Address of the record.
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
 	// The IPv6 Address of the record.
@@ -13062,7 +13062,7 @@ type RecordPTR struct {
 	// indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// Name of the DNS View in which the record resides, for example "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. For example: "zone.com".
@@ -13092,7 +13092,7 @@ func NewRecordPTR(dnsView string, ptrdname string, useTtl bool, ttl uint32, comm
 	res := NewEmptyRecordPTR()
 	res.View = dnsView
 	res.PtrdName = ptrdname
-	res.UseTtl = useTtl
+	res.UseTtl = utils.Bool(useTtl)
 	res.Ttl = ttl
 	res.Comment = comment
 	res.Ea = ea
@@ -13111,7 +13111,7 @@ type RecordRpzA struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13127,7 +13127,7 @@ type RecordRpzA struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13158,7 +13158,7 @@ type RecordRpzAIpaddress struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13174,7 +13174,7 @@ type RecordRpzAIpaddress struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13204,7 +13204,7 @@ type RecordRpzAaaa struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13220,7 +13220,7 @@ type RecordRpzAaaa struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13251,7 +13251,7 @@ type RecordRpzAaaaIpaddress struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13267,7 +13267,7 @@ type RecordRpzAaaaIpaddress struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13302,7 +13302,7 @@ type RecordRpzCname struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13316,7 +13316,7 @@ type RecordRpzCname struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13349,7 +13349,7 @@ type RecordRpzCnameClientipaddress struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13366,7 +13366,7 @@ type RecordRpzCnameClientipaddress struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13398,7 +13398,7 @@ type RecordRpzCnameClientipaddressdn struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13415,7 +13415,7 @@ type RecordRpzCnameClientipaddressdn struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13448,7 +13448,7 @@ type RecordRpzCnameIpaddress struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13465,7 +13465,7 @@ type RecordRpzCnameIpaddress struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13497,7 +13497,7 @@ type RecordRpzCnameIpaddressdn struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13514,7 +13514,7 @@ type RecordRpzCnameIpaddressdn struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13543,7 +13543,7 @@ type RecordRpzMx struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13561,7 +13561,7 @@ type RecordRpzMx struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13592,7 +13592,7 @@ type RecordRpzNaptr struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13635,7 +13635,7 @@ type RecordRpzNaptr struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13665,7 +13665,7 @@ type RecordRpzPtr struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13685,7 +13685,7 @@ type RecordRpzPtr struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13714,7 +13714,7 @@ type RecordRpzSrv struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13737,7 +13737,7 @@ type RecordRpzSrv struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The weight of the Substitute (SRV Record) Rule. Valid values are from 0 to
@@ -13769,7 +13769,7 @@ type RecordRpzTxt struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -13788,7 +13788,7 @@ type RecordRpzTxt struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS View in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -13894,10 +13894,10 @@ type RecordSRV struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for an SRV record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// The name for a SRV record in punycode format.
@@ -13906,7 +13906,7 @@ type RecordSRV struct {
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// A name in FQDN format. This value can be in unicode format.
@@ -13976,7 +13976,7 @@ type RecordTlsa struct {
 	Creator string `json:"creator,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the TLSA record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -13996,7 +13996,7 @@ type RecordTlsa struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -14037,17 +14037,17 @@ type RecordTXT struct {
 	// The GSS-TSIG principal that owns this record.
 	DdnsPrincipal string `json:"ddns_principal,omitempty"`
 	// Determines if the DDNS updates for this record are allowed or not.
-	DdnsProtected bool `json:"ddns_protected,omitempty"`
+	DdnsProtected *bool `json:"ddns_protected,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for a TXT record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Determines if the reclamation is allowed for the record or not.
-	ForbidReclamation bool `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
 	// Name for the TXT record in FQDN format. This value can be in unicode format.
@@ -14135,13 +14135,13 @@ type RecordUnknown struct {
 	Creator string `json:"creator,omitempty"`
 	// Determines if the record is disabled or not. False means that the record is
 	// enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Standard textual representation of the RDATA.
 	DisplayRdata string `json:"display_rdata,omitempty"`
 	// The name of the unknown record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Determines if host name policy is applicable for the record.
-	EnableHostNamePolicy bool `json:"enable_host_name_policy,omitempty"`
+	EnableHostNamePolicy *bool `json:"enable_host_name_policy,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -14160,7 +14160,7 @@ type RecordUnknown struct {
 	// Zero indicates that the record should not be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The name of the DNS view in which the record resides. Example: "external".
 	View string `json:"view,omitempty"`
 	// The name of the zone in which the record resides. Example: "zone.com". If a
@@ -14190,7 +14190,7 @@ type Recordnamepolicy struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether the record name policy is Grid default.
-	IsDefault bool `json:"is_default,omitempty"`
+	IsDefault *bool `json:"is_default,omitempty"`
 	// The name of the record name policy object.
 	Name string `json:"name,omitempty"`
 	// Determines whether the record name policy is a predefined one.
@@ -14262,9 +14262,9 @@ type Rir struct {
 	// The WebAPI URL for RIR.
 	Url string `json:"url,omitempty"`
 	// Use flag for: email
-	UseEmail bool `json:"use_email,omitempty"`
+	UseEmail *bool `json:"use_email,omitempty"`
 	// Use flag for: url
-	UseUrl bool `json:"use_url,omitempty"`
+	UseUrl *bool `json:"use_url,omitempty"`
 }
 
 func (Rir) ObjectType() string {
@@ -14333,7 +14333,7 @@ type RoamingHost struct {
 	Bootserver string `json:"bootserver,omitempty"`
 	// This field controls whether there is a prepend for the
 	// dhcp-client-identifier of a roaming host.
-	ClientIdentifierPrependZero bool `json:"client_identifier_prepend_zero,omitempty"`
+	ClientIdentifierPrependZero *bool `json:"client_identifier_prepend_zero,omitempty"`
 	// Comment for the roaming host; maximum 256 characters.
 	Comment string `json:"comment,omitempty"`
 	// The DDNS domain name for this roaming host.
@@ -14342,28 +14342,28 @@ type RoamingHost struct {
 	DdnsHostname string `json:"ddns_hostname,omitempty"`
 	// If set to true, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The DHCP client ID for the roaming host.
 	DhcpClientIdentifier string `json:"dhcp_client_identifier,omitempty"`
 	// Determines whether a roaming host is disabled or not. When this is set to
 	// False, the roaming host is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The dynamic DNS updates flag of the roaming host object. If set to True, the
 	// DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// Set this to True to use the roaming host name as its ddns_hostname.
-	ForceRoamingHostname bool `json:"force_roaming_hostname,omitempty"`
+	ForceRoamingHostname *bool `json:"force_roaming_hostname,omitempty"`
 	// If this field is set to False, the appliance returns all the DHCP options
 	// the client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// The client hostname of a DHCP roaming host object. This field specifies the
 	// host name that the DHCP client sends to the Infoblox appliance using DHCP
 	// option 12.
@@ -14382,9 +14382,9 @@ type RoamingHost struct {
 	// The DUID value for this roaming host.
 	Ipv6Duid string `json:"ipv6_duid,omitempty"`
 	// Set this to True to enable IPv6 DDNS.
-	Ipv6EnableDdns bool `json:"ipv6_enable_ddns,omitempty"`
+	Ipv6EnableDdns *bool `json:"ipv6_enable_ddns,omitempty"`
 	// Set this to True to use the roaming host name as its ddns_hostname.
-	Ipv6ForceRoamingHostname bool `json:"ipv6_force_roaming_hostname,omitempty"`
+	Ipv6ForceRoamingHostname *bool `json:"ipv6_force_roaming_hostname,omitempty"`
 	// The identification method for an IPv6 or mixed IPv4/IPv6 roaming host.
 	// Currently, the only supported value for this field is "DUID", which
 	// corresponds to identification by DHCPv6 unique ID.
@@ -14427,37 +14427,37 @@ type RoamingHost struct {
 	// specified in the named template.
 	Template string `json:"template,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_domainname
-	UseDdnsDomainname bool `json:"use_ddns_domainname,omitempty"`
+	UseDdnsDomainname *bool `json:"use_ddns_domainname,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ipv6_ddns_domainname
-	UseIpv6DdnsDomainname bool `json:"use_ipv6_ddns_domainname,omitempty"`
+	UseIpv6DdnsDomainname *bool `json:"use_ipv6_ddns_domainname,omitempty"`
 	// Use flag for: ipv6_domain_name
-	UseIpv6DomainName bool `json:"use_ipv6_domain_name,omitempty"`
+	UseIpv6DomainName *bool `json:"use_ipv6_domain_name,omitempty"`
 	// Use flag for: ipv6_domain_name_servers
-	UseIpv6DomainNameServers bool `json:"use_ipv6_domain_name_servers,omitempty"`
+	UseIpv6DomainNameServers *bool `json:"use_ipv6_domain_name_servers,omitempty"`
 	// Use flag for: ipv6_enable_ddns
-	UseIpv6EnableDdns bool `json:"use_ipv6_enable_ddns,omitempty"`
+	UseIpv6EnableDdns *bool `json:"use_ipv6_enable_ddns,omitempty"`
 	// Use flag for: ipv6_options
-	UseIpv6Options bool `json:"use_ipv6_options,omitempty"`
+	UseIpv6Options *bool `json:"use_ipv6_options,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: preferred_lifetime
-	UsePreferredLifetime bool `json:"use_preferred_lifetime,omitempty"`
+	UsePreferredLifetime *bool `json:"use_preferred_lifetime,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: valid_lifetime
-	UseValidLifetime bool `json:"use_valid_lifetime,omitempty"`
+	UseValidLifetime *bool `json:"use_valid_lifetime,omitempty"`
 	// The valid lifetime value for this roaming host object.
 	ValidLifetime uint32 `json:"valid_lifetime,omitempty"`
 }
@@ -14482,7 +14482,7 @@ type Ruleset struct {
 	// Descriptive comment about the Ruleset object.
 	Comment string `json:"comment,omitempty"`
 	// The flag that indicates if the Ruleset object is disabled.
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// The name of this Ruleset object.
 	Name string `json:"name,omitempty"`
 	// The list of Rules assigned to this Ruleset object. Rules can be set only
@@ -14578,7 +14578,7 @@ type ScheduledTask struct {
 	ApproverComment string `json:"approver_comment,omitempty"`
 	// Indicates whether there will be an automatic restart when the appliance
 	// executes the task.
-	AutomaticRestart bool `json:"automatic_restart,omitempty"`
+	AutomaticRestart *bool `json:"automatic_restart,omitempty"`
 	// A list of objects that are affected by the task.
 	ChangedObjects []*Changedobject `json:"changed_objects,omitempty"`
 	// If this scheduled task has dependent tasks, their references will be
@@ -14586,7 +14586,7 @@ type ScheduledTask struct {
 	DependentTasks []*ScheduledTask `json:"dependent_tasks,omitempty"`
 	// If this field is set to True the specified task will be executed
 	// immediately.
-	ExecuteNow bool `json:"execute_now,omitempty"`
+	ExecuteNow *bool `json:"execute_now,omitempty"`
 	// Messages generated by the execution of the scheduled task after its
 	// completion.
 	ExecutionDetails []string `json:"execution_details,omitempty"`
@@ -14606,7 +14606,7 @@ type ScheduledTask struct {
 	PredecessorTask string `json:"predecessor_task,omitempty"`
 	// If set to True, if the scheduled task is a Network Insight task and it
 	// failed, a new task will be cloned from this task and re-executed.
-	ReExecuteTask bool `json:"re_execute_task,omitempty"`
+	ReExecuteTask *bool `json:"re_execute_task,omitempty"`
 	// The time when the task is scheduled to occur.
 	ScheduledTime *UnixTime `json:"scheduled_time,omitempty"`
 	// The time when the task was submitted.
@@ -14666,7 +14666,7 @@ type SharedNetwork struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Authority for the shared network.
-	Authority bool `json:"authority,omitempty"`
+	Authority *bool `json:"authority,omitempty"`
 	// The bootfile name for the shared network. You can configure the DHCP server
 	// to support clients that use the boot file name option in their DHCPREQUEST
 	// messages.
@@ -14680,11 +14680,11 @@ type SharedNetwork struct {
 	// If this field is set to True, the DHCP server generates a hostname and
 	// updates DNS with it when the DHCP client request does not contain a
 	// hostname.
-	DdnsGenerateHostname bool `json:"ddns_generate_hostname,omitempty"`
+	DdnsGenerateHostname *bool `json:"ddns_generate_hostname,omitempty"`
 	// This field controls whether only the DHCP server is allowed to update DNS,
 	// regardless of the DHCP clients requests. Note that changes for this field
 	// take effect only if ddns_use_option81 is True.
-	DdnsServerAlwaysUpdates bool `json:"ddns_server_always_updates,omitempty"`
+	DdnsServerAlwaysUpdates *bool `json:"ddns_server_always_updates,omitempty"`
 	// The DNS update Time to Live (TTL) value of a shared network object. The TTL
 	// is a 32-bit unsigned integer that represents the duration, in seconds, for
 	// which the update is cached. Zero indicates that the update is not cached.
@@ -14694,12 +14694,12 @@ type SharedNetwork struct {
 	// PTR records of a client with a fixed address. When this feature is enabled
 	// and the DHCP server adds A and PTR records for a fixed address, the DHCP
 	// server never discards the records.
-	DdnsUpdateFixedAddresses bool `json:"ddns_update_fixed_addresses,omitempty"`
+	DdnsUpdateFixedAddresses *bool `json:"ddns_update_fixed_addresses,omitempty"`
 	// The support for DHCP Option 81 at the shared network level.
-	DdnsUseOption81 bool `json:"ddns_use_option81,omitempty"`
+	DdnsUseOption81 *bool `json:"ddns_use_option81,omitempty"`
 	// If set to true, BOOTP settings are disabled and BOOTP requests will be
 	// denied.
-	DenyBootp bool `json:"deny_bootp,omitempty"`
+	DenyBootp *bool `json:"deny_bootp,omitempty"`
 	// The percentage of the total DHCP utilization of the networks belonging to
 	// the shared network multiplied by 1000. This is the percentage of the total
 	// number of available IP addresses from all the networks belonging to the
@@ -14710,25 +14710,25 @@ type SharedNetwork struct {
 	DhcpUtilizationStatus string `json:"dhcp_utilization_status,omitempty"`
 	// Determines whether a shared network is disabled or not. When this is set to
 	// False, the shared network is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The total number of DHCP leases issued for the shared network.
 	DynamicHosts uint32 `json:"dynamic_hosts,omitempty"`
 	// The dynamic DNS updates flag of a shared network object. If set to True, the
 	// DHCP server sends DDNS updates to DNS servers in the same Grid, and to
 	// external DNS servers.
-	EnableDdns bool `json:"enable_ddns,omitempty"`
+	EnableDdns *bool `json:"enable_ddns,omitempty"`
 	// Set this to True if you want the DHCP server to use a different lease time
 	// for PXE clients.
-	EnablePxeLeaseTime bool `json:"enable_pxe_lease_time,omitempty"`
+	EnablePxeLeaseTime *bool `json:"enable_pxe_lease_time,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
 	// If set to true, the client identifier will be ignored.
-	IgnoreClientIdentifier bool `json:"ignore_client_identifier,omitempty"`
+	IgnoreClientIdentifier *bool `json:"ignore_client_identifier,omitempty"`
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
 	// client has requested.
-	IgnoreDhcpOptionListRequest bool `json:"ignore_dhcp_option_list_request,omitempty"`
+	IgnoreDhcpOptionListRequest *bool `json:"ignore_dhcp_option_list_request,omitempty"`
 	// Indicates whether the appliance will ignore DHCP client IDs or MAC
 	// addresses. Valid values are "NONE", "CLIENT", or "MACADDR". The default is
 	// "NONE".
@@ -14780,43 +14780,43 @@ type SharedNetwork struct {
 	TotalHosts uint32 `json:"total_hosts,omitempty"`
 	// This field controls whether the DHCP server updates DNS when a DHCP lease is
 	// renewed.
-	UpdateDnsOnLeaseRenewal bool `json:"update_dns_on_lease_renewal,omitempty"`
+	UpdateDnsOnLeaseRenewal *bool `json:"update_dns_on_lease_renewal,omitempty"`
 	// Use flag for: authority
-	UseAuthority bool `json:"use_authority,omitempty"`
+	UseAuthority *bool `json:"use_authority,omitempty"`
 	// Use flag for: bootfile
-	UseBootfile bool `json:"use_bootfile,omitempty"`
+	UseBootfile *bool `json:"use_bootfile,omitempty"`
 	// Use flag for: bootserver
-	UseBootserver bool `json:"use_bootserver,omitempty"`
+	UseBootserver *bool `json:"use_bootserver,omitempty"`
 	// Use flag for: ddns_generate_hostname
-	UseDdnsGenerateHostname bool `json:"use_ddns_generate_hostname,omitempty"`
+	UseDdnsGenerateHostname *bool `json:"use_ddns_generate_hostname,omitempty"`
 	// Use flag for: ddns_ttl
-	UseDdnsTtl bool `json:"use_ddns_ttl,omitempty"`
+	UseDdnsTtl *bool `json:"use_ddns_ttl,omitempty"`
 	// Use flag for: ddns_update_fixed_addresses
-	UseDdnsUpdateFixedAddresses bool `json:"use_ddns_update_fixed_addresses,omitempty"`
+	UseDdnsUpdateFixedAddresses *bool `json:"use_ddns_update_fixed_addresses,omitempty"`
 	// Use flag for: ddns_use_option81
-	UseDdnsUseOption81 bool `json:"use_ddns_use_option81,omitempty"`
+	UseDdnsUseOption81 *bool `json:"use_ddns_use_option81,omitempty"`
 	// Use flag for: deny_bootp
-	UseDenyBootp bool `json:"use_deny_bootp,omitempty"`
+	UseDenyBootp *bool `json:"use_deny_bootp,omitempty"`
 	// Use flag for: enable_ddns
-	UseEnableDdns bool `json:"use_enable_ddns,omitempty"`
+	UseEnableDdns *bool `json:"use_enable_ddns,omitempty"`
 	// Use flag for: ignore_client_identifier
-	UseIgnoreClientIdentifier bool `json:"use_ignore_client_identifier,omitempty"`
+	UseIgnoreClientIdentifier *bool `json:"use_ignore_client_identifier,omitempty"`
 	// Use flag for: ignore_dhcp_option_list_request
-	UseIgnoreDhcpOptionListRequest bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
+	UseIgnoreDhcpOptionListRequest *bool `json:"use_ignore_dhcp_option_list_request,omitempty"`
 	// Use flag for: ignore_id
-	UseIgnoreId bool `json:"use_ignore_id,omitempty"`
+	UseIgnoreId *bool `json:"use_ignore_id,omitempty"`
 	// Use flag for: lease_scavenge_time
-	UseLeaseScavengeTime bool `json:"use_lease_scavenge_time,omitempty"`
+	UseLeaseScavengeTime *bool `json:"use_lease_scavenge_time,omitempty"`
 	// Use flag for: logic_filter_rules
-	UseLogicFilterRules bool `json:"use_logic_filter_rules,omitempty"`
+	UseLogicFilterRules *bool `json:"use_logic_filter_rules,omitempty"`
 	// Use flag for: nextserver
-	UseNextserver bool `json:"use_nextserver,omitempty"`
+	UseNextserver *bool `json:"use_nextserver,omitempty"`
 	// Use flag for: options
-	UseOptions bool `json:"use_options,omitempty"`
+	UseOptions *bool `json:"use_options,omitempty"`
 	// Use flag for: pxe_lease_time
-	UsePxeLeaseTime bool `json:"use_pxe_lease_time,omitempty"`
+	UsePxeLeaseTime *bool `json:"use_pxe_lease_time,omitempty"`
 	// Use flag for: update_dns_on_lease_renewal
-	UseUpdateDnsOnLeaseRenewal bool `json:"use_update_dns_on_lease_renewal,omitempty"`
+	UseUpdateDnsOnLeaseRenewal *bool `json:"use_update_dns_on_lease_renewal,omitempty"`
 }
 
 func (SharedNetwork) ObjectType() string {
@@ -14843,7 +14843,7 @@ type SharedRecordA struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this shared record is disabled or not. False means that the
 	// record is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for this shared record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -14861,7 +14861,7 @@ type SharedRecordA struct {
 	// be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (SharedRecordA) ObjectType() string {
@@ -14888,7 +14888,7 @@ type SharedRecordAAAA struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this shared record is disabled or not. False means that the
 	// record is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for this shared record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -14906,7 +14906,7 @@ type SharedRecordAAAA struct {
 	// be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (SharedRecordAAAA) ObjectType() string {
@@ -14934,7 +14934,7 @@ type SharedrecordCname struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this shared record is disabled or not. False means that the
 	// record is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Canonical name in punycode format.
 	DnsCanonical string `json:"dns_canonical,omitempty"`
 	// The name for this shared record in punycode format.
@@ -14952,7 +14952,7 @@ type SharedrecordCname struct {
 	// be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (SharedrecordCname) ObjectType() string {
@@ -14979,7 +14979,7 @@ type SharedRecordMX struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this shared record is disabled or not. False means that the
 	// record is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the mail exchanger in punycode format.
 	DnsMailExchanger string `json:"dns_mail_exchanger,omitempty"`
 	// The name for this shared record in punycode format.
@@ -15003,7 +15003,7 @@ type SharedRecordMX struct {
 	// be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (SharedRecordMX) ObjectType() string {
@@ -15030,7 +15030,7 @@ type SharedrecordSrv struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this shared record is disabled or not. False means that the
 	// record is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for this shared record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// The name for a shared SRV record in punycode format.
@@ -15057,7 +15057,7 @@ type SharedrecordSrv struct {
 	// be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 	// The weight of the shared SRV record. Valid values are from 0 to 65535
 	// (inclusive), in 32-bit unsigned integer format.
 	Weight uint32 `json:"weight,omitempty"`
@@ -15088,7 +15088,7 @@ type SharedRecordTXT struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines if this shared record is disabled or not. False means that the
 	// record is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name for this shared record in punycode format.
 	DnsName string `json:"dns_name,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -15109,7 +15109,7 @@ type SharedRecordTXT struct {
 	// be cached.
 	Ttl uint32 `json:"ttl,omitempty"`
 	// Use flag for: ttl
-	UseTtl bool `json:"use_ttl,omitempty"`
+	UseTtl *bool `json:"use_ttl,omitempty"`
 }
 
 func (SharedRecordTXT) ObjectType() string {
@@ -15143,7 +15143,7 @@ type Sharedrecordgroup struct {
 	// The record name policy of this shared record group.
 	RecordNamePolicy string `json:"record_name_policy,omitempty"`
 	// Use flag for: record_name_policy
-	UseRecordNamePolicy bool `json:"use_record_name_policy,omitempty"`
+	UseRecordNamePolicy *bool `json:"use_record_name_policy,omitempty"`
 	// The list of zones associated with this shared record group.
 	ZoneAssociations []string `json:"zone_associations,omitempty"`
 }
@@ -15259,7 +15259,7 @@ type SNMPUser struct {
 	// A descriptive comment for the SNMPv3 User.
 	Comment string `json:"comment,omitempty"`
 	// Determines if SNMPv3 user is disabled or not.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -15291,12 +15291,12 @@ type Superhost struct {
 	Comment string `json:"comment,omitempty"`
 	// True if we have to delete all DNS/DHCP associated objects with Super Host,
 	// false by default.
-	DeleteAssociatedObjects bool `json:"delete_associated_objects,omitempty"`
+	DeleteAssociatedObjects *bool `json:"delete_associated_objects,omitempty"`
 	// A list of DHCP objects refs which are associated with Super Host.
 	DhcpAssociatedObjects []*Ipv4FixedAddress `json:"dhcp_associated_objects,omitempty"`
 	// Disable all DNS/DHCP associated objects with Super Host if True, False by
 	// default.
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// A list of object refs of the DNS resource records which are associated with
 	// Super Host.
 	DnsAssociatedObjects []*RecordA `json:"dns_associated_objects,omitempty"`
@@ -15422,7 +15422,7 @@ type TacacsplusAuthservice struct {
 	// The TACACS+ authentication service descriptive comment.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the TACACS+ authentication service object is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The TACACS+ authentication service name.
 	Name string `json:"name,omitempty"`
 	// The list of the TACACS+ servers used for authentication.
@@ -15448,7 +15448,7 @@ type Taxii struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Indicates whether the Taxii service is running on the given member or not.
-	EnableService bool `json:"enable_service,omitempty"`
+	EnableService *bool `json:"enable_service,omitempty"`
 	// The IPv4 Address of the Grid member.
 	Ipv4Addr string `json:"ipv4addr,omitempty"`
 	// The IPv6 Address of the Grid member.
@@ -15555,7 +15555,7 @@ type ThreatanalyticsWhitelist struct {
 	// The descriptive comment for the threat analytics whitelist.
 	Comment string `json:"comment,omitempty"`
 	// Determines whether the threat analytics whitelist is disabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The FQDN of the threat analytics whitelist.
 	Fqdn string `json:"fqdn,omitempty"`
 	// The type of the threat analytics whitelist.
@@ -15584,9 +15584,9 @@ type ThreatinsightCloudclient struct {
 	// Threat Insight Cloud Client.
 	BlacklistRpzList []*ZoneRp `json:"blacklist_rpz_list,omitempty"`
 	// Determines whether the Threat Insight in Cloud Client is enabled.
-	Enable bool `json:"enable,omitempty"`
+	Enable *bool `json:"enable,omitempty"`
 	// Force a refresh if at least one RPZ is configured.
-	ForceRefresh bool `json:"force_refresh,omitempty"`
+	ForceRefresh *bool `json:"force_refresh,omitempty"`
 	// The time interval (in seconds) for requesting newly detected domains by the
 	// Infoblox Threat Insight Cloud Client and applying them to the list of
 	// configured RPZs.
@@ -15621,7 +15621,7 @@ type ThreatprotectionGridRule struct {
 	// The description of the custom rule.
 	Description string `json:"description,omitempty"`
 	// Determines if the custom rule is disabled.
-	Disabled bool `json:"disabled,omitempty"`
+	Disabled *bool `json:"disabled,omitempty"`
 	// Determines if factory reset is enabled for the custom rule.
 	IsFactoryResetEnabled bool `json:"is_factory_reset_enabled,omitempty"`
 	// The name of the rule custom rule concatenated with its rule config
@@ -15661,7 +15661,7 @@ type ThreatprotectionProfile struct {
 	// The current Threat Protection profile ruleset.
 	CurrentRuleset string `json:"current_ruleset,omitempty"`
 	// Determines if multiple BIND responses via TCP connection are disabled.
-	DisableMultipleDnsTcpRequest bool `json:"disable_multiple_dns_tcp_request,omitempty"`
+	DisableMultipleDnsTcpRequest *bool `json:"disable_multiple_dns_tcp_request,omitempty"`
 	// The number of events logged per second per rule.
 	EventsPerSecondPerRule uint32 `json:"events_per_second_per_rule,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
@@ -15678,11 +15678,11 @@ type ThreatprotectionProfile struct {
 	// cloning a profile from an existing profile.
 	SourceProfile string `json:"source_profile,omitempty"`
 	// Use flag for: current_ruleset
-	UseCurrentRuleset bool `json:"use_current_ruleset,omitempty"`
+	UseCurrentRuleset *bool `json:"use_current_ruleset,omitempty"`
 	// Use flag for: disable_multiple_dns_tcp_request
-	UseDisableMultipleDnsTcpRequest bool `json:"use_disable_multiple_dns_tcp_request,omitempty"`
+	UseDisableMultipleDnsTcpRequest *bool `json:"use_disable_multiple_dns_tcp_request,omitempty"`
 	// Use flag for: events_per_second_per_rule
-	UseEventsPerSecondPerRule bool `json:"use_events_per_second_per_rule,omitempty"`
+	UseEventsPerSecondPerRule *bool `json:"use_events_per_second_per_rule,omitempty"`
 }
 
 func (ThreatprotectionProfile) ObjectType() string {
@@ -15705,7 +15705,7 @@ type ThreatprotectionProfileRule struct {
 	// The threat protection rule configuration.
 	Config *ThreatprotectionRuleconfig `json:"config,omitempty"`
 	// Determines if the rule is enabled or not for the profile.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the Threat protection profile.
 	Profile string `json:"profile,omitempty"`
 	// The rule object name.
@@ -15713,9 +15713,9 @@ type ThreatprotectionProfileRule struct {
 	// The snort rule ID.
 	Sid uint32 `json:"sid,omitempty"`
 	// Use flag for: config
-	UseConfig bool `json:"use_config,omitempty"`
+	UseConfig *bool `json:"use_config,omitempty"`
 	// Use flag for: disable
-	UseDisable bool `json:"use_disable,omitempty"`
+	UseDisable *bool `json:"use_disable,omitempty"`
 }
 
 func (ThreatprotectionProfileRule) ObjectType() string {
@@ -15738,7 +15738,7 @@ type ThreatprotectionRule struct {
 	// The threat protection rule configuration.
 	Config *ThreatprotectionRuleconfig `json:"config,omitempty"`
 	// Determines if the rule is enabled or not for the member.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The name of the Threat protection member.
 	Member string `json:"member,omitempty"`
 	// The rule object name.
@@ -15746,9 +15746,9 @@ type ThreatprotectionRule struct {
 	// The Rule ID.
 	Sid uint32 `json:"sid,omitempty"`
 	// Use flag for: config
-	UseConfig bool `json:"use_config,omitempty"`
+	UseConfig *bool `json:"use_config,omitempty"`
 	// Use flag for: disable
-	UseDisable bool `json:"use_disable,omitempty"`
+	UseDisable *bool `json:"use_disable,omitempty"`
 }
 
 func (ThreatprotectionRule) ObjectType() string {
@@ -15799,7 +15799,7 @@ type ThreatprotectionRuleset struct {
 	// The human readable comment for the ruleset.
 	Comment string `json:"comment,omitempty"`
 	// Determines if the ruleset will not be deleted during upgrade.
-	DoNotDelete bool `json:"do_not_delete,omitempty"`
+	DoNotDelete *bool `json:"do_not_delete,omitempty"`
 	// Determines if factory reset is enabled for this ruleset.
 	IsFactoryResetEnabled bool `json:"is_factory_reset_enabled,omitempty"`
 	// The users of the ruleset.
@@ -15926,7 +15926,7 @@ type Upgradeschedule struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// Determines whether the upgrade schedule is active.
-	Active bool `json:"active,omitempty"`
+	Active *bool `json:"active,omitempty"`
 	// The start time of the upgrade.
 	StartTime *UnixTime `json:"start_time,omitempty"`
 	// The time zone for upgrade start time.
@@ -16089,10 +16089,10 @@ type UserProfile struct {
 	Email string `json:"email,omitempty"`
 	// Determines if extensible attribute values will be returned by global search
 	// or not.
-	GlobalSearchOnEa bool `json:"global_search_on_ea,omitempty"`
+	GlobalSearchOnEa *bool `json:"global_search_on_ea,omitempty"`
 	// Determines if global search will search for network insight devices and
 	// interfaces or not.
-	GlobalSearchOnNiData bool `json:"global_search_on_ni_data,omitempty"`
+	GlobalSearchOnNiData *bool `json:"global_search_on_ni_data,omitempty"`
 	// List of Admin Group objects that the current user is mapped to.
 	GridAdminGroups []string `json:"grid_admin_groups,omitempty"`
 	// The timestamp when the admin last logged in.
@@ -16118,7 +16118,7 @@ type UserProfile struct {
 	// The time zone of the admin user.
 	TimeZone string `json:"time_zone,omitempty"`
 	// Use flag for: time_zone
-	UseTimeZone bool `json:"use_time_zone,omitempty"`
+	UseTimeZone *bool `json:"use_time_zone,omitempty"`
 	// The admin type.
 	UserType string `json:"user_type,omitempty"`
 }
@@ -16147,17 +16147,17 @@ type Vdiscoverytask struct {
 	Ref    string `json:"_ref,omitempty"`
 	// Allow unsecured connection over HTTPS and bypass validation of the remote
 	// SSL certificate.
-	AllowUnsecuredConnection bool `json:"allow_unsecured_connection,omitempty"`
+	AllowUnsecuredConnection *bool `json:"allow_unsecured_connection,omitempty"`
 	// Whether to insert or update cloud EAs with discovery data.
-	AutoConsolidateCloudEa bool `json:"auto_consolidate_cloud_ea,omitempty"`
+	AutoConsolidateCloudEa *bool `json:"auto_consolidate_cloud_ea,omitempty"`
 	// Whether to replace managed tenant with discovery tenant data.
-	AutoConsolidateManagedTenant bool `json:"auto_consolidate_managed_tenant,omitempty"`
+	AutoConsolidateManagedTenant *bool `json:"auto_consolidate_managed_tenant,omitempty"`
 	// Whether to replace managed virtual machine with discovery vm data.
-	AutoConsolidateManagedVm bool `json:"auto_consolidate_managed_vm,omitempty"`
+	AutoConsolidateManagedVm *bool `json:"auto_consolidate_managed_vm,omitempty"`
 	// Template string used to generate host name.
 	AutoCreateDnsHostnameTemplate string `json:"auto_create_dns_hostname_template,omitempty"`
 	// Control whether to create or update DNS record using discovered data.
-	AutoCreateDnsRecord bool `json:"auto_create_dns_record,omitempty"`
+	AutoCreateDnsRecord *bool `json:"auto_create_dns_record,omitempty"`
 	// Indicates the type of record to create if the auto create DNS record is
 	// enabled.
 	AutoCreateDnsRecordType string `json:"auto_create_dns_record_type,omitempty"`
@@ -16174,7 +16174,7 @@ type Vdiscoverytask struct {
 	// Type of discovery driver.
 	DriverType string `json:"driver_type,omitempty"`
 	// Whether to enabled the cloud discovery or not.
-	Enabled bool `json:"enabled,omitempty"`
+	Enabled *bool `json:"enabled,omitempty"`
 	// FQDN or IP of the cloud management platform.
 	FqdnOrIp string `json:"fqdn_or_ip,omitempty"`
 	// Identity service version.
@@ -16184,7 +16184,7 @@ type Vdiscoverytask struct {
 	// Member on which cloud discovery will be run.
 	Member string `json:"member,omitempty"`
 	// Whether to replace the old data with new or not.
-	MergeData bool `json:"merge_data,omitempty"`
+	MergeData *bool `json:"merge_data,omitempty"`
 	// Name of this cloud discovery task. Uniquely identify a task.
 	Name string `json:"name,omitempty"`
 	// Password used for connecting to the cloud management platform.
@@ -16210,14 +16210,14 @@ type Vdiscoverytask struct {
 	// State message of the complete discovery process.
 	StateMsg string `json:"state_msg,omitempty"`
 	// If set to true, the appliance uses a specific DNS view for private IPs.
-	UpdateDnsViewPrivateIp bool `json:"update_dns_view_private_ip,omitempty"`
+	UpdateDnsViewPrivateIp *bool `json:"update_dns_view_private_ip,omitempty"`
 	// If set to true, the appliance uses a specific DNS view for public IPs.
-	UpdateDnsViewPublicIp bool `json:"update_dns_view_public_ip,omitempty"`
+	UpdateDnsViewPublicIp *bool `json:"update_dns_view_public_ip,omitempty"`
 	// Whether to update metadata as a result of this network discovery.
-	UpdateMetadata bool `json:"update_metadata,omitempty"`
+	UpdateMetadata *bool `json:"update_metadata,omitempty"`
 	// If set true, all keystone connection will use "/identity" endpoint and port
 	// value will be ignored.
-	UseIdentity bool `json:"use_identity,omitempty"`
+	UseIdentity *bool `json:"use_identity,omitempty"`
 	// Username used for connecting to the cloud management platform.
 	Username string `json:"username,omitempty"`
 }
@@ -16248,7 +16248,7 @@ type View struct {
 	// The flag that indicates whether blacklist redirection queries are logged.
 	// Specify "true" to enable logging, or "false" to disable it. The default
 	// value is "false".
-	BlacklistLogQuery bool `json:"blacklist_log_query,omitempty"`
+	BlacklistLogQuery *bool `json:"blacklist_log_query,omitempty"`
 	// The array of IP addresses the appliance includes in the response it sends in
 	// place of a blacklisted IP address.
 	BlacklistRedirectAddresses []string `json:"blacklist_redirect_addresses,omitempty"`
@@ -16271,55 +16271,55 @@ type View struct {
 	CustomRootNameServers []NameServer `json:"custom_root_name_servers,omitempty"`
 	// Defines whether creation timestamp of RR should be updated ' when DDNS
 	// update happens even if there is no change to ' the RR.
-	DdnsForceCreationTimestampUpdate bool `json:"ddns_force_creation_timestamp_update,omitempty"`
+	DdnsForceCreationTimestampUpdate *bool `json:"ddns_force_creation_timestamp_update,omitempty"`
 	// The DDNS Principal cluster group name.
 	DdnsPrincipalGroup string `json:"ddns_principal_group,omitempty"`
 	// The flag that indicates whether the DDNS principal track is enabled or
 	// disabled.
-	DdnsPrincipalTracking bool `json:"ddns_principal_tracking,omitempty"`
+	DdnsPrincipalTracking *bool `json:"ddns_principal_tracking,omitempty"`
 	// The flag that indicates whether an option to restrict DDNS update request
 	// based on FQDN patterns is enabled or disabled.
-	DdnsRestrictPatterns bool `json:"ddns_restrict_patterns,omitempty"`
+	DdnsRestrictPatterns *bool `json:"ddns_restrict_patterns,omitempty"`
 	// The unordered list of restriction patterns for an option of to restrict DDNS
 	// updates based on FQDN patterns.
 	DdnsRestrictPatternsList []string `json:"ddns_restrict_patterns_list,omitempty"`
 	// The flag that indicates whether an option to restrict DDNS update request to
 	// protected resource records is enabled or disabled.
-	DdnsRestrictProtected bool `json:"ddns_restrict_protected,omitempty"`
+	DdnsRestrictProtected *bool `json:"ddns_restrict_protected,omitempty"`
 	// The flag that indicates whether DDNS update request for principal other than
 	// target resource record's principal is restricted.
-	DdnsRestrictSecure bool `json:"ddns_restrict_secure,omitempty"`
+	DdnsRestrictSecure *bool `json:"ddns_restrict_secure,omitempty"`
 	// The flag that indicates whether an option to restrict DDNS update request to
 	// resource records which are marked as 'STATIC' is enabled or disabled.
-	DdnsRestrictStatic bool `json:"ddns_restrict_static,omitempty"`
+	DdnsRestrictStatic *bool `json:"ddns_restrict_static,omitempty"`
 	// Determines if the DNS view is disabled or not. When this is set to False,
 	// the DNS view is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines if the DNS64 s enabled or not.
-	Dns64Enabled bool `json:"dns64_enabled,omitempty"`
+	Dns64Enabled *bool `json:"dns64_enabled,omitempty"`
 	// The list of DNS64 synthesis groups associated with this DNS view.
 	Dns64Groups []string `json:"dns64_groups,omitempty"`
 	// Determines if the DNS security extension is enabled or not.
-	DnssecEnabled bool `json:"dnssec_enabled,omitempty"`
+	DnssecEnabled *bool `json:"dnssec_enabled,omitempty"`
 	// Determines if the DNS security extension accepts expired signatures or not.
-	DnssecExpiredSignaturesEnabled bool `json:"dnssec_expired_signatures_enabled,omitempty"`
+	DnssecExpiredSignaturesEnabled *bool `json:"dnssec_expired_signatures_enabled,omitempty"`
 	// A list of zones for which the server does not perform DNSSEC validation.
 	DnssecNegativeTrustAnchors []string `json:"dnssec_negative_trust_anchors,omitempty"`
 	// The list of trusted keys for the DNS security extension.
 	DnssecTrustedKeys []*Dnssectrustedkey `json:"dnssec_trusted_keys,omitempty"`
 	// Determines if the DNS security validation is enabled or not.
-	DnssecValidationEnabled bool `json:"dnssec_validation_enabled,omitempty"`
+	DnssecValidationEnabled *bool `json:"dnssec_validation_enabled,omitempty"`
 	// Advertises the EDNS0 buffer size to the upstream server. The value should be
 	// between 512 and 4096 bytes. The recommended value is between 512 and 1220
 	// bytes.
 	EdnsUdpSize uint32 `json:"edns_udp_size,omitempty"`
 	// Determines if the blacklist in a DNS view is enabled or not.
-	EnableBlacklist bool `json:"enable_blacklist,omitempty"`
+	EnableBlacklist *bool `json:"enable_blacklist,omitempty"`
 	// Determines if the fixed RRset order FQDN is enabled or not.
-	EnableFixedRrsetOrderFqdns bool `json:"enable_fixed_rrset_order_fqdns,omitempty"`
+	EnableFixedRrsetOrderFqdns *bool `json:"enable_fixed_rrset_order_fqdns,omitempty"`
 	// Determines if the 'match-recursive-only' option in a DNS view is enabled or
 	// not.
-	EnableMatchRecursiveOnly bool `json:"enable_match_recursive_only,omitempty"`
+	EnableMatchRecursiveOnly *bool `json:"enable_match_recursive_only,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -16336,7 +16336,7 @@ type View struct {
 	// Determines if this DNS view sends queries to forwarders only or not. When
 	// the value is True, queries are sent to forwarders only, and not to other
 	// internal or Internet root servers.
-	ForwardOnly bool `json:"forward_only,omitempty"`
+	ForwardOnly *bool `json:"forward_only,omitempty"`
 	// The list of forwarders for the DNS view. A forwarder is a name server to
 	// which other name servers first send their off-site queries. The forwarder
 	// builds up a cache of information, avoiding the need for other name servers
@@ -16376,9 +16376,9 @@ type View struct {
 	// The flag that indicates whether NXDOMAIN redirection queries are logged.
 	// Specify "true" to enable logging, or "false" to disable it. The default
 	// value is "false".
-	NxdomainLogQuery bool `json:"nxdomain_log_query,omitempty"`
+	NxdomainLogQuery *bool `json:"nxdomain_log_query,omitempty"`
 	// Determines if NXDOMAIN redirection in a DNS view is enabled or not.
-	NxdomainRedirect bool `json:"nxdomain_redirect,omitempty"`
+	NxdomainRedirect *bool `json:"nxdomain_redirect,omitempty"`
 	// The array with IPv4 addresses the appliance includes in the response it
 	// sends in place of an NXDOMAIN response.
 	NxdomainRedirectAddresses []string `json:"nxdomain_redirect_addresses,omitempty"`
@@ -16393,14 +16393,14 @@ type View struct {
 	// redirection.
 	NxdomainRulesets []string `json:"nxdomain_rulesets,omitempty"`
 	// Determines if recursion is enabled or not.
-	Recursion bool `json:"recursion,omitempty"`
+	Recursion *bool `json:"recursion,omitempty"`
 	// The response rate limiting settings for the DNS View.
 	ResponseRateLimiting *GridResponseratelimiting `json:"response_rate_limiting,omitempty"`
 	// Determines the type of root name servers.
 	RootNameServerType string `json:"root_name_server_type,omitempty"`
 	// Enables the appliance to ignore RPZ-IP triggers with prefix lengths less
 	// than the specified minimum prefix length.
-	RpzDropIpRuleEnabled bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
+	RpzDropIpRuleEnabled *bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
 	// The minimum prefix length for IPv4 RPZ-IP triggers. The appliance ignores
 	// RPZ-IP triggers with prefix lengths less than the specified minimum IPv4
 	// prefix length.
@@ -16410,7 +16410,7 @@ type View struct {
 	// prefix length.
 	RpzDropIpRuleMinPrefixLengthIpv6 uint32 `json:"rpz_drop_ip_rule_min_prefix_length_ipv6,omitempty"`
 	// The flag that indicates whether recursive RPZ lookups are enabled.
-	RpzQnameWaitRecurse bool `json:"rpz_qname_wait_recurse,omitempty"`
+	RpzQnameWaitRecurse *bool `json:"rpz_qname_wait_recurse,omitempty"`
 	// The scavenging settings.
 	ScavengingSettings *SettingScavenging `json:"scavenging_settings,omitempty"`
 	// A sort list that determines the order of IP addresses in responses sent to
@@ -16419,59 +16419,59 @@ type View struct {
 	// Use flag for: blacklist_action , blacklist_log_query,
 	// blacklist_redirect_addresses, blacklist_redirect_ttl, blacklist_rulesets,
 	// enable_blacklist
-	UseBlacklist bool `json:"use_blacklist,omitempty"`
+	UseBlacklist *bool `json:"use_blacklist,omitempty"`
 	// Use flag for: ddns_force_creation_timestamp_update
-	UseDdnsForceCreationTimestampUpdate bool `json:"use_ddns_force_creation_timestamp_update,omitempty"`
+	UseDdnsForceCreationTimestampUpdate *bool `json:"use_ddns_force_creation_timestamp_update,omitempty"`
 	// Use flag for: ddns_restrict_patterns_list , ddns_restrict_patterns
-	UseDdnsPatternsRestriction bool `json:"use_ddns_patterns_restriction,omitempty"`
+	UseDdnsPatternsRestriction *bool `json:"use_ddns_patterns_restriction,omitempty"`
 	// Use flag for: ddns_restrict_secure , ddns_principal_tracking,
 	// ddns_principal_group
-	UseDdnsPrincipalSecurity bool `json:"use_ddns_principal_security,omitempty"`
+	UseDdnsPrincipalSecurity *bool `json:"use_ddns_principal_security,omitempty"`
 	// Use flag for: ddns_restrict_protected
-	UseDdnsRestrictProtected bool `json:"use_ddns_restrict_protected,omitempty"`
+	UseDdnsRestrictProtected *bool `json:"use_ddns_restrict_protected,omitempty"`
 	// Use flag for: ddns_restrict_static
-	UseDdnsRestrictStatic bool `json:"use_ddns_restrict_static,omitempty"`
+	UseDdnsRestrictStatic *bool `json:"use_ddns_restrict_static,omitempty"`
 	// Use flag for: dns64_enabled , dns64_groups
-	UseDns64 bool `json:"use_dns64,omitempty"`
+	UseDns64 *bool `json:"use_dns64,omitempty"`
 	// Use flag for: dnssec_enabled , dnssec_expired_signatures_enabled,
 	// dnssec_validation_enabled, dnssec_trusted_keys
-	UseDnssec bool `json:"use_dnssec,omitempty"`
+	UseDnssec *bool `json:"use_dnssec,omitempty"`
 	// Use flag for: edns_udp_size
-	UseEdnsUdpSize bool `json:"use_edns_udp_size,omitempty"`
+	UseEdnsUdpSize *bool `json:"use_edns_udp_size,omitempty"`
 	// Use flag for: filter_aaaa , filter_aaaa_list
-	UseFilterAaaa bool `json:"use_filter_aaaa,omitempty"`
+	UseFilterAaaa *bool `json:"use_filter_aaaa,omitempty"`
 	// Use flag for: fixed_rrset_order_fqdns , enable_fixed_rrset_order_fqdns
-	UseFixedRrsetOrderFqdns bool `json:"use_fixed_rrset_order_fqdns,omitempty"`
+	UseFixedRrsetOrderFqdns *bool `json:"use_fixed_rrset_order_fqdns,omitempty"`
 	// Use flag for: forwarders , forward_only
-	UseForwarders bool `json:"use_forwarders,omitempty"`
+	UseForwarders *bool `json:"use_forwarders,omitempty"`
 	// Use flag for: lame_ttl
-	UseLameTtl bool `json:"use_lame_ttl,omitempty"`
+	UseLameTtl *bool `json:"use_lame_ttl,omitempty"`
 	// Use flag for: max_cache_ttl
-	UseMaxCacheTtl bool `json:"use_max_cache_ttl,omitempty"`
+	UseMaxCacheTtl *bool `json:"use_max_cache_ttl,omitempty"`
 	// Use flag for: max_ncache_ttl
-	UseMaxNcacheTtl bool `json:"use_max_ncache_ttl,omitempty"`
+	UseMaxNcacheTtl *bool `json:"use_max_ncache_ttl,omitempty"`
 	// Use flag for: max_udp_size
-	UseMaxUdpSize bool `json:"use_max_udp_size,omitempty"`
+	UseMaxUdpSize *bool `json:"use_max_udp_size,omitempty"`
 	// Use flag for: nxdomain_redirect , nxdomain_redirect_addresses,
 	// nxdomain_redirect_addresses_v6, nxdomain_redirect_ttl, nxdomain_log_query,
 	// nxdomain_rulesets
-	UseNxdomainRedirect bool `json:"use_nxdomain_redirect,omitempty"`
+	UseNxdomainRedirect *bool `json:"use_nxdomain_redirect,omitempty"`
 	// Use flag for: recursion
-	UseRecursion bool `json:"use_recursion,omitempty"`
+	UseRecursion *bool `json:"use_recursion,omitempty"`
 	// Use flag for: response_rate_limiting
-	UseResponseRateLimiting bool `json:"use_response_rate_limiting,omitempty"`
+	UseResponseRateLimiting *bool `json:"use_response_rate_limiting,omitempty"`
 	// Use flag for: custom_root_name_servers , root_name_server_type
-	UseRootNameServer bool `json:"use_root_name_server,omitempty"`
+	UseRootNameServer *bool `json:"use_root_name_server,omitempty"`
 	// Use flag for: rpz_drop_ip_rule_enabled ,
 	// rpz_drop_ip_rule_min_prefix_length_ipv4,
 	// rpz_drop_ip_rule_min_prefix_length_ipv6
-	UseRpzDropIpRule bool `json:"use_rpz_drop_ip_rule,omitempty"`
+	UseRpzDropIpRule *bool `json:"use_rpz_drop_ip_rule,omitempty"`
 	// Use flag for: rpz_qname_wait_recurse
-	UseRpzQnameWaitRecurse bool `json:"use_rpz_qname_wait_recurse,omitempty"`
+	UseRpzQnameWaitRecurse *bool `json:"use_rpz_qname_wait_recurse,omitempty"`
 	// Use flag for: scavenging_settings , last_queried_acl
-	UseScavengingSettings bool `json:"use_scavenging_settings,omitempty"`
+	UseScavengingSettings *bool `json:"use_scavenging_settings,omitempty"`
 	// Use flag for: sortlist
-	UseSortlist bool `json:"use_sortlist,omitempty"`
+	UseSortlist *bool `json:"use_sortlist,omitempty"`
 }
 
 func (View) ObjectType() string {
@@ -16511,7 +16511,7 @@ type Vlan struct {
 	// The VLAN View or VLAN Range to which this VLAN belongs.
 	Parent string `json:"parent,omitempty"`
 	// When set VLAN can only be assigned to IPAM object manually.
-	Reserved bool `json:"reserved,omitempty"`
+	Reserved *bool `json:"reserved,omitempty"`
 	// Status of VLAN object. Can be Assigned, Unassigned, Reserved.
 	Status string `json:"status,omitempty"`
 }
@@ -16546,7 +16546,7 @@ type Vlanrange struct {
 	// Name of the VLAN Range.
 	Name string `json:"name,omitempty"`
 	// If set on creation VLAN objects will be created once VLAN Range created.
-	PreCreateVlan bool `json:"pre_create_vlan,omitempty"`
+	PreCreateVlan *bool `json:"pre_create_vlan,omitempty"`
 	// Start ID for VLAN Range.
 	StartVlanId uint32 `json:"start_vlan_id,omitempty"`
 	// If set on creation prefix string will be used for VLAN name.
@@ -16572,7 +16572,7 @@ type Vlanview struct {
 	IBBase `json:"-"`
 	Ref    string `json:"_ref,omitempty"`
 	// When set to true VLAN Ranges under VLAN View can have overlapping ID.
-	AllowRangeOverlapping bool `json:"allow_range_overlapping,omitempty"`
+	AllowRangeOverlapping *bool `json:"allow_range_overlapping,omitempty"`
 	// A descriptive comment for this VLAN View.
 	Comment string `json:"comment,omitempty"`
 	// End ID for VLAN View.
@@ -16583,7 +16583,7 @@ type Vlanview struct {
 	// Name of the VLAN View.
 	Name string `json:"name,omitempty"`
 	// If set on creation VLAN objects will be created once VLAN View created.
-	PreCreateVlan bool `json:"pre_create_vlan,omitempty"`
+	PreCreateVlan *bool `json:"pre_create_vlan,omitempty"`
 	// Start ID for VLAN View.
 	StartVlanId uint32 `json:"start_vlan_id,omitempty"`
 	// If set on creation prefix string will be used for VLAN name.
@@ -16618,12 +16618,12 @@ type ZoneAuth struct {
 	AllowActiveDir []*Addressac `json:"allow_active_dir,omitempty"`
 	// The flag that allows to enable or disable fixed RRset ordering for
 	// authoritative forward-mapping zones.
-	AllowFixedRrsetOrder bool `json:"allow_fixed_rrset_order,omitempty"`
+	AllowFixedRrsetOrder *bool `json:"allow_fixed_rrset_order,omitempty"`
 	// The flag that allows DHCP clients to perform GSS-TSIG signed updates for
 	// underscore zones.
-	AllowGssTsigForUnderscoreZone bool `json:"allow_gss_tsig_for_underscore_zone,omitempty"`
+	AllowGssTsigForUnderscoreZone *bool `json:"allow_gss_tsig_for_underscore_zone,omitempty"`
 	// The flag that enables or disables the zone for GSS-TSIG updates.
-	AllowGssTsigZoneUpdates bool `json:"allow_gss_tsig_zone_updates,omitempty"`
+	AllowGssTsigZoneUpdates *bool `json:"allow_gss_tsig_zone_updates,omitempty"`
 	// Determines whether DNS queries are allowed from a named ACL, or from a list
 	// of IPv4/IPv6 addresses, networks, and TSIG keys for the hosts.
 	AllowQuery []*Addressac `json:"allow_query,omitempty"`
@@ -16635,7 +16635,7 @@ type ZoneAuth struct {
 	AllowUpdate []*Addressac `json:"allow_update,omitempty"`
 	// The list with IP addresses, networks or TSIG keys for clients, from which
 	// forwarded dynamic updates are allowed.
-	AllowUpdateForwarding bool `json:"allow_update_forwarding,omitempty"`
+	AllowUpdateForwarding *bool `json:"allow_update_forwarding,omitempty"`
 	// Additional information for Route53 zone.
 	AwsRte53ZoneInfo *Awsrte53zoneinfo `json:"aws_rte53_zone_info,omitempty"`
 	// Structure containing all cloud API related information for this object.
@@ -16644,47 +16644,47 @@ type ZoneAuth struct {
 	Comment string `json:"comment,omitempty"`
 	// If this flag is set to True then copy allowed IPs from Allow Transfer to
 	// Also Notify.
-	CopyXferToNotify bool `json:"copy_xfer_to_notify,omitempty"`
+	CopyXferToNotify *bool `json:"copy_xfer_to_notify,omitempty"`
 	// Determines if PTR records are created for hosts automatically, if necessary,
 	// when the zone data is imported. This field is meaningful only when
 	// import_from is set.
-	CreatePtrForBulkHosts bool `json:"create_ptr_for_bulk_hosts,omitempty"`
+	CreatePtrForBulkHosts *bool `json:"create_ptr_for_bulk_hosts,omitempty"`
 	// Determines if PTR records are created for hosts automatically, if necessary,
 	// when the zone data is imported. This field is meaningful only when
 	// import_from is set.
-	CreatePtrForHosts bool `json:"create_ptr_for_hosts,omitempty"`
+	CreatePtrForHosts *bool `json:"create_ptr_for_hosts,omitempty"`
 	// Determines whether automatic creation of subzones is enabled or not.
-	CreateUnderscoreZones bool `json:"create_underscore_zones,omitempty"`
+	CreateUnderscoreZones *bool `json:"create_underscore_zones,omitempty"`
 	// Defines whether creation timestamp of RR should be updated ' when DDNS
 	// update happens even if there is no change to ' the RR.
-	DdnsForceCreationTimestampUpdate bool `json:"ddns_force_creation_timestamp_update,omitempty"`
+	DdnsForceCreationTimestampUpdate *bool `json:"ddns_force_creation_timestamp_update,omitempty"`
 	// The DDNS Principal cluster group name.
 	DdnsPrincipalGroup string `json:"ddns_principal_group,omitempty"`
 	// The flag that indicates whether the DDNS principal track is enabled or
 	// disabled.
-	DdnsPrincipalTracking bool `json:"ddns_principal_tracking,omitempty"`
+	DdnsPrincipalTracking *bool `json:"ddns_principal_tracking,omitempty"`
 	// The flag that indicates whether an option to restrict DDNS update request
 	// based on FQDN patterns is enabled or disabled.
-	DdnsRestrictPatterns bool `json:"ddns_restrict_patterns,omitempty"`
+	DdnsRestrictPatterns *bool `json:"ddns_restrict_patterns,omitempty"`
 	// The unordered list of restriction patterns for an option of to restrict DDNS
 	// updates based on FQDN patterns.
 	DdnsRestrictPatternsList []string `json:"ddns_restrict_patterns_list,omitempty"`
 	// The flag that indicates whether an option to restrict DDNS update request to
 	// protected resource records is enabled or disabled.
-	DdnsRestrictProtected bool `json:"ddns_restrict_protected,omitempty"`
+	DdnsRestrictProtected *bool `json:"ddns_restrict_protected,omitempty"`
 	// The flag that indicates whether DDNS update request for principal other than
 	// target resource record's principal is restricted.
-	DdnsRestrictSecure bool `json:"ddns_restrict_secure,omitempty"`
+	DdnsRestrictSecure *bool `json:"ddns_restrict_secure,omitempty"`
 	// The flag that indicates whether an option to restrict DDNS update request to
 	// resource records which are marked as 'STATIC' is enabled or disabled.
-	DdnsRestrictStatic bool `json:"ddns_restrict_static,omitempty"`
+	DdnsRestrictStatic *bool `json:"ddns_restrict_static,omitempty"`
 	// Determines whether a zone is disabled or not. When this is set to False, the
 	// zone is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines whether the name servers that host the zone should forward
 	// queries (ended with the domain name of the zone) to any configured
 	// forwarders.
-	DisableForwarding bool `json:"disable_forwarding,omitempty"`
+	DisableForwarding *bool `json:"disable_forwarding,omitempty"`
 	// The displayed name of the DNS zone.
 	DisplayDomain string `json:"display_domain,omitempty"`
 	// The name of this DNS zone in punycode format. For a reverse zone, this is in
@@ -16692,14 +16692,14 @@ type ZoneAuth struct {
 	// format.
 	DnsFqdn string `json:"dns_fqdn,omitempty"`
 	// If this is set to True, DNS integrity check is enabled for this zone.
-	DnsIntegrityEnable bool `json:"dns_integrity_enable,omitempty"`
+	DnsIntegrityEnable *bool `json:"dns_integrity_enable,omitempty"`
 	// The frequency, in seconds, of DNS integrity checks for this zone.
 	DnsIntegrityFrequency uint32 `json:"dns_integrity_frequency,omitempty"`
 	// The Grid member that performs DNS integrity checks for this zone.
 	DnsIntegrityMember string `json:"dns_integrity_member,omitempty"`
 	// If this is set to True, more information is logged for DNS integrity checks
 	// for this zone.
-	DnsIntegrityVerboseLogging bool `json:"dns_integrity_verbose_logging,omitempty"`
+	DnsIntegrityVerboseLogging *bool `json:"dns_integrity_verbose_logging,omitempty"`
 	// The SOA email for the zone in punycode format.
 	DnsSoaEmail string `json:"dns_soa_email,omitempty"`
 	// This structure contains the DNSSEC key parameters for this zone.
@@ -16712,7 +16712,7 @@ type ZoneAuth struct {
 	DnssecZskRolloverDate *UnixTime `json:"dnssec_zsk_rollover_date,omitempty"`
 	// Determines if hosts and bulk hosts are automatically created when the zone
 	// data is imported. This field is meaningful only when import_from is set.
-	DoHostAbstraction bool `json:"do_host_abstraction,omitempty"`
+	DoHostAbstraction *bool `json:"do_host_abstraction,omitempty"`
 	// The value of the check names policy, which indicates the action the
 	// appliance takes when it encounters host names that do not comply with the
 	// Strict Hostname Checking policy. This value applies only if the host name
@@ -16757,7 +16757,7 @@ type ZoneAuth struct {
 	// If you enable this flag, other administrators cannot make conflicting
 	// changes. This is for administration purposes only. The zone will continue to
 	// serve DNS data even when it is locked.
-	Locked bool `json:"locked,omitempty"`
+	Locked *bool `json:"locked,omitempty"`
 	// The name of a superuser or the administrator who locked this zone.
 	LockedBy string `json:"locked_by,omitempty"`
 	// IPv4 Netmask or IPv6 prefix for this zone.
@@ -16769,7 +16769,7 @@ type ZoneAuth struct {
 	// The flag that determines whether Active Directory is integrated or not. This
 	// field is valid only when ms_managed is "STUB", "AUTH_PRIMARY", or
 	// "AUTH_BOTH".
-	MsAdIntegrated bool `json:"ms_ad_integrated,omitempty"`
+	MsAdIntegrated *bool `json:"ms_ad_integrated,omitempty"`
 	// The list of DNS clients that are allowed to perform zone transfers from a
 	// Microsoft DNS server. This setting applies only to zones with Microsoft DNS
 	// servers that are either primary or secondary servers. This setting does not
@@ -16818,7 +16818,7 @@ type ZoneAuth struct {
 	MsSecondaries []*Msdnsserver `json:"ms_secondaries,omitempty"`
 	// This flag controls whether this zone is synchronized with Microsoft DNS
 	// servers.
-	MsSyncDisabled bool `json:"ms_sync_disabled,omitempty"`
+	MsSyncDisabled *bool `json:"ms_sync_disabled,omitempty"`
 	// The name of MS synchronization master for this zone.
 	MsSyncMasterName string `json:"ms_sync_master_name,omitempty"`
 	// The list with the associated network/network container information.
@@ -16845,7 +16845,7 @@ type ZoneAuth struct {
 	// Determines if this zone is also monitoring resource records.
 	RecordsMonitored bool `json:"records_monitored,omitempty"`
 	// Restarts the member service.
-	RestartIfNeeded bool `json:"restart_if_needed,omitempty"`
+	RestartIfNeeded *bool `json:"restart_if_needed,omitempty"`
 	// The time data collection for Not Queried Resource Record was enabled for
 	// this zone.
 	RrNotQueriedEnabledTime *UnixTime `json:"rr_not_queried_enabled_time,omitempty"`
@@ -16857,7 +16857,7 @@ type ZoneAuth struct {
 	// secondary server, thereby ensuring zone transfers come from the primary
 	// server (as they should). To change the serial number you need to set a new
 	// value at "soa_serial_number" and pass "set_soa_serial_number" as True.
-	SetSoaSerialNumber bool `json:"set_soa_serial_number,omitempty"`
+	SetSoaSerialNumber *bool `json:"set_soa_serial_number,omitempty"`
 	// The Time to Live (TTL) value of the SOA record of this zone. This value is
 	// the number of seconds that data is cached.
 	SoaDefaultTtl uint32 `json:"soa_default_ttl,omitempty"`
@@ -16895,49 +16895,49 @@ type ZoneAuth struct {
 	// This setting overrides the member-level setting.
 	UpdateForwarding []*Addressac `json:"update_forwarding,omitempty"`
 	// Use flag for: allow_active_dir
-	UseAllowActiveDir bool `json:"use_allow_active_dir,omitempty"`
+	UseAllowActiveDir *bool `json:"use_allow_active_dir,omitempty"`
 	// Use flag for: allow_query
-	UseAllowQuery bool `json:"use_allow_query,omitempty"`
+	UseAllowQuery *bool `json:"use_allow_query,omitempty"`
 	// Use flag for: allow_transfer
-	UseAllowTransfer bool `json:"use_allow_transfer,omitempty"`
+	UseAllowTransfer *bool `json:"use_allow_transfer,omitempty"`
 	// Use flag for: allow_update
-	UseAllowUpdate bool `json:"use_allow_update,omitempty"`
+	UseAllowUpdate *bool `json:"use_allow_update,omitempty"`
 	// Use flag for: allow_update_forwarding
-	UseAllowUpdateForwarding bool `json:"use_allow_update_forwarding,omitempty"`
+	UseAllowUpdateForwarding *bool `json:"use_allow_update_forwarding,omitempty"`
 	// Apply policy to dynamic updates and inbound zone transfers (This value
 	// applies only if the host name restriction policy is set to "Strict Hostname
 	// Checking".)
-	UseCheckNamesPolicy bool `json:"use_check_names_policy,omitempty"`
+	UseCheckNamesPolicy *bool `json:"use_check_names_policy,omitempty"`
 	// Use flag for: copy_xfer_to_notify
-	UseCopyXferToNotify bool `json:"use_copy_xfer_to_notify,omitempty"`
+	UseCopyXferToNotify *bool `json:"use_copy_xfer_to_notify,omitempty"`
 	// Use flag for: ddns_force_creation_timestamp_update
-	UseDdnsForceCreationTimestampUpdate bool `json:"use_ddns_force_creation_timestamp_update,omitempty"`
+	UseDdnsForceCreationTimestampUpdate *bool `json:"use_ddns_force_creation_timestamp_update,omitempty"`
 	// Use flag for: ddns_restrict_patterns_list , ddns_restrict_patterns
-	UseDdnsPatternsRestriction bool `json:"use_ddns_patterns_restriction,omitempty"`
+	UseDdnsPatternsRestriction *bool `json:"use_ddns_patterns_restriction,omitempty"`
 	// Use flag for: ddns_restrict_secure , ddns_principal_tracking,
 	// ddns_principal_group
-	UseDdnsPrincipalSecurity bool `json:"use_ddns_principal_security,omitempty"`
+	UseDdnsPrincipalSecurity *bool `json:"use_ddns_principal_security,omitempty"`
 	// Use flag for: ddns_restrict_protected
-	UseDdnsRestrictProtected bool `json:"use_ddns_restrict_protected,omitempty"`
+	UseDdnsRestrictProtected *bool `json:"use_ddns_restrict_protected,omitempty"`
 	// Use flag for: ddns_restrict_static
-	UseDdnsRestrictStatic bool `json:"use_ddns_restrict_static,omitempty"`
+	UseDdnsRestrictStatic *bool `json:"use_ddns_restrict_static,omitempty"`
 	// Use flag for: dnssec_key_params
-	UseDnssecKeyParams bool `json:"use_dnssec_key_params,omitempty"`
+	UseDnssecKeyParams *bool `json:"use_dnssec_key_params,omitempty"`
 	// This flag controls whether the zone is using an external primary.
-	UseExternalPrimary bool `json:"use_external_primary,omitempty"`
+	UseExternalPrimary *bool `json:"use_external_primary,omitempty"`
 	// Use flag for: soa_default_ttl , soa_expire, soa_negative_ttl, soa_refresh,
 	// soa_retry
-	UseGridZoneTimer bool `json:"use_grid_zone_timer,omitempty"`
+	UseGridZoneTimer *bool `json:"use_grid_zone_timer,omitempty"`
 	// Use flag for: import_from
-	UseImportFrom bool `json:"use_import_from,omitempty"`
+	UseImportFrom *bool `json:"use_import_from,omitempty"`
 	// Use flag for: notify_delay
-	UseNotifyDelay bool `json:"use_notify_delay,omitempty"`
+	UseNotifyDelay *bool `json:"use_notify_delay,omitempty"`
 	// Use flag for: record_name_policy
-	UseRecordNamePolicy bool `json:"use_record_name_policy,omitempty"`
+	UseRecordNamePolicy *bool `json:"use_record_name_policy,omitempty"`
 	// Use flag for: scavenging_settings , last_queried_acl
-	UseScavengingSettings bool `json:"use_scavenging_settings,omitempty"`
+	UseScavengingSettings *bool `json:"use_scavenging_settings,omitempty"`
 	// Use flag for: soa_email
-	UseSoaEmail bool `json:"use_soa_email,omitempty"`
+	UseSoaEmail *bool `json:"use_soa_email,omitempty"`
 	// This is true if the zone is associated with a shared record group.
 	UsingSrgAssociations bool `json:"using_srg_associations,omitempty"`
 	// The name of the DNS view in which the zone resides. Example "external".
@@ -17017,7 +17017,7 @@ type ZoneDelegated struct {
 	DelegatedTtl uint32 `json:"delegated_ttl,omitempty"`
 	// Determines whether a zone is disabled or not. When this is set to False, the
 	// zone is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The displayed name of the DNS zone.
 	DisplayDomain string `json:"display_domain,omitempty"`
 	// The name of this DNS zone in punycode format. For a reverse zone, this is in
@@ -17029,7 +17029,7 @@ type ZoneDelegated struct {
 	// is to overwrite all the existing records in the range; this corresponds to
 	// "allow_ptr_creation_in_parent" set to False. However, when this flag is set
 	// to True the existing PTR records are not overwritten.
-	EnableRfc2317Exclusion bool `json:"enable_rfc2317_exclusion,omitempty"`
+	EnableRfc2317Exclusion *bool `json:"enable_rfc2317_exclusion,omitempty"`
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
 	Ea EA `json:"extattrs,omitempty"`
@@ -17041,7 +17041,7 @@ type ZoneDelegated struct {
 	// If you enable this flag, other administrators cannot make conflicting
 	// changes. This is for administration purposes only. The zone will continue to
 	// serve DNS data even when it is locked.
-	Locked bool `json:"locked,omitempty"`
+	Locked *bool `json:"locked,omitempty"`
 	// The name of a superuser or the administrator who locked this zone.
 	LockedBy string `json:"locked_by,omitempty"`
 	// IPv4 Netmask or IPv6 prefix for this zone.
@@ -17049,7 +17049,7 @@ type ZoneDelegated struct {
 	// The flag that determines whether Active Directory is integrated or not. This
 	// field is valid only when ms_managed is "STUB", "AUTH_PRIMARY", or
 	// "AUTH_BOTH".
-	MsAdIntegrated bool `json:"ms_ad_integrated,omitempty"`
+	MsAdIntegrated *bool `json:"ms_ad_integrated,omitempty"`
 	// Determines whether an Active Directory-integrated zone with a Microsoft DNS
 	// server as primary allows dynamic updates. Valid values are: "SECURE" if the
 	// zone allows secure updates only. "NONE" if the zone forbids dynamic updates.
@@ -17084,7 +17084,7 @@ type ZoneDelegated struct {
 	// can be alphanumeric characters, such as 128/26 , 128-189 , or sub-B.
 	Prefix string `json:"prefix,omitempty"`
 	// Use flag for: delegated_ttl
-	UseDelegatedTtl bool `json:"use_delegated_ttl,omitempty"`
+	UseDelegatedTtl *bool `json:"use_delegated_ttl,omitempty"`
 	// This is true if the zone is associated with a shared record group.
 	UsingSrgAssociations bool `json:"using_srg_associations,omitempty"`
 	// The name of the DNS view in which the zone resides. Example "external".
@@ -17126,10 +17126,10 @@ type ZoneForward struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a zone is disabled or not. When this is set to False, the
 	// zone is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines whether a auto-generation of NS records in parent zone is
 	// disabled or not. When this is set to False, the auto-generation is enabled.
-	DisableNsGeneration bool `json:"disable_ns_generation,omitempty"`
+	DisableNsGeneration *bool `json:"disable_ns_generation,omitempty"`
 	// The displayed name of the DNS zone.
 	DisplayDomain string `json:"display_domain,omitempty"`
 	// The name of this DNS zone in punycode format. For a reverse zone, this is in
@@ -17146,7 +17146,7 @@ type ZoneForward struct {
 	ForwardTo []NameServer `json:"forward_to,omitempty"`
 	// Determines if the appliance sends queries to forwarders only, and not to
 	// other internal or Internet root servers.
-	ForwardersOnly bool `json:"forwarders_only,omitempty"`
+	ForwardersOnly *bool `json:"forwarders_only,omitempty"`
 	// The information for the Grid members to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
 	ForwardingServers []*Forwardingmemberserver `json:"forwarding_servers,omitempty"`
@@ -17158,7 +17158,7 @@ type ZoneForward struct {
 	// If you enable this flag, other administrators cannot make conflicting
 	// changes. This is for administration purposes only. The zone will continue to
 	// serve DNS data even when it is locked.
-	Locked bool `json:"locked,omitempty"`
+	Locked *bool `json:"locked,omitempty"`
 	// The name of a superuser or the administrator who locked this zone.
 	LockedBy string `json:"locked_by,omitempty"`
 	// IPv4 Netmask or IPv6 prefix for this zone.
@@ -17166,7 +17166,7 @@ type ZoneForward struct {
 	// The flag that determines whether Active Directory is integrated or not. This
 	// field is valid only when ms_managed is "STUB", "AUTH_PRIMARY", or
 	// "AUTH_BOTH".
-	MsAdIntegrated bool `json:"ms_ad_integrated,omitempty"`
+	MsAdIntegrated *bool `json:"ms_ad_integrated,omitempty"`
 	// Determines whether an Active Directory-integrated zone with a Microsoft DNS
 	// server as primary allows dynamic updates. Valid values are: "SECURE" if the
 	// zone allows secure updates only. "NONE" if the zone forbids dynamic updates.
@@ -17239,7 +17239,7 @@ type ZoneRp struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a zone is disabled or not. When this is set to False, the
 	// zone is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// The displayed name of the DNS zone.
 	DisplayDomain string `json:"display_domain,omitempty"`
 	// The SOA email for the zone in punycode format.
@@ -17262,12 +17262,12 @@ type ZoneRp struct {
 	// If you enable this flag, other administrators cannot make conflicting
 	// changes. This is for administration purposes only. The zone will continue to
 	// serve DNS data even when it is locked.
-	Locked bool `json:"locked,omitempty"`
+	Locked *bool `json:"locked,omitempty"`
 	// The name of a superuser or the administrator who locked this zone.
 	LockedBy string `json:"locked_by,omitempty"`
 	// Determines whether RPZ logging enabled or not at zone level. When this is
 	// set to False, the logging is disabled.
-	LogRpz bool `json:"log_rpz,omitempty"`
+	LogRpz *bool `json:"log_rpz,omitempty"`
 	// IPv4 Netmask or IPv6 prefix for this zone.
 	MaskPrefix string `json:"mask_prefix,omitempty"`
 	// The list of per-member SOA MNAME information.
@@ -17292,7 +17292,7 @@ type ZoneRp struct {
 	RecordNamePolicy string `json:"record_name_policy,omitempty"`
 	// Enables the appliance to ignore RPZ-IP triggers with prefix lengths less
 	// than the specified minimum prefix length.
-	RpzDropIpRuleEnabled bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
+	RpzDropIpRuleEnabled *bool `json:"rpz_drop_ip_rule_enabled,omitempty"`
 	// The minimum prefix length for IPv4 RPZ-IP triggers. The appliance ignores
 	// RPZ-IP triggers with prefix lengths less than the specified minimum IPv4
 	// prefix length.
@@ -17319,7 +17319,7 @@ type ZoneRp struct {
 	// secondary server, thereby ensuring zone transfers come from the primary
 	// server (as they should). To change the serial number you need to set a new
 	// value at "soa_serial_number" and pass "set_soa_serial_number" as True.
-	SetSoaSerialNumber bool `json:"set_soa_serial_number,omitempty"`
+	SetSoaSerialNumber *bool `json:"set_soa_serial_number,omitempty"`
 	// The Time to Live (TTL) value of the SOA record of this zone. This value is
 	// the number of seconds that data is cached.
 	SoaDefaultTtl uint32 `json:"soa_default_ttl,omitempty"`
@@ -17351,20 +17351,20 @@ type ZoneRp struct {
 	// policy zone.
 	SubstituteName string `json:"substitute_name,omitempty"`
 	// This flag controls whether the zone is using an external primary.
-	UseExternalPrimary bool `json:"use_external_primary,omitempty"`
+	UseExternalPrimary *bool `json:"use_external_primary,omitempty"`
 	// Use flag for: soa_default_ttl , soa_expire, soa_negative_ttl, soa_refresh,
 	// soa_retry
-	UseGridZoneTimer bool `json:"use_grid_zone_timer,omitempty"`
+	UseGridZoneTimer *bool `json:"use_grid_zone_timer,omitempty"`
 	// Use flag for: log_rpz
-	UseLogRpz bool `json:"use_log_rpz,omitempty"`
+	UseLogRpz *bool `json:"use_log_rpz,omitempty"`
 	// Use flag for: record_name_policy
-	UseRecordNamePolicy bool `json:"use_record_name_policy,omitempty"`
+	UseRecordNamePolicy *bool `json:"use_record_name_policy,omitempty"`
 	// Use flag for: rpz_drop_ip_rule_enabled ,
 	// rpz_drop_ip_rule_min_prefix_length_ipv4,
 	// rpz_drop_ip_rule_min_prefix_length_ipv6
-	UseRpzDropIpRule bool `json:"use_rpz_drop_ip_rule,omitempty"`
+	UseRpzDropIpRule *bool `json:"use_rpz_drop_ip_rule,omitempty"`
 	// Use flag for: soa_email
-	UseSoaEmail bool `json:"use_soa_email,omitempty"`
+	UseSoaEmail *bool `json:"use_soa_email,omitempty"`
 	// The name of the DNS view in which the zone resides. Example "external".
 	View string `json:"view,omitempty"`
 }
@@ -17393,10 +17393,10 @@ type ZoneStub struct {
 	Comment string `json:"comment,omitempty"`
 	// Determines whether a zone is disabled or not. When this is set to False, the
 	// zone is enabled.
-	Disable bool `json:"disable,omitempty"`
+	Disable *bool `json:"disable,omitempty"`
 	// Determines if the name servers that host the zone should not forward queries
 	// that end with the domain name of the zone to any configured forwarders.
-	DisableForwarding bool `json:"disable_forwarding,omitempty"`
+	DisableForwarding *bool `json:"disable_forwarding,omitempty"`
 	// The displayed name of the DNS zone.
 	DisplayDomain string `json:"display_domain,omitempty"`
 	// The name of this DNS zone in punycode format. For a reverse zone, this is in
@@ -17416,7 +17416,7 @@ type ZoneStub struct {
 	// If you enable this flag, other administrators cannot make conflicting
 	// changes. This is for administration purposes only. The zone will continue to
 	// serve DNS data even when it is locked.
-	Locked bool `json:"locked,omitempty"`
+	Locked *bool `json:"locked,omitempty"`
 	// The name of a superuser or the administrator who locked this zone.
 	LockedBy string `json:"locked_by,omitempty"`
 	// IPv4 Netmask or IPv6 prefix for this zone.
@@ -17424,7 +17424,7 @@ type ZoneStub struct {
 	// The flag that determines whether Active Directory is integrated or not. This
 	// field is valid only when ms_managed is "STUB", "AUTH_PRIMARY", or
 	// "AUTH_BOTH".
-	MsAdIntegrated bool `json:"ms_ad_integrated,omitempty"`
+	MsAdIntegrated *bool `json:"ms_ad_integrated,omitempty"`
 	// Determines whether an Active Directory-integrated zone with a Microsoft DNS
 	// server as primary allows dynamic updates. Valid values are: "SECURE" if the
 	// zone allows secure updates only. "NONE" if the zone forbids dynamic updates.

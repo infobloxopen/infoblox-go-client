@@ -497,7 +497,7 @@ var _ = Describe("Objects", func() {
 						Canonical: "e2e_test_cname_record.e2e-test.com",
 						Name:      "e2e_test_cname_record.e2e-test.com",
 						Ttl:       5,
-						UseTtl:    true,
+						UseTtl:    utils.Bool(true),
 						Comment:   "CNAME Record created by e2e test",
 						Ea:        make(ibclient.EA),
 					}
@@ -578,7 +578,7 @@ var _ = Describe("Objects", func() {
 							PtrdName: "e2e_test_ptr_record.e2e-test.com",
 							Ipv4Addr: "192.168.1.45",
 							Ttl:      5,
-							UseTtl:   true,
+							UseTtl:   utils.Bool(true),
 							Comment:  "PTR Record created by e2e test",
 						}
 

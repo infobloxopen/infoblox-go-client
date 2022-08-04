@@ -298,7 +298,7 @@ var _ = Describe("Go Client", func() {
 		search := &ibclient.GridCloudapi{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
-		Expect(res[0].EnableRecycleBin).To(Equal(true))
+		Expect(*res[0].EnableRecycleBin).To(Equal(true))
 		Expect(res[0].AllowedApiAdmins).To(Equal([]*ibclient.GridCloudapiUser{}))
 		Expect(res[0].AllowApiAdmins).To(Equal("ALL"))
 		Expect(res[0].Ref).To(Equal("grid:cloudapi/b25lLnZjb25uZWN0b3JfY2x1c3RlciQw:grid"))
@@ -338,7 +338,7 @@ var _ = Describe("Go Client", func() {
 		search := &ibclient.GridDhcpproperties{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
-		Expect(res[0].DisableAllNacFilters).To(Equal(false))
+		Expect(*res[0].DisableAllNacFilters).To(Equal(false))
 		Expect(res[0].Ref).To(Equal("grid:dhcpproperties/ZG5zLmNsdXN0ZXJfZGhjcF9wcm9wZXJ0aWVzJDA:Infoblox"))
 	})
 
@@ -452,7 +452,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 110", "ID: 148", "RW"), func() {
 					r := &ibclient.RecordCNAME{
 						Comment: "Modified CNAME Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     uint32(20),
 					}
 					ref, err := connector.UpdateObject(r, ref)
@@ -470,9 +470,9 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("record:cname.*cname\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified CNAME Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(20)))
-					Expect(res[0].UseTtl).To(Equal(true))
+					Expect(*res[0].UseTtl).To(Equal(true))
 				},
 			)
 		})
@@ -482,7 +482,7 @@ var _ = Describe("Go Client", func() {
 				Name:     "a.wapi.com",
 				Ipv4Addr: "9.0.0.1",
 				Comment:  "Added A Record",
-				Disable:  false,
+				Disable:  utils.Bool(false),
 				Ttl:      uint32(10),
 				UseTtl:   utils.Bool(true),
 				View:     "default",
@@ -499,7 +499,7 @@ var _ = Describe("Go Client", func() {
 					Name:     "a.wapi.com",
 					Ipv4Addr: "9.0.0.1",
 					Comment:  "Added A Record",
-					Disable:  false,
+					Disable:  utils.Bool(false),
 					Ttl:      uint32(10),
 					UseTtl:   utils.Bool(true),
 					View:     "default",
@@ -525,7 +525,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Name).To(Equal("a.wapi.com"))
 				Expect(res[0].Ipv4Addr).To(Equal("9.0.0.1"))
 				Expect(res[0].Comment).To(Equal("Added A Record"))
-				Expect(res[0].Disable).To(Equal(false))
+				Expect(*res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
 				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].View).To(Equal("default"))
@@ -535,7 +535,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 111", "ID: 147", "RW"), func() {
 					r := &ibclient.RecordA{
 						Comment: "Modified A Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     uint32(20),
 						UseTtl:  utils.Bool(false),
 					}
@@ -555,7 +555,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("record:a.*a\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified A Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(20)))
 					Expect(*res[0].UseTtl).To(Equal(false))
 				},
@@ -567,7 +567,7 @@ var _ = Describe("Go Client", func() {
 				Name:     "aaaa.wapi.com",
 				Ipv6Addr: "99::99",
 				Comment:  "Added AAAA Record",
-				Disable:  false,
+				Disable:  utils.Bool(false),
 				Ttl:      uint32(10),
 				UseTtl:   utils.Bool(true),
 				View:     "default",
@@ -584,7 +584,7 @@ var _ = Describe("Go Client", func() {
 					Name:     "aaaa.wapi.com",
 					Ipv6Addr: "99::99",
 					Comment:  "Added AAAA Record",
-					Disable:  false,
+					Disable:  utils.Bool(false),
 					Ttl:      uint32(10),
 					UseTtl:   utils.Bool(true),
 					View:     "default",
@@ -606,7 +606,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Name).To(Equal("aaaa.wapi.com"))
 				Expect(res[0].Ipv6Addr).To(Equal("99::99"))
 				Expect(res[0].Comment).To(Equal("Added AAAA Record"))
-				Expect(res[0].Disable).To(Equal(false))
+				Expect(*res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
 				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].View).To(Equal("default"))
@@ -616,7 +616,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 112", "ID: 146", "RW"), func() {
 					r := &ibclient.RecordAAAA{
 						Comment: "Modified AAAA Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     uint32(20),
 						UseTtl:  utils.Bool(false),
 					}
@@ -632,7 +632,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("record:aaaa.*aaaa\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified AAAA Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(20)))
 					Expect(*res[0].UseTtl).To(Equal(false))
 				},
@@ -645,12 +645,12 @@ var _ = Describe("Go Client", func() {
 					Name: "h1.wapi.com",
 					View: "default",
 					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-						{EnableDhcp: false, Ipv4Addr: "20.20.20.20"},
+						{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.20"},
 						{Ipv4Addr: "20.20.20.30"},
-						{EnableDhcp: false, Ipv4Addr: "20.20.20.40"},
+						{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.40"},
 					},
 					Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
-						{EnableDhcp: true, Ipv6Addr: "2000::1", Duid: "11:10"},
+						{EnableDhcp: utils.Bool(true), Ipv6Addr: "2000::1", Duid: "11:10"},
 						{Ipv6Addr: "2000::2"},
 					},
 				}
@@ -667,12 +667,12 @@ var _ = Describe("Go Client", func() {
 						Name: "h1.wapi.com",
 						View: "default",
 						Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-							{EnableDhcp: false, Ipv4Addr: "20.20.20.20"},
+							{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.20"},
 							{Ipv4Addr: "20.20.20.30"},
-							{EnableDhcp: false, Ipv4Addr: "20.20.20.40"},
+							{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.40"},
 						},
 						Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
-							{EnableDhcp: true, Ipv6Addr: "2000::1", Duid: "11:10"},
+							{EnableDhcp: utils.Bool(true), Ipv6Addr: "2000::1", Duid: "11:10"},
 							{Ipv6Addr: "2000::2"},
 						},
 					}
@@ -692,25 +692,25 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Name).To(Equal("h1.wapi.com"))
 
-					Expect(res[0].Ipv6Addrs[0].EnableDhcp).To(Equal(true))
+					Expect(*res[0].Ipv6Addrs[0].EnableDhcp).To(Equal(true))
 					Expect(res[0].Ipv6Addrs[0].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A1/h1\\.wapi\\.com/default$"))
 					Expect(res[0].Ipv6Addrs[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv6Addrs[0].Ipv6Addr).To(Equal("2000::1"))
 					Expect(res[0].Ipv6Addrs[0].Duid).To(Equal("11:10"))
-					Expect(res[0].Ipv6Addrs[1].EnableDhcp).To(Equal(false))
+					Expect(*res[0].Ipv6Addrs[1].EnableDhcp).To(Equal(false))
 					Expect(res[0].Ipv6Addrs[1].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A2/h1\\.wapi\\.com/default$"))
 					Expect(res[0].Ipv6Addrs[1].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv6Addrs[1].Ipv6Addr).To(Equal("2000::2"))
 
-					Expect(res[0].Ipv4Addrs[0].EnableDhcp).To(Equal(false))
+					Expect(*res[0].Ipv4Addrs[0].EnableDhcp).To(Equal(false))
 					Expect(res[0].Ipv4Addrs[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv4Addrs[0].Ipv4Addr).To(Equal("20.20.20.20"))
 					Expect(res[0].Ipv4Addrs[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.20/h1\\.wapi\\.com/default$"))
-					Expect(res[0].Ipv4Addrs[1].EnableDhcp).To(Equal(false))
+					Expect(*res[0].Ipv4Addrs[1].EnableDhcp).To(Equal(false))
 					Expect(res[0].Ipv4Addrs[1].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv4Addrs[1].Ipv4Addr).To(Equal("20.20.20.30"))
 					Expect(res[0].Ipv4Addrs[1].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.30/h1\\.wapi\\.com/default$"))
-					Expect(res[0].Ipv4Addrs[2].EnableDhcp).To(Equal(false))
+					Expect(*res[0].Ipv4Addrs[2].EnableDhcp).To(Equal(false))
 					Expect(res[0].Ipv4Addrs[2].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv4Addrs[2].Ipv4Addr).To(Equal("20.20.20.40"))
 					Expect(res[0].Ipv4Addrs[2].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.40/h1\\.wapi\\.com/default$"))
@@ -728,7 +728,7 @@ var _ = Describe("Go Client", func() {
 					})
 					err := connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
-					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(*res[0].EnableDhcp).To(Equal(false))
 					Expect(res[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv4Addr).To(Equal("20.20.20.20"))
 					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.20/h1\\.wapi\\.com/default$"))
@@ -739,7 +739,7 @@ var _ = Describe("Go Client", func() {
 					})
 					err = connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
-					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(*res[0].EnableDhcp).To(Equal(false))
 					Expect(res[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv4Addr).To(Equal("20.20.20.30"))
 					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.30/h1\\.wapi\\.com/default$"))
@@ -749,7 +749,7 @@ var _ = Describe("Go Client", func() {
 						"ipv4addr":     "20.20.20.40",
 					})
 					err = connector.GetObject(search, "", qp, &res)
-					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(*res[0].EnableDhcp).To(Equal(false))
 					Expect(res[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv4Addr).To(Equal("20.20.20.40"))
 					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv4addr.*20\\.20\\.20\\.40/h1\\.wapi\\.com/default$"))
@@ -765,7 +765,7 @@ var _ = Describe("Go Client", func() {
 					})
 					err := connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
-					Expect(res[0].EnableDhcp).To(Equal(true))
+					Expect(*res[0].EnableDhcp).To(Equal(true))
 					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A1/h1\\.wapi\\.com/default$"))
 					Expect(res[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv6Addr).To(Equal("2000::1"))
@@ -777,7 +777,7 @@ var _ = Describe("Go Client", func() {
 					})
 					err = connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
-					Expect(res[0].EnableDhcp).To(Equal(false))
+					Expect(*res[0].EnableDhcp).To(Equal(false))
 					Expect(res[0].Ref).To(MatchRegexp("^record:host_ipv6addr.*2000%3A%3A2/h1\\.wapi\\.com/default$"))
 					Expect(res[0].Host).To(Equal("h1.wapi.com"))
 					Expect(res[0].Ipv6Addr).To(Equal("2000::2"))
@@ -792,7 +792,7 @@ var _ = Describe("Go Client", func() {
 				MailExchanger: "wapi.com",
 				Preference:    uint32(10),
 				Comment:       "Creating mx record through infoblox-go-client",
-				Disable:       false,
+				Disable:       utils.Bool(false),
 				Ttl:           uint32(20),
 				UseTtl:        utils.Bool(true),
 			}
@@ -809,7 +809,7 @@ var _ = Describe("Go Client", func() {
 					MailExchanger: "wapi.com",
 					Preference:    uint32(10),
 					Comment:       "Creating mx record through infoblox-go-client",
-					Disable:       false,
+					Disable:       utils.Bool(false),
 					Ttl:           uint32(20),
 					UseTtl:        utils.Bool(true),
 				}
@@ -835,7 +835,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Zone).To(Equal("wapi.com"))
 				Expect(res[0].MailExchanger).To(Equal("wapi.com"))
 				Expect(*res[0].UseTtl).To(Equal(true))
-				Expect(res[0].Disable).To(Equal(false))
+				Expect(*res[0].Disable).To(Equal(false))
 				Expect(res[0].Preference).To(Equal(uint32(10)))
 				Expect(res[0].Ttl).To(Equal(uint32(20)))
 				Expect(res[0].Ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
@@ -846,7 +846,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 113", "ID: 145", "RW"), func() {
 					r := &ibclient.RecordMX{
 						Comment: "Modified mx Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     120,
 						UseTtl:  utils.Bool(false),
 					}
@@ -866,7 +866,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("^record:mx.*mx\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified mx Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
 					Expect(*res[0].UseTtl).To(Equal(false))
 				},
@@ -878,7 +878,7 @@ var _ = Describe("Go Client", func() {
 				Name:    "txt.wapi.com",
 				Text:    "wapi.com",
 				Comment: "Creating txt record through infoblox-go-client",
-				Disable: false,
+				Disable: utils.Bool(false),
 				Ttl:     uint32(20),
 				UseTtl:  utils.Bool(true),
 				View:    "default",
@@ -895,7 +895,7 @@ var _ = Describe("Go Client", func() {
 					Name:    "txt.wapi.com",
 					Text:    "wapi.com",
 					Comment: "Creating txt record through infoblox-go-client",
-					Disable: false,
+					Disable: utils.Bool(false),
 					Ttl:     uint32(20),
 					UseTtl:  utils.Bool(true),
 					View:    "default",
@@ -922,7 +922,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Zone).To(Equal("wapi.com"))
 				Expect(res[0].Text).To(Equal("wapi.com"))
 				Expect(*res[0].UseTtl).To(Equal(true))
-				Expect(res[0].Disable).To(Equal(false))
+				Expect(*res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(20)))
 				Expect(res[0].Ref).To(MatchRegexp("record:txt.*txt\\.wapi\\.com/default$"))
 				Expect(res[0].View).To(Equal("default"))
@@ -932,7 +932,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 114", "ID: 144", "RW"), func() {
 					r := &ibclient.RecordTXT{
 						Comment: "Modified TXT Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     uint32(120),
 						UseTtl:  utils.Bool(false),
 					}
@@ -952,7 +952,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("record:txt.*txt\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified TXT Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
 					Expect(*res[0].UseTtl).To(Equal(false))
 				},
@@ -965,9 +965,9 @@ var _ = Describe("Go Client", func() {
 				PtrdName: "ptr.wapi.com",
 				View:     "default",
 				Comment:  "wapi added",
-				Disable:  false,
+				Disable:  utils.Bool(false),
 				Ttl:      uint32(10),
-				UseTtl:   true,
+				UseTtl:   utils.Bool(true),
 			}
 			ref, err := connector.CreateObject(r)
 			Expect(err).To(BeNil())
@@ -982,9 +982,9 @@ var _ = Describe("Go Client", func() {
 					PtrdName: "ptr.wapi.com",
 					View:     "default",
 					Comment:  "wapi added",
-					Disable:  false,
+					Disable:  utils.Bool(false),
 					Ttl:      uint32(10),
-					UseTtl:   true,
+					UseTtl:   utils.Bool(true),
 				}
 				var err error
 				ref, err = connector.CreateObject(r)
@@ -1007,8 +1007,8 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].PtrdName).To(Equal("ptr.wapi.com"))
 				Expect(res[0].Name).To(Equal("ptr1.wapi.com"))
 				Expect(res[0].Zone).To(Equal("wapi.com"))
-				Expect(res[0].UseTtl).To(Equal(true))
-				Expect(res[0].Disable).To(Equal(false))
+				Expect(*res[0].UseTtl).To(Equal(true))
+				Expect(*res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
 				Expect(res[0].Ref).To(MatchRegexp("^record:ptr.*ptr1\\.wapi\\.com/default$"))
 				Expect(res[0].View).To(Equal("default"))
@@ -1018,7 +1018,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 115", "ID: 143", "RW"), func() {
 					r := &ibclient.RecordTXT{
 						Comment: "Modified PTR Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     uint32(120),
 						UseTtl:  utils.Bool(false),
 					}
@@ -1035,9 +1035,9 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("^record:ptr.*ptr1\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified PTR Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
-					Expect(res[0].UseTtl).To(Equal(false))
+					Expect(*res[0].UseTtl).To(Equal(false))
 				},
 			)
 		})
@@ -1051,7 +1051,7 @@ var _ = Describe("Go Client", func() {
 					Port:     uint32(10),
 					Target:   "srv.wapi.com",
 					Comment:  "wapi added",
-					Disable:  false,
+					Disable:  utils.Bool(false),
 					Ttl:      10,
 					UseTtl:   utils.Bool(true),
 					View:     "default",
@@ -1072,7 +1072,7 @@ var _ = Describe("Go Client", func() {
 					Port:     uint32(10),
 					Target:   "srv.wapi.com",
 					Comment:  "wapi added",
-					Disable:  false,
+					Disable:  utils.Bool(false),
 					Ttl:      10,
 					UseTtl:   utils.Bool(true),
 					View:     "default",
@@ -1101,7 +1101,7 @@ var _ = Describe("Go Client", func() {
 				Expect(res[0].Weight).To(Equal(uint32(10)))
 				Expect(*res[0].UseTtl).To(Equal(true))
 				Expect(res[0].Priority).To(Equal(uint32(10)))
-				Expect(res[0].Disable).To(Equal(false))
+				Expect(*res[0].Disable).To(Equal(false))
 				Expect(res[0].Ttl).To(Equal(uint32(10)))
 				Expect(res[0].Ref).To(MatchRegexp("record:srv.*srv\\.wapi\\.com/default$"))
 				Expect(res[0].Zone).To(Equal("wapi.com"))
@@ -1113,7 +1113,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 116", "ID: 142", "RW"), func() {
 					r := &ibclient.RecordSRV{
 						Comment: "Modified SRV Record",
-						Disable: true,
+						Disable: utils.Bool(true),
 						Ttl:     uint32(120),
 						UseTtl:  utils.Bool(false),
 					}
@@ -1130,7 +1130,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("record:srv.*srv\\.wapi\\.com/default$"))
 					Expect(res[0].Comment).To(Equal("Modified SRV Record"))
-					Expect(res[0].Disable).To(Equal(true))
+					Expect(*res[0].Disable).To(Equal(true))
 					Expect(res[0].Ttl).To(Equal(uint32(120)))
 					Expect(*res[0].UseTtl).To(Equal(false))
 				},
@@ -1153,7 +1153,7 @@ var _ = Describe("Go Client", func() {
 			Label("ID: 127", "ID: 131", "RW"), func() {
 				za := &ibclient.ZoneAuth{
 					Comment:               "WAPI Modified Comment",
-					AllowUpdateForwarding: true,
+					AllowUpdateForwarding: utils.Bool(true),
 					NotifyDelay:           100,
 				}
 				ref, err := connector.UpdateObject(za, refZoneAuth)
@@ -1169,7 +1169,7 @@ var _ = Describe("Go Client", func() {
 				Expect(err).To(BeNil())
 				Expect(res[0].Ref).To(MatchRegexp("^zone_auth.*wapi.com/default$"))
 				Expect(res[0].Comment).To(Equal("WAPI Modified Comment"))
-				Expect(res[0].AllowUpdateForwarding).To(Equal(true))
+				Expect(*res[0].AllowUpdateForwarding).To(Equal(true))
 				Expect(res[0].NotifyDelay).To(Equal(uint32(100)))
 			},
 		)
@@ -1245,7 +1245,7 @@ var _ = Describe("Go Client", func() {
 					// fields [comment, bootfile, use_bootfile]
 					r = &ibclient.Range{
 						Comment:     "modified comment",
-						UseBootfile: true,
+						UseBootfile: utils.Bool(true),
 						Bootfile:    "boot_file",
 					}
 					ref, err = connector.UpdateObject(r, ref)
@@ -1261,7 +1261,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(resUpd[0].Ref).To(MatchRegexp("92\\.0\\.0\\.10/92\\.0\\.0\\.20/dhcpview$"))
 					Expect(resUpd[0].Comment).To(Equal("modified comment"))
-					Expect(resUpd[0].UseBootfile).To(Equal(true))
+					Expect(*resUpd[0].UseBootfile).To(Equal(true))
 					Expect(resUpd[0].Bootfile).To(Equal("boot_file"))
 				},
 			)
@@ -1292,7 +1292,7 @@ var _ = Describe("Go Client", func() {
 					r := &ibclient.Ipv4FixedAddress{
 						Mac:          "11:11:11:11:11:18",
 						Comment:      "changed it",
-						DenyBootp:    true,
+						DenyBootp:    utils.Bool(true),
 						PxeLeaseTime: 10,
 					}
 					ref, err = connector.UpdateObject(r, ref)
@@ -1309,7 +1309,7 @@ var _ = Describe("Go Client", func() {
 					Expect(resUpd[0].NetworkView).To(Equal("dhcpview"))
 					Expect(resUpd[0].Mac).To(Equal("11:11:11:11:11:18"))
 					Expect(resUpd[0].Ipv4Addr).To(Equal("92.0.0.2"))
-					Expect(resUpd[0].DenyBootp).To(Equal(true))
+					Expect(*resUpd[0].DenyBootp).To(Equal(true))
 					Expect(resUpd[0].PxeLeaseTime).To(Equal(uint32(10)))
 					Expect(resUpd[0].Ref).To(MatchRegexp("^fixedaddress.*92\\.0\\.0\\.2/dhcpview"))
 				},
@@ -1331,7 +1331,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 118", "ID: 140", "RW"), func() {
 					r := &ibclient.Ipv4Network{
 						Comment:     "modified comment",
-						UseBootfile: true,
+						UseBootfile: utils.Bool(true),
 						Bootfile:    "boot_file",
 					}
 					ref, err := connector.UpdateObject(r, refNetwork)
@@ -1347,7 +1347,7 @@ var _ = Describe("Go Client", func() {
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("92\\.0\\.0\\.0/8/dhcpview$"))
 					Expect(res[0].Comment).To(Equal("modified comment"))
-					Expect(res[0].UseBootfile).To(Equal(true))
+					Expect(*res[0].UseBootfile).To(Equal(true))
 					Expect(res[0].Bootfile).To(Equal("boot_file"))
 				},
 			)
@@ -1503,8 +1503,8 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 121", "ID: 137", "RW"), func() {
 					r := &ibclient.IPv6Range{
 						Comment:          "modified comment",
-						UseRecycleLeases: true,
-						RecycleLeases:    true,
+						UseRecycleLeases: utils.Bool(true),
+						RecycleLeases:    utils.Bool(true),
 					}
 					ref, err := connector.UpdateObject(r, refRange)
 					Expect(err).To(BeNil())
@@ -1521,8 +1521,8 @@ var _ = Describe("Go Client", func() {
 					err = connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
 					Expect(res[0].Comment).To(Equal("modified comment"))
-					Expect(res[0].UseRecycleLeases).To(Equal(true))
-					Expect(res[0].RecycleLeases).To(Equal(true))
+					Expect(*res[0].UseRecycleLeases).To(Equal(true))
+					Expect(*res[0].RecycleLeases).To(Equal(true))
 				},
 			)
 		})
@@ -1587,7 +1587,7 @@ var _ = Describe("Go Client", func() {
 			Label("ID: 120", "ID: 138", "RW"), func() {
 				r := &ibclient.Ipv6Network{
 					Comment:       "modified comment",
-					UseDomainName: true,
+					UseDomainName: utils.Bool(true),
 					DomainName:    "boot_file",
 				}
 				ref, err := connector.UpdateObject(r, refNetwork)
@@ -1602,7 +1602,7 @@ var _ = Describe("Go Client", func() {
 				err = connector.GetObject(search, "", qp, &res)
 				Expect(err).To(BeNil())
 				Expect(res[0].Comment).To(Equal("modified comment"))
-				Expect(res[0].UseDomainName).To(Equal(true))
+				Expect(*res[0].UseDomainName).To(Equal(true))
 				Expect(res[0].DomainName).To(Equal("boot_file"))
 			},
 		)
@@ -1816,8 +1816,8 @@ var _ = Describe("Go Client", func() {
 		// Modify the fields [comment, disable, recursion] in DNS view [view1]
 		v = &ibclient.View{
 			Comment:   "Modify the view object",
-			Disable:   true,
-			Recursion: true,
+			Disable:   utils.Bool(true),
+			Recursion: utils.Bool(true),
 		}
 		ref, err = connector.UpdateObject(v, ref)
 		Expect(err).To(BeNil())
