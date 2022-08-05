@@ -389,6 +389,58 @@ func (c *Connector) GetObject(
 	return
 }
 
+func (c *Connector) PagingGetObject(
+	obj IBObject, ref string,
+	queryParams map[string]string, res *[]interface{}) (err error) {
+
+	pagingResponse := pagingResponseStruct{
+		NextPageId: "",
+		Result:     *res,
+	}
+
+	//copy query params and update them
+	queryParamsCopy := map[string]string{}
+	for k, v := range queryParams {
+		queryParamsCopy[k] = v
+	}
+
+	queryParamsCopy["_return_as_object"] = "1"
+	queryParamsCopy["_paging"] = "1"
+
+	var pagingResult []interface{}
+
+	err = c.GetObject(obj, "", NewQueryParams(false, queryParamsCopy), &pagingResponse)
+	if err != nil {
+		return fmt.Errorf("could not fetch object: %s", err)
+	} else {
+		pagingResult = append(pagingResult, pagingResponse.Result...)
+	}
+
+	for {
+		if pagingResponse.NextPageId == "" {
+			break
+		}
+		queryParamsCopy["_page_id"] = pagingResponse.NextPageId
+		pagingResponse.NextPageId = ""
+		err = c.GetObject(obj, "", NewQueryParams(false, queryParamsCopy), &pagingResponse)
+		if err != nil {
+			return fmt.Errorf("could not fetch object: %s", err)
+		}
+
+		pagingResult = append(pagingResult, pagingResponse.Result...)
+		fmt.Print(fmt.Sprintln("Paging to retrieve", reflect.TypeOf(obj), len(pagingResult)))
+	}
+
+	*res = pagingResult
+
+	return
+}
+
+type pagingResponseStruct struct {
+	NextPageId string        `json:"next_page_id,omitempty"`
+	Result     []interface{} `json:"result,omitempty"`
+}
+
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	refRes = ""
 	queryParams := NewQueryParams(false, nil)
