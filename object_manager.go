@@ -15,7 +15,7 @@ type IBObjectManager interface {
 	AllocateNetworkContainer(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (netContainer *NetworkContainer, err error)
 	CreateARecord(netView string, dnsView string, name string, cidr string, ipAddr string, ttl uint32, useTTL bool, comment string, ea EA) (*RecordA, error)
 	CreateAAAARecord(netView string, dnsView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordAAAA, error)
-	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
+	CreateZoneAuth(fqdn string, nsGroup string, restartIfNeeded bool, comment string, SoaDefaultTtl int, SoaExpire int, SoaNegativeTtl int, SoaRefresh int, SoaRetry int, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
@@ -192,38 +192,6 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 	err := objMgr.connector.GetObject(
 		gridObj, "", NewQueryParams(false, nil), &res)
 	return res, err
-}
-
-// CreateZoneAuth creates zones and subs by passing fqdn
-func (objMgr *ObjectManager) CreateZoneAuth(
-	fqdn string,
-	eas EA) (*ZoneAuth, error) {
-
-	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn: fqdn,
-		Ea:   eas})
-
-	ref, err := objMgr.connector.CreateObject(zoneAuth)
-	zoneAuth.Ref = ref
-	return zoneAuth, err
-}
-
-// Retreive a authortative zone by ref
-func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (*ZoneAuth, error) {
-	res := NewZoneAuth(ZoneAuth{})
-
-	if ref == "" {
-		return nil, fmt.Errorf("empty reference to an object is not allowed")
-	}
-
-	err := objMgr.connector.GetObject(
-		res, ref, NewQueryParams(false, nil), res)
-	return res, err
-}
-
-// DeleteZoneAuth deletes an auth zone
-func (objMgr *ObjectManager) DeleteZoneAuth(ref string) (string, error) {
-	return objMgr.connector.DeleteObject(ref)
 }
 
 // GetZoneAuth returns the authoritatives zones

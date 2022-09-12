@@ -2,6 +2,7 @@ package ibclient
 
 import (
 	"encoding/json"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -628,20 +629,47 @@ var _ = Describe("Objects", func() {
 
 		Context("ZoneAuth object", func() {
 			fqdn := "domain.com"
+			ns_group := "mynameservers"
+			restart_if_needed := true
+			comment := "test comment"
+			soa_default_ttl := 3600
+			soa_expire := 2419200
+			soa_negative_ttl := 900
+			soa_refresh := 10800
+			soa_retry := 3600
 			view := "default"
 
 			za := NewZoneAuth(ZoneAuth{
-				Fqdn: fqdn,
-				View: view})
+				Fqdn:            fqdn,
+				NsGroup:         ns_group,
+				RestartIfNeeded: restart_if_needed,
+				Comment:         comment,
+				SoaDefaultTtl:   soa_default_ttl,
+				SoaExpire:       soa_expire,
+				SoaNegativeTtl:  soa_negative_ttl,
+				SoaRefresh:      soa_refresh,
+				SoaRetry:        soa_retry,
+				View:            view})
 
 			It("should set fields correctly", func() {
 				Expect(za.Fqdn).To(Equal(fqdn))
+				Expect(za.NsGroup).To(Equal(ns_group))
+				Expect(za.RestartIfNeeded).To(Equal(restart_if_needed))
+				Expect(za.Comment).To(Equal(comment))
+				Expect(za.SoaDefaultTtl).To(Equal(soa_default_ttl))
+				Expect(za.SoaExpire).To(Equal(soa_expire))
+				Expect(za.SoaNegativeTtl).To(Equal(soa_negative_ttl))
+				Expect(za.SoaRefresh).To(Equal(soa_refresh))
+				Expect(za.SoaRetry).To(Equal(soa_retry))
 				Expect(za.View).To(Equal(view))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(za.ObjectType()).To(Equal("zone_auth"))
-				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view"))
+				Expect(za.ReturnFields()).To(ConsistOf(
+					"extattrs", "fqdn", "view", "ns_group", "comment",
+					"soa_default_ttl", "soa_expire", "soa_negative_ttl", "soa_refresh", "soa_retry",
+				))
 			})
 		})
 

@@ -310,12 +310,22 @@ var _ = Describe("Object Manager", func() {
 	Describe("Create Zone Auth", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
+		nsGroup := "mynameservers"
+		restartIfNeeded := true
 		fqdn := "azone.example.com"
+		comment := "test comment"
+		soaDefaultTtl := 3600
+		soaExpire := 2419200
+		soaNegativeTtl := 900
+		soaRefresh := 10800
+		soaRetry := 3600
 		fakeRefReturn := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
 		zaFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
-			resultObject:    NewZoneAuth(ZoneAuth{Fqdn: fqdn, Ref: fakeRefReturn}),
-			fakeRefReturn:   fakeRefReturn,
+			createObjectObj: NewZoneAuth(ZoneAuth{Fqdn: fqdn, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
+				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry}),
+			resultObject: NewZoneAuth(ZoneAuth{Fqdn: fqdn, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
+				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry, Ref: fakeRefReturn}),
+			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(zaFakeConnector, cmpType, tenantID)
@@ -333,7 +343,7 @@ var _ = Describe("Object Manager", func() {
 		var actualZoneAuth *ZoneAuth
 		var err error
 		It("should pass expected ZoneAuth Object to CreateObject", func() {
-			actualZoneAuth, err = objMgr.CreateZoneAuth(fqdn, ea)
+			actualZoneAuth, err = objMgr.CreateZoneAuth(fqdn, nsGroup, restartIfNeeded, comment, soaDefaultTtl, soaExpire, soaNegativeTtl, soaRefresh, soaRetry, ea)
 		})
 		It("should return expected ZoneAuth Object", func() {
 			Expect(actualZoneAuth).To(Equal(zaFakeConnector.resultObject))
@@ -361,7 +371,6 @@ var _ = Describe("Object Manager", func() {
 		It("should pass expected ZoneAuth Object to GetObject", func() {
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef(fakeRefReturn)
 		})
-		fmt.Printf("doodo  %s", actualZoneAuth)
 		It("should return expected ZoneAuth Object", func() {
 			Expect(actualZoneAuth).To(Equal(zdFakeConnector.resultObject))
 			Expect(err).To(BeNil())

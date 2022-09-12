@@ -824,17 +824,29 @@ func NewRecordTXT(
 }
 
 type ZoneAuth struct {
-	IBBase `json:"-"`
-	Ref    string `json:"_ref,omitempty"`
-	Fqdn   string `json:"fqdn,omitempty"`
-	View   string `json:"view,omitempty"`
-	Ea     EA     `json:"extattrs"`
+	IBBase          `json:"-"`
+	Ref             string `json:"_ref,omitempty"`
+	Fqdn            string `json:"fqdn,omitempty"`
+	View            string `json:"view,omitempty"`
+	NsGroup         string `json:"ns_group,omitempty"`
+	RestartIfNeeded bool   `json:"restart_if_needed"`
+	Comment         string `json:"comment"`
+	SoaDefaultTtl   int    `json:"soa_default_ttl"`
+	SoaExpire       int    `json:"soa_expire"`
+	SoaNegativeTtl  int    `json:"soa_negative_ttl"`
+	SoaRefresh      int    `json:"soa_refresh"`
+	SoaRetry        int    `json:"soa_retry"`
+	Ea              EA     `json:"extattrs"`
 }
 
 func NewZoneAuth(za ZoneAuth) *ZoneAuth {
 	res := za
 	res.objectType = "zone_auth"
-	res.returnFields = []string{"extattrs", "fqdn", "view"}
+	// restart_if_needed not included here because it is not readable
+	res.returnFields = []string{
+		"extattrs", "fqdn", "view", "ns_group", "comment",
+		"soa_default_ttl", "soa_expire", "soa_negative_ttl", "soa_refresh", "soa_retry",
+	}
 
 	return &res
 }
