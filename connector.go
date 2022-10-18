@@ -13,10 +13,13 @@ import (
 	"net/http/cookiejar"
 	"net/url"
 	"reflect"
+	"sort"
 	"strings"
 	"time"
 
 	"golang.org/x/net/publicsuffix"
+
+	"github.com/hashicorp/go-version"
 )
 
 type AuthConfig struct {
@@ -102,6 +105,63 @@ type Connector struct {
 	transportCfg   TransportConfig
 	requestBuilder HttpRequestBuilder
 	requestor      HttpRequestor
+}
+
+func getLatestVersion(hostCfg HostConfig, authCfg AuthConfig, transportCfg TransportConfig) (string, error) {
+	schemaUrl := fmt.Sprintf("https://%s/wapi/v1.0/?_schema", hostCfg.Host)
+	req, err := http.NewRequest(http.MethodGet, schemaUrl, nil)
+	if err != nil {
+		return "", err
+	}
+
+	req.SetBasicAuth(authCfg.Username, authCfg.Password)
+
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{
+			InsecureSkipVerify: !transportCfg.SslVerify,
+		},
+	}
+
+	client := &http.Client{
+		Timeout:   time.Second * 10,
+		Transport: tr,
+	}
+	resp, err := client.Do(req)
+	if err != nil {
+		return "", err
+	}
+
+	if resp.StatusCode != 200 {
+		log.Printf("Non OK Response: %v", resp)
+		return "", err
+	}
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+
+	resBody := make(map[string]interface{})
+	err = json.Unmarshal(body, &resBody)
+	if err != nil {
+		return "", err
+	}
+
+	if err := resp.Body.Close(); err != nil {
+		return "", err
+	}
+
+	versions := make([]*version.Version, 0, len(resBody["supported_versions"].([]interface{})))
+	for _, vStr := range resBody["supported_versions"].([]interface{}) {
+		v, err := version.NewVersion(vStr.(string))
+		if err != nil {
+			return "", err
+		}
+		versions = append(versions, v)
+	}
+
+	sort.Sort(version.Collection(versions))
+	return versions[len(versions)-1].String(), nil
 }
 
 type RequestType int
@@ -454,6 +514,14 @@ func validateConnector(c *Connector) (err error) {
 func NewConnector(hostConfig HostConfig, authCfg AuthConfig, transportConfig TransportConfig,
 	requestBuilder HttpRequestBuilder, requestor HttpRequestor) (res *Connector, err error) {
 	res = nil
+
+	if hostConfig.Version == "" {
+		ver, err := getLatestVersion(hostConfig, authCfg, transportConfig)
+		if err != nil {
+			return nil, err
+		}
+		hostConfig.Version = ver
+	}
 
 	connector := &Connector{
 		hostCfg:      hostConfig,
