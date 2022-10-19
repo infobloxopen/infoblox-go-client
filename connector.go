@@ -100,68 +100,58 @@ type IBConnector interface {
 }
 
 type Connector struct {
-	hostCfg        HostConfig
+	hostCfg        *HostConfig
 	authCfg        AuthConfig
 	transportCfg   TransportConfig
 	requestBuilder HttpRequestBuilder
 	requestor      HttpRequestor
 }
 
-func getLatestVersion(hostCfg HostConfig, authCfg AuthConfig, transportCfg TransportConfig) (string, error) {
-	schemaUrl := fmt.Sprintf("https://%s/wapi/v1.0/?_schema", hostCfg.Host)
-	req, err := http.NewRequest(http.MethodGet, schemaUrl, nil)
+// setLatestVersion will fetch latest WAPI version from provided instance, and set this version as default for
+// connector WAPI calls. Fields hostCfg, authCfg, requestor should be configured before calling this method.
+func (c *Connector) setLatestVersion() error {
+	schemaUrl := url.URL{
+		Scheme:   "https",
+		Host:     c.hostCfg.Host + ":" + c.hostCfg.Port,
+		Path:     fmt.Sprintf("wapi/v%s/", c.hostCfg.Version),
+		RawQuery: "_schema",
+	}
+	req, err := http.NewRequest(http.MethodGet, schemaUrl.String(), nil)
 	if err != nil {
-		return "", err
+		return err
 	}
 
-	req.SetBasicAuth(authCfg.Username, authCfg.Password)
-
-	tr := &http.Transport{
-		TLSClientConfig: &tls.Config{
-			InsecureSkipVerify: !transportCfg.SslVerify,
-		},
+	if c.authCfg.Username != "" {
+		req.SetBasicAuth(c.authCfg.Username, c.authCfg.Password)
 	}
 
-	client := &http.Client{
-		Timeout:   time.Second * 10,
-		Transport: tr,
-	}
-	resp, err := client.Do(req)
+	resp, err := c.requestor.SendRequest(req)
 	if err != nil {
-		return "", err
-	}
-
-	if resp.StatusCode != 200 {
-		log.Printf("Non OK Response: %v", resp)
-		return "", err
-	}
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
+		return err
 	}
 
 	resBody := make(map[string]interface{})
-	err = json.Unmarshal(body, &resBody)
+	err = json.Unmarshal(resp, &resBody)
 	if err != nil {
-		return "", err
-	}
-
-	if err := resp.Body.Close(); err != nil {
-		return "", err
+		return err
 	}
 
 	versions := make([]*version.Version, 0, len(resBody["supported_versions"].([]interface{})))
 	for _, vStr := range resBody["supported_versions"].([]interface{}) {
 		v, err := version.NewVersion(vStr.(string))
 		if err != nil {
-			return "", err
+			return err
 		}
 		versions = append(versions, v)
 	}
 
 	sort.Sort(version.Collection(versions))
-	return versions[len(versions)-1].String(), nil
+
+	c.hostCfg.Version = versions[len(versions)-1].String()
+
+	c.requestBuilder.Init(*c.hostCfg, c.authCfg)
+
+	return nil
 }
 
 type RequestType int
@@ -515,26 +505,32 @@ func NewConnector(hostConfig HostConfig, authCfg AuthConfig, transportConfig Tra
 	requestBuilder HttpRequestBuilder, requestor HttpRequestor) (res *Connector, err error) {
 	res = nil
 
-	if hostConfig.Version == "" {
-		ver, err := getLatestVersion(hostConfig, authCfg, transportConfig)
-		if err != nil {
-			return nil, err
-		}
-		hostConfig.Version = ver
-	}
-
 	connector := &Connector{
-		hostCfg:      hostConfig,
+		hostCfg:      &hostConfig,
 		authCfg:      authCfg,
 		transportCfg: transportConfig,
 	}
 
+	if connector.hostCfg.Version == "" {
+		connector.hostCfg.Version = "1.0"
+	}
+
 	//connector.requestBuilder = WapiRequestBuilder{WaipHostConfig: connector.hostCfg}
 	connector.requestBuilder = requestBuilder
-	connector.requestBuilder.Init(connector.hostCfg, connector.authCfg)
+	connector.requestBuilder.Init(*connector.hostCfg, connector.authCfg)
 
 	connector.requestor = requestor
 	connector.requestor.Init(connector.authCfg, connector.transportCfg)
+
+	err = ValidateConnector(connector)
+	if err != nil {
+		return nil, err
+	}
+
+	err = connector.setLatestVersion()
+	if err != nil {
+		return nil, err
+	}
 
 	res = connector
 	err = ValidateConnector(connector)
