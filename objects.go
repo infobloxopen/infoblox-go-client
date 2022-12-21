@@ -292,6 +292,12 @@ func NewFixedAddress(
 	return res
 }
 
+func NewEmptyDNSView() *View {
+	res := &View{}
+	res.returnFields = []string{"extattrs", "name", "network_view", "comment"}
+	return res
+}
+
 type Network struct {
 	IBBase      `json:"-"`
 	objectType  string
@@ -317,7 +323,7 @@ func NewNetwork(netview string, cidr string, isIPv6 bool, comment string, ea EA)
 	} else {
 		res.objectType = "network"
 	}
-	res.returnFields = []string{"extattrs", "network", "comment"}
+	res.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 	return &res
 }
