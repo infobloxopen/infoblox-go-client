@@ -1232,7 +1232,8 @@ var _ = Describe("Go Client", func() {
 
 					var res []ibclient.Range
 					search := &ibclient.Range{}
-					err = connector.GetObject(search, "", nil, &res)
+					qp := ibclient.NewQueryParams(false, map[string]string{"start_addr": "92.0.0.10", "end_addr": "92.0.0.20"})
+					err = connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
 					Expect(res[0].Network).To(Equal("92.0.0.0/8"))
 					Expect(res[0].Comment).To(Equal("Add Range through WAPI"))
@@ -1256,7 +1257,7 @@ var _ = Describe("Go Client", func() {
 					var resUpd []ibclient.Range
 					searchUpd := &ibclient.Range{}
 					searchUpd.SetReturnFields([]string{"comment", "bootfile", "use_bootfile"})
-					qp := ibclient.NewQueryParams(false, map[string]string{"start_addr": "92.0.0.10", "end_addr": "92.0.0.20"})
+					qp = ibclient.NewQueryParams(false, map[string]string{"start_addr": "92.0.0.10", "end_addr": "92.0.0.20"})
 					err = connector.GetObject(searchUpd, "", qp, &resUpd)
 					Expect(err).To(BeNil())
 					Expect(resUpd[0].Ref).To(MatchRegexp("92\\.0\\.0\\.10/92\\.0\\.0\\.20/dhcpview$"))
