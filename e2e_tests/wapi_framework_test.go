@@ -124,7 +124,7 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.DiscoveryDeviceneighbor
 		search := &ibclient.DiscoveryDeviceneighbor{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Discovery Status object (N)", Label("ID: 12", "RO"), func() {
@@ -147,14 +147,14 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.DtcCertificate
 		search := &ibclient.DtcCertificate{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC LBDN object", Label("ID: 15", "RO"), func() {
 		var res []ibclient.DtcLbdn
 		search := &ibclient.DtcLbdn{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC monitor object", Label("ID: 16", "RO"), func() {
@@ -236,42 +236,42 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.DtcMonitorTcp
 		search := &ibclient.DtcMonitorTcp{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC object", Label("ID: 22", "RO"), func() {
 		var res []ibclient.DtcObject
 		search := &ibclient.DtcObject{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC POOL object", Label("ID: 23", "RO"), func() {
 		var res []ibclient.DtcPool
 		search := &ibclient.DtcPool{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC Server object", Label("ID: 24", "RO"), func() {
 		var res []ibclient.DtcServer
 		search := &ibclient.DtcServer{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC Topology object", Label("ID: 25", "RO"), func() {
 		var res []ibclient.DtcTopology
 		search := &ibclient.DtcTopology{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC Topology Rule object", Label("ID: 26", "RO"), func() {
 		var res []ibclient.DtcTopologyRule
 		search := &ibclient.DtcTopologyRule{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Extensible Attribute Definition object", Label("ID: 27", "RO"), func() {
@@ -323,14 +323,14 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.GridCloudapiTenant
 		search := &ibclient.GridCloudapiTenant{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Grid Cloud API VM address object", Label("ID: 32", "RO"), func() {
 		var res []ibclient.GridCloudapiVmaddress
 		search := &ibclient.GridCloudapiVmaddress{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Grid DHCP properties object", Label("ID: 33", "RO"), func() {
@@ -361,7 +361,7 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.GridMemberCloudapi
 		search := &ibclient.GridMemberCloudapi{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the x509certificate object", Label("ID: 37", "RO"), func() {
@@ -369,7 +369,7 @@ var _ = Describe("Go Client", func() {
 		search := &ibclient.GridX509certificate{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).NotTo(BeNil())
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should add Network View [dhcpview]", Label("ID: 38", "RW"), func() {
@@ -1885,35 +1885,35 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.NetworkTemplate
 		search := &ibclient.NetworkTemplate{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP IPv6 network template object", Label("ID: 65", "RO"), func() {
 		var res []ibclient.IPv6NetworkTemplate
 		search := &ibclient.IPv6NetworkTemplate{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP IPv6 Shared Network object", Label("ID: 66", "RO"), func() {
 		var res []ibclient.IPv6SharedNetwork
 		search := &ibclient.IPv6SharedNetwork{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Lease object", Label("ID: 67", "RO"), func() {
 		var res []ibclient.Lease
 		search := &ibclient.Lease{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the MAC Filter Address object", Label("ID: 68", "RO"), func() {
 		var res []ibclient.MACFilterAddress
 		search := &ibclient.MACFilterAddress{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Member DHCP properties object", Label("ID: 69", "RO"), func() {
@@ -1940,14 +1940,14 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.MsserverAdsitesDomain
 		search := &ibclient.MsserverAdsitesDomain{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Active Directory Site object", Label("ID: 72", "RO"), func() {
 		var res []ibclient.MsserverAdsitesSite
 		search := &ibclient.MsserverAdsitesSite{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Permissions object", Label("ID: 73", "RO"), func() {
@@ -1965,35 +1965,35 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.RecordNaptr
 		search := &ibclient.RecordNaptr{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC LBDN object", Label("ID: 90", "RO"), func() {
 		var res []ibclient.RecordDtclbdn
 		search := &ibclient.RecordDtclbdn{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DTC LBDN object", Label("ID: 90", "RO"), func() {
 		var res []ibclient.RecordDtclbdn
 		search := &ibclient.RecordDtclbdn{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Roaming Host object", Label("ID: 94", "RO"), func() {
 		var res []ibclient.RoamingHost
 		search := &ibclient.RoamingHost{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Scheduled Task object", Label("ID: 95", "RO"), func() {
 		var res []ibclient.ScheduledTask
 		search := &ibclient.ScheduledTask{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the Search object (N)", Label("ID: 96", "RO"), func() {
@@ -2008,42 +2008,42 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.SharedNetwork
 		search := &ibclient.SharedNetwork{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Shared A record object", Label("ID: 98", "RO"), func() {
 		var res []ibclient.SharedRecordA
 		search := &ibclient.SharedRecordA{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Shared AAAA record object", Label("ID: 99", "RO"), func() {
 		var res []ibclient.SharedRecordAAAA
 		search := &ibclient.SharedRecordAAAA{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Shared MX record object", Label("ID: 100", "RO"), func() {
 		var res []ibclient.SharedRecordMX
 		search := &ibclient.SharedRecordMX{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Shared TXT record object", Label("ID: 101", "RO"), func() {
 		var res []ibclient.SharedRecordTXT
 		search := &ibclient.SharedRecordTXT{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DHCP Shared SRV record object", Label("ID: 102", "RO"), func() {
 		var res []ibclient.SharedrecordSrv
 		search := &ibclient.SharedrecordSrv{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the snmpuser object (N)", Label("ID: 103", "RO"), func() {
@@ -2058,27 +2058,27 @@ var _ = Describe("Go Client", func() {
 		var res []ibclient.ZoneAuthDiscrepancy
 		search := &ibclient.ZoneAuthDiscrepancy{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DNS Delegated Zone object", Label("ID: 105", "RO"), func() {
 		var res []ibclient.ZoneDelegated
 		search := &ibclient.ZoneDelegated{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DNS Forward Zone object", Label("ID: 106", "RO"), func() {
 		var res []ibclient.ZoneForward
 		search := &ibclient.ZoneForward{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 
 	It("Should get the DNS Stub Zone object", Label("ID: 107", "RO"), func() {
 		var res []ibclient.ZoneStub
 		search := &ibclient.ZoneStub{}
 		err := connector.GetObject(search, "", nil, &res)
-		Expect(err).To(MatchError("not found"))
+		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 })
