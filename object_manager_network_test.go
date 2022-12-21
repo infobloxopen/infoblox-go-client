@@ -353,10 +353,10 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork(netviewName, cidr, false, comment, expectedEas)
+			updateObjIn := NewNetwork("", cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetwork(netviewName, cidr, false, comment, expectedEas)
@@ -395,10 +395,10 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork(netviewName, cidr, false, comment, expectedEas)
+			updateObjIn := NewNetwork("", cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetwork(netviewName, cidr, false, comment, expectedEas)
@@ -431,7 +431,7 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := "test comment 1"
 
@@ -457,10 +457,10 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork(netviewName, cidr, false, comment, nil)
+			updateObjIn := NewNetwork("", cidr, false, comment, nil)
 			updateObjIn.Ref = ref
 
 			conn = &fakeConnector{
@@ -489,10 +489,10 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := ""
-			updateObjIn := NewNetwork(netviewName, cidr, false, comment, nil)
+			updateObjIn := NewNetwork("", cidr, false, comment, nil)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetwork(netviewName, cidr, false, comment, nil)
@@ -538,10 +538,10 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork(netviewName, cidr, false, comment, expectedEas)
+			updateObjIn := NewNetwork("", cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetwork(netviewName, cidr, false, comment, expectedEas)
@@ -587,10 +587,10 @@ var _ = Describe("Object Manager: network", func() {
 
 			getObjIn := &Network{}
 			getObjIn.objectType = "ipv6network"
-			getObjIn.returnFields = []string{"extattrs", "network", "comment"}
+			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork(netviewName, cidr, true, comment, expectedEas)
+			updateObjIn := NewNetwork("", cidr, true, comment, expectedEas)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetwork(netviewName, cidr, true, comment, expectedEas)
@@ -674,7 +674,7 @@ var _ = Describe("Object Manager: network", func() {
 
 		expectedNetwork := Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
 		expectedNetwork.objectType = "network"
-		expectedNetwork.returnFields = []string{"extattrs", "network", "comment"}
+		expectedNetwork.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 		resObj, err := BuildNetworkFromRef(networkRef)
 		resObj1, err1 := BuildNetworkFromRef("network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
 		It("should return expected Network Object", func() {
@@ -695,7 +695,7 @@ var _ = Describe("Object Manager: network", func() {
 
 		expectedNetwork := Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
 		expectedNetwork.objectType = "ipv6network"
-		expectedNetwork.returnFields = []string{"extattrs", "network", "comment"}
+		expectedNetwork.returnFields = []string{"extattrs", "network", "network_view", "comment"}
 		resObj, err := BuildIPv6NetworkFromRef(networkRef)
 		resObj1, err1 := BuildIPv6NetworkFromRef("ipv6network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
 		It("should return expected Network Object", func() {

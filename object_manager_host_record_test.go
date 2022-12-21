@@ -383,7 +383,7 @@ var _ = Describe("Object Manager: host record", func() {
 				"ea5": "ea5_old_value"}
 			initialAliases := []string{"abc.test.com", "xyz.test.com"}
 			initObj := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, initialEas, enableDNS, "", "", "", useTtl, ttl, "old comment", initialAliases)
+				[]HostRecordIpv6Addr{}, initialEas, enableDNS, "someDNSview", "", "", useTtl, ttl, "old comment", initialAliases)
 			initObj.Ref = ref
 
 			setEas := EA{
@@ -398,11 +398,11 @@ var _ = Describe("Object Manager: host record", func() {
 			updateUseTtl := false
 			updateTtl := uint32(0)
 			updateObjIn := NewHostRecord("", "host1.test.com", "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
+				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "someDNSview", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewHostRecord("", "host1.test.com", "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
+				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "someDNSview", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
@@ -421,7 +421,7 @@ var _ = Describe("Object Manager: host record", func() {
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateHostRecord(ref, true, false, "host1.test.com", "",
-				"", "", "", "", "", "", updateUseTtl, updateTtl, comment, setEas, expectedAliases)
+				"someDNSview", "", "", "", "", "", "", updateUseTtl, updateTtl, comment, setEas, expectedAliases)
 			Expect(err).To(BeNil())
 			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})
@@ -458,7 +458,7 @@ var _ = Describe("Object Manager: host record", func() {
 			}
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
 
-			actualObj, err = objMgr.UpdateHostRecord(ref, enableDNS, false, hostName, "", "",
+			actualObj, err = objMgr.UpdateHostRecord(ref, enableDNS, false, hostName, "", "", "",
 				"", ipv4Addr, ipv6Addr, macAddr, duid, useTtl, ttl, "", nil, []string{})
 			Expect(err).To(BeNil())
 			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))

@@ -213,7 +213,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(nw.ObjectType()).To(Equal("network"))
-				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "comment"))
+				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view", "comment"))
 				Expect(nw.EaSearch()).To(Equal(searchEAs))
 			})
 		})
@@ -236,7 +236,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(nw.ObjectType()).To(Equal("ipv6network"))
-				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "comment"))
+				Expect(nw.ReturnFields()).To(ConsistOf("extattrs", "network", "network_view", "comment"))
 				Expect(nw.EaSearch()).To(Equal(searchEAs))
 			})
 		})

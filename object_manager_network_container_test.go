@@ -257,7 +257,7 @@ var _ = Describe("Object Manager: network container", func() {
 			getObjIn.returnFields = []string{"extattrs", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetworkContainer(netviewName, ipv4Cidr, false, comment, expectedEas)
+			updateObjIn := NewNetworkContainer("", ipv4Cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetworkContainer(netviewName, ipv4Cidr, false, comment, expectedEas)
@@ -317,7 +317,7 @@ var _ = Describe("Object Manager: network container", func() {
 			getObjIn.returnFields = []string{"extattrs", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetworkContainer(netviewName, ipv4Cidr, false, comment, nil)
+			updateObjIn := NewNetworkContainer("", ipv4Cidr, false, comment, nil)
 			updateObjIn.Ref = ref
 
 			conn = &fakeConnector{
@@ -363,7 +363,7 @@ var _ = Describe("Object Manager: network container", func() {
 			getObjIn.returnFields = []string{"extattrs", "comment"}
 
 			comment := "test comment 1"
-			updateObjIn := NewNetworkContainer(netviewName, ipv6Cidr, true, comment, expectedEas)
+			updateObjIn := NewNetworkContainer("", ipv6Cidr, true, comment, expectedEas)
 			updateObjIn.Ref = ref
 
 			expectedObj := NewNetworkContainer(netviewName, ipv6Cidr, true, comment, expectedEas)
