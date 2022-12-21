@@ -452,7 +452,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 110", "ID: 148", "RW"), func() {
 					r := &ibclient.RecordCNAME{
 						Comment: "Modified CNAME Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     uint32(20),
 					}
 					ref, err := connector.UpdateObject(r, ref)
@@ -482,9 +482,9 @@ var _ = Describe("Go Client", func() {
 				Name:     "a.wapi.com",
 				Ipv4Addr: "9.0.0.1",
 				Comment:  "Added A Record",
-				Disable:  utils.Bool(false),
+				Disable:  utils.BoolPtr(false),
 				Ttl:      uint32(10),
-				UseTtl:   utils.Bool(true),
+				UseTtl:   utils.BoolPtr(true),
 				View:     "default",
 			}
 			ref, err := connector.CreateObject(r)
@@ -499,9 +499,9 @@ var _ = Describe("Go Client", func() {
 					Name:     "a.wapi.com",
 					Ipv4Addr: "9.0.0.1",
 					Comment:  "Added A Record",
-					Disable:  utils.Bool(false),
+					Disable:  utils.BoolPtr(false),
 					Ttl:      uint32(10),
-					UseTtl:   utils.Bool(true),
+					UseTtl:   utils.BoolPtr(true),
 					View:     "default",
 				}
 				var err error
@@ -535,9 +535,9 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 111", "ID: 147", "RW"), func() {
 					r := &ibclient.RecordA{
 						Comment: "Modified A Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     uint32(20),
-						UseTtl:  utils.Bool(false),
+						UseTtl:  utils.BoolPtr(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -567,9 +567,9 @@ var _ = Describe("Go Client", func() {
 				Name:     "aaaa.wapi.com",
 				Ipv6Addr: "99::99",
 				Comment:  "Added AAAA Record",
-				Disable:  utils.Bool(false),
+				Disable:  utils.BoolPtr(false),
 				Ttl:      uint32(10),
-				UseTtl:   utils.Bool(true),
+				UseTtl:   utils.BoolPtr(true),
 				View:     "default",
 			}
 			ref, err := connector.CreateObject(r)
@@ -584,9 +584,9 @@ var _ = Describe("Go Client", func() {
 					Name:     "aaaa.wapi.com",
 					Ipv6Addr: "99::99",
 					Comment:  "Added AAAA Record",
-					Disable:  utils.Bool(false),
+					Disable:  utils.BoolPtr(false),
 					Ttl:      uint32(10),
-					UseTtl:   utils.Bool(true),
+					UseTtl:   utils.BoolPtr(true),
 					View:     "default",
 				}
 				var err error
@@ -616,9 +616,9 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 112", "ID: 146", "RW"), func() {
 					r := &ibclient.RecordAAAA{
 						Comment: "Modified AAAA Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     uint32(20),
-						UseTtl:  utils.Bool(false),
+						UseTtl:  utils.BoolPtr(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -645,12 +645,12 @@ var _ = Describe("Go Client", func() {
 					Name: "h1.wapi.com",
 					View: "default",
 					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-						{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.20"},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: "20.20.20.20"},
 						{Ipv4Addr: "20.20.20.30"},
-						{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.40"},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: "20.20.20.40"},
 					},
 					Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
-						{EnableDhcp: utils.Bool(true), Ipv6Addr: "2000::1", Duid: "11:10"},
+						{EnableDhcp: utils.BoolPtr(true), Ipv6Addr: "2000::1", Duid: "11:10"},
 						{Ipv6Addr: "2000::2"},
 					},
 				}
@@ -667,12 +667,12 @@ var _ = Describe("Go Client", func() {
 						Name: "h1.wapi.com",
 						View: "default",
 						Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-							{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.20"},
+							{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: "20.20.20.20"},
 							{Ipv4Addr: "20.20.20.30"},
-							{EnableDhcp: utils.Bool(false), Ipv4Addr: "20.20.20.40"},
+							{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: "20.20.20.40"},
 						},
 						Ipv6Addrs: []ibclient.HostRecordIpv6Addr{
-							{EnableDhcp: utils.Bool(true), Ipv6Addr: "2000::1", Duid: "11:10"},
+							{EnableDhcp: utils.BoolPtr(true), Ipv6Addr: "2000::1", Duid: "11:10"},
 							{Ipv6Addr: "2000::2"},
 						},
 					}
@@ -792,9 +792,9 @@ var _ = Describe("Go Client", func() {
 				MailExchanger: "wapi.com",
 				Preference:    uint32(10),
 				Comment:       "Creating mx record through infoblox-go-client",
-				Disable:       utils.Bool(false),
+				Disable:       utils.BoolPtr(false),
 				Ttl:           uint32(20),
-				UseTtl:        utils.Bool(true),
+				UseTtl:        utils.BoolPtr(true),
 			}
 			ref, err := connector.CreateObject(r)
 			Expect(err).To(BeNil())
@@ -809,9 +809,9 @@ var _ = Describe("Go Client", func() {
 					MailExchanger: "wapi.com",
 					Preference:    uint32(10),
 					Comment:       "Creating mx record through infoblox-go-client",
-					Disable:       utils.Bool(false),
+					Disable:       utils.BoolPtr(false),
 					Ttl:           uint32(20),
-					UseTtl:        utils.Bool(true),
+					UseTtl:        utils.BoolPtr(true),
 				}
 				var err error
 				ref, err = connector.CreateObject(r)
@@ -846,9 +846,9 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 113", "ID: 145", "RW"), func() {
 					r := &ibclient.RecordMX{
 						Comment: "Modified mx Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     120,
-						UseTtl:  utils.Bool(false),
+						UseTtl:  utils.BoolPtr(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -878,9 +878,9 @@ var _ = Describe("Go Client", func() {
 				Name:    "txt.wapi.com",
 				Text:    "wapi.com",
 				Comment: "Creating txt record through infoblox-go-client",
-				Disable: utils.Bool(false),
+				Disable: utils.BoolPtr(false),
 				Ttl:     uint32(20),
-				UseTtl:  utils.Bool(true),
+				UseTtl:  utils.BoolPtr(true),
 				View:    "default",
 			}
 			ref, err := connector.CreateObject(r)
@@ -895,9 +895,9 @@ var _ = Describe("Go Client", func() {
 					Name:    "txt.wapi.com",
 					Text:    "wapi.com",
 					Comment: "Creating txt record through infoblox-go-client",
-					Disable: utils.Bool(false),
+					Disable: utils.BoolPtr(false),
 					Ttl:     uint32(20),
-					UseTtl:  utils.Bool(true),
+					UseTtl:  utils.BoolPtr(true),
 					View:    "default",
 				}
 				var err error
@@ -932,9 +932,9 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 114", "ID: 144", "RW"), func() {
 					r := &ibclient.RecordTXT{
 						Comment: "Modified TXT Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     uint32(120),
-						UseTtl:  utils.Bool(false),
+						UseTtl:  utils.BoolPtr(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -965,9 +965,9 @@ var _ = Describe("Go Client", func() {
 				PtrdName: "ptr.wapi.com",
 				View:     "default",
 				Comment:  "wapi added",
-				Disable:  utils.Bool(false),
+				Disable:  utils.BoolPtr(false),
 				Ttl:      uint32(10),
-				UseTtl:   utils.Bool(true),
+				UseTtl:   utils.BoolPtr(true),
 			}
 			ref, err := connector.CreateObject(r)
 			Expect(err).To(BeNil())
@@ -982,9 +982,9 @@ var _ = Describe("Go Client", func() {
 					PtrdName: "ptr.wapi.com",
 					View:     "default",
 					Comment:  "wapi added",
-					Disable:  utils.Bool(false),
+					Disable:  utils.BoolPtr(false),
 					Ttl:      uint32(10),
-					UseTtl:   utils.Bool(true),
+					UseTtl:   utils.BoolPtr(true),
 				}
 				var err error
 				ref, err = connector.CreateObject(r)
@@ -1018,9 +1018,9 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 115", "ID: 143", "RW"), func() {
 					r := &ibclient.RecordTXT{
 						Comment: "Modified PTR Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     uint32(120),
-						UseTtl:  utils.Bool(false),
+						UseTtl:  utils.BoolPtr(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -1051,9 +1051,9 @@ var _ = Describe("Go Client", func() {
 					Port:     uint32(10),
 					Target:   "srv.wapi.com",
 					Comment:  "wapi added",
-					Disable:  utils.Bool(false),
+					Disable:  utils.BoolPtr(false),
 					Ttl:      10,
-					UseTtl:   utils.Bool(true),
+					UseTtl:   utils.BoolPtr(true),
 					View:     "default",
 				}
 				ref, err := connector.CreateObject(r)
@@ -1072,9 +1072,9 @@ var _ = Describe("Go Client", func() {
 					Port:     uint32(10),
 					Target:   "srv.wapi.com",
 					Comment:  "wapi added",
-					Disable:  utils.Bool(false),
+					Disable:  utils.BoolPtr(false),
 					Ttl:      10,
-					UseTtl:   utils.Bool(true),
+					UseTtl:   utils.BoolPtr(true),
 					View:     "default",
 				}
 				var err error
@@ -1113,9 +1113,9 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 116", "ID: 142", "RW"), func() {
 					r := &ibclient.RecordSRV{
 						Comment: "Modified SRV Record",
-						Disable: utils.Bool(true),
+						Disable: utils.BoolPtr(true),
 						Ttl:     uint32(120),
-						UseTtl:  utils.Bool(false),
+						UseTtl:  utils.BoolPtr(false),
 					}
 					ref, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
@@ -1153,7 +1153,7 @@ var _ = Describe("Go Client", func() {
 			Label("ID: 127", "ID: 131", "RW"), func() {
 				za := &ibclient.ZoneAuth{
 					Comment:               "WAPI Modified Comment",
-					AllowUpdateForwarding: utils.Bool(true),
+					AllowUpdateForwarding: utils.BoolPtr(true),
 					NotifyDelay:           100,
 				}
 				ref, err := connector.UpdateObject(za, refZoneAuth)
@@ -1246,7 +1246,7 @@ var _ = Describe("Go Client", func() {
 					// fields [comment, bootfile, use_bootfile]
 					r = &ibclient.Range{
 						Comment:     "modified comment",
-						UseBootfile: utils.Bool(true),
+						UseBootfile: utils.BoolPtr(true),
 						Bootfile:    "boot_file",
 					}
 					ref, err = connector.UpdateObject(r, ref)
@@ -1293,7 +1293,7 @@ var _ = Describe("Go Client", func() {
 					r := &ibclient.Ipv4FixedAddress{
 						Mac:          "11:11:11:11:11:18",
 						Comment:      "changed it",
-						DenyBootp:    utils.Bool(true),
+						DenyBootp:    utils.BoolPtr(true),
 						PxeLeaseTime: 10,
 					}
 					ref, err = connector.UpdateObject(r, ref)
@@ -1332,7 +1332,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 118", "ID: 140", "RW"), func() {
 					r := &ibclient.Ipv4Network{
 						Comment:     "modified comment",
-						UseBootfile: utils.Bool(true),
+						UseBootfile: utils.BoolPtr(true),
 						Bootfile:    "boot_file",
 					}
 					ref, err := connector.UpdateObject(r, refNetwork)
@@ -1504,8 +1504,8 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 121", "ID: 137", "RW"), func() {
 					r := &ibclient.IPv6Range{
 						Comment:          "modified comment",
-						UseRecycleLeases: utils.Bool(true),
-						RecycleLeases:    utils.Bool(true),
+						UseRecycleLeases: utils.BoolPtr(true),
+						RecycleLeases:    utils.BoolPtr(true),
 					}
 					ref, err := connector.UpdateObject(r, refRange)
 					Expect(err).To(BeNil())
@@ -1558,7 +1558,7 @@ var _ = Describe("Go Client", func() {
 				Label("ID: 125", "ID: 133", "RW"), func() {
 					r := &ibclient.Ipv6FixedAddress{
 						Comment:              "Modify the ipv6fixedaddress object",
-						UsePreferredLifetime: utils.Bool(false),
+						UsePreferredLifetime: utils.BoolPtr(false),
 						PreferredLifetime:    220,
 					}
 					ref, err := connector.UpdateObject(r, refFixedAddress)
@@ -1588,7 +1588,7 @@ var _ = Describe("Go Client", func() {
 			Label("ID: 120", "ID: 138", "RW"), func() {
 				r := &ibclient.Ipv6Network{
 					Comment:       "modified comment",
-					UseDomainName: utils.Bool(true),
+					UseDomainName: utils.BoolPtr(true),
 					DomainName:    "boot_file",
 				}
 				ref, err := connector.UpdateObject(r, refNetwork)
@@ -1817,8 +1817,8 @@ var _ = Describe("Go Client", func() {
 		// Modify the fields [comment, disable, recursion] in DNS view [view1]
 		v = &ibclient.View{
 			Comment:   "Modify the view object",
-			Disable:   utils.Bool(true),
-			Recursion: utils.Bool(true),
+			Disable:   utils.BoolPtr(true),
+			Recursion: utils.BoolPtr(true),
 		}
 		ref, err = connector.UpdateObject(v, ref)
 		Expect(err).To(BeNil())

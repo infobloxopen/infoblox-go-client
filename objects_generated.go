@@ -11638,7 +11638,7 @@ func NewRecordA(
 	res.Name = name
 	res.Ipv4Addr = ipAddr
 	res.Ttl = ttl
-	res.UseTtl = utils.Bool(useTTL)
+	res.UseTtl = utils.BoolPtr(useTTL)
 	res.Comment = comment
 	res.Ea = eas
 	res.Ref = ref
@@ -11742,7 +11742,7 @@ func NewRecordAAAA(
 	res.View = view
 	res.Name = name
 	res.Ipv6Addr = ipAddr
-	res.UseTtl = utils.Bool(useTtl)
+	res.UseTtl = utils.BoolPtr(useTtl)
 	res.Ttl = ttl
 	res.Comment = comment
 	res.Ea = eas
@@ -11966,7 +11966,7 @@ func NewRecordCNAME(dnsView string,
 	res.View = dnsView
 	res.Canonical = canonical
 	res.Name = recordName
-	res.UseTtl = utils.Bool(useTtl)
+	res.UseTtl = utils.BoolPtr(useTtl)
 	res.Ttl = ttl
 	res.Comment = comment
 	res.Ea = ea
@@ -12380,10 +12380,10 @@ func NewHostRecord(
 	//res.Ipv6Addr = ipv6Addr
 	res.Ipv4Addrs = ipv4AddrList
 	res.Ipv6Addrs = ipv6AddrList
-	res.UseTtl = utils.Bool(useTtl)
+	res.UseTtl = utils.BoolPtr(useTtl)
 	res.Ttl = ttl
 	res.Aliases = aliases
-	res.EnableDns = utils.Bool(enableDNS)
+	res.EnableDns = utils.BoolPtr(enableDNS)
 
 	return res
 }
@@ -12503,7 +12503,7 @@ func NewHostRecordIpv4Addr(
 	res.Ipv4Addr = ipAddr
 	res.Mac = macAddr
 	res.Ref = ref
-	res.EnableDhcp = utils.Bool(enableDhcp)
+	res.EnableDhcp = utils.BoolPtr(enableDhcp)
 
 	return res
 }
@@ -12612,7 +12612,7 @@ func NewHostRecordIpv6Addr(
 	res.Ipv6Addr = ipAddr
 	res.Duid = duid
 	res.Ref = ref
-	res.EnableDhcp = utils.Bool(enableDhcp)
+	res.EnableDhcp = utils.BoolPtr(enableDhcp)
 
 	return res
 }
@@ -13092,7 +13092,7 @@ func NewRecordPTR(dnsView string, ptrdname string, useTtl bool, ttl uint32, comm
 	res := NewEmptyRecordPTR()
 	res.View = dnsView
 	res.PtrdName = ptrdname
-	res.UseTtl = utils.Bool(useTtl)
+	res.UseTtl = utils.BoolPtr(useTtl)
 	res.Ttl = ttl
 	res.Comment = comment
 	res.Ea = ea
@@ -14109,7 +14109,7 @@ func NewRecordTXT(
 	res.Name = recordname
 	res.Text = text
 	res.Ttl = ttl
-	res.UseTtl = utils.Bool(useTtl)
+	res.UseTtl = utils.BoolPtr(useTtl)
 	res.Comment = comment
 	res.Ea = eas
 
