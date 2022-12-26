@@ -2,6 +2,7 @@ package ibclient
 
 import (
 	"fmt"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -32,7 +33,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv6Addr = ipAddr
+		conn.createObjectObj.(*RecordPTR).Ipv6Addr = &ipAddr
 
 		var actualRecord *RecordPTR
 		var err error
@@ -69,7 +70,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv4Addr = ipAddr
+		conn.createObjectObj.(*RecordPTR).Ipv4Addr = &ipAddr
 
 		var actualRecord *RecordPTR
 		var err error
@@ -108,7 +109,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv4Addr = ipAddr
+		conn.createObjectObj.(*RecordPTR).Ipv4Addr = &ipAddr
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
@@ -146,7 +147,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv6Addr = ipAddr
+		conn.createObjectObj.(*RecordPTR).Ipv6Addr = &ipAddr
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
@@ -182,7 +183,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Name = recordName
+		conn.createObjectObj.(*RecordPTR).Name = &recordName
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
@@ -212,7 +213,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Name = recordName
+		conn.createObjectObj.(*RecordPTR).Name = &recordName
 		var actualRecord, expectedObj *RecordPTR
 		var err error
 		expectedObj = nil
@@ -242,7 +243,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv4Addr = ipAddr
+		conn.createObjectObj.(*RecordPTR).Ipv4Addr = &ipAddr
 		var actualRecord, expectedObj *RecordPTR
 		var err error
 		expectedObj = nil
@@ -309,7 +310,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.resultObject.([]RecordPTR)[0].Ipv4Addr = ipAddr
+		conn.resultObject.([]RecordPTR)[0].Ipv4Addr = &ipAddr
 		var actualRecord *RecordPTR
 		var err error
 		It("should pass expected PTR record Object to GetObject", func() {
@@ -432,7 +433,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea5": "ea5_old_value"}
 			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
-			initObj.Ipv4Addr = ipv4Addr
+			initObj.Ipv4Addr = &ipv4Addr
 
 			setEas := EA{
 				"ea0": "ea0_old_value",
@@ -449,11 +450,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
 			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
-			updateObjIn.Ipv4Addr = updateIpAddr
+			updateObjIn.Ipv4Addr = &updateIpAddr
+			updateObjIn.Name = utils.StringPtr("")
 
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
-			expectedObj.Ipv4Addr = updateIpAddr
+			expectedObj.Ipv4Addr = &updateIpAddr
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
@@ -485,7 +487,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea5": "ea5_old_value"}
 			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
-			initObj.Ipv4Addr = ipv6Addr
+			initObj.Ipv4Addr = &ipv6Addr
 
 			setEas := EA{
 				"ea0": "ea0_old_value",
@@ -502,11 +504,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
 			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
-			updateObjIn.Ipv6Addr = updateIpAddr
+			updateObjIn.Ipv6Addr = &updateIpAddr
+			updateObjIn.Name = utils.StringPtr("")
 
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
-			expectedObj.Ipv6Addr = updateIpAddr
+			expectedObj.Ipv6Addr = &updateIpAddr
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
@@ -538,7 +541,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea5": "ea5_old_value"}
 			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
-			initObj.Ipv4Addr = ipv4Addr
+			initObj.Ipv4Addr = &ipv4Addr
 
 			setEas := EA{
 				"ea0": "ea0_old_value",
@@ -555,11 +558,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
 			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
-			updateObjIn.Ipv4Addr = updateIpAddr
+			updateObjIn.Ipv4Addr = &updateIpAddr
+			updateObjIn.Name = utils.StringPtr("")
 
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
-			expectedObj.Ipv4Addr = updateIpAddr
+			expectedObj.Ipv4Addr = &updateIpAddr
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
@@ -591,7 +595,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea5": "ea5_old_value"}
 			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
-			initObj.Ipv6Addr = ipv6Addr
+			initObj.Ipv6Addr = &ipv6Addr
 
 			setEas := EA{
 				"ea0": "ea0_old_value",
@@ -608,11 +612,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
 			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
-			updateObjIn.Ipv6Addr = updateIpAddr
+			updateObjIn.Ipv6Addr = &updateIpAddr
+			updateObjIn.Name = utils.StringPtr("")
 
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
-			expectedObj.Ipv6Addr = updateIpAddr
+			expectedObj.Ipv6Addr = &updateIpAddr
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
@@ -644,7 +649,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 				"ea5": "ea5_old_value"}
 			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
-			initObj.Name = recordName
+			initObj.Name = &recordName
 
 			setEas := EA{
 				"ea0": "ea0_old_value",
@@ -661,11 +666,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			updatedRef := fmt.Sprintf("record:ptr/%s:%s/20", refBase, newPtrdname)
 			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
-			updateObjIn.Name = updateName
+			updateObjIn.Name = &updateName
 
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
-			expectedObj.Name = updateName
+			expectedObj.Name = &updateName
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),

@@ -39,8 +39,8 @@ var _ = Describe("Objects", func() {
 	Describe("Network View", func() {
 		It("Should properly serialize/deserialize", Label("RW"), func() {
 			nv := &ibclient.NetworkView{
-				Name:    "e2e_test_view",
-				Comment: "Network View created by e2e test",
+				Name:    utils.StringPtr("e2e_test_view"),
+				Comment: utils.StringPtr("Network View created by e2e test"),
 			}
 
 			ref, err := connector.CreateObject(nv)
@@ -53,7 +53,7 @@ var _ = Describe("Objects", func() {
 			Expect(res.Name).To(Equal(nv.Name))
 			Expect(res.Comment).To(Equal(nv.Comment))
 
-			nv.Comment = "Network View updated by e2e test"
+			nv.Comment = utils.StringPtr("Network View updated by e2e test")
 			updRef, err := connector.UpdateObject(nv, ref)
 			Expect(err).To(BeNil())
 
@@ -65,8 +65,8 @@ var _ = Describe("Objects", func() {
 	When("Network View exists", Label("RW"), func() {
 		BeforeEach(func() {
 			nv := &ibclient.NetworkView{
-				Name:    "e2e_test_view",
-				Comment: "Network View created by e2e test",
+				Name:    utils.StringPtr("e2e_test_view"),
+				Comment: utils.StringPtr("Network View created by e2e test"),
 			}
 
 			_, err := connector.CreateObject(nv)
@@ -77,8 +77,8 @@ var _ = Describe("Objects", func() {
 			It("Should properly serialize/deserialize", func() {
 				nw := &ibclient.Ipv4Network{
 					NetworkView: "e2e_test_view",
-					Network:     "192.168.1.0/24",
-					Comment:     "IPv4 Network created by e2e test",
+					Network:     utils.StringPtr("192.168.1.0/24"),
+					Comment:     utils.StringPtr("IPv4 Network created by e2e test"),
 				}
 
 				ref, err := connector.CreateObject(nw)
@@ -93,7 +93,7 @@ var _ = Describe("Objects", func() {
 				Expect(res.Comment).To(Equal(nw.Comment))
 
 				nw.NetworkView = ""
-				nw.Comment = "IPv4 Network updated by e2e test"
+				nw.Comment = utils.StringPtr("IPv4 Network updated by e2e test")
 				updRef, err := connector.UpdateObject(nw, ref)
 				Expect(err).To(BeNil())
 
@@ -106,8 +106,8 @@ var _ = Describe("Objects", func() {
 			BeforeEach(func() {
 				nw := &ibclient.Ipv4Network{
 					NetworkView: "e2e_test_view",
-					Network:     "192.168.1.0/24",
-					Comment:     "IPv4 Network created by e2e test",
+					Network:     utils.StringPtr("192.168.1.0/24"),
+					Comment:     utils.StringPtr("IPv4 Network created by e2e test"),
 				}
 
 				_, err := connector.CreateObject(nw)
@@ -117,11 +117,11 @@ var _ = Describe("Objects", func() {
 			Describe("IPv4 Fixed Address", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					fa := &ibclient.Ipv4FixedAddress{
-						NetworkView: "e2e_test_view",
-						Name:        "e2e_test_ipv4_fixed_address",
-						Ipv4Addr:    "192.168.1.45",
-						Mac:         "00:00:00:00:00:00",
-						Comment:     "IPv4 Fixed Address created by e2e test",
+						NetworkView: utils.StringPtr("e2e_test_view"),
+						Name:        utils.StringPtr("e2e_test_ipv4_fixed_address"),
+						Ipv4Addr:    utils.StringPtr("192.168.1.45"),
+						Mac:         utils.StringPtr("00:00:00:00:00:00"),
+						Comment:     utils.StringPtr("IPv4 Fixed Address created by e2e test"),
 					}
 
 					ref, err := connector.CreateObject(fa)
@@ -138,7 +138,7 @@ var _ = Describe("Objects", func() {
 					Expect(res.Mac).To(Equal(fa.Mac))
 					Expect(res.Comment).To(Equal(fa.Comment))
 
-					fa.Comment = "IPv4 Fixed Address updated by e2e test"
+					fa.Comment = utils.StringPtr("IPv4 Fixed Address updated by e2e test")
 					updRef, err := connector.UpdateObject(fa, ref)
 					Expect(err).To(BeNil())
 
@@ -150,11 +150,11 @@ var _ = Describe("Objects", func() {
 			Describe("IP Range", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					r := &ibclient.Range{
-						NetworkView: "e2e_test_view",
-						Name:        "e2e_test_ip_range",
-						Comment:     "IP Range created by e2e test",
-						StartAddr:   "192.168.1.10",
-						EndAddr:     "192.168.1.20",
+						NetworkView: utils.StringPtr("e2e_test_view"),
+						Name:        utils.StringPtr("e2e_test_ip_range"),
+						Comment:     utils.StringPtr("IP Range created by e2e test"),
+						StartAddr:   utils.StringPtr("192.168.1.10"),
+						EndAddr:     utils.StringPtr("192.168.1.20"),
 					}
 
 					ref, err := connector.CreateObject(r)
@@ -171,7 +171,7 @@ var _ = Describe("Objects", func() {
 					Expect(res.StartAddr).To(Equal(r.StartAddr))
 					Expect(res.EndAddr).To(Equal(r.EndAddr))
 
-					r.Comment = "IP Range updated by e2e test"
+					r.Comment = utils.StringPtr("IP Range updated by e2e test")
 					updRef, err := connector.UpdateObject(r, ref)
 					Expect(err).To(BeNil())
 
@@ -184,43 +184,43 @@ var _ = Describe("Objects", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					By("Creating DNS view")
 					v := &ibclient.View{
-						Name:        "e2e_test_dns_view",
-						NetworkView: "e2e_test_view",
-						Comment:     "DNS View created by e2e test",
+						Name:        utils.StringPtr("e2e_test_dns_view"),
+						NetworkView: utils.StringPtr("e2e_test_view"),
+						Comment:     utils.StringPtr("DNS View created by e2e test"),
 					}
 					_, err := connector.CreateObject(v)
 					Expect(err).To(BeNil())
 
 					By("Creating forwarding-mapping DNS Auth Zone")
 					zf := &ibclient.ZoneAuth{
-						View:    "e2e_test_dns_view",
+						View:    utils.StringPtr("e2e_test_dns_view"),
 						Fqdn:    "e2e-test.com",
-						Comment: "Forwarding-mapping DNS Auth Zone created by e2e test",
+						Comment: utils.StringPtr("Forwarding-mapping DNS Auth Zone created by e2e test"),
 					}
 					_, err = connector.CreateObject(zf)
 					Expect(err).To(BeNil())
 
 					By("Creating reverse-mapping DNS Auth Zone")
 					zr := &ibclient.ZoneAuth{
-						View:       "e2e_test_dns_view",
+						View:       utils.StringPtr("e2e_test_dns_view"),
 						Fqdn:       "192.168.1.0/24",
 						ZoneFormat: "IPV4",
-						Comment:    "Reverse-mapping DNS Auth Zone created by e2e test",
+						Comment:    utils.StringPtr("Reverse-mapping DNS Auth Zone created by e2e test"),
 					}
 					_, err = connector.CreateObject(zr)
 					Expect(err).To(BeNil())
 
 					fa := &ibclient.HostRecord{
 						NetworkView: "e2e_test_view",
-						View:        "e2e_test_dns_view",
-						Name:        "e2e_test_host_record.e2e-test.com",
+						View:        utils.StringPtr("e2e_test_dns_view"),
+						Name:        utils.StringPtr("e2e_test_host_record.e2e-test.com"),
 						Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
 							{
-								Ipv4Addr: "192.168.1.60",
-								Mac:      "00:00:00:00:00:00",
+								Ipv4Addr: utils.StringPtr("192.168.1.60"),
+								Mac:      utils.StringPtr("00:00:00:00:00:00"),
 							},
 						},
-						Comment: "IPv4 Host Record created by e2e test",
+						Comment: utils.StringPtr("IPv4 Host Record created by e2e test"),
 					}
 
 					ref, err := connector.CreateObject(fa)
@@ -236,7 +236,7 @@ var _ = Describe("Objects", func() {
 					Expect(res.Comment).To(Equal(fa.Comment))
 
 					fa.NetworkView = ""
-					fa.Comment = "IPv4 Host Record updated by e2e test"
+					fa.Comment = utils.StringPtr("IPv4 Host Record updated by e2e test")
 					updRef, err := connector.UpdateObject(fa, ref)
 					Expect(err).To(BeNil())
 
@@ -252,7 +252,7 @@ var _ = Describe("Objects", func() {
 				nc := &ibclient.Ipv4NetworkContainer{
 					NetworkView: "e2e_test_view",
 					Network:     "192.168.1.0/24",
-					Comment:     "IPv4 Network Container created by e2e test",
+					Comment:     utils.StringPtr("IPv4 Network Container created by e2e test"),
 				}
 
 				ref, err := connector.CreateObject(nc)
@@ -262,13 +262,13 @@ var _ = Describe("Objects", func() {
 				err = connector.GetObject(nc, ref, nil, &res)
 				Expect(err).To(BeNil())
 				Expect(res.Ref).To(Equal(ref))
-				Expect(res.NetworkView).To(Equal(nc.NetworkView))
-				Expect(res.Network).To(Equal(nc.Network))
-				Expect(res.Comment).To(Equal(nc.Comment))
+				Expect(*res.NetworkView).To(Equal(nc.NetworkView))
+				Expect(*res.Network).To(Equal(nc.Network))
+				Expect(*res.Comment).To(Equal(*nc.Comment))
 
 				nc.Network = ""
 				nc.NetworkView = ""
-				nc.Comment = "IPv4 Network Container updated by e2e test"
+				nc.Comment = utils.StringPtr("IPv4 Network Container updated by e2e test")
 				updRef, err := connector.UpdateObject(nc, ref)
 				Expect(err).To(BeNil())
 
@@ -281,8 +281,8 @@ var _ = Describe("Objects", func() {
 	Describe("DNS View", func() {
 		It("Should properly serialize/deserialize", Label("RW"), func() {
 			v := &ibclient.View{
-				Name:    "e2e_test_dns_view",
-				Comment: "DNS View created by e2e test",
+				Name:    utils.StringPtr("e2e_test_dns_view"),
+				Comment: utils.StringPtr("DNS View created by e2e test"),
 			}
 
 			ref, err := connector.CreateObject(v)
@@ -297,7 +297,7 @@ var _ = Describe("Objects", func() {
 			Expect(res.Name).To(Equal(v.Name))
 			Expect(res.Comment).To(Equal(v.Comment))
 
-			v.Comment = "DNS View updated by e2e test"
+			v.Comment = utils.StringPtr("DNS View updated by e2e test")
 			updRef, err := connector.UpdateObject(v, ref)
 			Expect(err).To(BeNil())
 
@@ -309,8 +309,8 @@ var _ = Describe("Objects", func() {
 	When("DNS View exists", Label("RW"), func() {
 		BeforeEach(func() {
 			v := &ibclient.View{
-				Name:    "e2e_test_dns_view",
-				Comment: "DNS View created by e2e test",
+				Name:    utils.StringPtr("e2e_test_dns_view"),
+				Comment: utils.StringPtr("DNS View created by e2e test"),
 			}
 
 			_, err := connector.CreateObject(v)
@@ -320,9 +320,9 @@ var _ = Describe("Objects", func() {
 		Describe("DNS Zone Auth", func() {
 			It("Should support CRUD operations of forwarding-mapping zone", Label("RW"), func() {
 				z := &ibclient.ZoneAuth{
-					View:    "e2e_test_dns_view",
+					View:    utils.StringPtr("e2e_test_dns_view"),
 					Fqdn:    "e2e-test.com",
-					Comment: "DNS Auth Zone created by e2e test",
+					Comment: utils.StringPtr("DNS Auth Zone created by e2e test"),
 				}
 
 				ref, err := connector.CreateObject(z)
@@ -339,7 +339,7 @@ var _ = Describe("Objects", func() {
 				Expect(res.Comment).To(Equal(z.Comment))
 
 				z.Fqdn = ""
-				z.Comment = "DNS Auth Zone updated by e2e test"
+				z.Comment = utils.StringPtr("DNS Auth Zone updated by e2e test")
 				updRef, err := connector.UpdateObject(z, ref)
 				Expect(err).To(BeNil())
 
@@ -349,10 +349,10 @@ var _ = Describe("Objects", func() {
 
 			It("Should support CRUD operations of reverse-mapping zone", Label("RW"), func() {
 				z := &ibclient.ZoneAuth{
-					View:       "e2e_test_dns_view",
+					View:       utils.StringPtr("e2e_test_dns_view"),
 					Fqdn:       "192.168.1.0/24",
 					ZoneFormat: "IPV4",
-					Comment:    "DNS Auth Zone created by e2e test",
+					Comment:    utils.StringPtr("DNS Auth Zone created by e2e test"),
 				}
 
 				ref, err := connector.CreateObject(z)
@@ -370,7 +370,7 @@ var _ = Describe("Objects", func() {
 
 				z.Fqdn = ""
 				z.ZoneFormat = ""
-				z.Comment = "DNS Auth Zone updated by e2e test"
+				z.Comment = utils.StringPtr("DNS Auth Zone updated by e2e test")
 				updRef, err := connector.UpdateObject(z, ref)
 				Expect(err).To(BeNil())
 
@@ -382,9 +382,9 @@ var _ = Describe("Objects", func() {
 		When("forwarding-mapping DNS Zone Exists", Label("RW"), func() {
 			BeforeEach(func() {
 				z := &ibclient.ZoneAuth{
-					View:    "e2e_test_dns_view",
+					View:    utils.StringPtr("e2e_test_dns_view"),
 					Fqdn:    "e2e-test.com",
-					Comment: "Forwarding-mapping DNS Auth Zone created by e2e test",
+					Comment: utils.StringPtr("Forwarding-mapping DNS Auth Zone created by e2e test"),
 				}
 
 				_, err := connector.CreateObject(z)
@@ -395,11 +395,11 @@ var _ = Describe("Objects", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					a := &ibclient.RecordA{
 						View:     "e2e_test_dns_view",
-						Name:     "e2e_test_a_record.e2e-test.com",
-						Ipv4Addr: "192.168.1.45",
-						Ttl:      5,
+						Name:     utils.StringPtr("e2e_test_a_record.e2e-test.com"),
+						Ipv4Addr: utils.StringPtr("192.168.1.45"),
+						Ttl:      utils.Uint32Ptr(5),
 						UseTtl:   utils.BoolPtr(true),
-						Comment:  "A Record created by e2e test",
+						Comment:  utils.StringPtr("A Record created by e2e test"),
 						Ea:       make(ibclient.EA),
 					}
 
@@ -416,7 +416,7 @@ var _ = Describe("Objects", func() {
 					Expect(res.CreationTime).To(Not(BeNil()))
 
 					a.View = ""
-					a.Comment = "A Record updated by e2e test"
+					a.Comment = utils.StringPtr("A Record updated by e2e test")
 					updRef, err := connector.UpdateObject(a, ref)
 					Expect(err).To(BeNil())
 
@@ -427,11 +427,11 @@ var _ = Describe("Objects", func() {
 				It("Should support search by zone field", Label("RW"), func() {
 					a := &ibclient.RecordA{
 						View:     "e2e_test_dns_view",
-						Name:     "e2e_test_a_record.e2e-test.com",
-						Ipv4Addr: "192.168.1.45",
-						Ttl:      5,
+						Name:     utils.StringPtr("e2e_test_a_record.e2e-test.com"),
+						Ipv4Addr: utils.StringPtr("192.168.1.45"),
+						Ttl:      utils.Uint32Ptr(5),
 						UseTtl:   utils.BoolPtr(true),
-						Comment:  "A Record created by e2e test",
+						Comment:  utils.StringPtr("A Record created by e2e test"),
 						Ea:       make(ibclient.EA),
 					}
 
@@ -459,11 +459,11 @@ var _ = Describe("Objects", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					aaaa := &ibclient.RecordAAAA{
 						View:     "e2e_test_dns_view",
-						Name:     "e2e_test_a_record.e2e-test.com",
-						Ipv6Addr: "2001:db8:abcd:14::1",
-						Ttl:      5,
+						Name:     utils.StringPtr("e2e_test_a_record.e2e-test.com"),
+						Ipv6Addr: utils.StringPtr("2001:db8:abcd:14::1"),
+						Ttl:      utils.Uint32Ptr(5),
 						UseTtl:   utils.BoolPtr(true),
-						Comment:  "A Record created by e2e test",
+						Comment:  utils.StringPtr("A Record created by e2e test"),
 						Ea:       make(ibclient.EA),
 					}
 
@@ -481,7 +481,7 @@ var _ = Describe("Objects", func() {
 					Expect(res.Comment).To(Equal(aaaa.Comment))
 
 					aaaa.View = ""
-					aaaa.Comment = "A Record updated by e2e test"
+					aaaa.Comment = utils.StringPtr("A Record updated by e2e test")
 					updRef, err := connector.UpdateObject(aaaa, ref)
 					Expect(err).To(BeNil())
 
@@ -493,12 +493,12 @@ var _ = Describe("Objects", func() {
 			Describe("CNAME Record", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					cname := &ibclient.RecordCNAME{
-						View:      "e2e_test_dns_view",
-						Canonical: "e2e_test_cname_record.e2e-test.com",
-						Name:      "e2e_test_cname_record.e2e-test.com",
-						Ttl:       5,
+						View:      utils.StringPtr("e2e_test_dns_view"),
+						Canonical: utils.StringPtr("e2e_test_cname_record.e2e-test.com"),
+						Name:      utils.StringPtr("e2e_test_cname_record.e2e-test.com"),
+						Ttl:       utils.Uint32Ptr(5),
 						UseTtl:    utils.BoolPtr(true),
-						Comment:   "CNAME Record created by e2e test",
+						Comment:   utils.StringPtr("CNAME Record created by e2e test"),
 						Ea:        make(ibclient.EA),
 					}
 
@@ -514,8 +514,8 @@ var _ = Describe("Objects", func() {
 					Expect(res.Ttl).To(Equal(cname.Ttl))
 					Expect(res.Comment).To(Equal(cname.Comment))
 
-					cname.View = ""
-					cname.Comment = "CNAME Record updated by e2e test"
+					cname.View = nil
+					cname.Comment = utils.StringPtr("CNAME Record updated by e2e test")
 					updRef, err := connector.UpdateObject(cname, ref)
 					Expect(err).To(BeNil())
 
@@ -527,12 +527,12 @@ var _ = Describe("Objects", func() {
 			Describe("TXT Record", func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					txt := &ibclient.RecordTXT{
-						View:    "e2e_test_dns_view",
-						Name:    "e2e_test_txt_record.e2e-test.com",
-						Text:    "TXT Record created by e2e test",
-						Ttl:     5,
+						View:    utils.StringPtr("e2e_test_dns_view"),
+						Name:    utils.StringPtr("e2e_test_txt_record.e2e-test.com"),
+						Text:    utils.StringPtr("TXT Record created by e2e test"),
+						Ttl:     utils.Uint32Ptr(5),
 						UseTtl:  utils.BoolPtr(true),
-						Comment: "TXT Record created by e2e test",
+						Comment: utils.StringPtr("TXT Record created by e2e test"),
 					}
 
 					ref, err := connector.CreateObject(txt)
@@ -549,7 +549,7 @@ var _ = Describe("Objects", func() {
 					Expect(res.Ttl).To(Equal(txt.Ttl))
 					Expect(res.Comment).To(Equal(txt.Comment))
 
-					txt.Comment = "TXT Record updated by e2e test"
+					txt.Comment = utils.StringPtr("TXT Record updated by e2e test")
 					updRef, err := connector.UpdateObject(txt, ref)
 					Expect(err).To(BeNil())
 
@@ -561,10 +561,10 @@ var _ = Describe("Objects", func() {
 			When("reverse-mapping DNS Zone Exists", Label("RW"), func() {
 				BeforeEach(func() {
 					z := &ibclient.ZoneAuth{
-						View:       "e2e_test_dns_view",
+						View:       utils.StringPtr("e2e_test_dns_view"),
 						Fqdn:       "192.168.1.0/24",
 						ZoneFormat: "IPV4",
-						Comment:    "Reverse-mapping DNS Auth Zone created by e2e test",
+						Comment:    utils.StringPtr("Reverse-mapping DNS Auth Zone created by e2e test"),
 					}
 
 					_, err := connector.CreateObject(z)
@@ -575,11 +575,11 @@ var _ = Describe("Objects", func() {
 					It("Should properly serialize/deserialize", Label("RW"), func() {
 						ptr := &ibclient.RecordPTR{
 							View:     "e2e_test_dns_view",
-							PtrdName: "e2e_test_ptr_record.e2e-test.com",
-							Ipv4Addr: "192.168.1.45",
-							Ttl:      5,
+							PtrdName: utils.StringPtr("e2e_test_ptr_record.e2e-test.com"),
+							Ipv4Addr: utils.StringPtr("192.168.1.45"),
+							Ttl:      utils.Uint32Ptr(5),
 							UseTtl:   utils.BoolPtr(true),
-							Comment:  "PTR Record created by e2e test",
+							Comment:  utils.StringPtr("PTR Record created by e2e test"),
 						}
 
 						ref, err := connector.CreateObject(ptr)
@@ -597,7 +597,7 @@ var _ = Describe("Objects", func() {
 						Expect(res.Comment).To(Equal(ptr.Comment))
 
 						ptr.View = ""
-						ptr.Comment = "PTR Record updated by e2e test"
+						ptr.Comment = utils.StringPtr("PTR Record updated by e2e test")
 						updRef, err := connector.UpdateObject(ptr, ref)
 						Expect(err).To(BeNil())
 
@@ -613,8 +613,8 @@ var _ = Describe("Objects", func() {
 	Describe("EA Definition", func() {
 		It("Should properly serialize/deserialize", Label("RW"), func() {
 			eadef := &ibclient.EADefinition{
-				Name:       "E2E Test EA",
-				Comment:    "EA Def created by e2e test",
+				Name:       utils.StringPtr("E2E Test EA"),
+				Comment:    utils.StringPtr("EA Def created by e2e test"),
 				ListValues: []*ibclient.EADefListValue{{"value1"}, {"value2"}},
 				Type:       "STRING",
 			}
@@ -632,7 +632,7 @@ var _ = Describe("Objects", func() {
 			Expect(res.ListValues).To(Equal(eadef.ListValues))
 			Expect(res.Type).To(Equal(eadef.Type))
 
-			eadef.Comment = "EA Def updated by e2e test"
+			eadef.Comment = utils.StringPtr("EA Def updated by e2e test")
 			updRef, err := connector.UpdateObject(eadef, ref)
 			Expect(err).To(BeNil())
 

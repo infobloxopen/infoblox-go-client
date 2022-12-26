@@ -16,9 +16,9 @@ var _ = Describe("Object Manager: EA definition", func() {
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
 		ead := EADefinition{
-			Name:               name,
-			Comment:            comment,
-			Flags:              flags,
+			Name:               &name,
+			Comment:            &comment,
+			Flags:              &flags,
 			ListValues:         listValues,
 			Type:               eaType,
 			AllowedObjectTypes: allowedTypes}
@@ -53,13 +53,13 @@ var _ = Describe("Object Manager: EA definition", func() {
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
 		ead := EADefinition{
-			Name: name,
+			Name: &name,
 		}
 		fakeRefReturn := "extensibleattributedef/ZG5zLm5ldHdvcmtfdmlldyQyMw:TestEA"
 		eadRes := EADefinition{
-			Name:               name,
-			Comment:            comment,
-			Flags:              flags,
+			Name:               &name,
+			Comment:            &comment,
+			Flags:              &flags,
 			ListValues:         listValues,
 			Type:               eaType,
 			AllowedObjectTypes: allowedTypes,

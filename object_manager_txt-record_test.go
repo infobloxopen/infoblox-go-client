@@ -123,7 +123,7 @@ var _ = Describe("Object Manager: TXT-record", func() {
 		netviewName := "default_view"
 		netviewRef := fmt.Sprintf("networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:%s/false", netviewName)
 
-		expectedNetworkView := NetworkView{Ref: netviewRef, Name: netviewName}
+		expectedNetworkView := NetworkView{Ref: netviewRef, Name: &netviewName}
 		It("should return expected Network View Object", func() {
 			Expect(*BuildNetworkViewFromRef(netviewRef)).To(Equal(expectedNetworkView))
 		})

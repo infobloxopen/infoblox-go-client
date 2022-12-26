@@ -30,7 +30,7 @@ func BuildNetworkViewFromRef(ref string) *NetworkView {
 
 	return &NetworkView{
 		Ref:  ref,
-		Name: m[1],
+		Name: &m[1],
 	}
 }
 
