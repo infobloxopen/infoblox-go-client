@@ -49,7 +49,7 @@ type IBObjectManager interface {
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
 	GetHostRecord(netview string, dnsview string, recordName string, ipv4addr string, ipv6addr string) (*HostRecord, error)
-	SearchHostRecordByAltId(internalId string, ref string, eaNameForInternalId string) (*HostRecord, error)
+	GetHostRecordByAltId(internalId string, ref string, eaNameForInternalId string) (*HostRecord, error)
 	GetHostRecordByRef(ref string) (*HostRecord, error)
 	GetIpAddressFromHostRecord(host HostRecord) (string, error)
 	GetNetwork(netview string, cidr string, isIPv6 bool, ea EA) (*Network, error)

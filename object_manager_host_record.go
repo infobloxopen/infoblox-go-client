@@ -75,7 +75,7 @@ func (objMgr *ObjectManager) GetHostRecordByRef(ref string) (*HostRecord, error)
 	return recordHost, err
 }
 
-func (objMgr *ObjectManager) SearchHostRecordByAltId(
+func (objMgr *ObjectManager) GetHostRecordByAltId(
 	internalId string, ref string, eaNameForInternalId string) (*HostRecord, error) {
 
 	if internalId == "" {
