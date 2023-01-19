@@ -796,6 +796,25 @@ func NewHostRecord(
 	return res
 }
 
+type RecordMX struct {
+	IBBase   `json:"-"`
+	Ref      string `json:"_ref,omitempty"`
+	dnsView  string `json:"view,omitempty"`
+	Fqdn     string `json:"name,omitempty"`
+	MX       string `json:"mail_exchanger,omitempty"`
+	Priority int    `json:"preference,omitempty"`
+	Comment  string `json:"comment"`
+	Ea       EA     `json:"extattrs"`
+}
+
+func NewRecordMX(rm RecordMX) *RecordMX {
+	res := rm
+	res.objectType = "record:mx"
+	res.returnFields = []string{"mail_exchanger", "view", "name", "preference", "extattrs"}
+
+	return &res
+}
+
 type RecordTXT struct {
 	IBBase  `json:"-"`
 	View    string `json:"view,omitempty"`

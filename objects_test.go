@@ -603,6 +603,35 @@ var _ = Describe("Objects", func() {
 			})
 		})
 
+		Context("RecordMX object", func() {
+			fqdn := "test.example.com"
+			mx := "example.com"
+			dnsview := "default"
+			priority := 10
+			comment := "test comment"
+			eas := EA{"Country": "test"}
+
+			rm := NewRecordMX(RecordMX{
+				Fqdn:     fqdn,
+				MX:       mx,
+				dnsView:  dnsview,
+				Priority: priority,
+				Comment:  comment,
+				Ea:       eas,
+			})
+
+			It("should set fields correctly", func() {
+				Expect(rm.Fqdn).To(Equal(fqdn))
+				Expect(rm.MX).To(Equal(mx))
+				Expect(rm.dnsView).To(Equal(dnsview))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(rm.ObjectType()).To(Equal("record.mx"))
+				Expect(rm.ReturnFields()).To(ConsistOf("mail_exchanger", "view", "name", "preference", "extattrs"))
+			})
+		})
+
 		Context("RecordTXT object", func() {
 			view := "default"
 			name := "txt.domain.com"
