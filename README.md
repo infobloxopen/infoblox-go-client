@@ -45,10 +45,10 @@ This library is compatible with Go 1.2+
    		    Port:     "PORT",
    	    }
 
-          authConfig := ibclient.AuthConfig{
+            authConfig := ibclient.AuthConfig{
              	    Username: "username",
    		    Password: "password",
-          }
+            }
    	    transportConfig := ibclient.NewTransportConfig("false", 20, 10)
    	    requestBuilder := &ibclient.WapiRequestBuilder{}
    	    requestor := &ibclient.WapiHttpRequestor{}
