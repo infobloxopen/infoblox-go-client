@@ -304,6 +304,39 @@ var _ = Describe("Objects", func() {
 			_, err = connector.DeleteObject(updRef)
 			Expect(err).To(BeNil())
 		})
+
+		It("Should update view comment to empty string", Label("RW", "DNS View"), func() {
+			v := &ibclient.View{
+				Name:    utils.StringPtr("e2e_test_dns_view"),
+				Comment: utils.StringPtr("DNS View created by e2e test"),
+			}
+
+			ref, err := connector.CreateObject(v)
+			Expect(err).To(BeNil())
+
+			v.SetReturnFields([]string{"name", "comment"})
+
+			var res ibclient.View
+			err = connector.GetObject(v, ref, nil, &res)
+			Expect(err).To(BeNil())
+			Expect(res.Ref).To(Equal(ref))
+			Expect(*res.Comment).To(Equal("DNS View created by e2e test"))
+
+			v.Comment = utils.StringPtr("")
+			updRef, err := connector.UpdateObject(v, ref)
+			Expect(err).To(BeNil())
+
+			v.SetReturnFields([]string{"name", "comment"})
+
+			res = ibclient.View{}
+			err = connector.GetObject(v, ref, nil, &res)
+			Expect(err).To(BeNil())
+			Expect(res.Ref).To(Equal(ref))
+			Expect(res.Comment).To(BeNil())
+
+			_, err = connector.DeleteObject(updRef)
+			Expect(err).To(BeNil())
+		})
 	})
 
 	When("DNS View exists", Label("RW"), func() {
