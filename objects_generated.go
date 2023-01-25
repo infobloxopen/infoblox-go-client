@@ -130,7 +130,7 @@ type Admingroup struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Grid set commands for the grid command group.
 	GridSetCommands *AdmingroupGridsetcommands `json:"grid_set_commands,omitempty"`
@@ -229,7 +229,7 @@ type Adminrole struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of an admin role.
 	Name *string `json:"name,omitempty"`
@@ -286,7 +286,7 @@ type Adminuser struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the admin user.
 	Name *string `json:"name,omitempty"`
@@ -576,7 +576,7 @@ type Approvalworkflow struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The destination for failed task notifications.
 	FailedNotifyTo string `json:"failed_notify_to,omitempty"`
@@ -830,7 +830,7 @@ type Bulkhost struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
@@ -1250,7 +1250,7 @@ type CiscoiseEndpoint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The Cisco ISE network view name.
 	NetworkView *string `json:"network_view,omitempty"`
@@ -1562,7 +1562,7 @@ type Dhcpfailover struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines the TCP port on which the server should listen for connections
 	// from its failover peer. Valid values are between 1 and 63999.
@@ -1864,7 +1864,7 @@ type DiscoveryDevice struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// List of the device interfaces.
 	Interfaces []*DiscoveryDeviceinterface `json:"interfaces,omitempty"`
@@ -2045,7 +2045,7 @@ type DiscoveryDeviceinterface struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// List of IFaddr information associated with the interface.
 	IfaddrInfos []*DiscoveryIfaddrinfo `json:"ifaddr_infos,omitempty"`
@@ -2704,7 +2704,7 @@ type Dns64group struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Access Control settings that contain IPv4 addresses and networks for which
 	// the DNS server can synthesize AAAA records with the specified prefix.
@@ -2840,7 +2840,7 @@ type DtcLbdn struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The LBDN health information.
 	Health *DtcHealth `json:"health,omitempty"`
@@ -2907,7 +2907,7 @@ type DtcMonitor struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for a health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -2993,7 +2993,7 @@ type DtcMonitorHttp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for TCP health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -3056,7 +3056,7 @@ type DtcMonitorIcmp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for TCP health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -3101,7 +3101,7 @@ type DtcMonitorPdp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for TCP health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -3157,7 +3157,7 @@ type DtcMonitorSip struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for TCP health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -3232,7 +3232,7 @@ type DtcMonitorSnmp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for TCP health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -3288,7 +3288,7 @@ type DtcMonitorTcp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The interval for TCP health check.
 	Interval *uint32 `json:"interval,omitempty"`
@@ -3340,7 +3340,7 @@ type DtcObject struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of IPv4 addresses.
 	Ipv4AddressList []string `json:"ipv4_address_list,omitempty"`
@@ -3399,7 +3399,7 @@ type DtcPool struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The health status.
 	Health *DtcHealth `json:"health,omitempty"`
@@ -3736,7 +3736,7 @@ type DtcServer struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The health status.
 	Health *DtcHealth `json:"health,omitempty"`
@@ -3782,7 +3782,7 @@ type DtcTopology struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Display name of the DTC Topology.
 	Name *string `json:"name,omitempty"`
@@ -3907,7 +3907,7 @@ type DxlEndpoint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The log level for a DXL endpoint.
 	LogLevel string `json:"log_level,omitempty"`
@@ -4059,7 +4059,7 @@ type Filterfingerprint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of DHCP Fingerprint objects.
 	Fingerprint []string `json:"fingerprint,omitempty"`
@@ -4107,7 +4107,7 @@ type Filtermac struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The length of time the DHCP server leases an IP address to a client. The
 	// lease time applies to hosts that meet the filter criteria.
@@ -4157,7 +4157,7 @@ type Filternac struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The length of time the DHCP server leases an IP address to a client. The
 	// lease time applies to hosts that meet the filter criteria.
@@ -4211,7 +4211,7 @@ type Filteroption struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines the lease time of a DHCP filter option object.
 	LeaseTime *uint32 `json:"lease_time,omitempty"`
@@ -4282,7 +4282,7 @@ type Filterrelayagent struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The circuit ID matching rule of a DHCP relay agent filter object. The
 	// circuit_id value takes effect only if the value is "MATCHES_VALUE".
@@ -4348,7 +4348,7 @@ type Fingerprint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// A list (comma separated list) of IPv6 option number sequences of the device
 	// or operating system.
@@ -4479,7 +4479,7 @@ type Ipv4FixedAddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
@@ -4664,7 +4664,7 @@ type Fixedaddresstemplate struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// If this field is set to False, the appliance returns all DHCP options the
 	// client is eligible to receive, rather than only the list of options the
@@ -4758,7 +4758,7 @@ type Ftpuser struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The absolute path of the FTP user's home directory.
 	HomeDir string `json:"home_dir,omitempty"`
@@ -5150,7 +5150,7 @@ type GridCloudapiVm struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The timestamp when the VM was first seen in the system.
 	FirstSeen *UnixTime `json:"first_seen,omitempty"`
@@ -6572,7 +6572,7 @@ type GridMemberCloudapi struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Structure containing all the information related to Gateway configuration
 	// for the member
@@ -6610,7 +6610,7 @@ type GridServicerestartGroup struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if this Restart Group is the default group.
 	IsDefault bool `json:"is_default,omitempty"`
@@ -7241,7 +7241,7 @@ type IPv4Address struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// DHCP fingerprint for the address.
 	Fingerprint string `json:"fingerprint,omitempty"`
@@ -7333,7 +7333,7 @@ type IPv6Address struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// DHCP fingerprint for the address.
 	Fingerprint string `json:"fingerprint,omitempty"`
@@ -7482,7 +7482,7 @@ type Ipv6filteroption struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines the lease time of a DHCP IPv6 filter option object.
 	LeaseTime *uint32 `json:"lease_time,omitempty"`
@@ -7581,7 +7581,7 @@ type Ipv6FixedAddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv6 Address of the DHCP IPv6 fixed address.
 	Ipv6Addr *string `json:"ipv6addr,omitempty"`
@@ -7702,7 +7702,7 @@ type Ipv6fixedaddresstemplate struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// This field contains the logic filters to be applied to this IPv6 fixed
 	// address. This list corresponds to the match rules that are written to the
@@ -7886,7 +7886,7 @@ type Ipv6Network struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The timestamp when the last RIR registration update was sent.
 	LastRirRegistrationUpdateSent *UnixTime `json:"last_rir_registration_update_sent,omitempty"`
@@ -8154,7 +8154,7 @@ type Ipv6NetworkContainer struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The timestamp when the last RIR registration update was sent.
 	LastRirRegistrationUpdateSent *UnixTime `json:"last_rir_registration_update_sent,omitempty"`
@@ -8392,7 +8392,7 @@ type IPv6NetworkTemplate struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of IPv6 fixed address templates assigned to this IPv6 network
 	// template object. When you create an IPv6 network based on an IPv6 network
@@ -8576,7 +8576,7 @@ type IPv6Range struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv6 Address end prefix of the DHCP IPv6 range.
 	Ipv6EndPrefix *string `json:"ipv6_end_prefix,omitempty"`
@@ -8809,7 +8809,7 @@ type IPv6SharedNetwork struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// This field contains the logic filters to be applied on the this IPv6 shared
 	// network. This list corresponds to the match rules that are written to the
@@ -9314,7 +9314,7 @@ type MACFilterAddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name of the MAC filter to which this address belongs.
 	Filter *string `json:"filter,omitempty"`
@@ -9491,7 +9491,7 @@ type Member struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of external syslog backup servers.
 	ExternalSyslogBackupServers []*Extsyslogbackupserver `json:"external_syslog_backup_servers,omitempty"`
@@ -9883,7 +9883,7 @@ type MemberDHCPProperties struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of GSS-TSIG keys for a member DHCP object.
 	GssTsigKeys []*Kerberoskey `json:"gss_tsig_keys,omitempty"`
@@ -10615,7 +10615,7 @@ type MemberDns struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The DNS capture file transfer settings. Include the specified parameter to
 	// set the attribute value. Omit the parameter to retrieve the attribute value.
@@ -11355,7 +11355,7 @@ type Memberdfp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Host name of the parent Member
 	HostName string `json:"host_name,omitempty"`
@@ -11417,7 +11417,7 @@ type Msserver struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// eference to the assigned grid member
 	GridMember *string `json:"grid_member,omitempty"`
@@ -11721,7 +11721,7 @@ type Mssuperscope struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The percentage value for DHCP range usage after which an alarm will be
 	// active.
@@ -11792,7 +11792,7 @@ type Namedacl struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the named ACL.
 	Name *string `json:"name,omitempty"`
@@ -12009,7 +12009,7 @@ type Ipv4Network struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The percentage of DHCP network usage threshold above which network usage is
 	// not expected and may warrant your attention. When the high watermark is
@@ -12441,7 +12441,7 @@ type Ipv4NetworkContainer struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The percentage of DHCP network container usage threshold above which network
 	// container usage is not expected and may warrant your attention. When the
@@ -12808,7 +12808,7 @@ type NetworkTemplate struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of fixed address templates assigned to this network template
 	// object. When you create a network based on a network template object that
@@ -13106,7 +13106,7 @@ type NetworkView struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of linked authoritative DNS zones.
 	InternalForwardZones []*ZoneAuth `json:"internal_forward_zones,omitempty"`
@@ -13189,7 +13189,7 @@ type NotificationRestEndpoint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The log level for a notification REST endpoint.
 	LogLevel string `json:"log_level,omitempty"`
@@ -13396,7 +13396,7 @@ type Nsgroup struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of external primary servers.
 	ExternalPrimaries []NameServer `json:"external_primaries,omitempty"`
@@ -13456,7 +13456,7 @@ type NsgroupDelegation struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the delegated NS group.
 	Name *string `json:"name,omitempty"`
@@ -13486,7 +13486,7 @@ type NsgroupForwardingmember struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of forwarding member servers.
 	ForwardingServers []*Forwardingmemberserver `json:"forwarding_servers,omitempty"`
@@ -13520,7 +13520,7 @@ type NsgroupForwardstubserver struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of external servers.
 	ExternalServers []NameServer `json:"external_servers,omitempty"`
@@ -13553,7 +13553,7 @@ type NsgroupStubmember struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the Stub Member Name Server Group.
 	Name *string `json:"name,omitempty"`
@@ -13986,7 +13986,7 @@ type ParentalcontrolSubscribersite struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The start of the first Deterministic block.
 	FirstPort *uint32 `json:"first_port,omitempty"`
@@ -14112,7 +14112,7 @@ type PxgridEndpoint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The log level for a notification pxgrid endpoint.
 	LogLevel string `json:"log_level,omitempty"`
@@ -14345,7 +14345,7 @@ type Range struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the failover association: the server in this failover
 	// association will serve the IPv4 range in case the main server is out of
@@ -14703,7 +14703,7 @@ type Rangetemplate struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the failover association: the server in this failover
 	// association will serve the IPv4 range in case the main server is out of
@@ -14961,7 +14961,7 @@ type RecordA struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -15092,7 +15092,7 @@ type RecordAAAA struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -15211,7 +15211,7 @@ type RecordAlias struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
@@ -15299,7 +15299,7 @@ type RecordCaa struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -15387,7 +15387,7 @@ type RecordCNAME struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -15549,7 +15549,7 @@ type RecordDname struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if reclamation is allowed for the record.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -15769,7 +15769,7 @@ type RecordDtclbdn struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
@@ -15870,7 +15870,7 @@ type HostRecord struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// This is a list of IPv4 Addresses for the host.
 	Ipv4Addrs []HostRecordIpv4Addr `json:"ipv4addrs,omitempty"`
@@ -16318,7 +16318,7 @@ type RecordMX struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -16410,7 +16410,7 @@ type RecordNaptr struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The flags used to control the interpretation of the fields for an NAPTR
 	// record object. Supported values for the flags field are "U", "S", "P" and
@@ -16812,7 +16812,7 @@ type RecordPTR struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -16906,7 +16906,7 @@ type RecordRpzA struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv4 Address of the substitute rule.
 	Ipv4Addr *string `json:"ipv4addr,omitempty"`
@@ -16964,7 +16964,7 @@ type RecordRpzAIpaddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv4 Address of the substitute rule.
 	Ipv4Addr *string `json:"ipv4addr,omitempty"`
@@ -17021,7 +17021,7 @@ type RecordRpzAaaa struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv6 Address of the substitute rule.
 	Ipv6Addr *string `json:"ipv6addr,omitempty"`
@@ -17079,7 +17079,7 @@ type RecordRpzAaaaIpaddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv6 Address of the substitute rule.
 	Ipv6Addr *string `json:"ipv6addr,omitempty"`
@@ -17142,7 +17142,7 @@ type RecordRpzCname struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name for a record in FQDN format. This value cannot be in unicode
 	// format.
@@ -17200,7 +17200,7 @@ type RecordRpzCnameClientipaddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Indicates whether the record is an IPv4 record. If the return value is
 	// "true", it is an IPv4 record. Ohterwise, it is an IPv6 record.
@@ -17261,7 +17261,7 @@ type RecordRpzCnameClientipaddressdn struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Indicates whether the record is an IPv4 record. If the return value is
 	// "true", it is an IPv4 record. Ohterwise, it is an IPv6 record.
@@ -17323,7 +17323,7 @@ type RecordRpzCnameIpaddress struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Indicates whether the record is an IPv4 record. If the return value is
 	// "true", it is an IPv4 record. Ohterwise, it is an IPv6 record.
@@ -17384,7 +17384,7 @@ type RecordRpzCnameIpaddressdn struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Indicates whether the record is an IPv4 record. If the return value is
 	// "true", it is an IPv4 record. Ohterwise, it is an IPv6 record.
@@ -17441,7 +17441,7 @@ type RecordRpzMx struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Mail exchanger name in FQDN format. This value can be in unicode format.
 	MailExchanger *string `json:"mail_exchanger,omitempty"`
@@ -17502,7 +17502,7 @@ type RecordRpzNaptr struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The flags used to control the interpretation of the fields for a Substitute
 	// (NAPTR Record) Rule object. Supported values for the flags field are "U",
@@ -17592,7 +17592,7 @@ type RecordRpzPtr struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv4 Address of the substitute rule.
 	Ipv4Addr *string `json:"ipv4addr,omitempty"`
@@ -17654,7 +17654,7 @@ type RecordRpzSrv struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name for a record in FQDN format. This value cannot be in unicode
 	// format.
@@ -17723,7 +17723,7 @@ type RecordRpzTxt struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name for a record in FQDN format. This value cannot be in unicode
 	// format.
@@ -17895,7 +17895,7 @@ type RecordSRV struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -17994,7 +17994,7 @@ type RecordTlsa struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
@@ -18077,7 +18077,7 @@ type RecordTXT struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Determines if the reclamation is allowed for the record or not.
 	ForbidReclamation *bool `json:"forbid_reclamation,omitempty"`
@@ -18195,7 +18195,7 @@ type RecordUnknown struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
@@ -18368,7 +18368,7 @@ type RirOrganization struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The RIR organization identifier.
 	Id *string `json:"id,omitempty"`
@@ -18456,7 +18456,7 @@ type RoamingHost struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Set this to True to use the roaming host name as its ddns_hostname.
 	ForceRoamingHostname *bool `json:"force_roaming_hostname,omitempty"`
@@ -18922,7 +18922,7 @@ type SharedNetwork struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// If set to true, the client identifier will be ignored.
 	IgnoreClientIdentifier *bool `json:"ignore_client_identifier,omitempty"`
@@ -19087,7 +19087,7 @@ type SharedRecordA struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv4 Address of the shared record.
 	Ipv4Addr *string `json:"ipv4addr,omitempty"`
@@ -19142,7 +19142,7 @@ type SharedRecordAAAA struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The IPv6 Address of the shared record.
 	Ipv6Addr *string `json:"ipv6addr,omitempty"`
@@ -19202,7 +19202,7 @@ type SharedrecordCname struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name for this shared record. This value can be in unicode format.
 	Name *string `json:"name,omitempty"`
@@ -19257,7 +19257,7 @@ type SharedRecordMX struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the mail exchanger in FQDN format. This value can be in unicode
 	// format.
@@ -19320,7 +19320,7 @@ type SharedrecordSrv struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name for this shared record. This value can be in unicode format.
 	Name *string `json:"name,omitempty"`
@@ -19389,7 +19389,7 @@ type SharedRecordTXT struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name for this shared record. This value can be in unicode format.
 	Name *string `json:"name,omitempty"`
@@ -19441,7 +19441,7 @@ type Sharedrecordgroup struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of this shared record group.
 	Name *string `json:"name,omitempty"`
@@ -19591,7 +19591,7 @@ type SNMPUser struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of the user.
 	Name *string `json:"name,omitempty"`
@@ -19641,7 +19641,7 @@ type Superhost struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name of the Superhost.
 	Name *string `json:"name,omitempty"`
@@ -19722,7 +19722,7 @@ type SyslogEndpoint struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The log level for a notification REST endpoint.
 	LogLevel string `json:"log_level,omitempty"`
@@ -20085,7 +20085,7 @@ type ThreatprotectionProfile struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of members that are associated with the profile.
 	Members []string `json:"members,omitempty"`
@@ -20936,7 +20936,7 @@ type View struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The type of AAAA filtering for this DNS view object.
 	FilterAaaa string `json:"filter_aaaa,omitempty"`
@@ -21179,7 +21179,7 @@ type Vlan struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// VLAN ID value.
 	Id *uint32 `json:"id,omitempty"`
@@ -21228,7 +21228,7 @@ type Vlanrange struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name of the VLAN Range.
 	Name *string `json:"name,omitempty"`
@@ -21275,7 +21275,7 @@ type Vlanview struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// Name of the VLAN View.
 	Name *string `json:"name,omitempty"`
@@ -21464,7 +21464,7 @@ type ZoneAuth struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of external primary servers.
 	ExternalPrimaries []NameServer `json:"external_primaries,omitempty"`
@@ -21863,7 +21863,7 @@ type ZoneDelegated struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The name of this DNS zone. For a reverse zone, this is in "address/cidr"
 	// format. For other zones, this is in FQDN format. This value can be in
@@ -21993,7 +21993,7 @@ type ZoneForward struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// A forward stub server name server group.
 	ExternalNsGroup *string `json:"external_ns_group,omitempty"`
@@ -22127,7 +22127,7 @@ type ZoneRp struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// The list of external primary servers.
 	ExternalPrimaries []NameServer `json:"external_primaries,omitempty"`
@@ -22337,7 +22337,7 @@ type ZoneStub struct {
 
 	// Extensible attributes associated with the object. For valid values for
 	// extensible attributes, see {extattrs:values}.
-	Ea EA `json:"extattrs,omitempty"`
+	Ea EA `json:"extattrs"`
 
 	// A forward stub server name server group.
 	ExternalNsGroup *string `json:"external_ns_group,omitempty"`

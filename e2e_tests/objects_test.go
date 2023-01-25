@@ -100,6 +100,42 @@ var _ = Describe("Objects", func() {
 				_, err = connector.DeleteObject(updRef)
 				Expect(err).To(BeNil())
 			})
+
+			It("Should be able to remove all EAs", Label("RW", "IPv4 Network"), func() {
+				nw := &ibclient.Ipv4Network{
+					NetworkView: "e2e_test_view",
+					Network:     utils.StringPtr("192.168.1.0/24"),
+					Ea: ibclient.EA{
+						"Country": "Colombia",
+					},
+				}
+
+				ref, err := connector.CreateObject(nw)
+				Expect(err).To(BeNil())
+				nw.SetReturnFields([]string{"network_view", "network", "extattrs"})
+
+				var res ibclient.Ipv4Network
+				err = connector.GetObject(nw, ref, nil, &res)
+				Expect(err).To(BeNil())
+				Expect(res.Ref).To(Equal(ref))
+				Expect(res.NetworkView).To(Equal(nw.NetworkView))
+				Expect(res.Network).To(Equal(nw.Network))
+				Expect(res.Ea["Country"]).To(Equal("Colombia"))
+
+				nw.NetworkView = ""
+				nw.Ea = ibclient.EA{}
+				updRef, err := connector.UpdateObject(nw, ref)
+				Expect(err).To(BeNil())
+
+				res = ibclient.Ipv4Network{}
+				err = connector.GetObject(nw, ref, nil, &res)
+				Expect(err).To(BeNil())
+				Expect(res.Ref).To(Equal(ref))
+				Expect(res.Ea["Country"]).To(BeNil())
+
+				_, err = connector.DeleteObject(updRef)
+				Expect(err).To(BeNil())
+			})
 		})
 
 		When("IPv4 Network exists", Label("RW"), func() {
@@ -433,7 +469,7 @@ var _ = Describe("Objects", func() {
 						Ttl:      utils.Uint32Ptr(5),
 						UseTtl:   utils.BoolPtr(true),
 						Comment:  utils.StringPtr("A Record created by e2e test"),
-						Ea:       make(ibclient.EA),
+						Ea:       ibclient.EA{},
 					}
 
 					ref, err := connector.CreateObject(a)
@@ -465,7 +501,7 @@ var _ = Describe("Objects", func() {
 						Ttl:      utils.Uint32Ptr(5),
 						UseTtl:   utils.BoolPtr(true),
 						Comment:  utils.StringPtr("A Record created by e2e test"),
-						Ea:       make(ibclient.EA),
+						Ea:       ibclient.EA{},
 					}
 
 					ref, err := connector.CreateObject(a)
@@ -497,7 +533,7 @@ var _ = Describe("Objects", func() {
 						Ttl:      utils.Uint32Ptr(5),
 						UseTtl:   utils.BoolPtr(true),
 						Comment:  utils.StringPtr("A Record created by e2e test"),
-						Ea:       make(ibclient.EA),
+						Ea:       ibclient.EA{},
 					}
 
 					ref, err := connector.CreateObject(aaaa)
@@ -532,7 +568,7 @@ var _ = Describe("Objects", func() {
 						Ttl:       utils.Uint32Ptr(5),
 						UseTtl:    utils.BoolPtr(true),
 						Comment:   utils.StringPtr("CNAME Record created by e2e test"),
-						Ea:        make(ibclient.EA),
+						Ea:        ibclient.EA{},
 					}
 
 					ref, err := connector.CreateObject(cname)
