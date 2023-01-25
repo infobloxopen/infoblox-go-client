@@ -799,10 +799,12 @@ func NewHostRecord(
 type RecordMX struct {
 	IBBase   `json:"-"`
 	Ref      string `json:"_ref,omitempty"`
-	dnsView  string `json:"view,omitempty"`
+	View     string `json:"view,omitempty"`
 	Fqdn     string `json:"name,omitempty"`
 	MX       string `json:"mail_exchanger,omitempty"`
-	Priority int    `json:"preference,omitempty"`
+	Priority int
+	Ttl      uint32 `json:"ttl"`
+	UseTtl   bool   `json:"use_ttl"`
 	Comment  string `json:"comment"`
 	Ea       EA     `json:"extattrs"`
 }
@@ -810,7 +812,7 @@ type RecordMX struct {
 func NewRecordMX(rm RecordMX) *RecordMX {
 	res := rm
 	res.objectType = "record:mx"
-	res.returnFields = []string{"mail_exchanger", "view", "name", "preference", "extattrs"}
+	res.returnFields = []string{"mail_exchanger", "view", "name", "preference", "ttl", "use_ttl", "comment", "extattrs"}
 
 	return &res
 }

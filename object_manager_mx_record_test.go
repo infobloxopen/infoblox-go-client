@@ -17,6 +17,8 @@ var _ = Describe("Object Manager: MX-record", func() {
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		priority := 10
+		ttl := uint32(70)
+		useTtl := true
 		comment := "test comment"
 
 		fakeRefReturn := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
@@ -27,9 +29,12 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordMX(RecordMX{
+				View:     dnsView,
 				Fqdn:     fqdn,
 				MX:       mx,
 				Priority: priority,
+				Ttl:      ttl,
+				UseTtl:   useTtl,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordMX(RecordMX{
@@ -39,9 +44,12 @@ var _ = Describe("Object Manager: MX-record", func() {
 				Ref:      fakeRefReturn,
 			}),
 			resultObject: NewRecordMX(RecordMX{
+				View:     dnsView,
 				Fqdn:     fqdn,
 				MX:       mx,
 				Priority: priority,
+				Ttl:      ttl,
+				UseTtl:   useTtl,
 				Ref:      fakeRefReturn,
 			}),
 			fakeRefReturn: fakeRefReturn,
@@ -52,7 +60,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 		var actualRecord *RecordMX
 		var err error
 		It("should pass expected MX record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateMXRecord(dnsView, fqdn, mx, priority, comment, eas)
+			actualRecord, err = objMgr.CreateMXRecord(dnsView, fqdn, mx, priority, ttl, useTtl, comment, eas)
 		})
 		It("should return expected MX record Object", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
@@ -72,16 +80,20 @@ var _ = Describe("Object Manager: MX-record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		fqdn := "test.example.com"
-		dnsview := "default"
+		dnsView := "default"
+		ttl := uint32(70)
+		useTtl := true
 
 		It("Updating fqdn, comment, priority and EAs", func() {
-			ref = fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsview)
+			ref = fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 			initialEas := EA{"Country": "old value"}
 			initObj := NewRecordMX(RecordMX{
-				dnsView:  dnsview,
+				View:     dnsView,
 				Fqdn:     fqdn,
 				Priority: 10,
 				Comment:  "test comment",
+				Ttl:      ttl,
+				UseTtl:   useTtl,
 				Ea:       initialEas,
 			})
 			initObj.Ref = ref
@@ -90,12 +102,15 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 			updateFqdn := "new.example.com"
 			updateComment := "new comment"
+			updateTtl := uint32(100)
 			updatePriority := 15
-			updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsview)
+			updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 			updateObjIn := NewRecordMX(RecordMX{
 				Fqdn:     updateFqdn,
 				Priority: updatePriority,
 				Comment:  updateComment,
+				Ttl:      ttl,
+				UseTtl:   useTtl,
 				Ea:       expectedEas,
 			})
 			updateObjIn.Ref = ref
@@ -104,6 +119,8 @@ var _ = Describe("Object Manager: MX-record", func() {
 				Fqdn:     updateFqdn,
 				Priority: updatePriority,
 				Comment:  updateComment,
+				Ttl:      ttl,
+				UseTtl:   useTtl,
 				Ea:       expectedEas,
 			})
 			expectedObj.Ref = updatedRef
@@ -128,7 +145,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 			}
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
 			It("should pass updated MX record arguments", func() {
-				actualObj, err = objMgr.UpdateMXRecord(ref, dnsview, updateFqdn, "", updateComment, updatePriority, expectedEas)
+				actualObj, err = objMgr.UpdateMXRecord(ref, dnsView, updateFqdn, "", updateTtl, useTtl, updateComment, updatePriority, expectedEas)
 			})
 			It("should return expected MX record obj", func() {
 				Expect(err).To(BeNil())
