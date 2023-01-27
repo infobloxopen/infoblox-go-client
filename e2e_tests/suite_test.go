@@ -85,6 +85,7 @@ func (c *ConnectorFacadeE2E) removeDeleteRef(ref string) {
 	for i := range c.deleteSet {
 		if c.deleteSet[i] == ref {
 			c.deleteSet = append(c.deleteSet[:i], c.deleteSet[i+1:]...)
+			return
 		}
 	}
 }

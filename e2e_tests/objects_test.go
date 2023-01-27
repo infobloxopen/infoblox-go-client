@@ -216,7 +216,7 @@ var _ = Describe("Objects", func() {
 				})
 			})
 
-			Describe("IPv4 Host Record", func() {
+			Describe("IPv4 Host Record", Label("record:host"), func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					By("Creating DNS view")
 					v := &ibclient.View{
@@ -279,6 +279,98 @@ var _ = Describe("Objects", func() {
 					_, err = connector.DeleteObject(updRef)
 					Expect(err).To(BeNil())
 				})
+
+				It("View field should be updatable",
+					Label("RW"), func() {
+						By("Creating DNS view")
+						v := &ibclient.View{
+							Name:        utils.StringPtr("e2e_test_dns_view"),
+							NetworkView: utils.StringPtr("e2e_test_view"),
+							Comment:     utils.StringPtr("DNS View created by e2e test"),
+						}
+						_, err := connector.CreateObject(v)
+						Expect(err).To(BeNil())
+
+						By("Creating forwarding-mapping DNS Auth Zone")
+						zf := &ibclient.ZoneAuth{
+							View:    utils.StringPtr("e2e_test_dns_view"),
+							Fqdn:    "e2e-test.com",
+							Comment: utils.StringPtr("Forwarding-mapping DNS Auth Zone created by e2e test"),
+						}
+						_, err = connector.CreateObject(zf)
+						Expect(err).To(BeNil())
+
+						By("Creating reverse-mapping DNS Auth Zone")
+						zr := &ibclient.ZoneAuth{
+							View:       utils.StringPtr("e2e_test_dns_view"),
+							Fqdn:       "192.168.1.0/24",
+							ZoneFormat: "IPV4",
+							Comment:    utils.StringPtr("Reverse-mapping DNS Auth Zone created by e2e test"),
+						}
+						_, err = connector.CreateObject(zr)
+						Expect(err).To(BeNil())
+
+						hr := &ibclient.HostRecord{
+							NetworkView: "e2e_test_view",
+							View:        utils.StringPtr("e2e_test_dns_view"),
+							Name:        utils.StringPtr("e2e_test_host_record.e2e-test.com"),
+							Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+								{
+									Ipv4Addr: utils.StringPtr("192.168.1.60"),
+									Mac:      utils.StringPtr("00:00:00:00:00:00"),
+								},
+							},
+							Comment: utils.StringPtr("IPv4 Host Record created by e2e test"),
+						}
+
+						By("Creating Host Record")
+						ref, err := connector.CreateObject(hr)
+						Expect(err).To(BeNil())
+
+						hr.SetReturnFields([]string{"view"})
+						var res ibclient.HostRecord
+						err = connector.GetObject(hr, ref, nil, &res)
+						Expect(err).To(BeNil())
+						Expect(*res.View).To(Equal("e2e_test_dns_view"))
+
+						By("Creating a second DNS view")
+						v2 := &ibclient.View{
+							Name: utils.StringPtr("e2e_test_dns_view2"),
+						}
+						_, err = connector.CreateObject(v2)
+						Expect(err).To(BeNil())
+
+						By("Creating a second forwarding-mapping DNS Auth Zone")
+						zf2 := &ibclient.ZoneAuth{
+							View:    utils.StringPtr("e2e_test_dns_view2"),
+							Fqdn:    "e2e-test.com",
+							Comment: utils.StringPtr("Forwarding-mapping DNS Auth Zone created by e2e test"),
+						}
+						_, err = connector.CreateObject(zf2)
+						Expect(err).To(BeNil())
+
+						By("Creating a second reverse-mapping DNS Auth Zone")
+						zr2 := &ibclient.ZoneAuth{
+							View:       utils.StringPtr("e2e_test_dns_view2"),
+							Fqdn:       "192.168.1.0/24",
+							ZoneFormat: "IPV4",
+							Comment:    utils.StringPtr("Reverse-mapping DNS Auth Zone created by e2e test"),
+						}
+						_, err = connector.CreateObject(zr2)
+						Expect(err).To(BeNil())
+
+						By("Updating a DNS View value for the Host Record object")
+						hr.NetworkView = ""
+						hr.View = utils.StringPtr("e2e_test_dns_view2")
+						updRef, err := connector.UpdateObject(hr, ref)
+						Expect(err).To(BeNil())
+
+						By("Reading Host Record and checking if view field is updated")
+						res = ibclient.HostRecord{}
+						err = connector.GetObject(hr, updRef, nil, &res)
+						Expect(err).To(BeNil())
+						Expect(*res.View).To(Equal("e2e_test_dns_view2"))
+					})
 			})
 
 		})
@@ -559,7 +651,7 @@ var _ = Describe("Objects", func() {
 				})
 			})
 
-			Describe("CNAME Record", func() {
+			Describe("CNAME Record", Label("record:cname"), func() {
 				It("Should properly serialize/deserialize", Label("RW"), func() {
 					cname := &ibclient.RecordCNAME{
 						View:      utils.StringPtr("e2e_test_dns_view"),
@@ -591,6 +683,58 @@ var _ = Describe("Objects", func() {
 					_, err = connector.DeleteObject(updRef)
 					Expect(err).To(BeNil())
 				})
+
+				It("View field should be updatable",
+					Label("RW"), func() {
+						By("Creating a second DNS view")
+						v := &ibclient.View{
+							Name: utils.StringPtr("e2e_test_dns_view2"),
+						}
+						_, err := connector.CreateObject(v)
+						Expect(err).To(BeNil())
+
+						By("Creating a second forward-mapping DNS zone")
+						z := &ibclient.ZoneAuth{
+							View: utils.StringPtr("e2e_test_dns_view2"),
+							Fqdn: "e2e-test.com",
+						}
+						_, err = connector.CreateObject(z)
+						Expect(err).To(BeNil())
+
+						By("Creating CNAME Record in the first DNS View")
+						cname := &ibclient.RecordCNAME{
+							View:      utils.StringPtr("e2e_test_dns_view"),
+							Canonical: utils.StringPtr("e2e_test_cname_record.e2e-test.com"),
+							Name:      utils.StringPtr("e2e_test_cname_record.e2e-test.com"),
+							Ttl:       utils.Uint32Ptr(5),
+							UseTtl:    utils.BoolPtr(true),
+							Comment:   utils.StringPtr("CNAME Record created by e2e test"),
+							Ea:        ibclient.EA{},
+						}
+
+						ref, err := connector.CreateObject(cname)
+						Expect(err).To(BeNil())
+
+						cname.SetReturnFields([]string{"view"})
+						var res ibclient.RecordCNAME
+						err = connector.GetObject(cname, ref, nil, &res)
+						Expect(err).To(BeNil())
+						Expect(*res.View).To(Equal("e2e_test_dns_view"))
+
+						By("Updating CNAME record's view field with a new view name")
+						cname.View = utils.StringPtr("e2e_test_dns_view2")
+						updRef, err := connector.UpdateObject(cname, ref)
+						Expect(err).To(BeNil())
+
+						By("Reading the same CNAME record and checking if view field is updated")
+						res = ibclient.RecordCNAME{}
+						err = connector.GetObject(cname, updRef, nil, &res)
+						Expect(err).To(BeNil())
+						Expect(*res.View).To(Equal("e2e_test_dns_view2"))
+
+						_, err = connector.DeleteObject(updRef)
+						Expect(err).To(BeNil())
+					})
 			})
 
 			Describe("TXT Record", func() {
