@@ -15873,10 +15873,10 @@ type HostRecord struct {
 	Ea EA `json:"extattrs"`
 
 	// This is a list of IPv4 Addresses for the host.
-	Ipv4Addrs []HostRecordIpv4Addr `json:"ipv4addrs,omitempty"`
+	Ipv4Addrs []HostRecordIpv4Addr `json:"ipv4addrs"`
 
 	// This is a list of IPv6 Addresses for the host.
-	Ipv6Addrs []HostRecordIpv6Addr `json:"ipv6addrs,omitempty"`
+	Ipv6Addrs []HostRecordIpv6Addr `json:"ipv6addrs"`
 
 	// The time of the last DNS query in Epoch seconds format.
 	LastQueried *UnixTime `json:"last_queried,omitempty"`
@@ -15967,7 +15967,9 @@ func NewHostRecord(
 	res.NetworkView = netView
 	res.Name = &name
 	res.Ea = eas
-	res.View = &dnsView
+	if dnsView != "" {
+		res.View = &dnsView
+	}
 	res.Zone = zone
 	res.Ref = ref
 	res.Comment = &comment
