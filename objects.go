@@ -796,6 +796,29 @@ func NewHostRecord(
 	return res
 }
 
+type RecordSRV struct {
+	IBBase   `json:"-"`
+	Ref      string `json:"_ref,omitempty"`
+	View     string `json:"view,omitempty"`
+	Fqdn     string `json:"name,omitempty"`
+	Priority int    `json:"priority"`
+	Weight   int    `json:"weight"`
+	Port     int    `json:"port"`
+	Target   string `json:"target,omitempty"`
+	Ttl      uint32 `json:"ttl"`
+	UseTtl   bool   `json:"use_ttl"`
+	Comment  string `json:"comment"`
+	Ea       EA     `json:"extattrs"`
+}
+
+func NewRecordSRV(rv RecordSRV) *RecordSRV {
+	res := rv
+	res.objectType = "record:srv"
+	res.returnFields = []string{"name", "view", "priority", "weight", "port", "target", "ttl", "comment", "extattrs"}
+
+	return &res
+}
+
 type RecordTXT struct {
 	IBBase  `json:"-"`
 	View    string `json:"view,omitempty"`
