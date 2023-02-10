@@ -637,6 +637,7 @@ var _ = Describe("Objects", func() {
 			soa_negative_ttl := 900
 			soa_refresh := 10800
 			soa_retry := 3600
+			zone_format := "FORWARD"
 			view := "default"
 
 			za := NewZoneAuth(ZoneAuth{
@@ -649,9 +650,11 @@ var _ = Describe("Objects", func() {
 				SoaNegativeTtl:  soa_negative_ttl,
 				SoaRefresh:      soa_refresh,
 				SoaRetry:        soa_retry,
+				ZoneFormat:      zone_format,
 				View:            view})
 
 			It("should set fields correctly", func() {
+				Expect(za.View).To(Equal(view))
 				Expect(za.Fqdn).To(Equal(fqdn))
 				Expect(za.NsGroup).To(Equal(ns_group))
 				Expect(za.RestartIfNeeded).To(Equal(restart_if_needed))
@@ -661,6 +664,7 @@ var _ = Describe("Objects", func() {
 				Expect(za.SoaNegativeTtl).To(Equal(soa_negative_ttl))
 				Expect(za.SoaRefresh).To(Equal(soa_refresh))
 				Expect(za.SoaRetry).To(Equal(soa_retry))
+				Expect(za.ZoneFormat).To(Equal(zone_format))
 				Expect(za.View).To(Equal(view))
 			})
 
@@ -668,7 +672,7 @@ var _ = Describe("Objects", func() {
 				Expect(za.ObjectType()).To(Equal("zone_auth"))
 				Expect(za.ReturnFields()).To(ConsistOf(
 					"extattrs", "fqdn", "view", "ns_group", "comment",
-					"soa_default_ttl", "soa_expire", "soa_negative_ttl", "soa_refresh", "soa_retry",
+					"soa_default_ttl", "soa_expire", "soa_negative_ttl", "soa_refresh", "soa_retry", "zone_format",
 				))
 			})
 		})

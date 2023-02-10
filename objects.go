@@ -827,7 +827,7 @@ type ZoneAuth struct {
 	IBBase          `json:"-"`
 	Ref             string `json:"_ref,omitempty"`
 	Fqdn            string `json:"fqdn,omitempty"`
-	View            string `json:"view,omitempty"`
+	View            string `json:"view"`
 	NsGroup         string `json:"ns_group,omitempty"`
 	RestartIfNeeded bool   `json:"restart_if_needed"`
 	Comment         string `json:"comment"`
@@ -836,6 +836,7 @@ type ZoneAuth struct {
 	SoaNegativeTtl  int    `json:"soa_negative_ttl"`
 	SoaRefresh      int    `json:"soa_refresh"`
 	SoaRetry        int    `json:"soa_retry"`
+	ZoneFormat      string `json:"zone_format,omitempty"`
 	Ea              EA     `json:"extattrs"`
 }
 
@@ -844,8 +845,9 @@ func NewZoneAuth(za ZoneAuth) *ZoneAuth {
 	res.objectType = "zone_auth"
 	// restart_if_needed not included here because it is not readable
 	res.returnFields = []string{
-		"extattrs", "fqdn", "view", "ns_group", "comment",
+		"view", "fqdn", "ns_group", "comment",
 		"soa_default_ttl", "soa_expire", "soa_negative_ttl", "soa_refresh", "soa_retry",
+		"zone_format", "extattrs",
 	}
 
 	return &res

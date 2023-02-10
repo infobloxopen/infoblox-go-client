@@ -310,6 +310,7 @@ var _ = Describe("Object Manager", func() {
 	Describe("Create Zone Auth", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsview := "default"
 		nsGroup := "mynameservers"
 		restartIfNeeded := true
 		fqdn := "azone.example.com"
@@ -319,12 +320,13 @@ var _ = Describe("Object Manager", func() {
 		soaNegativeTtl := 900
 		soaRefresh := 10800
 		soaRetry := 3600
+		zoneFormat := "FORWARD"
 		fakeRefReturn := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
 		zaFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneAuth(ZoneAuth{Fqdn: fqdn, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
-				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry}),
-			resultObject: NewZoneAuth(ZoneAuth{Fqdn: fqdn, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
-				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry, Ref: fakeRefReturn}),
+			createObjectObj: NewZoneAuth(ZoneAuth{View: dnsview, Fqdn: fqdn, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
+				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry, ZoneFormat: zoneFormat}),
+			resultObject: NewZoneAuth(ZoneAuth{View: dnsview, Fqdn: fqdn, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
+				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry, ZoneFormat: zoneFormat, Ref: fakeRefReturn}),
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -343,7 +345,7 @@ var _ = Describe("Object Manager", func() {
 		var actualZoneAuth *ZoneAuth
 		var err error
 		It("should pass expected ZoneAuth Object to CreateObject", func() {
-			actualZoneAuth, err = objMgr.CreateZoneAuth(fqdn, nsGroup, restartIfNeeded, comment, soaDefaultTtl, soaExpire, soaNegativeTtl, soaRefresh, soaRetry, ea)
+			actualZoneAuth, err = objMgr.CreateZoneAuth(dnsview, fqdn, nsGroup, restartIfNeeded, comment, soaDefaultTtl, soaExpire, soaNegativeTtl, soaRefresh, soaRetry, zoneFormat, ea)
 		})
 		It("should return expected ZoneAuth Object", func() {
 			Expect(actualZoneAuth).To(Equal(zaFakeConnector.resultObject))
@@ -354,13 +356,14 @@ var _ = Describe("Object Manager", func() {
 	Describe("Get AuthZone by ref", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsview := "default"
 		fqdn := "azone.example.com"
 		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:azone.example.com/default"
 		zdFakeConnector := &fakeConnector{
 			getObjectObj:         NewZoneAuth(ZoneAuth{}),
 			getObjectRef:         fakeRefReturn,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewZoneAuth(ZoneAuth{Fqdn: fqdn}),
+			resultObject:         NewZoneAuth(ZoneAuth{View: dnsview, Fqdn: fqdn}),
 		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
@@ -381,6 +384,45 @@ var _ = Describe("Object Manager", func() {
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef("")
 			Expect(actualZoneAuth).To(Equal(getNoRef))
 			Expect(err).ToNot(BeNil())
+		})
+	})
+
+	Describe("Update ZoneAuth", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		dnsview := "default"
+		// fqdn := "azone.example.com"
+		nsGroup := "mynameservers"
+		restartIfNeeded := true
+		comment := "test comment"
+		soaDefaultTtl := 3600
+		soaExpire := 2419200
+		soaNegativeTtl := 900
+		soaRefresh := 10800
+		soaRetry := 3600
+		// zoneFormat := "FORWARD"
+		ea := make(EA)
+
+		fakeRefReturn := "zone_auth/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+
+		zaFakeConnector := &fakeConnector{
+			updateObjectObj: NewZoneAuth(ZoneAuth{Ref: fakeRefReturn, View: dnsview, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
+				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry, Ea: ea}),
+			updateObjectRef: fakeRefReturn,
+			resultObject: NewZoneAuth(ZoneAuth{Ref: fakeRefReturn, View: dnsview, NsGroup: nsGroup, RestartIfNeeded: restartIfNeeded, Comment: comment,
+				SoaDefaultTtl: soaDefaultTtl, SoaExpire: soaExpire, SoaNegativeTtl: soaNegativeTtl, SoaRefresh: soaRefresh, SoaRetry: soaRetry, Ea: ea}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(zaFakeConnector, cmpType, tenantID)
+
+		var actualZoneAuth *ZoneAuth
+		var err error
+		It("should pass expected ZoneAuth fields to UpdateObject and receive updated ZoneAuth Object", func() {
+			actualZoneAuth, err = objMgr.UpdateZoneAuth(fakeRefReturn, dnsview, nsGroup, restartIfNeeded, comment,
+				soaDefaultTtl, soaExpire, soaNegativeTtl, soaRefresh, soaRetry, ea)
+			Expect(err).To(BeNil())
+			Expect(actualZoneAuth).To(Equal(zaFakeConnector.resultObject))
 		})
 	})
 

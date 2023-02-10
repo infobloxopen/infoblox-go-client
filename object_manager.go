@@ -15,7 +15,7 @@ type IBObjectManager interface {
 	AllocateNetworkContainer(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (netContainer *NetworkContainer, err error)
 	CreateARecord(netView string, dnsView string, name string, cidr string, ipAddr string, ttl uint32, useTTL bool, comment string, ea EA) (*RecordA, error)
 	CreateAAAARecord(netView string, dnsView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordAAAA, error)
-	CreateZoneAuth(fqdn string, nsGroup string, restartIfNeeded bool, comment string, SoaDefaultTtl int, SoaExpire int, SoaNegativeTtl int, SoaRefresh int, SoaRetry int, ea EA) (*ZoneAuth, error)
+	CreateZoneAuth(dnsview string, fqdn string, nsGroup string, restartIfNeeded bool, comment string, soaDefaultTtl int, soaExpire int, soaNegativeTtl int, soaRefresh int, soaRetry int, zoneFormat string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
@@ -79,6 +79,7 @@ type IBObjectManager interface {
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
+	UpdateZoneAuth(ref string, dnsview string, nsGroup string, restartIfNeeded bool, comment string, soaDefaultTtl int, soaExpire int, soaNegativeTtl int, soaRefresh int, soaRetry int, ea EA) (*ZoneAuth, error)
 	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
 }
 
