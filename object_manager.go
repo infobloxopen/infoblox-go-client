@@ -41,6 +41,7 @@ type IBObjectManager interface {
 	DeleteZoneDelegated(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetARecord(dnsview string, recordName string, ipAddr string) (*RecordA, error)
+	GetARecordByZone(zone_name string, dnsview string) (*[]RecordA, error)
 	GetAAAARecord(dnsview string, recordName string, ipAddr string) (*RecordAAAA, error)
 	GetAAAARecordByRef(ref string) (*RecordAAAA, error)
 	GetCNAMERecord(dnsview string, canonical string, recordName string) (*RecordCNAME, error)
