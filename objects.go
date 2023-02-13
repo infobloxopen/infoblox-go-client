@@ -800,10 +800,10 @@ type RecordSRV struct {
 	IBBase   `json:"-"`
 	Ref      string `json:"_ref,omitempty"`
 	View     string `json:"view,omitempty"`
-	Fqdn     string `json:"name,omitempty"`
+	Name     string `json:"name,omitempty"`
 	Priority int    `json:"priority"`
 	Weight   int    `json:"weight"`
-	Port     int    `json:"port"`
+	Port     uint32 `json:"port"`
 	Target   string `json:"target,omitempty"`
 	Ttl      uint32 `json:"ttl"`
 	UseTtl   bool   `json:"use_ttl"`
@@ -814,7 +814,7 @@ type RecordSRV struct {
 func NewRecordSRV(rv RecordSRV) *RecordSRV {
 	res := rv
 	res.objectType = "record:srv"
-	res.returnFields = []string{"name", "view", "priority", "weight", "port", "target", "ttl", "comment", "extattrs"}
+	res.returnFields = []string{"name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs"}
 
 	return &res
 }

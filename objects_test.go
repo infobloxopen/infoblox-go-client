@@ -604,7 +604,7 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordSRV object", func() {
-			fqdn := "srv.sample.com"
+			name := "srv.sample.com"
 			dnsView := "default"
 			priority := 10
 			weight := 24
@@ -617,10 +617,10 @@ var _ = Describe("Objects", func() {
 
 			rv := NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Fqdn:     fqdn,
+				Name:     name,
 				Priority: priority,
 				Weight:   weight,
-				Port:     port,
+				Port:     uint32(port),
 				Target:   target,
 				Ttl:      ttl,
 				UseTtl:   useTtl,
@@ -630,15 +630,19 @@ var _ = Describe("Objects", func() {
 
 			It("should set field correctly", func() {
 				Expect(rv.View).To(Equal(dnsView))
-				Expect(rv.Fqdn).To(Equal(fqdn))
+				Expect(rv.Name).To(Equal(name))
 				Expect(rv.Priority).To(Equal(priority))
 				Expect(rv.Weight).To(Equal(weight))
 				Expect(rv.Port).To(Equal(port))
 				Expect(rv.Target).To(Equal(target))
+				Expect(rv.Ttl).To(Equal(ttl))
+				Expect(rv.UseTtl).To(Equal(useTtl))
+				Expect(rv.Comment).To(Equal(comment))
+				Expect(rv.Ea).To(Equal(eas))
 			})
 			It("should set base fields correctly", func() {
 				Expect(rv.ObjectType()).To(Equal("record.srv"))
-				Expect(rv.ReturnFields()).To(ConsistOf("name", "view", "priority", "weight", "port", "target", "ttl", "comment", "extattrs"))
+				Expect(rv.ReturnFields()).To(ConsistOf("name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs"))
 			})
 
 		})

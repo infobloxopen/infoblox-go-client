@@ -1,38 +1,55 @@
 package ibclient
 
-import "fmt"
+import (
+	"fmt"
+	"regexp"
+)
 
 func (objMgr *ObjectManager) CreateSRVRecord(
 	dnsView string,
-	fqdn string,
+	name string,
 	priority int,
 	weight int,
-	port int,
+	port uint32,
 	target string,
 	ttl uint32,
 	useTtl bool,
 	comment string,
 	eas EA) (*RecordSRV, error) {
 
+	nameRegex := `^_[a-z]+\._[a-z]+\.[a-z0-9-]+\.[a-z]+$`
+	targetRegex := `^[a-z]+\.[a-z0-9-]+\.[a-z]+$`
+
+	valid, _ := regexp.MatchString(nameRegex, name)
+	valid_tg, _ := regexp.MatchString(targetRegex, name)
+
+	if !valid {
+		return nil, fmt.Errorf("'name' format is not valid")
+	}
+
+	if !valid_tg {
+		return nil, fmt.Errorf("'target' is not in valid format")
+	}
+
 	if dnsView == "" {
 		dnsView = "default"
 	}
 
-	if fqdn == "" {
-		return nil, fmt.Errorf("fqdn must not be empty")
+	if name == "" {
+		return nil, fmt.Errorf("'name' must not be empty")
 	}
 
 	if priority < 0 || weight < 0 {
-		return nil, fmt.Errorf("priority and weight can't be a negative number")
+		return nil, fmt.Errorf("'priority' and 'weight' can't be a negative number")
 	}
 
 	if target == "" {
-		return nil, fmt.Errorf("target must not be empty")
+		return nil, fmt.Errorf("'target' must not be empty")
 	}
 
 	recordSRV := NewRecordSRV(RecordSRV{
 		View:     dnsView,
-		Fqdn:     fqdn,
+		Name:     name,
 		Priority: priority,
 		Weight:   weight,
 		Port:     port,
@@ -50,13 +67,13 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 	}
 
 	recordSRV.Ref = ref
-	return recordSRV, err
+	return recordSRV, nil
 
 }
 
-func (objMgr *ObjectManager) GetSRVRecord(dnsView string, fqdn string) (*RecordSRV, error) {
-	if dnsView == "" || fqdn == "" {
-		return nil, fmt.Errorf("DNS view and fqdn are required to retrieve a unique srv record")
+func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string) (*[]RecordSRV, error) {
+	if dnsView == "" || name == "" {
+		return nil, fmt.Errorf("DNS view and name are required to retrieve a unique srv record")
 	}
 	var res []RecordSRV
 
@@ -64,7 +81,7 @@ func (objMgr *ObjectManager) GetSRVRecord(dnsView string, fqdn string) (*RecordS
 
 	sf := map[string]string{
 		"view": dnsView,
-		"name": fqdn,
+		"name": name,
 	}
 	queryParams := NewQueryParams(false, sf)
 	err := objMgr.connector.GetObject(recordSRV, "", queryParams, &res)
@@ -77,10 +94,10 @@ func (objMgr *ObjectManager) GetSRVRecord(dnsView string, fqdn string) (*RecordS
 		return nil, NewNotFoundError(
 			fmt.Sprintf(
 				"SRV record with name '%s' in DNS view '%s' is not found",
-				fqdn, dnsView))
+				name, dnsView))
 	}
 
-	return &res[0], nil
+	return &res, nil
 }
 
 func (objMgr *ObjectManager) GetSRVRecordByRef(ref string) (*RecordSRV, error) {
@@ -92,37 +109,45 @@ func (objMgr *ObjectManager) GetSRVRecordByRef(ref string) (*RecordSRV, error) {
 
 func (objMgr *ObjectManager) UpdateSRVRecord(
 	ref string,
-	dnsView string,
-	fqdn string,
+	name string,
 	priority int,
 	weight int,
-	port int,
+	port uint32,
 	target string,
 	ttl uint32,
 	useTtl bool,
 	comment string,
 	eas EA) (*RecordSRV, error) {
 
-	res, err := objMgr.GetSRVRecordByRef(ref)
+	_, err := objMgr.GetSRVRecordByRef(ref)
+	nameRegex := `^_[a-z]+\._[a-z]+\.[a-z0-9-]+\.[a-z]+$`
+	targetRegex := `^[a-z]+\.[a-z0-9-]+\.[a-z]+$`
+
+	valid, _ := regexp.MatchString(nameRegex, name)
+	valid_tg, _ := regexp.MatchString(targetRegex, name)
 
 	if err != nil {
 		return nil, err
 	}
 
-	if dnsView != res.View {
-		return nil, fmt.Errorf("changing dns_view after object creation is not allowed")
+	if !valid {
+		return nil, fmt.Errorf("'name' format is not valid")
+	}
+
+	if !valid_tg {
+		return nil, fmt.Errorf("'target' is not in valid format")
 	}
 
 	if priority < 0 {
-		return nil, fmt.Errorf("priority field must not be a negative number")
+		return nil, fmt.Errorf("'priority' field must not be a negative number")
 	}
 
-	if port < 0 || weight < 0 {
-		return nil, fmt.Errorf("port or weight must not be a negative number")
+	if weight < 0 {
+		return nil, fmt.Errorf("'port' or 'weight' must not be a negative number")
 	}
 
 	recordSRV := NewRecordSRV(RecordSRV{
-		Fqdn:     fqdn,
+		Name:     name,
 		Priority: priority,
 		Weight:   weight,
 		Port:     port,
@@ -143,7 +168,7 @@ func (objMgr *ObjectManager) UpdateSRVRecord(
 
 	recordSRV.Ref = nw_ref
 
-	return recordSRV, err
+	return recordSRV, nil
 }
 
 func (objMgr *ObjectManager) DeleteSRVRecord(ref string) (string, error) {
