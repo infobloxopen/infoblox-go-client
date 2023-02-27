@@ -43,8 +43,8 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 		return nil, fmt.Errorf("'priority' and 'weight' can't be a negative number")
 	}
 
-	if port < 0 || port > 65535 {
-		return nil, fmt.Errorf("port value should between 0 to 65535")
+	if port > 65535 {
+		return nil, fmt.Errorf("'port' value should between 0 to 65535")
 	}
 
 	if target == "" {
@@ -77,7 +77,7 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 
 func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string) (*[]RecordSRV, error) {
 	if dnsView == "" || name == "" {
-		return nil, fmt.Errorf("DNS view and name are required to retrieve a unique srv record")
+		return nil, fmt.Errorf("'DNS view' and 'name' are required to retrieve a unique srv record")
 	}
 	var res []RecordSRV
 
@@ -146,8 +146,8 @@ func (objMgr *ObjectManager) UpdateSRVRecord(
 		return nil, fmt.Errorf("'priority' field must not be a negative number")
 	}
 
-	if port < 0 || port > 65535 {
-		return nil, fmt.Errorf("port value should between 0 to 65535")
+	if port > 65535 {
+		return nil, fmt.Errorf("'port' value should between 0 to 65535")
 	}
 
 	if weight < 0 {
