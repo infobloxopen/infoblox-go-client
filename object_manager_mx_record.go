@@ -17,11 +17,11 @@ func (objMgr *ObjectManager) CreateMXRecord(
 	}
 
 	if fqdn == "" || mx == "" {
-		return nil, fmt.Errorf("fqdn and mail_exchanger fields must not be empty")
+		return nil, fmt.Errorf("'fqdn' and 'mail_exchanger' fields must not be empty")
 	}
 
 	if priority < 0 {
-		return nil, fmt.Errorf("preference must not be a negative number")
+		return nil, fmt.Errorf("'preference' must not be a negative number")
 	}
 
 	recordMx := NewRecordMX(RecordMX{
@@ -52,7 +52,7 @@ func (objMgr *ObjectManager) GetMXRecordByRef(ref string) (*RecordMX, error) {
 
 func (objMgr *ObjectManager) GetMXRecord(dnsView string, fqdn string) (*RecordMX, error) {
 	if dnsView == "" || fqdn == "" {
-		return nil, fmt.Errorf("DNS view and fqdn are required to retrieve a unique mx record")
+		return nil, fmt.Errorf("'DNS view' and 'fqdn' are required to retrieve a unique mx record")
 	}
 	var res []RecordMX
 
@@ -97,15 +97,15 @@ func (objMgr *ObjectManager) UpdateMXRecord(
 	}
 
 	if dnsView != res.View {
-		return nil, fmt.Errorf("changing dns_view after object creation is not allowed")
+		return nil, fmt.Errorf("changing 'dns_view' after object creation is not allowed")
 	}
 
 	if priority < 0 {
-		return nil, fmt.Errorf("preference must not be a negative number")
+		return nil, fmt.Errorf("'preference' must not be a negative number")
 	}
 
 	if mx == "" {
-		return nil, fmt.Errorf("mail_exchanger field must not be empty")
+		return nil, fmt.Errorf("'mail_exchanger' field must not be empty")
 	}
 	recordMx := NewRecordMX(RecordMX{
 		View:     dnsView,

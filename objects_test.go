@@ -628,6 +628,11 @@ var _ = Describe("Objects", func() {
 				Expect(rm.Fqdn).To(Equal(fqdn))
 				Expect(rm.MX).To(Equal(mx))
 				Expect(rm.View).To(Equal(dnsView))
+				Expect(rm.Priority).To(Equal(priority))
+				Expect(rm.Ttl).To(Equal(ttl))
+				Expect(rm.UseTtl).To(Equal(useTtl))
+				Expect(rm.Comment).To(Equal(comment))
+				Expect(rm.Ea).To(Equal(eas))
 			})
 
 			It("should set base fields correctly", func() {

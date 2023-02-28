@@ -155,6 +155,105 @@ var _ = Describe("Object Manager: MX-record", func() {
 		})
 	})
 
+	Describe("Get MX Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "test.example.com"
+		dnsView := "default"
+		mx := "example.com"
+		priority := 25
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		ttl := uint32(70)
+		useTtl := true
+		comment := "test comment"
+
+		fakeRefReturn := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
+
+		eas := make(EA)
+		eas["VM ID"] = vmID
+		eas["VM Name"] = vmName
+
+		nwFakeConnector := &fakeConnector{
+			getObjectObj: NewRecordMX(RecordMX{
+				Fqdn: fqdn,
+				View: dnsView,
+			}),
+			resultObject: NewRecordMX(RecordMX{
+				View:     dnsView,
+				Fqdn:     fqdn,
+				MX:       mx,
+				Priority: priority,
+				Ttl:      ttl,
+				UseTtl:   useTtl,
+				Comment:  comment,
+				Ea:       eas,
+				Ref:      fakeRefReturn,
+			}),
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRecord *RecordMX
+		var err error
+		It("should pass expected MX record object to GetObject", func() {
+			actualRecord, err = objMgr.GetMXRecord(dnsView, fqdn)
+		})
+		It("should return expected MX record Object", func() {
+			Expect(actualRecord).To(Equal(nwFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get MX Record By Ref", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		fqdn := "test.example.com"
+		dnsView := "default"
+		mx := "example.com"
+		priority := 25
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		ttl := uint32(70)
+		useTtl := true
+		comment := "test comment"
+
+		readobjRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
+
+		eas := make(EA)
+		eas["VM ID"] = vmID
+		eas["VM Name"] = vmName
+
+		nwFakeConnector := &fakeConnector{
+			getObjectRef: readobjRef,
+			resultObject: NewRecordMX(RecordMX{
+				View:     dnsView,
+				Fqdn:     fqdn,
+				MX:       mx,
+				Priority: priority,
+				Ttl:      ttl,
+				UseTtl:   useTtl,
+				Comment:  comment,
+				Ea:       eas,
+				Ref:      readobjRef,
+			}),
+			fakeRefReturn: readobjRef,
+		}
+
+		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+
+		var actualRecord *RecordMX
+		var err error
+		It("should pass expected MX record ref to GetObject", func() {
+			actualRecord, err = objMgr.GetMXRecordByRef(readobjRef)
+		})
+		It("should return expected MX record Object", func() {
+			Expect(actualRecord).To(Equal(nwFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Delete MX Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
