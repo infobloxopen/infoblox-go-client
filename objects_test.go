@@ -2,6 +2,7 @@ package ibclient
 
 import (
 	"encoding/json"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -607,7 +608,7 @@ var _ = Describe("Objects", func() {
 			fqdn := "test.example.com"
 			mx := "example.com"
 			dnsView := "default"
-			priority := 10
+			priority := uint32(10)
 			ttl := uint32(70)
 			useTtl := true
 			comment := "test comment"

@@ -16,7 +16,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 		fqdn := "test.example.com"
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
-		priority := 10
+		priority := uint32(10)
 		ttl := uint32(70)
 		useTtl := true
 		comment := "test comment"
@@ -90,7 +90,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 			initObj := NewRecordMX(RecordMX{
 				View:     dnsView,
 				Fqdn:     fqdn,
-				Priority: 10,
+				Priority: uint32(10),
 				Comment:  "test comment",
 				Ttl:      ttl,
 				UseTtl:   useTtl,
@@ -103,7 +103,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 			updateFqdn := "new.example.com"
 			updateComment := "new comment"
 			updateTtl := uint32(100)
-			updatePriority := 15
+			updatePriority := uint32(15)
 			updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 			updateObjIn := NewRecordMX(RecordMX{
 				Fqdn:     updateFqdn,
@@ -161,7 +161,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 		fqdn := "test.example.com"
 		dnsView := "default"
 		mx := "example.com"
-		priority := 25
+		priority := uint32(25)
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		ttl := uint32(70)
@@ -212,7 +212,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 		fqdn := "test.example.com"
 		dnsView := "default"
 		mx := "example.com"
-		priority := 25
+		priority := uint32(25)
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		ttl := uint32(70)

@@ -6,7 +6,7 @@ func (objMgr *ObjectManager) CreateMXRecord(
 	dnsView string,
 	fqdn string,
 	mx string,
-	priority int,
+	priority uint32,
 	ttl uint32,
 	useTtl bool,
 	comment string,
@@ -20,8 +20,8 @@ func (objMgr *ObjectManager) CreateMXRecord(
 		return nil, fmt.Errorf("'fqdn' and 'mail_exchanger' fields must not be empty")
 	}
 
-	if priority < 0 {
-		return nil, fmt.Errorf("'preference' must not be a negative number")
+	if priority < 0 || priority > 65535 {
+		return nil, fmt.Errorf("'preference' is not in range 0 to 65535")
 	}
 
 	recordMx := NewRecordMX(RecordMX{
@@ -87,7 +87,7 @@ func (objMgr *ObjectManager) UpdateMXRecord(
 	ttl uint32,
 	useTtl bool,
 	comment string,
-	priority int,
+	priority uint32,
 	eas EA) (*RecordMX, error) {
 
 	res, err := objMgr.GetMXRecordByRef(ref)
@@ -100,8 +100,8 @@ func (objMgr *ObjectManager) UpdateMXRecord(
 		return nil, fmt.Errorf("changing 'dns_view' after object creation is not allowed")
 	}
 
-	if priority < 0 {
-		return nil, fmt.Errorf("'preference' must not be a negative number")
+	if priority < 0 || priority > 65535 {
+		return nil, fmt.Errorf("'preference' is not in range 0 to 65535")
 	}
 
 	if mx == "" {

@@ -802,7 +802,7 @@ type RecordMX struct {
 	View     string `json:"view,omitempty"`
 	Fqdn     string `json:"name,omitempty"`
 	MX       string `json:"mail_exchanger,omitempty"`
-	Priority int    `json:preference`
+	Priority uint32 `json:"preference"`
 	Ttl      uint32 `json:"ttl"`
 	UseTtl   bool   `json:"use_ttl"`
 	Comment  string `json:"comment"`
