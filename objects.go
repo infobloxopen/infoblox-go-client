@@ -801,8 +801,8 @@ type RecordSRV struct {
 	Ref      string `json:"_ref,omitempty"`
 	View     string `json:"view,omitempty"`
 	Name     string `json:"name,omitempty"`
-	Priority int    `json:"priority"`
-	Weight   int    `json:"weight"`
+	Priority uint32 `json:"priority"`
+	Weight   uint32 `json:"weight"`
 	Port     uint32 `json:"port"`
 	Target   string `json:"target,omitempty"`
 	Ttl      uint32 `json:"ttl"`

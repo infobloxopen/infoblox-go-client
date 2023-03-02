@@ -606,9 +606,9 @@ var _ = Describe("Objects", func() {
 		Context("RecordSRV object", func() {
 			name := "srv.sample.com"
 			dnsView := "default"
-			priority := 10
-			weight := 24
-			port := 88
+			priority := uint32(10)
+			weight := uint32(24)
+			port := uint32(88)
 			target := "h1.sample.com"
 			ttl := uint32(300)
 			useTtl := true
@@ -620,7 +620,7 @@ var _ = Describe("Objects", func() {
 				Name:     name,
 				Priority: priority,
 				Weight:   weight,
-				Port:     uint32(port),
+				Port:     port,
 				Target:   target,
 				Ttl:      ttl,
 				UseTtl:   useTtl,
