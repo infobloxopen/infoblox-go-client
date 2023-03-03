@@ -19,7 +19,7 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 	eas EA) (*RecordSRV, error) {
 
 	targetRegex := `^[a-z]+\.[a-z0-9-]+\.[a-z]+$`
-	valid_tg, _ := regexp.MatchString(targetRegex, name)
+	valid_tg, _ := regexp.MatchString(targetRegex, target)
 
 	nameSplit := strings.SplitN(name, ".", 3)
 
