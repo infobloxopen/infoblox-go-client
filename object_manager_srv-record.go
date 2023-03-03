@@ -142,7 +142,7 @@ func (objMgr *ObjectManager) UpdateSRVRecord(
 
 	_, err := objMgr.GetSRVRecordByRef(ref)
 	targetRegex := `^[a-z]+\.[a-z0-9-]+\.[a-z]+$`
-	valid_tg, _ := regexp.MatchString(targetRegex, name)
+	valid_tg, _ := regexp.MatchString(targetRegex, target)
 
 	if err != nil {
 		return nil, err
