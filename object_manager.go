@@ -62,7 +62,7 @@ type IBObjectManager interface {
 	GetNetworkViewByRef(ref string) (*NetworkView, error)
 	GetPTRRecord(dnsview string, ptrdname string, recordName string, ipAddr string) (*RecordPTR, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
-	GetSRVRecord(dnsView string, name string) (*[]RecordSRV, error)
+	GetSRVRecord(dnsView string, name string) (*RecordSRV, error)
 	GetSRVRecordByRef(ref string) (*RecordSRV, error)
 	GetTXTRecord(dnsview string, name string) (*RecordTXT, error)
 	GetTXTRecordByRef(ref string) (*RecordTXT, error)

@@ -92,7 +92,7 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 
 }
 
-func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string) (*[]RecordSRV, error) {
+func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string) (*RecordSRV, error) {
 	if dnsView == "" || name == "" {
 		return nil, fmt.Errorf("'DNS view' and 'name' are required to retrieve a unique srv record")
 	}
@@ -118,7 +118,7 @@ func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string) (*[]Recor
 				name, dnsView))
 	}
 
-	return &res, nil
+	return &res[0], nil
 }
 
 func (objMgr *ObjectManager) GetSRVRecordByRef(ref string) (*RecordSRV, error) {

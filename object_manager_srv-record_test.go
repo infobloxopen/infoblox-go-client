@@ -206,7 +206,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 
 		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
-		var actualRecord *[]RecordSRV
+		var actualRecord *RecordSRV
 		var err error
 		It("should pass expected dnsview, name to GetObject", func() {
 			actualRecord, err = objMgr.GetSRVRecord(dnsView, fqdn)
