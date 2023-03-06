@@ -84,6 +84,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]RecordCNAME) = c.resultObject.([]RecordCNAME)
 		case *RecordA:
 			*res.(*[]RecordA) = c.resultObject.([]RecordA)
+		case *RecordMX:
+			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
 		}
 	} else {
 		switch obj.(type) {
@@ -109,6 +111,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			**res.(**RecordA) = *c.resultObject.(*RecordA)
 		case *RecordAAAA:
 			**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
+		case *RecordMX:
+			**res.(**RecordMX) = *c.resultObject.(*RecordMX)
 		}
 	}
 
@@ -361,7 +365,6 @@ var _ = Describe("Object Manager", func() {
 		It("should pass expected ZoneAuth Object to GetObject", func() {
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef(fakeRefReturn)
 		})
-		fmt.Printf("doodo  %s", actualZoneAuth)
 		It("should return expected ZoneAuth Object", func() {
 			Expect(actualZoneAuth).To(Equal(zdFakeConnector.resultObject))
 			Expect(err).To(BeNil())

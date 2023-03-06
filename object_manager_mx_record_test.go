@@ -35,6 +35,8 @@ var _ = Describe("Object Manager: MX-record", func() {
 				Priority: priority,
 				Ttl:      ttl,
 				UseTtl:   useTtl,
+				Comment:  comment,
+				Ea:       eas,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordMX(RecordMX{
@@ -51,6 +53,8 @@ var _ = Describe("Object Manager: MX-record", func() {
 				Ttl:      ttl,
 				UseTtl:   useTtl,
 				Ref:      fakeRefReturn,
+				Comment:  comment,
+				Ea:       eas,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -79,117 +83,117 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		fqdn := "test.example.com"
 		dnsView := "default"
-		ttl := uint32(70)
-		useTtl := true
 
-		It("Updating fqdn, comment, priority and EAs", func() {
-			ref = fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-			initialEas := EA{"Country": "old value"}
-			initObj := NewRecordMX(RecordMX{
-				View:     dnsView,
-				Fqdn:     fqdn,
-				Priority: uint32(10),
-				Comment:  "test comment",
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Ea:       initialEas,
-			})
-			initObj.Ref = ref
+		fqdn := "test.example.com"
+		initMx := "mx.test.example.com"
+		initComment := "test comment"
+		ref = fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
+		initialEas := EA{"Country": "old value"}
 
-			expectedEas := EA{"Country": "new value"}
-
-			updateFqdn := "new.example.com"
-			updateComment := "new comment"
-			updateTtl := uint32(100)
-			updatePriority := uint32(15)
-			updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-			updateObjIn := NewRecordMX(RecordMX{
-				Fqdn:     updateFqdn,
-				Priority: updatePriority,
-				Comment:  updateComment,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Ea:       expectedEas,
-			})
-			updateObjIn.Ref = ref
-
-			expectedObj := NewRecordMX(RecordMX{
-				Fqdn:     updateFqdn,
-				Priority: updatePriority,
-				Comment:  updateComment,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Ea:       expectedEas,
-			})
-			expectedObj.Ref = updatedRef
-
-			conn = &fakeConnector{
-				getObjectObj: NewRecordMX(RecordMX{
-					Fqdn:     fqdn,
-					MX:       actualObj.MX,
-					Priority: initObj.Priority,
-					Ref:      initObj.Ref,
-				}),
-				getObjectQueryParams: NewQueryParams(false, nil),
-				getObjectRef:         updatedRef,
-				getObjectError:       nil,
-				resultObject:         expectedObj,
-
-				updateObjectObj:   updateObjIn,
-				updateObjectRef:   ref,
-				updateObjectError: nil,
-
-				fakeRefReturn: updatedRef,
-			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
-			It("should pass updated MX record arguments", func() {
-				actualObj, err = objMgr.UpdateMXRecord(ref, dnsView, updateFqdn, "", updateTtl, useTtl, updateComment, updatePriority, expectedEas)
-			})
-			It("should return expected MX record obj", func() {
-				Expect(err).To(BeNil())
-				Expect(actualObj).To(BeEquivalentTo(expectedObj))
-			})
-
+		initObj := NewRecordMX(RecordMX{
+			Ref:      ref,
+			View:     dnsView,
+			Fqdn:     fqdn,
+			MX:       initMx,
+			Priority: uint32(10),
+			Ttl:      uint32(70),
+			UseTtl:   true,
+			Comment:  initComment,
+			Ea:       initialEas,
 		})
+
+		updatedEAs := EA{"Country": "new value"}
+		updateFqdn := "new.example.com"
+		updateMx := "mx.new.example.com"
+		updateComment := "new comment"
+		updateTtl := uint32(100)
+		updatePriority := uint32(15)
+		updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
+		updateObjIn := NewRecordMX(RecordMX{
+			Ref:      ref,
+			View:     dnsView,
+			Fqdn:     updateFqdn,
+			MX:       updateMx,
+			Priority: updatePriority,
+			Ttl:      updateTtl,
+			UseTtl:   true,
+			Comment:  updateComment,
+			Ea:       updatedEAs,
+		})
+
+		expectedObj := NewRecordMX(RecordMX{
+			Ref:      ref,
+			View:     dnsView,
+			Fqdn:     updateFqdn,
+			MX:       updateMx,
+			Priority: updatePriority,
+			Ttl:      updateTtl,
+			UseTtl:   true,
+			Comment:  updateComment,
+			Ea:       updatedEAs,
+		})
+
+		conn = &fakeConnector{
+			getObjectObj:         NewEmptyRecordMX(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectRef:         updatedRef,
+			getObjectError:       nil,
+			resultObject:         initObj,
+
+			updateObjectObj:   updateObjIn,
+			updateObjectRef:   ref,
+			updateObjectError: nil,
+
+			fakeRefReturn: updatedRef,
+		}
+		objMgr = NewObjectManager(conn, cmpType, tenantID)
+		It("should pass updated MX record arguments", func() {
+			actualObj, err = objMgr.UpdateMXRecord(ref, dnsView, updateFqdn, updateMx, updateTtl, true, updateComment, updatePriority, updatedEAs)
+		})
+		It("should return expected MX record obj", func() {
+			Expect(err).To(BeNil())
+			Expect(actualObj).To(BeEquivalentTo(expectedObj))
+		})
+
 	})
 
 	Describe("Get MX Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		fqdn := "test.example.com"
 		dnsView := "default"
+
+		fqdn := "test.example.com"
 		mx := "example.com"
 		priority := uint32(25)
-		vmID := "93f9249abc039284"
-		vmName := "dummyvm"
 		ttl := uint32(70)
-		useTtl := true
 		comment := "test comment"
 
 		fakeRefReturn := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 
 		eas := make(EA)
-		eas["VM ID"] = vmID
-		eas["VM Name"] = vmName
+		eas["VM ID"] = "93f9249abc039284"
+		eas["VM Name"] = "dummyvm"
 
+		sf := map[string]string{
+			"view":           dnsView,
+			"name":           fqdn,
+			"mail_exchanger": mx,
+		}
 		nwFakeConnector := &fakeConnector{
-			getObjectObj: NewRecordMX(RecordMX{
-				Fqdn: fqdn,
-				View: dnsView,
-			}),
-			resultObject: NewRecordMX(RecordMX{
+			getObjectObj:         NewEmptyRecordMX(),
+			getObjectQueryParams: NewQueryParams(false, sf),
+			resultObject: []RecordMX{*NewRecordMX(RecordMX{
 				View:     dnsView,
 				Fqdn:     fqdn,
 				MX:       mx,
 				Priority: priority,
 				Ttl:      ttl,
-				UseTtl:   useTtl,
+				UseTtl:   true,
 				Comment:  comment,
 				Ea:       eas,
 				Ref:      fakeRefReturn,
-			}),
+			})},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -198,10 +202,11 @@ var _ = Describe("Object Manager: MX-record", func() {
 		var actualRecord *RecordMX
 		var err error
 		It("should pass expected MX record object to GetObject", func() {
-			actualRecord, err = objMgr.GetMXRecord(dnsView, fqdn)
+			actualRecord, err = objMgr.GetMXRecord(dnsView, fqdn, mx)
 		})
 		It("should return expected MX record Object", func() {
-			Expect(actualRecord).To(Equal(nwFakeConnector.resultObject))
+			Expect(actualRecord).NotTo(BeNil())
+			Expect(*actualRecord).To(Equal(nwFakeConnector.resultObject.([]RecordMX)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -209,36 +214,30 @@ var _ = Describe("Object Manager: MX-record", func() {
 	Describe("Get MX Record By Ref", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		fqdn := "test.example.com"
 		dnsView := "default"
-		mx := "example.com"
-		priority := uint32(25)
-		vmID := "93f9249abc039284"
-		vmName := "dummyvm"
-		ttl := uint32(70)
-		useTtl := true
-		comment := "test comment"
 
-		readobjRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-
-		eas := make(EA)
-		eas["VM ID"] = vmID
-		eas["VM Name"] = vmName
-
+		fqdn := "test.example.com"
+		readObjRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
+		eas := EA{
+			"VM ID":   "93f9249abc039284",
+			"VM Name": "dummyvm",
+		}
 		nwFakeConnector := &fakeConnector{
-			getObjectRef: readobjRef,
+			getObjectRef:         readObjRef,
+			getObjectObj:         NewEmptyRecordMX(),
+			getObjectQueryParams: NewQueryParams(false, nil),
 			resultObject: NewRecordMX(RecordMX{
 				View:     dnsView,
 				Fqdn:     fqdn,
-				MX:       mx,
-				Priority: priority,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Comment:  comment,
+				MX:       "example.com",
+				Priority: uint32(25),
+				Ttl:      uint32(70),
+				UseTtl:   true,
+				Comment:  "test comment",
 				Ea:       eas,
-				Ref:      readobjRef,
+				Ref:      readObjRef,
 			}),
-			fakeRefReturn: readobjRef,
+			fakeRefReturn: readObjRef,
 		}
 
 		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
@@ -246,7 +245,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 		var actualRecord *RecordMX
 		var err error
 		It("should pass expected MX record ref to GetObject", func() {
-			actualRecord, err = objMgr.GetMXRecordByRef(readobjRef)
+			actualRecord, err = objMgr.GetMXRecordByRef(readObjRef)
 		})
 		It("should return expected MX record Object", func() {
 			Expect(actualRecord).To(Equal(nwFakeConnector.resultObject))

@@ -44,23 +44,23 @@ func (objMgr *ObjectManager) CreateMXRecord(
 }
 
 func (objMgr *ObjectManager) GetMXRecordByRef(ref string) (*RecordMX, error) {
-	recordMX := NewRecordMX(RecordMX{})
+	recordMX := NewEmptyRecordMX()
 	err := objMgr.connector.GetObject(recordMX, ref, NewQueryParams(false, nil), &recordMX)
 
 	return recordMX, err
 }
 
-func (objMgr *ObjectManager) GetMXRecord(dnsView string, fqdn string) (*RecordMX, error) {
+func (objMgr *ObjectManager) GetMXRecord(dnsView string, fqdn string, mx string) (*RecordMX, error) {
 	if dnsView == "" || fqdn == "" {
 		return nil, fmt.Errorf("'DNS view' and 'fqdn' are required to retrieve a unique mx record")
 	}
 	var res []RecordMX
 
-	recordMX := NewRecordMX(RecordMX{})
-
+	recordMX := NewEmptyRecordMX()
 	sf := map[string]string{
-		"view": dnsView,
-		"name": fqdn,
+		"view":           dnsView,
+		"name":           fqdn,
+		"mail_exchanger": mx,
 	}
 	queryParams := NewQueryParams(false, sf)
 	err := objMgr.connector.GetObject(recordMX, "", queryParams, &res)
@@ -72,8 +72,8 @@ func (objMgr *ObjectManager) GetMXRecord(dnsView string, fqdn string) (*RecordMX
 	if res == nil || len(res) == 0 {
 		return nil, NewNotFoundError(
 			fmt.Sprintf(
-				"MX record with name '%s' in DNS view '%s' is not found",
-				fqdn, dnsView))
+				"MX record with name '%s' and MX '%s' in DNS view '%s' is not found",
+				fqdn, mx, dnsView))
 	}
 
 	return &res[0], nil
@@ -97,7 +97,7 @@ func (objMgr *ObjectManager) UpdateMXRecord(
 	}
 
 	if dnsView != res.View {
-		return nil, fmt.Errorf("changing 'dns_view' after object creation is not allowed")
+		return nil, fmt.Errorf("changing 'dns_view' field after object creation is not allowed")
 	}
 
 	if priority < 0 || priority > 65535 {

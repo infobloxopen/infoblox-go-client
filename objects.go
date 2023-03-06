@@ -809,6 +809,14 @@ type RecordMX struct {
 	Ea       EA     `json:"extattrs"`
 }
 
+func NewEmptyRecordMX() *RecordMX {
+	res := &RecordMX{}
+	res.objectType = "record:mx"
+	res.returnFields = []string{"mail_exchanger", "view", "name", "preference", "ttl", "use_ttl", "comment", "extattrs"}
+
+	return res
+}
+
 func NewRecordMX(rm RecordMX) *RecordMX {
 	res := rm
 	res.objectType = "record:mx"

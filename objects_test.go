@@ -637,7 +637,7 @@ var _ = Describe("Objects", func() {
 			})
 
 			It("should set base fields correctly", func() {
-				Expect(rm.ObjectType()).To(Equal("record.mx"))
+				Expect(rm.ObjectType()).To(Equal("record:mx"))
 				Expect(rm.ReturnFields()).To(ConsistOf("mail_exchanger", "view", "name", "preference", "ttl", "use_ttl", "comment", "extattrs"))
 			})
 		})
