@@ -2,9 +2,41 @@ package ibclient
 
 import (
 	"fmt"
-	"regexp"
-	"strings"
 )
+
+func validateSrvRecArgs(
+	name string,
+	priority uint32,
+	weight uint32,
+	port uint32,
+	target string) error {
+
+	if err := ValidateSrvRecName(name); err != nil {
+		return err
+	}
+
+	if name == "" {
+		return fmt.Errorf("'name' must not be empty")
+	}
+
+	if priority < 0 || priority > 65535 {
+		return fmt.Errorf("'priority' value must be in range(0-65535)")
+	}
+
+	if port > 65535 {
+		return fmt.Errorf("'port' value should between 0 to 65535")
+	}
+
+	if weight < 0 || weight > 65535 {
+		return fmt.Errorf("'weight' value should in range(0-65535)")
+	}
+
+	if target == "" {
+		return fmt.Errorf("'target' must not be empty")
+	}
+
+	return nil
+}
 
 func (objMgr *ObjectManager) CreateSRVRecord(
 	dnsView string,
@@ -18,54 +50,18 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 	comment string,
 	eas EA) (*RecordSRV, error) {
 
-	targetRegex := `^[a-z]+\.[a-z0-9-]+\.[a-z]+$`
-	valid_tg, _ := regexp.MatchString(targetRegex, target)
-
-	nameSplit := strings.SplitN(name, ".", 3)
-
-	if len(nameSplit) < 3 {
-		return nil, fmt.Errorf("SRV Record format: _service._proto.domainName")
-	} else {
-		serviceRegex := `^_[a-z]+$`
-		validService, _ := regexp.MatchString(serviceRegex, nameSplit[0])
-
-		protocolRegex := `^_[a-z0-9-]+$`
-		validProtocol, _ := regexp.MatchString(protocolRegex, nameSplit[1])
-
-		domainRegexp := regexp.MustCompile(`^(?i)[a-z0-9-]+(\.[a-z0-9-]+)+\.?$`)
-		validDomainName := domainRegexp.MatchString(nameSplit[2])
-
-		if !(validService && validProtocol && validDomainName) {
-			return nil, fmt.Errorf("name is not in valid format")
-		}
-	}
-
-	if !valid_tg {
-		return nil, fmt.Errorf("'target' is not in valid format")
+	err := validateSrvRecArgs(
+		name,
+		priority,
+		weight,
+		port,
+		target)
+	if err != nil {
+		return nil, err
 	}
 
 	if dnsView == "" {
 		dnsView = "default"
-	}
-
-	if name == "" {
-		return nil, fmt.Errorf("'name' must not be empty")
-	}
-
-	if priority < 0 || priority > 65535 {
-		return nil, fmt.Errorf("'priority' value must be in range(0-65535)")
-	}
-
-	if port > 65535 {
-		return nil, fmt.Errorf("'port' value should between 0 to 65535")
-	}
-
-	if weight < 0 || weight > 65535 {
-		return nil, fmt.Errorf("'weight' value should in range(0-65535)")
-	}
-
-	if target == "" {
-		return nil, fmt.Errorf("'target' must not be empty")
 	}
 
 	recordSRV := NewRecordSRV(RecordSRV{
@@ -92,17 +88,19 @@ func (objMgr *ObjectManager) CreateSRVRecord(
 
 }
 
-func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string) (*RecordSRV, error) {
+func (objMgr *ObjectManager) GetSRVRecord(dnsView string, name string, priority uint32, weight uint32) (*RecordSRV, error) {
 	if dnsView == "" || name == "" {
 		return nil, fmt.Errorf("'DNS view' and 'name' are required to retrieve a unique srv record")
 	}
 	var res []RecordSRV
 
-	recordSRV := NewRecordSRV(RecordSRV{})
+	recordSRV := NewEmptyRecordSRV()
 
 	sf := map[string]string{
-		"view": dnsView,
-		"name": name,
+		"view":     dnsView,
+		"name":     name,
+		"priority": fmt.Sprintf("%d", priority),
+		"weight":   fmt.Sprintf("%d", weight),
 	}
 	queryParams := NewQueryParams(false, sf)
 	err := objMgr.connector.GetObject(recordSRV, "", queryParams, &res)
@@ -140,50 +138,18 @@ func (objMgr *ObjectManager) UpdateSRVRecord(
 	comment string,
 	eas EA) (*RecordSRV, error) {
 
-	_, err := objMgr.GetSRVRecordByRef(ref)
-	targetRegex := `^[a-z]+\.[a-z0-9-]+\.[a-z]+$`
-	valid_tg, _ := regexp.MatchString(targetRegex, target)
-
+	err := validateSrvRecArgs(
+		name,
+		priority,
+		weight,
+		port,
+		target)
 	if err != nil {
 		return nil, err
 	}
 
-	nameSplit := strings.SplitN(name, ".", 3)
-
-	if len(nameSplit) < 3 {
-		return nil, fmt.Errorf("SRV Record format: _service._proto.domainName")
-	} else {
-		serviceRegex := `^_[a-z]+$`
-		validService, _ := regexp.MatchString(serviceRegex, nameSplit[0])
-
-		protocolRegex := `^_[a-z0-9-]+$`
-		validProtocol, _ := regexp.MatchString(protocolRegex, nameSplit[1])
-
-		domainRegexp := regexp.MustCompile(`^(?i)[a-z0-9-]+(\.[a-z0-9-]+)+\.?$`)
-		validDomainName := domainRegexp.MatchString(nameSplit[2])
-
-		if !(validService && validProtocol && validDomainName) {
-			return nil, fmt.Errorf("name is not in valid format")
-		}
-	}
-
-	if !valid_tg {
-		return nil, fmt.Errorf("'target' is not in valid format")
-	}
-
-	if priority < 0 || priority > 65535 {
-		return nil, fmt.Errorf("priority' value must be in range(0-65535)")
-	}
-
-	if port > 65535 {
-		return nil, fmt.Errorf("'port' value should between 0 to 65535")
-	}
-
-	if weight < 0 || weight > 65535 {
-		return nil, fmt.Errorf("'weight' value must be in range(0-65535)")
-	}
-
 	recordSRV := NewRecordSRV(RecordSRV{
+		Ref:      ref,
 		Name:     name,
 		Priority: priority,
 		Weight:   weight,
@@ -195,10 +161,7 @@ func (objMgr *ObjectManager) UpdateSRVRecord(
 		Ea:       eas,
 	})
 
-	recordSRV.Ref = ref
-
 	nw_ref, err := objMgr.connector.UpdateObject(recordSRV, ref)
-
 	if err != nil {
 		return nil, err
 	}

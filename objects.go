@@ -811,6 +811,14 @@ type RecordSRV struct {
 	Ea       EA     `json:"extattrs"`
 }
 
+func NewEmptyRecordSRV() *RecordSRV {
+	res := RecordSRV{}
+	res.objectType = "record:srv"
+	res.returnFields = []string{"name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs"}
+
+	return &res
+}
+
 func NewRecordSRV(rv RecordSRV) *RecordSRV {
 	res := rv
 	res.objectType = "record:srv"

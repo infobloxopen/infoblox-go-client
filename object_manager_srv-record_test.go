@@ -12,9 +12,8 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		dnsView := "default"
-		fqdn := "srv.example.com"
-		vmID := "93f9249abc039284"
-		vmName := "dummyvm"
+
+		name := "_srv._proto.example.com"
 		priority := uint32(10)
 		weight := uint32(25)
 		port := uint32(88)
@@ -23,32 +22,33 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		useTtl := true
 		comment := "this is a test comment"
 
-		fakeRefReturn := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-
-		eas := make(EA)
-		eas["VM ID"] = vmID
-		eas["VM Name"] = vmName
-
+		fakeRefReturn := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkuMC4xLg:%s/%s", name, dnsView)
+		eas := EA{
+			"VM ID":   "93f9249abc039284",
+			"VM Name": "dummyvm",
+		}
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     fqdn,
+				Name:     name,
 				Priority: priority,
 				Weight:   weight,
 				Port:     port,
 				Target:   target,
 				Ttl:      ttl,
 				UseTtl:   useTtl,
+				Comment:  comment,
+				Ea:       eas,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordSRV(RecordSRV{
 				View: dnsView,
-				Name: fqdn,
+				Name: name,
 				Ref:  fakeRefReturn,
 			}),
 			resultObject: NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     fqdn,
+				Name:     name,
 				Priority: priority,
 				Weight:   weight,
 				Port:     port,
@@ -56,6 +56,8 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 				Ttl:      ttl,
 				UseTtl:   useTtl,
 				Ref:      fakeRefReturn,
+				Comment:  comment,
+				Ea:       eas,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -65,108 +67,85 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		var actualRecord *RecordSRV
 		var err error
 		It("should pass expected SRV record object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateSRVRecord(dnsView, fqdn, priority, weight, port, target, ttl, useTtl, comment, eas)
+			actualRecord, err = objMgr.CreateSRVRecord(dnsView, name, priority, weight, port, target, ttl, useTtl, comment, eas)
 		})
 		It("should return expected SRV record Object", func() {
-			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 			Expect(err).To(BeNil())
+			Expect(actualRecord).NotTo(BeNil())
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 		})
 	})
 
 	Describe("Update SRV Record", func() {
 		var (
-			err       error
-			objMgr    IBObjectManager
-			conn      *fakeConnector
-			ref       string
-			actualObj *RecordSRV
+			err          error
+			objMgr       IBObjectManager
+			conn         *fakeConnector
+			ref          string
+			actualRecord *RecordSRV
 		)
 
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		fqdn := "srv.example.com"
 		dnsView := "default"
-		priority := uint32(10)
-		weight := uint32(25)
-		port := uint32(80)
-		target := "h2.example.com"
-		ttl := uint32(400)
-		useTtl := true
 
-		It("Updating fqdn, priority, weight, port, target, comment and EA's", func() {
-			ref = fmt.Sprintf("record:srv/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-			initialEas := EA{"Country": "old value"}
-			initObj := NewRecordSRV(RecordSRV{
-				View:     dnsView,
-				Name:     fqdn,
-				Priority: priority,
-				Weight:   weight,
-				Port:     port,
-				Target:   target,
-				Comment:  "test comment",
-				Ea:       initialEas,
-			})
-			initObj.Ref = ref
+		name := "_srv._proto.example.com"
+		ref = fmt.Sprintf("record:srv/ZG5zLmhvc3RjkuMC4xLg:%s/%s", name, dnsView)
 
-			expectedEas := EA{"Country": "new value"}
+		newEas := EA{"Country": "new value"}
+		updateName := "_srv2._proto.example.com"
+		updateRef := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", updateName, dnsView)
+		updateObjIn := NewRecordSRV(RecordSRV{
+			Ref:      ref,
+			View:     "",
+			Name:     updateName,
+			Priority: uint32(20),
+			Weight:   uint32(30),
+			Port:     uint32(88),
+			Target:   "h3.example.com",
+			Ttl:      uint32(100),
+			UseTtl:   true,
+			Comment:  "new comment",
+			Ea:       newEas,
+		})
 
-			updateFqdn := "new.example.com"
-			updatePriority := uint32(15)
-			updateWeight := uint32(30)
-			updatePort := uint32(88)
-			updateTarget := "h3.example.com"
-			updateComment := "test comment"
-			updateRef := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", fqdn, dnsView)
-			updateObjIn := NewRecordSRV(RecordSRV{
-				Name:     updateFqdn,
-				Priority: updatePriority,
-				Weight:   updateWeight,
-				Port:     updatePort,
-				Target:   updateTarget,
-				Comment:  updateComment,
-				Ea:       expectedEas,
-			})
-			updateObjIn.Ref = ref
+		expectedObj := NewRecordSRV(RecordSRV{
+			Ref:      updateRef,
+			Name:     updateName,
+			Priority: uint32(20),
+			Weight:   uint32(30),
+			Port:     uint32(88),
+			Target:   "h3.example.com",
+			Ttl:      uint32(100),
+			UseTtl:   true,
+			Comment:  "new comment",
+			Ea:       newEas,
+		})
 
-			expectedObj := NewRecordSRV(RecordSRV{
-				Name:     updateFqdn,
-				Priority: updatePriority,
-				Weight:   updateWeight,
-				Port:     updatePort,
-				Target:   updateTarget,
-				Comment:  updateComment,
-				Ea:       expectedEas,
-			})
-			expectedObj.Ref = updateRef
+		conn = &fakeConnector{
+			updateObjectObj:   updateObjIn,
+			updateObjectRef:   ref,
+			updateObjectError: nil,
 
-			conn = &fakeConnector{
-				getObjectObj: NewRecordSRV(RecordSRV{
-					Name:     fqdn,
-					Priority: initObj.Priority,
-					Weight:   initObj.Weight,
-					Port:     initObj.Port,
-					Target:   initObj.Target,
-					Ref:      initObj.Ref,
-				}),
-				getObjectQueryParams: NewQueryParams(false, nil),
-				getObjectRef:         updateRef,
-				getObjectError:       nil,
-				resultObject:         expectedObj,
-
-				updateObjectObj:   updateObjIn,
-				updateObjectRef:   ref,
-				updateObjectError: nil,
-
-				fakeRefReturn: updateRef,
-			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
-			It("should pass updated SRV record arguments", func() {
-				actualObj, err = objMgr.UpdateSRVRecord(ref, updateFqdn, updatePriority, updateWeight, updatePort, updateTarget, ttl, useTtl, updateComment, expectedEas)
-			})
-			It("should return expected SRV record obj", func() {
-				Expect(err).To(BeNil())
-				Expect(actualObj).To(BeEquivalentTo(expectedObj))
-			})
+			fakeRefReturn: updateRef,
+		}
+		objMgr = NewObjectManager(conn, cmpType, tenantID)
+		It("should pass updated SRV record arguments", func() {
+			actualRecord, err = objMgr.UpdateSRVRecord(
+				ref,
+				updateName,
+				uint32(20),
+				uint32(30),
+				uint32(88),
+				"h3.example.com",
+				uint32(100), true,
+				"new comment",
+				newEas)
+		})
+		It("should return expected SRV record obj", func() {
+			Expect(err).To(BeNil())
+			Expect(actualRecord).NotTo(BeNil())
+			Expect(actualRecord).To(BeEquivalentTo(expectedObj))
 		})
 	})
 
@@ -174,7 +153,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		dnsView := "default"
-		fqdn := "srv.example.com"
+		name := "_srv._proto.example.com"
 		priority := uint32(10)
 		weight := uint32(25)
 		port := uint32(88)
@@ -182,16 +161,23 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		ttl := uint32(70)
 		useTtl := true
 		comment := "this is a test comment"
-		fakeRefReturn := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", fqdn, dnsView)
+		fakeRefReturn := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", name, dnsView)
+
+		sf := map[string]string{
+			"view":     dnsView,
+			"name":     name,
+			"priority": fmt.Sprintf("%d", priority),
+			"weight":   fmt.Sprintf("%d", weight),
+		}
+		queryParams := NewQueryParams(false, sf)
+
 		nwFakeConnector := &fakeConnector{
-			getObjectObj: NewRecordSRV(RecordSRV{
-				View: dnsView,
-				Name: fqdn,
-				Ref:  fakeRefReturn,
-			}),
-			resultObject: NewRecordSRV(RecordSRV{
+			getObjectObj:         NewEmptyRecordSRV(),
+			getObjectQueryParams: queryParams,
+
+			resultObject: []RecordSRV{*NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     fqdn,
+				Name:     name,
 				Priority: priority,
 				Weight:   weight,
 				Port:     port,
@@ -200,7 +186,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 				UseTtl:   useTtl,
 				Comment:  comment,
 				Ref:      fakeRefReturn,
-			}),
+			})},
 			fakeRefReturn: fakeRefReturn,
 		}
 
@@ -209,20 +195,21 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		var actualRecord *RecordSRV
 		var err error
 		It("should pass expected dnsview, name to GetObject", func() {
-			actualRecord, err = objMgr.GetSRVRecord(dnsView, fqdn)
+			actualRecord, err = objMgr.GetSRVRecord(dnsView, name, priority, weight)
 		})
 		It("should return expected SRV record Object", func() {
-			Expect(actualRecord).To(Equal(nwFakeConnector.resultObject))
 			Expect(err).To(BeNil())
+			Expect(actualRecord).NotTo(BeNil())
+			Expect(*actualRecord).To(Equal(nwFakeConnector.resultObject.([]RecordSRV)[0]))
 		})
 	})
 
 	Describe("Delete SRV Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		fqdn := "srv.example.com"
+		name := "_srv._proto.example.com"
 		dnsView := "default"
-		deleteRef := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", fqdn, dnsView)
+		deleteRef := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", name, dnsView)
 		fakeRefReturn := deleteRef
 		nwFakeConnector := &fakeConnector{
 			deleteObjectRef: deleteRef,
@@ -237,8 +224,8 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 			actualRef, err = objMgr.DeleteSRVRecord(deleteRef)
 		})
 		It("should return expected SRV Record Ref", func() {
-			Expect(actualRef).To(Equal(fakeRefReturn))
 			Expect(err).To(BeNil())
+			Expect(actualRef).To(Equal(fakeRefReturn))
 		})
 	})
 })

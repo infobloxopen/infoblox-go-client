@@ -641,7 +641,7 @@ var _ = Describe("Objects", func() {
 				Expect(rv.Ea).To(Equal(eas))
 			})
 			It("should set base fields correctly", func() {
-				Expect(rv.ObjectType()).To(Equal("record.srv"))
+				Expect(rv.ObjectType()).To(Equal("record:srv"))
 				Expect(rv.ReturnFields()).To(ConsistOf("name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs"))
 			})
 
