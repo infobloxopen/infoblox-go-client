@@ -537,7 +537,6 @@ var _ = Describe("Object Manager: network container", func() {
 		ea := EA{"Site": "test"}
 		comment := "Test network container"
 		resObj, err := BuildIPv6NetworkContainerFromRef(fakeRefReturn)
-		fmt.Println(resObj)
 		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, true)
 		container := NewNetworkContainerNextAvailable(containerInfo, true, comment, ea)
 
