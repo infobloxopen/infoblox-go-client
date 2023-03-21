@@ -179,6 +179,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 			"view":           dnsView,
 			"name":           fqdn,
 			"mail_exchanger": mx,
+			"preference":     fmt.Sprintf("%d", preference),
 		}
 		nwFakeConnector := &fakeConnector{
 			getObjectObj:         NewEmptyRecordMX(),
@@ -202,7 +203,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 		var actualRecord *RecordMX
 		var err error
 		It("should pass expected MX record object to GetObject", func() {
-			actualRecord, err = objMgr.GetMXRecord(dnsView, fqdn, mx)
+			actualRecord, err = objMgr.GetMXRecord(dnsView, fqdn, mx, preference)
 		})
 		It("should return expected MX record Object", func() {
 			Expect(actualRecord).NotTo(BeNil())
