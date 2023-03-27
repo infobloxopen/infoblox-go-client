@@ -638,7 +638,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(rm.ObjectType()).To(Equal("record:mx"))
-				Expect(rm.ReturnFields()).To(ConsistOf("mail_exchanger", "view", "name", "preference", "ttl", "use_ttl", "comment", "extattrs"))
+				Expect(rm.ReturnFields()).To(ConsistOf("mail_exchanger", "view", "name", "preference", "ttl", "use_ttl", "comment", "extattrs", "zone"))
 			})
 		})
 
@@ -681,7 +681,7 @@ var _ = Describe("Objects", func() {
 			})
 			It("should set base fields correctly", func() {
 				Expect(rv.ObjectType()).To(Equal("record:srv"))
-				Expect(rv.ReturnFields()).To(ConsistOf("name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs"))
+				Expect(rv.ReturnFields()).To(ConsistOf("name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs", "zone"))
 			})
 
 		})
