@@ -91,8 +91,8 @@ func (objMgr *ObjectManager) AllocateNetworkContainer(
 	comment string,
 	eas EA) (*NetworkContainer, error) {
 
-	containerInfo := NewNetworkContainerNextAvailableInfo(netview, cidr, prefixLen, isIPv6)
-	container := NewNetworkContainerNextAvailable(containerInfo, isIPv6, comment, eas)
+	cidr = fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netview, prefixLen)
+	container := NewNetworkContainer(netview, cidr, isIPv6, comment, eas)
 
 	ref, err := objMgr.connector.CreateObject(container)
 

@@ -459,13 +459,13 @@ var _ = Describe("Object Manager: network container", func() {
 		cidr := "142.0.22.0/24"
 		prefixLen := uint(28)
 		networkName := "private-net"
+		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		ea := EA{"Site": "test"}
 		comment := "Test network container"
 		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
 
-		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
-		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+		container := NewNetworkContainer(netviewName, cidr1, false, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -475,8 +475,8 @@ var _ = Describe("Object Manager: network container", func() {
 
 		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*NetworkContainer).Ea = ea
+		connector.createObjectObj.(*NetworkContainer).Ea["Network Name"] = networkName
 
 		var actualNetwork *NetworkContainer
 		It("should pass expected Network Container Object to CreateObject", func() {
@@ -496,13 +496,13 @@ var _ = Describe("Object Manager: network container", func() {
 		cidr := "10.0.1.0./64"
 		prefixLen := uint(65)
 		networkName := "private-net"
+		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		ea := EA{"Site": "test"}
 		comment := "Test network container"
 		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
 
-		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
-		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+		container := NewNetworkContainer(netviewName, cidr1, false, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -512,8 +512,8 @@ var _ = Describe("Object Manager: network container", func() {
 
 		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*NetworkContainer).Ea = ea
+		connector.createObjectObj.(*NetworkContainer).Ea["Network Name"] = networkName
 
 		var actualNetwork *NetworkContainer
 		It("should pass expected Network Container Object with invalid Cidr value to CreateObject", func() {
@@ -533,12 +533,13 @@ var _ = Describe("Object Manager: network container", func() {
 		cidr := "2003:db8:abcd:14::/64"
 		prefixLen := uint(28)
 		networkName := "private-net"
+		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("ipv6networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		ea := EA{"Site": "test"}
 		comment := "Test network container"
 		resObj, err := BuildIPv6NetworkContainerFromRef(fakeRefReturn)
-		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, true)
-		container := NewNetworkContainerNextAvailable(containerInfo, true, comment, ea)
+
+		container := NewNetworkContainer(netviewName, cidr1, true, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -548,8 +549,8 @@ var _ = Describe("Object Manager: network container", func() {
 
 		objMgr := NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*NetworkContainer).Ea = ea
+		connector.createObjectObj.(*NetworkContainer).Ea["Network Name"] = networkName
 
 		var actualNetwork *NetworkContainer
 		It("should pass expected Network Container Object to CreateObject", func() {
