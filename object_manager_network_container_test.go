@@ -465,7 +465,7 @@ var _ = Describe("Object Manager: network container", func() {
 		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
 
 		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
-		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+		container := NewNetworkContainerNextAvailable(containerInfo, netviewName, false, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -502,7 +502,7 @@ var _ = Describe("Object Manager: network container", func() {
 		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
 
 		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
-		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+		container := NewNetworkContainerNextAvailable(containerInfo, netviewName, false, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -538,7 +538,7 @@ var _ = Describe("Object Manager: network container", func() {
 		comment := "Test network container"
 		resObj, err := BuildIPv6NetworkContainerFromRef(fakeRefReturn)
 		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, true)
-		container := NewNetworkContainerNextAvailable(containerInfo, true, comment, ea)
+		container := NewNetworkContainerNextAvailable(containerInfo, netviewName, true, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
