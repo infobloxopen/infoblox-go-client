@@ -92,7 +92,7 @@ func (objMgr *ObjectManager) AllocateNetworkContainer(
 	eas EA) (*NetworkContainer, error) {
 
 	containerInfo := NewNetworkContainerNextAvailableInfo(netview, cidr, prefixLen, isIPv6)
-	container := NewNetworkContainerNextAvailable(containerInfo, netview, isIPv6, comment, eas)
+	container := NewNetworkContainerNextAvailable(containerInfo, isIPv6, comment, eas)
 
 	ref, err := objMgr.connector.CreateObject(container)
 

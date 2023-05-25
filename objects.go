@@ -357,10 +357,10 @@ func NewNetworkContainerNextAvailableInfo(netview, cidr string, prefixLen uint, 
 	return &containerInfo
 }
 
-func NewNetworkContainerNextAvailable(ncav *NetworkContainerNextAvailableInfo, netview string, isIPv6 bool, comment string, ea EA) *NetworkContainerNextAvailable {
+func NewNetworkContainerNextAvailable(ncav *NetworkContainerNextAvailableInfo, isIPv6 bool, comment string, ea EA) *NetworkContainerNextAvailable {
 	nc := &NetworkContainerNextAvailable{
 		Network:     ncav,
-		NetviewName: netview,
+		NetviewName: ncav.NetviewName,
 		Ea:          ea,
 		Comment:     comment,
 	}
