@@ -23,6 +23,10 @@ func (objMgr *ObjectManager) CreateARecord(
 			"'name' argument is expected to be non-empty and it must NOT contain leading/trailing spaces")
 	}
 
+	if name != strings.ToLower(name) {
+		return nil, fmt.Errorf("'name' argument is not expected to contain any uppercase letters")
+	}
+
 	recordA := NewRecordA(dnsView, "", name, "", ttl, useTTL, comment, eas, "")
 
 	if ipAddr == "" {
@@ -80,6 +84,10 @@ func (objMgr *ObjectManager) UpdateARecord(
 	if cleanName == "" || cleanName != name {
 		return nil, fmt.Errorf(
 			"'name' argument is expected to be non-empty and it must NOT contain leading/trailing spaces")
+	}
+
+	if name != strings.ToLower(name) {
+		return nil, fmt.Errorf("'name' argument is not expected to contain any uppercase letters")
 	}
 
 	rec, err := objMgr.GetARecordByRef(ref)
