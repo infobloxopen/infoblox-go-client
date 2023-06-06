@@ -412,6 +412,45 @@ var _ = Describe("Object Manager: A-record", func() {
 		})
 	})
 
+	Describe("Update A Record name with uppercase letters", func() {
+		var (
+			err    error
+			objMgr IBObjectManager
+			conn   *fakeConnector
+		)
+
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+
+		dnsView := "default"
+		initDnsName := "arec1.test.loc"
+		refBase := "ZG5zLm5ldHdvcmtfdmlldyQyMw"
+		ipAddr := "10.2.1.56"
+		newDnsName := "arecNEW1.test.loc"
+		ttl := uint32(9)
+		useTtl := true
+
+		It("Negative case: updating A Record with uppercase letters", func() {
+			initRef := fmt.Sprintf(
+				"record:a/%s:%s/%s/%s",
+				refBase, ipAddr, initDnsName, dnsView)
+			getObjIn := NewEmptyRecordA()
+
+			conn = &fakeConnector{
+				getObjectObj:         getObjIn,
+				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectRef:         initRef,
+				getObjectError:       fmt.Errorf("test error"),
+				resultObject:         NewEmptyRecordA(),
+				fakeRefReturn:        "",
+			}
+			objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+			_, err = objMgr.UpdateARecord(initRef, newDnsName, ipAddr, "", "", ttl, useTtl, "some comment", nil)
+			Expect(err).ToNot(BeNil())
+		})
+	})
+
 	Describe("Delete A Record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
