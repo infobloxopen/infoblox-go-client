@@ -66,7 +66,6 @@ func (objMgr *ObjectManager) DeleteCNAMERecord(ref string) (string, error) {
 
 func (objMgr *ObjectManager) UpdateCNAMERecord(
 	ref string,
-	dnsView string,
 	canonical string,
 	recordName string,
 	useTtl bool,
@@ -74,7 +73,7 @@ func (objMgr *ObjectManager) UpdateCNAMERecord(
 	comment string,
 	setEas EA) (*RecordCNAME, error) {
 
-	recordCNAME := NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, setEas, ref)
+	recordCNAME := NewRecordCNAME("", canonical, recordName, useTtl, ttl, comment, setEas, ref)
 	updatedRef, err := objMgr.connector.UpdateObject(recordCNAME, ref)
 	if err != nil {
 		return nil, err
