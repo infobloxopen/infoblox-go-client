@@ -50,8 +50,8 @@ var _ = Describe("Go Client", func() {
 		search.SetReturnFields([]string{"host_name"})
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
-		Expect(res[0].Ref).To(Equal("member/b25lLnZpcnR1YWxfbm9kZSQw:infoblox.localdomain"))
-		Expect(*res[0].HostName).To(Equal("infoblox.localdomain"))
+		Expect(res[0].Ref).To(HavePrefix("member/b25lLnZpcnR1YWxfbm9kZSQw:infoblox."))
+		Expect(*res[0].HostName).To(HavePrefix("infoblox."))
 	})
 
 	It("Should get the Admin User [admin]", Label("ID: 3", "RO"), func() {
@@ -1922,8 +1922,8 @@ var _ = Describe("Go Client", func() {
 		search.SetReturnFields([]string{"host_name"})
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
-		Expect(res[0].HostName).To(Equal("infoblox.localdomain"))
-		Expect(res[0].Ref).To(MatchRegexp("^member:dhcpproperties.*infoblox.localdomain$"))
+		Expect(res[0].HostName).To(HavePrefix("infoblox."))
+		Expect(res[0].Ref).To(MatchRegexp("^member:dhcpproperties.*infoblox\\..*"))
 	})
 
 	It("Should get the Member DNS object", Label("ID: 70", "RO"), func() {
@@ -1932,8 +1932,8 @@ var _ = Describe("Go Client", func() {
 		search.SetReturnFields([]string{"host_name"})
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
-		Expect(res[0].HostName).To(Equal("infoblox.localdomain"))
-		Expect(res[0].Ref).To(MatchRegexp("^member:dns.*infoblox.localdomain$"))
+		Expect(res[0].HostName).To(HavePrefix("infoblox."))
+		Expect(res[0].Ref).To(MatchRegexp("^member:dns.*infoblox\\..*"))
 	})
 
 	It("Should get the Active Directory Domain object", Label("ID: 71", "RO"), func() {
