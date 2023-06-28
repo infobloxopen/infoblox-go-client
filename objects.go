@@ -174,11 +174,12 @@ func (SingleRequest) ObjectType() string {
 }
 
 type NetworkContainerNextAvailable struct {
-	IBBase     `json:"-"`
-	objectType string
-	Network    *NetworkContainerNextAvailableInfo `json:"network"`
-	Comment    string                             `json:"comment"`
-	Ea         EA                                 `json:"extattrs"`
+	IBBase      `json:"-"`
+	objectType  string
+	Network     *NetworkContainerNextAvailableInfo `json:"network"`
+	NetviewName string                             `json:"network_view,omitempty"`
+	Comment     string                             `json:"comment"`
+	Ea          EA                                 `json:"extattrs"`
 }
 
 func (nc *NetworkContainerNextAvailable) ObjectType() string {
@@ -214,9 +215,10 @@ func NewNetworkContainerNextAvailableInfo(netview, cidr string, prefixLen uint, 
 
 func NewNetworkContainerNextAvailable(ncav *NetworkContainerNextAvailableInfo, isIPv6 bool, comment string, ea EA) *NetworkContainerNextAvailable {
 	nc := &NetworkContainerNextAvailable{
-		Network: ncav,
-		Ea:      ea,
-		Comment: comment,
+		Network:     ncav,
+		NetviewName: ncav.NetviewName,
+		Ea:          ea,
+		Comment:     comment,
 	}
 
 	if isIPv6 {
@@ -405,6 +407,38 @@ func NewLicense(license License) *License {
 	result.objectType = "member:license"
 	result.returnFields = returnFields
 	return &result
+}
+
+var mxRecordReturnFieldsList = []string{"mail_exchanger", "view", "name", "preference", "ttl", "use_ttl", "comment", "extattrs", "zone"}
+
+func NewEmptyRecordMX() *RecordMX {
+	res := &RecordMX{}
+	res.returnFields = mxRecordReturnFieldsList
+
+	return res
+}
+
+func NewRecordMX(rm RecordMX) *RecordMX {
+	res := rm
+	res.returnFields = mxRecordReturnFieldsList
+
+	return &res
+}
+
+var srvRecordReturnFieldsList = []string{"name", "view", "priority", "weight", "port", "target", "ttl", "use_ttl", "comment", "extattrs", "zone"}
+
+func NewEmptyRecordSRV() *RecordSRV {
+	res := RecordSRV{}
+	res.returnFields = srvRecordReturnFieldsList
+
+	return &res
+}
+
+func NewRecordSRV(rv RecordSRV) *RecordSRV {
+	res := rv
+	res.returnFields = srvRecordReturnFieldsList
+
+	return &res
 }
 
 // UnixTime is used to marshall/unmarshall epoch seconds
