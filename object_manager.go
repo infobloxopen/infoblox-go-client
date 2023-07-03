@@ -28,7 +28,7 @@ type IBObjectManager interface {
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
-	CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error)
+	CreateZoneDelegated(fqdn string, delegate_to []NameServer, NsGroup string) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
@@ -90,7 +90,7 @@ type IBObjectManager interface {
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
-	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
+	UpdateZoneDelegated(ref string, delegate_to []NameServer, ns_group string) (*ZoneDelegated, error)
 }
 
 type ObjectManager struct {
@@ -271,10 +271,12 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 }
 
 // CreateZoneDelegated creates delegated zone
-func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
+func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer, ns_group string) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{
 		Fqdn:       fqdn,
-		DelegateTo: delegate_to})
+		DelegateTo: delegate_to,
+		NsGroup:    ns_group,
+	})
 
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref
@@ -283,10 +285,12 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []Name
 }
 
 // UpdateZoneDelegated updates delegated zone
-func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
+func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer, ns_group string) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{
 		Ref:        ref,
-		DelegateTo: delegate_to})
+		DelegateTo: delegate_to,
+		NsGroup:    ns_group,
+	})
 
 	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
 	zoneDelegated.Ref = refResp
