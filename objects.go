@@ -936,12 +936,13 @@ type ZoneDelegated struct {
 	DelegateTo []NameServer `json:"delegate_to,omitempty"`
 	View       string       `json:"view,omitempty"`
 	Ea         EA           `json:"extattrs"`
+	NsGroup    string       `json:"ns_group,omitempty"`
 }
 
 func NewZoneDelegated(za ZoneDelegated) *ZoneDelegated {
 	res := za
 	res.objectType = "zone_delegated"
-	res.returnFields = []string{"extattrs", "fqdn", "view", "delegate_to"}
+	res.returnFields = []string{"extattrs", "fqdn", "view", "delegate_to", "ns_group"}
 
 	return &res
 }
