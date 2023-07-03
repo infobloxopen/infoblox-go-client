@@ -947,6 +947,23 @@ func NewZoneDelegated(za ZoneDelegated) *ZoneDelegated {
 	return &res
 }
 
+type NsGroupDelegation struct {
+	IBBase     `json:"-"`
+	Ref        string       `json:"_ref,omitempty"`
+	Name       string       `json:"name"`
+	Comment    string       `json:"commend,omitempty"`
+	Ea         EA           `json:"extattrs"`
+	DelegateTo []NameServer `json:"delegate_to,omitempty"`
+}
+
+func NewNsGroupDelegation(ngd NsGroupDelegation) *NsGroupDelegation {
+	res := ngd
+	res.objectType = "nsgroup:delegation"
+	res.returnFields = []string{"extattrs", "name", "comment", "delegate_to"}
+
+	return &res
+}
+
 func (ea EA) Count() int {
 	return len(ea)
 }
