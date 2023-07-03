@@ -936,12 +936,30 @@ type ZoneDelegated struct {
 	DelegateTo []NameServer `json:"delegate_to,omitempty"`
 	View       string       `json:"view,omitempty"`
 	Ea         EA           `json:"extattrs"`
+	NsGroup    string       `json:"ns_group,omitempty"`
 }
 
 func NewZoneDelegated(za ZoneDelegated) *ZoneDelegated {
 	res := za
 	res.objectType = "zone_delegated"
-	res.returnFields = []string{"extattrs", "fqdn", "view", "delegate_to"}
+	res.returnFields = []string{"extattrs", "fqdn", "view", "delegate_to", "ns_group"}
+
+	return &res
+}
+
+type NsGroupDelegation struct {
+	IBBase     `json:"-"`
+	Ref        string       `json:"_ref,omitempty"`
+	Name       string       `json:"name"`
+	Comment    string       `json:"commend,omitempty"`
+	Ea         EA           `json:"extattrs"`
+	DelegateTo []NameServer `json:"delegate_to,omitempty"`
+}
+
+func NewNsGroupDelegation(ngd NsGroupDelegation) *NsGroupDelegation {
+	res := ngd
+	res.objectType = "nsgroup:delegation"
+	res.returnFields = []string{"extattrs", "name", "comment", "delegate_to"}
 
 	return &res
 }
