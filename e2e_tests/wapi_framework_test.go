@@ -1282,7 +1282,8 @@ var _ = Describe("Go Client", func() {
 
 					var res []ibclient.Ipv4FixedAddress
 					search := &ibclient.Ipv4FixedAddress{}
-					err = connector.GetObject(search, "", nil, &res)
+					qp := ibclient.NewQueryParams(false, map[string]string{"ipv4addr": "92.0.0.2"})
+					err = connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("^fixedaddress.*92\\.0\\.0\\.2/dhcpview"))
 					Expect(*res[0].Ipv4Addr).To(MatchRegexp("92.0.0.2"))
@@ -1304,7 +1305,7 @@ var _ = Describe("Go Client", func() {
 					var resUpd []ibclient.Ipv4FixedAddress
 					searchUpd := &ibclient.Ipv4FixedAddress{}
 					searchUpd.SetReturnFields(append(searchUpd.ReturnFields(), "mac", "comment", "deny_bootp", "pxe_lease_time"))
-					err = connector.GetObject(searchUpd, "", nil, &resUpd)
+					err = connector.GetObject(searchUpd, "", qp, &resUpd)
 					Expect(err).To(BeNil())
 					Expect(*resUpd[0].Comment).To(Equal("changed it"))
 					Expect(*resUpd[0].NetworkView).To(Equal("dhcpview"))
@@ -1443,7 +1444,8 @@ var _ = Describe("Go Client", func() {
 		It("Should get the IPv6 Network [1::/16]", Label("ID: 79", "RO"), func() {
 			var res []ibclient.Ipv6Network
 			search := &ibclient.Ipv6Network{}
-			err := connector.GetObject(search, "", nil, &res)
+			qp := ibclient.NewQueryParams(false, map[string]string{"network": "1::/16"})
+			err := connector.GetObject(search, "", qp, &res)
 			Expect(err).To(BeNil())
 			Expect(*res[0].Comment).To(Equal("Add ipv6network through WAPI"))
 			Expect(*res[0].NetworkView).To(Equal("default"))
