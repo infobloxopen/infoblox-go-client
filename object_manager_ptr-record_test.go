@@ -457,6 +457,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv4Addr = &updateIpAddr
 
+			if *updateObjIn.Name == "" {
+				updateObjIn.Name = nil
+			}
+			expectedObj.Name = updateObjIn.Name
+
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
 				getObjectQueryParams: NewQueryParams(false, nil),
@@ -510,6 +515,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv6Addr = &updateIpAddr
+
+			if *updateObjIn.Name == "" {
+				updateObjIn.Name = nil
+			}
+			expectedObj.Name = updateObjIn.Name
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
@@ -565,6 +575,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv4Addr = &updateIpAddr
 
+			if *updateObjIn.Name == "" {
+				updateObjIn.Name = nil
+			}
+			expectedObj.Name = updateObjIn.Name
+
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
 				getObjectQueryParams: NewQueryParams(false, nil),
@@ -618,6 +633,11 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv6Addr = &updateIpAddr
+
+			if *updateObjIn.Name == "" {
+				updateObjIn.Name = nil
+			}
+			expectedObj.Name = updateObjIn.Name
 
 			conn = &fakeConnector{
 				getObjectObj:         NewEmptyRecordPTR(),
