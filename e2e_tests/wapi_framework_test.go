@@ -600,7 +600,8 @@ var _ = Describe("Go Client", func() {
 				var res []ibclient.RecordAAAA
 				search := &ibclient.RecordAAAA{}
 				search.SetReturnFields([]string{"name", "ipv6addr", "comment", "disable", "ttl", "use_ttl", "view"})
-				err := connector.GetObject(search, "", nil, &res)
+				qp := ibclient.NewQueryParams(false, map[string]string{"ipv6addr": "99::99"})
+				err := connector.GetObject(search, "", qp, &res)
 				Expect(err).To(BeNil())
 				Expect(res[0].Ref).To(MatchRegexp("record:aaaa.*aaaa\\.wapi\\.com/default$"))
 				Expect(*res[0].Name).To(Equal("aaaa.wapi.com"))
@@ -628,7 +629,8 @@ var _ = Describe("Go Client", func() {
 					var res []ibclient.RecordAAAA
 					search := &ibclient.RecordAAAA{}
 					search.SetReturnFields([]string{"comment", "disable", "ttl", "use_ttl"})
-					err = connector.GetObject(search, "", nil, &res)
+					qp := ibclient.NewQueryParams(false, map[string]string{"ipv6addr": "99::99"})
+					err = connector.GetObject(search, "", qp, &res)
 					Expect(err).To(BeNil())
 					Expect(res[0].Ref).To(MatchRegexp("record:aaaa.*aaaa\\.wapi\\.com/default$"))
 					Expect(*res[0].Comment).To(Equal("Modified AAAA Record"))
