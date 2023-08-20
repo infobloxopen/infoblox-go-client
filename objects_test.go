@@ -749,6 +749,35 @@ var _ = Describe("Objects", func() {
 
 	})
 
+	Context("RecordNS object", func() {
+			name := "ns.domain.com"
+			ns   := "ns.domain.com"
+			addr := []ZoneNameServer{{
+				Address:  "10.0.0.1"}}
+			view := "default"
+			zone := "domain.com"
+
+			rt := NewRecordNS(RecordNS{
+				Name:      name,
+				NS:        ns,
+				Addresses: addr,
+				View:      view,
+				Zone:      zone})
+
+			It("should set fields correctly", func() {
+				Expect(rt.Name).To(Equal(name))
+				Expect(rt.NS).To(Equal(ns))
+				Expect(rt.Addresses).To(Equal(addr))
+				Expect(rt.View).To(Equal(view))
+				Expect(rt.Zone).To(Equal(zone))
+			})
+
+			It("should set base fields correctly", func() {
+				Expect(rt.ObjectType()).To(Equal("record:ns"))
+				Expect(rt.ReturnFields()).To(ConsistOf("extattrs", "name", "nameserver", "addresses", "view", "zone"))
+			})
+		})
+
 	Context("Unmarshalling malformed JSON", func() {
 		Context("for EA", func() {
 			badJSON := `""`
