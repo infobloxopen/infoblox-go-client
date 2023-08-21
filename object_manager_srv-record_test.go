@@ -2,8 +2,9 @@ package ibclient
 
 import (
 	"fmt"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -30,33 +31,33 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     name,
-				Priority: priority,
-				Weight:   weight,
-				Port:     port,
-				Target:   target,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Comment:  comment,
+				Name:     &name,
+				Priority: &priority,
+				Weight:   &weight,
+				Port:     &port,
+				Target:   &target,
+				Ttl:      &ttl,
+				UseTtl:   &useTtl,
+				Comment:  &comment,
 				Ea:       eas,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordSRV(RecordSRV{
 				View: dnsView,
-				Name: name,
+				Name: &name,
 				Ref:  fakeRefReturn,
 			}),
 			resultObject: NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     name,
-				Priority: priority,
-				Weight:   weight,
-				Port:     port,
-				Target:   target,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
+				Name:     &name,
+				Priority: &priority,
+				Weight:   &weight,
+				Port:     &port,
+				Target:   &target,
+				Ttl:      &ttl,
+				UseTtl:   &useTtl,
 				Ref:      fakeRefReturn,
-				Comment:  comment,
+				Comment:  &comment,
 				Ea:       eas,
 			}),
 			fakeRefReturn: fakeRefReturn,
@@ -98,27 +99,27 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		updateObjIn := NewRecordSRV(RecordSRV{
 			Ref:      ref,
 			View:     "",
-			Name:     updateName,
-			Priority: uint32(20),
-			Weight:   uint32(30),
-			Port:     uint32(88),
-			Target:   "h3.example.com",
-			Ttl:      uint32(100),
-			UseTtl:   true,
-			Comment:  "new comment",
+			Name:     &updateName,
+			Priority: utils.Uint32Ptr(20),
+			Weight:   utils.Uint32Ptr(30),
+			Port:     utils.Uint32Ptr(88),
+			Target:   utils.StringPtr("h3.example.com"),
+			Ttl:      utils.Uint32Ptr(100),
+			UseTtl:   utils.BoolPtr(true),
+			Comment:  utils.StringPtr("new comment"),
 			Ea:       newEas,
 		})
 
 		expectedObj := NewRecordSRV(RecordSRV{
 			Ref:      updateRef,
-			Name:     updateName,
-			Priority: uint32(20),
-			Weight:   uint32(30),
-			Port:     uint32(88),
-			Target:   "h3.example.com",
-			Ttl:      uint32(100),
-			UseTtl:   true,
-			Comment:  "new comment",
+			Name:     &updateName,
+			Priority: utils.Uint32Ptr(20),
+			Weight:   utils.Uint32Ptr(30),
+			Port:     utils.Uint32Ptr(88),
+			Target:   utils.StringPtr("h3.example.com"),
+			Ttl:      utils.Uint32Ptr(100),
+			UseTtl:   utils.BoolPtr(true),
+			Comment:  utils.StringPtr("new comment"),
 			Ea:       newEas,
 		})
 
@@ -177,14 +178,14 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 
 			resultObject: []RecordSRV{*NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     name,
-				Priority: priority,
-				Weight:   weight,
-				Port:     port,
-				Target:   target,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Comment:  comment,
+				Name:     &name,
+				Priority: &priority,
+				Weight:   &weight,
+				Port:     &port,
+				Target:   &target,
+				Ttl:      &ttl,
+				UseTtl:   &useTtl,
+				Comment:  &comment,
 				Ref:      fakeRefReturn,
 			})},
 			fakeRefReturn: fakeRefReturn,

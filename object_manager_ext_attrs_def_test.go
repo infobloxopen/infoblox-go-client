@@ -1,7 +1,7 @@
 package ibclient
 
 import (
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -11,14 +11,14 @@ var _ = Describe("Object Manager: EA definition", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "Test Extensible Attribute"
 		flags := "CGV"
-		listValues := []EADefListValue{"True", "False"}
+		listValues := []*EADefListValue{{"True"}, {"False"}}
 		name := "TestEA"
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
 		ead := EADefinition{
-			Name:               name,
-			Comment:            comment,
-			Flags:              flags,
+			Name:               &name,
+			Comment:            &comment,
+			Flags:              &flags,
 			ListValues:         listValues,
 			Type:               eaType,
 			AllowedObjectTypes: allowedTypes}
@@ -48,18 +48,18 @@ var _ = Describe("Object Manager: EA definition", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "Test Extensible Attribute"
 		flags := "CGV"
-		listValues := []EADefListValue{"True", "False"}
+		listValues := []*EADefListValue{{"True"}, {"False"}}
 		name := "TestEA"
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
 		ead := EADefinition{
-			Name: name,
+			Name: &name,
 		}
 		fakeRefReturn := "extensibleattributedef/ZG5zLm5ldHdvcmtfdmlldyQyMw:TestEA"
 		eadRes := EADefinition{
-			Name:               name,
-			Comment:            comment,
-			Flags:              flags,
+			Name:               &name,
+			Comment:            &comment,
+			Flags:              &flags,
 			ListValues:         listValues,
 			Type:               eaType,
 			AllowedObjectTypes: allowedTypes,

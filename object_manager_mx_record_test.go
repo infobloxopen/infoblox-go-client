@@ -2,8 +2,9 @@ package ibclient
 
 import (
 	"fmt"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -29,32 +30,32 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 		aniFakeConnector := &fakeConnector{
 			createObjectObj: NewRecordMX(RecordMX{
-				View:       dnsView,
-				Fqdn:       fqdn,
-				MX:         mx,
-				Preference: preference,
-				Ttl:        ttl,
-				UseTtl:     useTtl,
-				Comment:    comment,
-				Ea:         eas,
+				View:          &dnsView,
+				Name:          &fqdn,
+				MailExchanger: &mx,
+				Preference:    &preference,
+				Ttl:           &ttl,
+				UseTtl:        &useTtl,
+				Comment:       &comment,
+				Ea:            eas,
 			}),
 			getObjectRef: fakeRefReturn,
 			getObjectObj: NewRecordMX(RecordMX{
-				Fqdn:       fqdn,
-				MX:         mx,
-				Preference: preference,
-				Ref:        fakeRefReturn,
+				Name:          &fqdn,
+				MailExchanger: &mx,
+				Preference:    &preference,
+				Ref:           fakeRefReturn,
 			}),
 			resultObject: NewRecordMX(RecordMX{
-				View:       dnsView,
-				Fqdn:       fqdn,
-				MX:         mx,
-				Preference: preference,
-				Ttl:        ttl,
-				UseTtl:     useTtl,
-				Ref:        fakeRefReturn,
-				Comment:    comment,
-				Ea:         eas,
+				View:          &dnsView,
+				Name:          &fqdn,
+				MailExchanger: &mx,
+				Preference:    &preference,
+				Ttl:           &ttl,
+				UseTtl:        &useTtl,
+				Ref:           fakeRefReturn,
+				Comment:       &comment,
+				Ea:            eas,
 			}),
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -92,15 +93,15 @@ var _ = Describe("Object Manager: MX-record", func() {
 		initialEas := EA{"Country": "old value"}
 
 		initObj := NewRecordMX(RecordMX{
-			Ref:        ref,
-			View:       dnsView,
-			Fqdn:       fqdn,
-			MX:         initMx,
-			Preference: uint32(10),
-			Ttl:        uint32(70),
-			UseTtl:     true,
-			Comment:    initComment,
-			Ea:         initialEas,
+			Ref:           ref,
+			View:          &dnsView,
+			Name:          &fqdn,
+			MailExchanger: &initMx,
+			Preference:    utils.Uint32Ptr(10),
+			Ttl:           utils.Uint32Ptr(70),
+			UseTtl:        utils.BoolPtr(true),
+			Comment:       &initComment,
+			Ea:            initialEas,
 		})
 
 		updatedEAs := EA{"Country": "new value"}
@@ -111,27 +112,27 @@ var _ = Describe("Object Manager: MX-record", func() {
 		updatedPreference := uint32(15)
 		updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 		updateObjIn := NewRecordMX(RecordMX{
-			Ref:        ref,
-			View:       dnsView,
-			Fqdn:       updatedFqdn,
-			MX:         updatedMx,
-			Preference: updatedPreference,
-			Ttl:        updatedTtl,
-			UseTtl:     true,
-			Comment:    updatedComment,
-			Ea:         updatedEAs,
+			Ref:           ref,
+			View:          &dnsView,
+			Name:          &updatedFqdn,
+			MailExchanger: &updatedMx,
+			Preference:    &updatedPreference,
+			Ttl:           &updatedTtl,
+			UseTtl:        utils.BoolPtr(true),
+			Comment:       &updatedComment,
+			Ea:            updatedEAs,
 		})
 
 		expectedObj := NewRecordMX(RecordMX{
-			Ref:        ref,
-			View:       dnsView,
-			Fqdn:       updatedFqdn,
-			MX:         updatedMx,
-			Preference: updatedPreference,
-			Ttl:        updatedTtl,
-			UseTtl:     true,
-			Comment:    updatedComment,
-			Ea:         updatedEAs,
+			Ref:           ref,
+			View:          &dnsView,
+			Name:          &updatedFqdn,
+			MailExchanger: &updatedMx,
+			Preference:    &updatedPreference,
+			Ttl:           &updatedTtl,
+			UseTtl:        utils.BoolPtr(true),
+			Comment:       &updatedComment,
+			Ea:            updatedEAs,
 		})
 
 		conn = &fakeConnector{
@@ -185,15 +186,15 @@ var _ = Describe("Object Manager: MX-record", func() {
 			getObjectObj:         NewEmptyRecordMX(),
 			getObjectQueryParams: NewQueryParams(false, sf),
 			resultObject: []RecordMX{*NewRecordMX(RecordMX{
-				View:       dnsView,
-				Fqdn:       fqdn,
-				MX:         mx,
-				Preference: preference,
-				Ttl:        ttl,
-				UseTtl:     true,
-				Comment:    comment,
-				Ea:         eas,
-				Ref:        fakeRefReturn,
+				View:          &dnsView,
+				Name:          &fqdn,
+				MailExchanger: &mx,
+				Preference:    &preference,
+				Ttl:           &ttl,
+				UseTtl:        utils.BoolPtr(true),
+				Comment:       &comment,
+				Ea:            eas,
+				Ref:           fakeRefReturn,
 			})},
 			fakeRefReturn: fakeRefReturn,
 		}
@@ -228,15 +229,15 @@ var _ = Describe("Object Manager: MX-record", func() {
 			getObjectObj:         NewEmptyRecordMX(),
 			getObjectQueryParams: NewQueryParams(false, nil),
 			resultObject: NewRecordMX(RecordMX{
-				View:       dnsView,
-				Fqdn:       fqdn,
-				MX:         "example.com",
-				Preference: uint32(25),
-				Ttl:        uint32(70),
-				UseTtl:     true,
-				Comment:    "test comment",
-				Ea:         eas,
-				Ref:        readObjRef,
+				View:          &dnsView,
+				Name:          &fqdn,
+				MailExchanger: utils.StringPtr("example.com"),
+				Preference:    utils.Uint32Ptr(25),
+				Ttl:           utils.Uint32Ptr(70),
+				UseTtl:        utils.BoolPtr(true),
+				Comment:       utils.StringPtr("test comment"),
+				Ea:            eas,
+				Ref:           readObjRef,
 			}),
 			fakeRefReturn: readObjRef,
 		}

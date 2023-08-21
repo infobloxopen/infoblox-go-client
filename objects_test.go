@@ -3,7 +3,8 @@ package ibclient
 import (
 	"encoding/json"
 
-	. "github.com/onsi/ginkgo"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -11,18 +12,18 @@ var _ = Describe("Objects", func() {
 
 	Context("Grid object", func() {
 
-		tesNtpserver := NTPserver{
+		tesNtpserver := &NTPserver{
 			Address:              "16.4.1.2",
 			Burst:                true,
 			EnableAuthentication: true,
 			IBurst:               true,
-			Preffered:            true,
+			Preferred:            true,
 		}
-		grid := Grid{Name: "test", NTPSetting: &NTPSetting{EnableNTP: true,
+		grid := Grid{Name: utils.StringPtr("test"), NTPSetting: &NTPSetting{EnableNTP: true,
 			NTPAcl:     nil,
 			NTPKeys:    nil,
 			NTPKod:     false,
-			NTPServers: []NTPserver{tesNtpserver},
+			NTPServers: []*NTPserver{tesNtpserver},
 		},
 		}
 		gridJSON := `{
@@ -34,7 +35,7 @@ var _ = Describe("Objects", func() {
 					"burst": true,
 					"enable_authentication": true,
 					"iburst": true,
-					"preffered": true
+					"preferred": true
 					}]
 				}
 				}`
@@ -140,7 +141,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Context("EADefListValue Object", func() {
-		var eadListVal EADefListValue = "Host Record"
+		eadListVal := EADefListValue{"Host Record"}
 
 		eadListValJSON := `{"value": "Host Record"}`
 
@@ -184,8 +185,8 @@ var _ = Describe("Objects", func() {
 			nv := NewNetworkView(name, comment, setEas, ref)
 
 			It("should set fields correctly", func() {
-				Expect(nv.Name).To(Equal(name))
-				Expect(nv.Comment).To(Equal(comment))
+				Expect(*nv.Name).To(Equal(name))
+				Expect(*nv.Comment).To(Equal(comment))
 				Expect(nv.Ea).To(Equal(setEas))
 				Expect(nv.Ref).To(Equal(ref))
 			})
@@ -342,23 +343,23 @@ var _ = Describe("Objects", func() {
 		Context("EADefinition object", func() {
 			comment := "Test Extensible Attribute"
 			flags := "CGV"
-			listValues := []EADefListValue{"True", "False"}
+			listValues := []*EADefListValue{{"True"}, {"False"}}
 			name := "Test EA"
 			eaType := "string"
 			allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
 			eaDef := NewEADefinition(EADefinition{
-				Name:               name,
-				Comment:            comment,
-				Flags:              flags,
+				Name:               &name,
+				Comment:            &comment,
+				Flags:              &flags,
 				ListValues:         listValues,
 				Type:               eaType,
 				AllowedObjectTypes: allowedTypes})
 
 			It("should set fields correctly", func() {
-				Expect(eaDef.Comment).To(Equal(comment))
-				Expect(eaDef.Flags).To(Equal(flags))
+				Expect(*eaDef.Comment).To(Equal(comment))
+				Expect(*eaDef.Flags).To(Equal(flags))
 				Expect(eaDef.ListValues).To(ConsistOf(listValues))
-				Expect(eaDef.Name).To(Equal(name))
+				Expect(*eaDef.Name).To(Equal(name))
 				Expect(eaDef.Type).To(Equal(eaType))
 				Expect(eaDef.AllowedObjectTypes).To(ConsistOf(allowedTypes))
 			})
@@ -394,14 +395,14 @@ var _ = Describe("Objects", func() {
 			ra := NewRecordA(view, zone, name, ipv4addr, ttl, useTTL, comment, eas, "")
 
 			It("should set fields correctly", func() {
-				Expect(ra.Ipv4Addr).To(Equal(ipv4addr))
-				Expect(ra.Name).To(Equal(name))
+				Expect(*ra.Ipv4Addr).To(Equal(ipv4addr))
+				Expect(*ra.Name).To(Equal(name))
 				Expect(ra.View).To(Equal(view))
 				Expect(ra.Zone).To(Equal(zone))
 
-				Expect(ra.Ttl).To(Equal(ttl))
-				Expect(ra.UseTtl).To(Equal(useTTL))
-				Expect(ra.Comment).To(Equal(comment))
+				Expect(*ra.Ttl).To(Equal(ttl))
+				Expect(*ra.UseTtl).To(Equal(useTTL))
+				Expect(*ra.Comment).To(Equal(comment))
 				Expect(ra.Ea).To(Equal(eas))
 			})
 
@@ -424,12 +425,12 @@ var _ = Describe("Objects", func() {
 			ra := NewRecordAAAA(view, name, ipv6addr, useTtl, ttl, comment, ea, "")
 
 			It("should set fields correctly", func() {
-				Expect(ra.Ipv6Addr).To(Equal(ipv6addr))
-				Expect(ra.Name).To(Equal(name))
+				Expect(*ra.Ipv6Addr).To(Equal(ipv6addr))
+				Expect(*ra.Name).To(Equal(name))
 				Expect(ra.View).To(Equal(view))
-				Expect(ra.UseTtl).To(Equal(useTtl))
-				Expect(ra.Ttl).To(Equal(ttl))
-				Expect(ra.Comment).To(Equal(comment))
+				Expect(*ra.UseTtl).To(Equal(useTtl))
+				Expect(*ra.Ttl).To(Equal(ttl))
+				Expect(*ra.Comment).To(Equal(comment))
 				Expect(ra.Ea).To(Equal(ea))
 			})
 
@@ -452,18 +453,18 @@ var _ = Describe("Objects", func() {
 
 			rptr := NewRecordPTR(view, ptrdname, useTtl, ttl, comment, eas)
 			rptr.Zone = zone
-			rptr.Ipv4Addr = ipv4addr
-			rptr.Ipv6Addr = ipv6addr
+			rptr.Ipv4Addr = &ipv4addr
+			rptr.Ipv6Addr = &ipv6addr
 
 			It("should set fields correctly", func() {
-				Expect(rptr.Ipv4Addr).To(Equal(ipv4addr))
-				Expect(rptr.Ipv6Addr).To(Equal(ipv6addr))
-				Expect(rptr.PtrdName).To(Equal(ptrdname))
+				Expect(*rptr.Ipv4Addr).To(Equal(ipv4addr))
+				Expect(*rptr.Ipv6Addr).To(Equal(ipv6addr))
+				Expect(*rptr.PtrdName).To(Equal(ptrdname))
 				Expect(rptr.View).To(Equal(view))
 				Expect(rptr.Zone).To(Equal(zone))
-				Expect(rptr.UseTtl).To(Equal(useTtl))
-				Expect(rptr.Ttl).To(Equal(ttl))
-				Expect(rptr.Comment).To(Equal(comment))
+				Expect(*rptr.UseTtl).To(Equal(useTtl))
+				Expect(*rptr.Ttl).To(Equal(ttl))
+				Expect(*rptr.Comment).To(Equal(comment))
 				Expect(rptr.Ea).To(Equal(eas))
 			})
 
@@ -495,12 +496,12 @@ var _ = Describe("Objects", func() {
 			rc := NewRecordCNAME(view, canonical, name, useTtl, ttl, comment, eas, "")
 
 			It("should set fields correctly", func() {
-				Expect(rc.Canonical).To(Equal(canonical))
-				Expect(rc.Name).To(Equal(name))
-				Expect(rc.UseTtl).To(Equal(useTtl))
-				Expect(rc.Ttl).To(Equal(ttl))
-				Expect(rc.View).To(Equal(view))
-				Expect(rc.Comment).To(Equal(comment))
+				Expect(*rc.Canonical).To(Equal(canonical))
+				Expect(*rc.Name).To(Equal(name))
+				Expect(*rc.UseTtl).To(Equal(useTtl))
+				Expect(*rc.Ttl).To(Equal(ttl))
+				Expect(*rc.View).To(Equal(view))
+				Expect(*rc.Comment).To(Equal(comment))
 				Expect(rc.Ea).To(Equal(eas))
 			})
 
@@ -517,8 +518,8 @@ var _ = Describe("Objects", func() {
 			hostAddr := NewHostRecordIpv4Addr(ipAddress, mac, enableDHCP, "")
 
 			It("should set fields correctly", func() {
-				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
-				Expect(hostAddr.Mac).To(Equal(mac))
+				Expect(*hostAddr.Ipv4Addr).To(Equal(ipAddress))
+				Expect(*hostAddr.Mac).To(Equal(mac))
 			})
 
 			It("should set base fields correctly", func() {
@@ -533,7 +534,7 @@ var _ = Describe("Objects", func() {
 			hostAddr := NewHostRecordIpv4Addr(ipAddress, "", enableDHCP, "")
 
 			It("should set fields correctly", func() {
-				Expect(hostAddr.Ipv4Addr).To(Equal(ipAddress))
+				Expect(*hostAddr.Ipv4Addr).To(Equal(ipAddress))
 			})
 
 			It("should set base fields correctly", func() {
@@ -549,8 +550,8 @@ var _ = Describe("Objects", func() {
 			hostAddr := NewHostRecordIpv6Addr(ipAddress, duid, enableDHCP, "")
 
 			It("should set fields correctly", func() {
-				Expect(hostAddr.Ipv6Addr).To(Equal(ipAddress))
-				Expect(hostAddr.Duid).To(Equal(duid))
+				Expect(*hostAddr.Ipv6Addr).To(Equal(ipAddress))
+				Expect(*hostAddr.Duid).To(Equal(duid))
 			})
 
 			It("should set base fields correctly", func() {
@@ -564,7 +565,7 @@ var _ = Describe("Objects", func() {
 			hostAddr := NewHostRecordIpv6Addr(ipAddress, "", enableDHCP, "")
 
 			It("should set fields correctly", func() {
-				Expect(hostAddr.Ipv6Addr).To(Equal(ipAddress))
+				Expect(*hostAddr.Ipv6Addr).To(Equal(ipAddress))
 			})
 
 			It("should set base fields correctly", func() {
@@ -573,8 +574,8 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordHost object", func() {
-			ipv4addrs := []HostRecordIpv4Addr{{Ipv4Addr: "1.1.1.1"}, {Ipv4Addr: "2.2.2.2"}}
-			ipv6addrs := []HostRecordIpv6Addr{{Ipv6Addr: "fc00::0100"}, {Ipv6Addr: "fc00::0101"}}
+			ipv4addrs := []HostRecordIpv4Addr{{Ipv4Addr: utils.StringPtr("1.1.1.1")}, {Ipv4Addr: utils.StringPtr("2.2.2.2")}}
+			ipv6addrs := []HostRecordIpv6Addr{{Ipv6Addr: utils.StringPtr("fc00::0100")}, {Ipv6Addr: utils.StringPtr("fc00::0101")}}
 			name := "bind_host.domain.com"
 			view := "default"
 			zone := "domain.com"
@@ -590,10 +591,10 @@ var _ = Describe("Objects", func() {
 			It("should set fields correctly", func() {
 				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))
 				Expect(rh.Ipv6Addrs).To(Equal(ipv6addrs))
-				Expect(rh.Name).To(Equal(name))
-				Expect(rh.View).To(Equal(view))
+				Expect(*rh.Name).To(Equal(name))
+				Expect(*rh.View).To(Equal(view))
 				Expect(rh.Zone).To(Equal(zone))
-				Expect(rh.Comment).To(Equal(comment))
+				Expect(*rh.Comment).To(Equal(comment))
 				Expect(rh.Aliases).To(Equal(aliases))
 			})
 
@@ -615,24 +616,24 @@ var _ = Describe("Objects", func() {
 			eas := EA{"Country": "test"}
 
 			rm := NewRecordMX(RecordMX{
-				Fqdn:       fqdn,
-				MX:         mx,
-				View:       dnsView,
-				Preference: priority,
-				Ttl:        ttl,
-				UseTtl:     useTtl,
-				Comment:    comment,
-				Ea:         eas,
+				Name:          &fqdn,
+				MailExchanger: &mx,
+				View:          &dnsView,
+				Preference:    &priority,
+				Ttl:           &ttl,
+				UseTtl:        &useTtl,
+				Comment:       &comment,
+				Ea:            eas,
 			})
 
 			It("should set fields correctly", func() {
-				Expect(rm.Fqdn).To(Equal(fqdn))
-				Expect(rm.MX).To(Equal(mx))
-				Expect(rm.View).To(Equal(dnsView))
-				Expect(rm.Preference).To(Equal(priority))
-				Expect(rm.Ttl).To(Equal(ttl))
-				Expect(rm.UseTtl).To(Equal(useTtl))
-				Expect(rm.Comment).To(Equal(comment))
+				Expect(*rm.Name).To(Equal(fqdn))
+				Expect(*rm.MailExchanger).To(Equal(mx))
+				Expect(*rm.View).To(Equal(dnsView))
+				Expect(*rm.Preference).To(Equal(priority))
+				Expect(*rm.Ttl).To(Equal(ttl))
+				Expect(*rm.UseTtl).To(Equal(useTtl))
+				Expect(*rm.Comment).To(Equal(comment))
 				Expect(rm.Ea).To(Equal(eas))
 			})
 
@@ -656,27 +657,27 @@ var _ = Describe("Objects", func() {
 
 			rv := NewRecordSRV(RecordSRV{
 				View:     dnsView,
-				Name:     name,
-				Priority: priority,
-				Weight:   weight,
-				Port:     port,
-				Target:   target,
-				Ttl:      ttl,
-				UseTtl:   useTtl,
-				Comment:  comment,
+				Name:     &name,
+				Priority: &priority,
+				Weight:   &weight,
+				Port:     &port,
+				Target:   &target,
+				Ttl:      &ttl,
+				UseTtl:   &useTtl,
+				Comment:  &comment,
 				Ea:       eas,
 			})
 
 			It("should set field correctly", func() {
 				Expect(rv.View).To(Equal(dnsView))
-				Expect(rv.Name).To(Equal(name))
-				Expect(rv.Priority).To(Equal(priority))
-				Expect(rv.Weight).To(Equal(weight))
-				Expect(rv.Port).To(Equal(port))
-				Expect(rv.Target).To(Equal(target))
-				Expect(rv.Ttl).To(Equal(ttl))
-				Expect(rv.UseTtl).To(Equal(useTtl))
-				Expect(rv.Comment).To(Equal(comment))
+				Expect(*rv.Name).To(Equal(name))
+				Expect(*rv.Priority).To(Equal(priority))
+				Expect(*rv.Weight).To(Equal(weight))
+				Expect(*rv.Port).To(Equal(port))
+				Expect(*rv.Target).To(Equal(target))
+				Expect(*rv.Ttl).To(Equal(ttl))
+				Expect(*rv.UseTtl).To(Equal(useTtl))
+				Expect(*rv.Comment).To(Equal(comment))
 				Expect(rv.Ea).To(Equal(eas))
 			})
 			It("should set base fields correctly", func() {
@@ -698,9 +699,9 @@ var _ = Describe("Objects", func() {
 			rt := NewRecordTXT(view, "", name, text, ttl, useTtl, comment, eas)
 
 			It("should set fields correctly", func() {
-				Expect(rt.View).To(Equal(view))
-				Expect(rt.Name).To(Equal(name))
-				Expect(rt.Text).To(Equal(text))
+				Expect(*rt.View).To(Equal(view))
+				Expect(*rt.Name).To(Equal(name))
+				Expect(*rt.Text).To(Equal(text))
 			})
 
 			It("should set base fields correctly", func() {
@@ -715,11 +716,11 @@ var _ = Describe("Objects", func() {
 
 			za := NewZoneAuth(ZoneAuth{
 				Fqdn: fqdn,
-				View: view})
+				View: &view})
 
 			It("should set fields correctly", func() {
 				Expect(za.Fqdn).To(Equal(fqdn))
-				Expect(za.View).To(Equal(view))
+				Expect(*za.View).To(Equal(view))
 			})
 
 			It("should set base fields correctly", func() {
@@ -734,11 +735,11 @@ var _ = Describe("Objects", func() {
 
 			za := NewZoneDelegated(ZoneDelegated{
 				Fqdn: fqdn,
-				View: view})
+				View: &view})
 
 			It("should set fields correctly", func() {
 				Expect(za.Fqdn).To(Equal(fqdn))
-				Expect(za.View).To(Equal(view))
+				Expect(*za.View).To(Equal(view))
 			})
 
 			It("should set base fields correctly", func() {

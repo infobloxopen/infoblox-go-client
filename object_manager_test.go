@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -374,7 +374,6 @@ var _ = Describe("Object Manager", func() {
 			Expect(err).To(BeNil())
 		})
 		It("should return empty ZoneAuth and nil error if ref is empty", func() {
-			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.objectType = ""
 			zdFakeConnector.getObjectObj.(*ZoneAuth).IBBase.returnFields = nil
 			actualZoneAuth, err = objMgr.GetZoneAuthByRef("")
 			Expect(actualZoneAuth).To(Equal(getNoRef))

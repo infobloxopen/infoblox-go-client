@@ -3,7 +3,7 @@ package ibclient
 import (
 	"fmt"
 
-	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
@@ -78,7 +78,7 @@ var _ = Describe("Object Manager: A-record", func() {
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.resultObject.([]RecordA)[0].Ipv4Addr = ipAddr
+		conn.resultObject.([]RecordA)[0].Ipv4Addr = &ipAddr
 		var actualRecord *RecordA
 		var err error
 		It("should pass expected A record Object to GetObject", func() {
