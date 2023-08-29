@@ -88,6 +88,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]RecordA) = c.resultObject.([]RecordA)
 		case *RecordMX:
 			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
+		case *IPv4Address:
+			*res.(*[]IPv4Address) = c.resultObject.([]IPv4Address)
 		}
 	} else {
 		switch obj.(type) {
@@ -518,6 +520,45 @@ var _ = Describe("Object Manager", func() {
 		})
 		It("should return expected ZoneDelegated Ref", func() {
 			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Get IPAddressInfo", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		sf := map[string]string{
+			"ip_address": "10.197.38.235",
+		}
+		zdFakeConnector := &fakeConnector{
+			getObjectQueryParams: NewQueryParams(false, sf),
+			getObjectObj:         &IPv4Address{},
+			resultObject: []IPv4Address{{
+				IBBase:      IBBase{},
+				Ref:         "ipv4address/Li5pcHY0X2FkZHJlc3MkMTAuMTk3LjM4LjIzNS8w:10.197.38.235",
+				IpAddress:   "10.197.38.235",
+				Names:       []string{"custom.example.k8s.org", "infoblox.localdomain"},
+				Network:     "10.197.38.0/24",
+				NetworkView: "default",
+				Objects: []string{
+					"record:a/ZG5zLmJpbmRfYSQuMS5vcmcuazhzLmV4YW1wbGUsY3VzdG9tLDEwLjE5Ny4zOC4yMzU:custom.example.k8s.org/non-default",
+					"record:ptr/ZG5zLmJpbmRfcHRyJC5fZGVmYXVsdC5hcnBhLmluLWFkZHIuMTAuMTk3LjM4LjIzNS5pbmZvYmxveC5sb2NhbGRvbWFpbg:235.38.197.10.in-addr.arpa/default",
+					"record:ptr/ZG5zLmJpbmRfcHRyJC4xLmFycGEuaW4tYWRkci4xMC4xOTcuMzguMjM1LmN1c3RvbS5leGFtcGxlLms4cy5vcmc:235.38.197.10.in-addr.arpa/non-default",
+				},
+				Status: "USED",
+				Types:  []string{"A", "PTR"},
+				Usage:  []string{"DNS"},
+			}},
+		}
+		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+
+		var actualObj []IPv4Address
+		var err error
+		It("should pass expected get IPAddressInfo", func() {
+			actualObj, err = objMgr.GetIPAddressInfo("10.197.38.235")
+		})
+		It("Should return IPv4 Address info", func() {
+			Expect(actualObj).ToNot(BeNil())
 			Expect(err).To(BeNil())
 		})
 	})
