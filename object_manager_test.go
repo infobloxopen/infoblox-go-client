@@ -528,17 +528,16 @@ var _ = Describe("Object Manager", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		sf := map[string]string{
-			"ip_address": "10.197.38.235",
+			"ip_address": "dummy",
 		}
 		zdFakeConnector := &fakeConnector{
 			getObjectQueryParams: NewQueryParams(false, sf),
 			getObjectObj:         &IPv4Address{},
 			resultObject: []IPv4Address{{
-				IBBase:      IBBase{},
-				Ref:         "ipv4address/Li5pcHY0X2FkZHJlc3MkMTAuMTk3LjM4LjIzNS8w:10.197.38.235",
-				IpAddress:   "10.197.38.235",
+				Ref:         "ipv4address/Li5pcHY0X2FkZHJlc3MkMTAuMTk3LjM4LjIzNS8w:dummy",
+				IpAddress:   "dummy",
 				Names:       []string{"custom.example.k8s.org", "infoblox.localdomain"},
-				Network:     "10.197.38.0/24",
+				Network:     "dummy/24",
 				NetworkView: "default",
 				Objects: []string{
 					"record:a/ZG5zLmJpbmRfYSQuMS5vcmcuazhzLmV4YW1wbGUsY3VzdG9tLDEwLjE5Ny4zOC4yMzU:custom.example.k8s.org/non-default",
@@ -555,9 +554,7 @@ var _ = Describe("Object Manager", func() {
 		var actualObj []IPv4Address
 		var err error
 		It("should pass expected get IPAddressInfo", func() {
-			actualObj, err = objMgr.GetIPAddressInfo("10.197.38.235")
-		})
-		It("Should return IPv4 Address info", func() {
+			actualObj, err = objMgr.GetIPAddressInfo("dummy")
 			Expect(actualObj).ToNot(BeNil())
 			Expect(err).To(BeNil())
 		})

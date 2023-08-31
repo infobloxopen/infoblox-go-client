@@ -302,7 +302,7 @@ func (objMgr *ObjectManager) DeleteZoneDelegated(ref string) (string, error) {
 // GetIPAddressInfo returns information related to an ipv4 address
 func (objMgr *ObjectManager) GetIPAddressInfo(ipAddr string) ([]IPv4Address, error) {
 	if ipAddr == "" {
-		return nil, fmt.Errorf("'IP address should not be empty")
+		return nil, fmt.Errorf("empty ipAddr value is not allowed")
 	}
 
 	sf := map[string]string{
@@ -318,7 +318,7 @@ func (objMgr *ObjectManager) GetIPAddressInfo(ipAddr string) ([]IPv4Address, err
 	if err != nil {
 		return nil, err
 	} else if res == nil || len(res) == 0 {
-		return nil, NewNotFoundError(fmt.Sprintf("Information for IPv4 address '%s' is not found", ipAddr))
+		return nil, NewNotFoundError(fmt.Sprintf("failed to get IPV4 address object '%s' ", ipAddr))
 	}
 
 	return res, err
