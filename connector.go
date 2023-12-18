@@ -252,8 +252,8 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 	}
 
 	scheme := "https"
-	if wrb.hostCfg.Scheme != "" {
-		scheme = wrb.hostCfg.Scheme
+	if wrb.hostCfg.Scheme == "http" {
+		scheme = "http"
 	}
 	u := url.URL{
 		Scheme:   scheme,
