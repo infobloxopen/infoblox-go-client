@@ -28,6 +28,7 @@ type AuthConfig struct {
 }
 
 type HostConfig struct {
+	Scheme  string
 	Host    string
 	Version string
 	Port    string
@@ -250,8 +251,12 @@ func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref strin
 		qry = vals.Encode()
 	}
 
+	scheme := "https"
+	if wrb.hostCfg.Scheme != "" {
+		scheme = wrb.hostCfg.Scheme
+	}
 	u := url.URL{
-		Scheme:   "https",
+		Scheme:   scheme,
 		Host:     wrb.hostCfg.Host + ":" + wrb.hostCfg.Port,
 		Path:     strings.Join(path, "/"),
 		RawQuery: qry,
