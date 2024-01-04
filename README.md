@@ -41,6 +41,7 @@ This library is compatible with Go 1.2+
 
        func main() {
          hostConfig := ibclient.HostConfig{
+            Scheme:  "https",
          	Host:    "<NIOS grid IP>",
             Version: "<WAPI version>",
             Port:    "PORT",
