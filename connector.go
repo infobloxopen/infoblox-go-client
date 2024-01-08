@@ -25,6 +25,8 @@ type AuthConfig struct {
 
 	ClientCert []byte
 	ClientKey  []byte
+
+	Headers map[string][]string
 }
 
 type HostConfig struct {
@@ -67,6 +69,15 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 	cfg.HttpRequestTimeout = time.Duration(httpRequestTimeout)
 
 	return
+}
+
+func (a *AuthConfig) NewHeaders(headers map[string][]string) {
+	if a.Headers == nil {
+		a.Headers = make(map[string][]string)
+	}
+	for key, value := range headers {
+		a.Headers[key] = value
+	}
 }
 
 type HttpRequestBuilder interface {
@@ -330,7 +341,16 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 		log.Printf("cannot build request: '%s'", err)
 		return
 	}
-	req.Header.Set("Content-Type", "application/json")
+
+	if wrb.authCfg.Headers != nil {
+		for key, value := range wrb.authCfg.Headers {
+			for _, v := range value {
+				req.Header.Add(key, v)
+			}
+		}
+	} else {
+		req.Header.Set("Content-Type", "application/json")
+	}
 	if wrb.authCfg.Username != "" {
 		req.SetBasicAuth(wrb.authCfg.Username, wrb.authCfg.Password)
 	}
