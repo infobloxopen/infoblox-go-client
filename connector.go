@@ -348,9 +348,8 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 				req.Header.Add(key, v)
 			}
 		}
-	} else {
-		req.Header.Set("Content-Type", "application/json")
 	}
+	req.Header.Set("Content-Type", "application/json")
 	if wrb.authCfg.Username != "" {
 		req.SetBasicAuth(wrb.authCfg.Username, wrb.authCfg.Password)
 	}
