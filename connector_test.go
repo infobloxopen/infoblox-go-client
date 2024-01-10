@@ -7,29 +7,10 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
-	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
-
-func TestHeaderRequestBuilder_BuildRequest(t *testing.T) {
-	header := make(http.Header)
-	header.Add("x", "1")
-	header.Add("y", "2")
-	requestBuilder := &WapiRequestBuilderWithHeaders{
-		HttpRequestBuilder: &WapiRequestBuilder{},
-		Header:             header,
-	}
-	var obj IBObject
-	req, _ := requestBuilder.BuildRequest(GET, obj, "ref", nil)
-
-	for k := range header {
-		if req.Header.Get(k) != header.Get(k) {
-			t.Errorf("Expected header %s to be %s, got %s", k, header.Get(k), req.Header.Get(k))
-		}
-	}
-}
 
 type FakeRequestBuilder struct {
 	hostCfg HostConfig
@@ -291,6 +272,42 @@ var _ = Describe("Connector", func() {
 				})
 			})
 
+		})
+	})
+
+	Describe("WapiRequestBuilderWithHeaders", func() {
+		host := "172.22.18.66"
+		version := "2.2"
+		port := "443"
+		username := "myname"
+		password := "mysecrete!"
+		hostCfg := HostConfig{
+			Host:    host,
+			Version: version,
+			Port:    port,
+		}
+		authCfg := AuthConfig{
+			Username: username,
+			Password: password,
+		}
+
+		header := make(http.Header)
+		header.Add("x", "1")
+		header.Add("y", "2")
+
+		wrb, err := NewWapiRequestBuilderWithHeaders(hostCfg, authCfg, header)
+		if err != nil {
+			panic("NewWapiRequestBuilderWithHeaders() is not expected to return an error")
+		}
+
+		Describe("BuildRequest", func() {
+			It("should set given headers to request", func() {
+				var obj IBObject
+				req, _ := wrb.BuildRequest(GET, obj, "ref", nil)
+				for k := range header {
+					Expect(header.Get(k)).To(Equal(req.Header.Get(k)))
+				}
+			})
 		})
 	})
 
