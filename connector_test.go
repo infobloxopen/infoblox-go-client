@@ -295,7 +295,8 @@ var _ = Describe("Connector", func() {
 		header.Add("x", "1")
 		header.Add("y", "2")
 
-		wrb, err := NewWapiRequestBuilderWithHeaders(hostCfg, authCfg, header)
+		wrb, _ := NewWapiRequestBuilder(hostCfg, authCfg)
+		wrbh, err := NewWapiRequestBuilderWithHeaders(wrb, header)
 		if err != nil {
 			panic("NewWapiRequestBuilderWithHeaders() is not expected to return an error")
 		}
@@ -303,7 +304,7 @@ var _ = Describe("Connector", func() {
 		Describe("BuildRequest", func() {
 			It("should set given headers to request", func() {
 				var obj IBObject
-				req, _ := wrb.BuildRequest(GET, obj, "ref", nil)
+				req, _ := wrbh.BuildRequest(GET, obj, "ref", nil)
 				for k := range header {
 					Expect(header.Get(k)).To(Equal(req.Header.Get(k)))
 				}

@@ -91,14 +91,9 @@ type WapiRequestBuilderWithHeaders struct {
 	header http.Header
 }
 
-func NewWapiRequestBuilderWithHeaders(hostCfg HostConfig, authCfg AuthConfig, header http.Header) (*WapiRequestBuilderWithHeaders, error) {
-	wrb := WapiRequestBuilder{
-		hostCfg: hostCfg,
-		authCfg: authCfg,
-	}
-
+func NewWapiRequestBuilderWithHeaders(wrb *WapiRequestBuilder, header http.Header) (*WapiRequestBuilderWithHeaders, error) {
 	return &WapiRequestBuilderWithHeaders{
-		HttpRequestBuilder: &wrb,
+		HttpRequestBuilder: wrb,
 		header:             header,
 	}, nil
 }
