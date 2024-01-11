@@ -86,6 +86,31 @@ type WapiRequestBuilder struct {
 	authCfg AuthConfig
 }
 
+type WapiRequestBuilderWithHeaders struct {
+	HttpRequestBuilder
+	header http.Header
+}
+
+func NewWapiRequestBuilderWithHeaders(wrb *WapiRequestBuilder, header http.Header) (*WapiRequestBuilderWithHeaders, error) {
+	return &WapiRequestBuilderWithHeaders{
+		HttpRequestBuilder: wrb,
+		header:             header,
+	}, nil
+}
+
+func (wrbh *WapiRequestBuilderWithHeaders) BuildRequest(r RequestType, obj IBObject, ref string, queryParams *QueryParams) (req *http.Request, err error) {
+	req, err = wrbh.HttpRequestBuilder.BuildRequest(r, obj, ref, queryParams)
+	if err != nil {
+		return req, err
+	}
+	for h, values := range wrbh.header {
+		for _, v := range values {
+			req.Header.Add(h, v)
+		}
+	}
+	return req, nil
+}
+
 type WapiHttpRequestor struct {
 	client http.Client
 }
