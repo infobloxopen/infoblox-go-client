@@ -91,6 +91,7 @@ type IBObjectManager interface {
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
 	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
+	GetIPAddressInfo(ipAddr string) ([]IPv4Address, error)
 }
 
 type ObjectManager struct {
@@ -296,4 +297,29 @@ func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameS
 // DeleteZoneDelegated deletes delegated zone
 func (objMgr *ObjectManager) DeleteZoneDelegated(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
+}
+
+// GetIPAddressInfo returns information related to an ipv4 address
+func (objMgr *ObjectManager) GetIPAddressInfo(ipAddr string) ([]IPv4Address, error) {
+	if ipAddr == "" {
+		return nil, fmt.Errorf("empty ipAddr value is not allowed")
+	}
+
+	sf := map[string]string{
+		"ip_address": ipAddr,
+	}
+
+	var res []IPv4Address
+	ipv4Info := &IPv4Address{}
+
+	err := objMgr.connector.GetObject(
+		ipv4Info, "", NewQueryParams(false, sf), &res)
+
+	if err != nil {
+		return nil, err
+	} else if res == nil || len(res) == 0 {
+		return nil, NewNotFoundError(fmt.Sprintf("failed to get IPV4 address object '%s' ", ipAddr))
+	}
+
+	return res, err
 }
