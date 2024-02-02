@@ -1,11 +1,13 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
-	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 )
 
 var _ = Describe("Object Manager: SRV-Record", func() {
@@ -24,12 +26,12 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		comment := "this is a test comment"
 
 		fakeRefReturn := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkuMC4xLg:%s/%s", name, dnsView)
-		eas := EA{
+		eas := ibclient.EA{
 			"VM ID":   "93f9249abc039284",
 			"VM Name": "dummyvm",
 		}
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordSRV(RecordSRV{
+			createObjectObj: ibclient.NewRecordSRV(ibclient.RecordSRV{
 				View:     dnsView,
 				Name:     &name,
 				Priority: &priority,
@@ -42,12 +44,12 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 				Ea:       eas,
 			}),
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordSRV(RecordSRV{
+			getObjectObj: ibclient.NewRecordSRV(ibclient.RecordSRV{
 				View: dnsView,
 				Name: &name,
 				Ref:  fakeRefReturn,
 			}),
-			resultObject: NewRecordSRV(RecordSRV{
+			resultObject: ibclient.NewRecordSRV(ibclient.RecordSRV{
 				View:     dnsView,
 				Name:     &name,
 				Priority: &priority,
@@ -63,9 +65,9 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		var actualRecord *RecordSRV
+		var actualRecord *ibclient.RecordSRV
 		var err error
 		It("should pass expected SRV record object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateSRVRecord(dnsView, name, priority, weight, port, target, ttl, useTtl, comment, eas)
@@ -80,10 +82,10 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 	Describe("Update SRV Record", func() {
 		var (
 			err          error
-			objMgr       IBObjectManager
+			objMgr       ibclient.IBObjectManager
 			conn         *fakeConnector
 			ref          string
-			actualRecord *RecordSRV
+			actualRecord *ibclient.RecordSRV
 		)
 
 		cmpType := "Docker"
@@ -93,10 +95,10 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		name := "_srv._proto.example.com"
 		ref = fmt.Sprintf("record:srv/ZG5zLmhvc3RjkuMC4xLg:%s/%s", name, dnsView)
 
-		newEas := EA{"Country": "new value"}
+		newEas := ibclient.EA{"Country": "new value"}
 		updateName := "_srv2._proto.example.com"
 		updateRef := fmt.Sprintf("record:srv/ZG5zLmhvc3RjkugC4xLg:%s/%s", updateName, dnsView)
-		updateObjIn := NewRecordSRV(RecordSRV{
+		updateObjIn := ibclient.NewRecordSRV(ibclient.RecordSRV{
 			Ref:      ref,
 			View:     "",
 			Name:     &updateName,
@@ -110,7 +112,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 			Ea:       newEas,
 		})
 
-		expectedObj := NewRecordSRV(RecordSRV{
+		expectedObj := ibclient.NewRecordSRV(ibclient.RecordSRV{
 			Ref:      updateRef,
 			Name:     &updateName,
 			Priority: utils.Uint32Ptr(20),
@@ -130,7 +132,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 
 			fakeRefReturn: updateRef,
 		}
-		objMgr = NewObjectManager(conn, cmpType, tenantID)
+		objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 		It("should pass updated SRV record arguments", func() {
 			actualRecord, err = objMgr.UpdateSRVRecord(
 				ref,
@@ -170,13 +172,13 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 			"target": fmt.Sprintf("%s", target),
 			"port":   fmt.Sprintf("%d", port),
 		}
-		queryParams := NewQueryParams(false, sf)
+		queryParams := ibclient.NewQueryParams(false, sf)
 
 		nwFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyRecordSRV(),
+			getObjectObj:         ibclient.NewEmptyRecordSRV(),
 			getObjectQueryParams: queryParams,
 
-			resultObject: []RecordSRV{*NewRecordSRV(RecordSRV{
+			resultObject: []ibclient.RecordSRV{*ibclient.NewRecordSRV(ibclient.RecordSRV{
 				View:     dnsView,
 				Name:     &name,
 				Priority: &priority,
@@ -191,9 +193,9 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
-		var actualRecord *RecordSRV
+		var actualRecord *ibclient.RecordSRV
 		var err error
 		It("should pass expected dnsview, name to GetObject", func() {
 			actualRecord, err = objMgr.GetSRVRecord(dnsView, name, target, port)
@@ -201,7 +203,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 		It("should return expected SRV record Object", func() {
 			Expect(err).To(BeNil())
 			Expect(actualRecord).NotTo(BeNil())
-			Expect(*actualRecord).To(Equal(nwFakeConnector.resultObject.([]RecordSRV)[0]))
+			Expect(*actualRecord).To(Equal(nwFakeConnector.resultObject.([]ibclient.RecordSRV)[0]))
 		})
 	})
 
@@ -217,7 +219,7 @@ var _ = Describe("Object Manager: SRV-Record", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

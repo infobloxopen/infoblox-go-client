@@ -139,7 +139,7 @@ const (
 	UPDATE
 )
 
-func (r RequestType) toMethod() string {
+func (r RequestType) ToMethod() string {
 	switch r {
 	case CREATE:
 		return "POST"
@@ -215,7 +215,7 @@ func (whr *WapiHttpRequestor) SendRequest(req *http.Request) (res []byte, err er
 		return
 	} else if !(resp.StatusCode == http.StatusOK ||
 		(resp.StatusCode == http.StatusCreated &&
-			req.Method == CREATE.toMethod())) {
+			req.Method == CREATE.ToMethod())) {
 		err := getHTTPResponseError(resp)
 		return nil, err
 	}
@@ -350,7 +350,7 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 		bodyStr = wrb.BuildBody(t, obj)
 	}
 
-	req, err = http.NewRequest(t.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+	req, err = http.NewRequest(t.ToMethod(), urlStr, bytes.NewBuffer(bodyStr))
 	if err != nil {
 		log.Printf("cannot build request: '%s'", err)
 		return
@@ -363,7 +363,7 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 	return
 }
 
-func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryParams *QueryParams) (res []byte, err error) {
+func (c *Connector) MakeRequest(t RequestType, obj IBObject, ref string, queryParams *QueryParams) (res []byte, err error) {
 	var req *http.Request
 	req, err = c.requestBuilder.BuildRequest(t, obj, ref, queryParams)
 	if err != nil {
@@ -390,7 +390,7 @@ func (c *Connector) makeRequest(t RequestType, obj IBObject, ref string, queryPa
 func (c *Connector) CreateObject(obj IBObject) (ref string, err error) {
 	ref = ""
 	queryParams := NewQueryParams(false, nil)
-	resp, err := c.makeRequest(CREATE, obj, "", queryParams)
+	resp, err := c.MakeRequest(CREATE, obj, "", queryParams)
 	if err != nil || len(resp) == 0 {
 		log.Printf("CreateObject request error: '%s'\n", err)
 		return
@@ -409,7 +409,7 @@ func (c *Connector) GetObject(
 	obj IBObject, ref string,
 	queryParams *QueryParams, res interface{}) (err error) {
 
-	resp, err := c.makeRequest(GET, obj, ref, queryParams)
+	resp, err := c.MakeRequest(GET, obj, ref, queryParams)
 	if err != nil {
 		return
 	}
@@ -427,7 +427,7 @@ func (c *Connector) GetObject(
 			return
 		}
 		queryParams.forceProxy = true
-		resp, err = c.makeRequest(GET, obj, ref, queryParams)
+		resp, err = c.MakeRequest(GET, obj, ref, queryParams)
 	}
 	if err != nil {
 		log.Printf("GetObject request error: '%s'\n", err)
@@ -448,7 +448,7 @@ func (c *Connector) GetObject(
 func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 	refRes = ""
 	queryParams := NewQueryParams(false, nil)
-	resp, err := c.makeRequest(DELETE, nil, ref, queryParams)
+	resp, err := c.MakeRequest(DELETE, nil, ref, queryParams)
 	if err != nil {
 		log.Printf("DeleteObject request error: '%s'\n", err)
 		return
@@ -466,7 +466,7 @@ func (c *Connector) DeleteObject(ref string) (refRes string, err error) {
 func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err error) {
 	queryParams := NewQueryParams(false, nil)
 	refRes = ""
-	resp, err := c.makeRequest(UPDATE, obj, ref, queryParams)
+	resp, err := c.MakeRequest(UPDATE, obj, ref, queryParams)
 	if err != nil {
 		log.Printf("failed to update object %s: %s", obj.ObjectType(), err)
 		return
@@ -485,7 +485,7 @@ func (c *Connector) UpdateObject(obj IBObject, ref string) (refRes string, err e
 // initialized.
 func (c *Connector) Logout() (err error) {
 	queryParams := NewQueryParams(false, nil)
-	_, err = c.makeRequest(CREATE, nil, "logout", queryParams)
+	_, err = c.MakeRequest(CREATE, nil, "logout", queryParams)
 	if err != nil {
 		log.Printf("Logout request error: '%s'\n", err)
 	}

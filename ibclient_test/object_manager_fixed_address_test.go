@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: fixed address", func() {
@@ -20,27 +22,27 @@ var _ = Describe("Object Manager: fixed address", func() {
 		vmName := "dummyvm"
 		name := "testvm"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", ipAddr)
-		ea := EA{"VM ID": vmID, "VM Name": vmName}
+		ea := ibclient.EA{"VM ID": vmID, "VM Name": vmName}
 		isIPv6 := false
 
 		conn := &fakeConnector{
-			createObjectObj: NewFixedAddress(
+			createObjectObj: ibclient.NewFixedAddress(
 				netviewName, name,
 				ipAddr, cidr, macAddr,
 				"", ea, "", isIPv6, comment),
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewFixedAddress(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewFixedAddress(
 				netviewName, name,
-				GetIPAddressFromRef(fakeRefReturn), cidr, macAddr,
+				ibclient.GetIPAddressFromRef(fakeRefReturn), cidr, macAddr,
 				"", ea, fakeRefReturn, isIPv6, comment),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
 			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, isIPv6, macAddr, name, comment, ea)
@@ -65,26 +67,26 @@ var _ = Describe("Object Manager: fixed address", func() {
 		vmName := "dummyvm"
 		resultIP := "53.0.0.32"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", resultIP)
-		ea := EA{"VM ID": vmID, "VM Name": vmName}
+		ea := ibclient.EA{"VM ID": vmID, "VM Name": vmName}
 
 		conn := &fakeConnector{
-			createObjectObj: NewFixedAddress(
+			createObjectObj: ibclient.NewFixedAddress(
 				netviewName, name,
 				ipAddr, cidr, macAddr,
 				"", ea, "", isIPv6, comment),
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewFixedAddress(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewFixedAddress(
 				netviewName, name,
 				resultIP, cidr, macAddr,
 				"", ea, fakeRefReturn, isIPv6, comment),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
 			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", isIPv6, macAddr, name, comment, ea)
@@ -108,28 +110,28 @@ var _ = Describe("Object Manager: fixed address", func() {
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 		name := "testvm"
-		ea := EA{"VM ID": vmID, "VM Name": vmName}
+		ea := ibclient.EA{"VM ID": vmID, "VM Name": vmName}
 		fakeRefReturn := fmt.Sprintf("ipv6fixedaddress/ZG5zLmJpbmRfY25h:%s/private", refIp)
 		isIPv6 := true
 
 		conn := &fakeConnector{
-			createObjectObj: NewFixedAddress(
+			createObjectObj: ibclient.NewFixedAddress(
 				netviewName, name,
 				ipAddr, cidr, duid,
 				"", ea, "", isIPv6, comment),
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewFixedAddress(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewFixedAddress(
 				netviewName, name,
 				ipAddr, cidr, duid,
 				"", ea, fakeRefReturn, isIPv6, comment),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
 			actualIP, err = objMgr.AllocateIP(netviewName, cidr, ipAddr, isIPv6, duid, name, comment, ea)
@@ -154,26 +156,26 @@ var _ = Describe("Object Manager: fixed address", func() {
 		vmName := "dummyvm"
 		resultIP := "2001%3Adb8%3Aabcd%3A12%3A%3A1"
 		fakeRefReturn := fmt.Sprintf("ipv6fixedaddress/ZG5zLmJpbmRfY25h:%s/private", resultIP)
-		ea := EA{"VM ID": vmID, "VM Name": vmName}
+		ea := ibclient.EA{"VM ID": vmID, "VM Name": vmName}
 
 		conn := &fakeConnector{
-			createObjectObj: NewFixedAddress(
+			createObjectObj: ibclient.NewFixedAddress(
 				netviewName, name,
 				ipAddr, cidr, duid,
 				"", ea, "", isIPv6, comment),
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewFixedAddress(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewFixedAddress(
 				netviewName, name,
 				resultIP, cidr, duid,
 				"", ea, fakeRefReturn, isIPv6, comment),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
 			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", isIPv6, duid, name, comment, ea)
@@ -199,11 +201,11 @@ var _ = Describe("Object Manager: fixed address", func() {
 		vmName := "dummyvm"
 		resultIP := "2001%3Adb8%3Aabcd%3A12%3A%3A1"
 		fakeRefReturn := fmt.Sprintf("ipv6fixedaddress/ZG5zLmJpbmRfY25h:%s/private", resultIP)
-		ea := EA{"VM ID": vmID, "VM Name": vmName}
-		var expectedObj *FixedAddress
+		ea := ibclient.EA{"VM ID": vmID, "VM Name": vmName}
+		var expectedObj *ibclient.FixedAddress
 		expectedObj = nil
 		conn := &fakeConnector{
-			createObjectObj: NewFixedAddress(
+			createObjectObj: ibclient.NewFixedAddress(
 				netviewName, name,
 				ipAddr, cidr, duid,
 				"", ea, "", isIPv6, comment),
@@ -211,9 +213,9 @@ var _ = Describe("Object Manager: fixed address", func() {
 			fakeRefReturn:     fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to CreateObject", func() {
 			actualIP, err = objMgr.AllocateIP(netviewName, cidr, "", isIPv6, duid, name, comment, ea)
@@ -236,7 +238,7 @@ var _ = Describe("Object Manager: fixed address", func() {
 		comment := "test"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", ipAddr)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -246,25 +248,25 @@ var _ = Describe("Object Manager: fixed address", func() {
 			})
 
 		fipFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject: []FixedAddress{*NewFixedAddress(
+			resultObject: []ibclient.FixedAddress{*ibclient.NewFixedAddress(
 				netviewName, "",
-				GetIPAddressFromRef(fakeRefReturn), cidr, macAddr,
+				ibclient.GetIPAddressFromRef(fakeRefReturn), cidr, macAddr,
 				"", nil, fakeRefReturn, isIPv6, comment)},
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(fipFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(fipFakeConnector, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to GetObject", func() {
 			actualIP, err = objMgr.GetFixedAddress(netviewName, cidr, ipAddr, isIPv6, macAddr)
 		})
 		It("should return expected Fixed Address Object", func() {
-			Expect(*actualIP).To(Equal(fipFakeConnector.resultObject.([]FixedAddress)[0]))
+			Expect(*actualIP).To(Equal(fipFakeConnector.resultObject.([]ibclient.FixedAddress)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -281,7 +283,7 @@ var _ = Describe("Object Manager: fixed address", func() {
 		comment := "test"
 		fakeRefReturn := fmt.Sprintf("ipv6fixedaddress/ZG5zLmJpbmRfY25h:%s/private", refIp)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -291,25 +293,25 @@ var _ = Describe("Object Manager: fixed address", func() {
 			})
 
 		fipFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject: []FixedAddress{*NewFixedAddress(
+			resultObject: []ibclient.FixedAddress{*ibclient.NewFixedAddress(
 				netviewName, "",
 				ipAddr, cidr, duid,
 				"", nil, fakeRefReturn, isIPv6, comment)},
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(fipFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(fipFakeConnector, cmpType, tenantID)
 
-		var actualIP *FixedAddress
+		var actualIP *ibclient.FixedAddress
 		var err error
 		It("should pass expected Fixed Address Object to GetObject", func() {
 			actualIP, err = objMgr.GetFixedAddress(netviewName, cidr, ipAddr, isIPv6, duid)
 		})
 		It("should return expected Fixed Address Object", func() {
-			Expect(*actualIP).To(Equal(fipFakeConnector.resultObject.([]FixedAddress)[0]))
+			Expect(*actualIP).To(Equal(fipFakeConnector.resultObject.([]ibclient.FixedAddress)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -317,10 +319,10 @@ var _ = Describe("Object Manager: fixed address", func() {
 	Describe("Update IPv4 Fixed Address", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *FixedAddress
+			actualObj *ibclient.FixedAddress
 		)
 
 		cmpType := "Docker"
@@ -341,16 +343,16 @@ var _ = Describe("Object Manager: fixed address", func() {
 		It("IPv4, updating name, MAC Address, comment and EAs", func() {
 			ref = fmt.Sprintf("fixedaddress/%s:%s/%s", refBase, ipv4Addr, netviewName)
 			updateIp := "10.0.0.3"
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewFixedAddress(netviewName, name, "10.0.0.2", ipv4Cidr, macAddr, "MAC_ADDRESS", initialEas, ref, false, "old comment")
+			initObj := ibclient.NewFixedAddress(netviewName, name, "10.0.0.2", ipv4Cidr, macAddr, "MAC_ADDRESS", initialEas, ref, false, "old comment")
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -358,15 +360,15 @@ var _ = Describe("Object Manager: fixed address", func() {
 			expectedEas := setEas
 
 			comment := "test comment 1"
-			updateObjIn := NewFixedAddress("", updateName, updateIp, "", updateMacAddr, "MAC_ADDRESS", expectedEas, ref, false, comment)
+			updateObjIn := ibclient.NewFixedAddress("", updateName, updateIp, "", updateMacAddr, "MAC_ADDRESS", expectedEas, ref, false, comment)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewFixedAddress("", updateName, updateIp, "", updateMacAddr, "MAC_ADDRESS", expectedEas, ref, false, comment)
+			expectedObj := ibclient.NewFixedAddress("", updateName, updateIp, "", updateMacAddr, "MAC_ADDRESS", expectedEas, ref, false, comment)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyFixedAddress(false),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyFixedAddress(false),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -377,7 +379,7 @@ var _ = Describe("Object Manager: fixed address", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateFixedAddress(ref, "", updateName, "", updateIp, "MAC_ADDRESS", updateMacAddr, comment, setEas)
 			Expect(err).To(BeNil())
@@ -387,22 +389,22 @@ var _ = Describe("Object Manager: fixed address", func() {
 		It("Negative case: Update fails if a valid match client value is not passed", func() {
 			ref = fmt.Sprintf("fixedaddress/%s:%s/%s", refBase, ipv4Addr, netviewName)
 			matchClient := "MAC"
-			initObj := NewFixedAddress("", name, "", "", macAddr, matchClient, nil, ref, false, "")
+			initObj := ibclient.NewFixedAddress("", name, "", "", macAddr, matchClient, nil, ref, false, "")
 			initObj.Ref = ref
 
 			comment := "test comment 1"
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyFixedAddress(false),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyFixedAddress(false),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       fmt.Errorf("test error"),
 				updateObjectError:    fmt.Errorf("wrong value for match_client passed %s \n ", matchClient),
 				fakeRefReturn:        ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-			var expectedObj *FixedAddress
+			var expectedObj *ibclient.FixedAddress
 			expectedObj = nil
 			actualObj, err = objMgr.UpdateFixedAddress(ref, "", updateName, "", "", matchClient, updateMacAddr, comment, nil)
 			Expect(actualObj).To(Equal(expectedObj))
@@ -412,16 +414,16 @@ var _ = Describe("Object Manager: fixed address", func() {
 		It("IPv6, updating name, MAC Address, comment and EAs", func() {
 			ref = fmt.Sprintf("ipv6fixedaddress/%s:%s/%s", refBase, ipv6CidrRef, netviewName)
 			updateIp := "2001:db8:abcd:14::2"
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewFixedAddress(netviewName, name, "2001:db8:abcd:14::1", ipv6Cidr, duid, "", initialEas, ref, true, "old comment")
+			initObj := ibclient.NewFixedAddress(netviewName, name, "2001:db8:abcd:14::1", ipv6Cidr, duid, "", initialEas, ref, true, "old comment")
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -429,15 +431,15 @@ var _ = Describe("Object Manager: fixed address", func() {
 			expectedEas := setEas
 
 			comment := "test comment 1"
-			updateObjIn := NewFixedAddress("", updateName, updateIp, "", updateDuid, "", expectedEas, ref, true, comment)
+			updateObjIn := ibclient.NewFixedAddress("", updateName, updateIp, "", updateDuid, "", expectedEas, ref, true, comment)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewFixedAddress("", updateName, updateIp, "", updateDuid, "", expectedEas, ref, true, comment)
+			expectedObj := ibclient.NewFixedAddress("", updateName, updateIp, "", updateDuid, "", expectedEas, ref, true, comment)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyFixedAddress(true),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyFixedAddress(true),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -448,7 +450,7 @@ var _ = Describe("Object Manager: fixed address", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateFixedAddress(ref, "", updateName, "", updateIp, "", updateDuid, comment, setEas)
 			Expect(err).To(BeNil())
@@ -467,7 +469,7 @@ var _ = Describe("Object Manager: fixed address", func() {
 		comment := "test"
 		fakeRefReturn := fmt.Sprintf("fixedaddress/ZG5zLmJpbmRfY25h:%s/private", ipAddr)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -477,13 +479,13 @@ var _ = Describe("Object Manager: fixed address", func() {
 			})
 
 		fipFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyFixedAddress(isIPv6),
+			getObjectObj:         ibclient.NewEmptyFixedAddress(isIPv6),
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject: []FixedAddress{*NewFixedAddress(
+			resultObject: []ibclient.FixedAddress{*ibclient.NewFixedAddress(
 				netviewName,
 				"",
-				GetIPAddressFromRef(fakeRefReturn),
+				ibclient.GetIPAddressFromRef(fakeRefReturn),
 				cidr,
 				macAddr,
 				"",
@@ -493,7 +495,7 @@ var _ = Describe("Object Manager: fixed address", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(fipFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(fipFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

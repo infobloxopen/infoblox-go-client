@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: host record", func() {
@@ -25,38 +27,38 @@ var _ = Describe("Object Manager: host record", func() {
 		enabledhcp := false
 		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPv6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := ibclient.NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
+		resultIPv6Addrs := ibclient.NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
 		useTtl := true
 		ttl := uint32(70)
 		comment := "test"
 		aliases := []string{"abc.test.com"}
 
-		eas := make(EA)
+		eas := make(ibclient.EA)
 		eas["VM ID"] = vmID
 		eas["VM Name"] = vmName
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
+			createObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPv6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPv6Addrs},
 				eas, enabledns, dnsView, "", "", useTtl, ttl, comment, aliases),
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
+			getObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPv6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPv6Addrs},
 				eas, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPv6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPv6Addrs},
 				eas, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		var actualRecord *HostRecord
+		var actualRecord *ibclient.HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateHostRecord(
@@ -87,8 +89,8 @@ var _ = Describe("Object Manager: host record", func() {
 		enabledhcp := false
 		dnsView := "default"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := ibclient.NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
+		resultIPV6Addrs := ibclient.NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
 		enableDNS := true
 		useTtl := true
 		ttl := uint32(70)
@@ -96,39 +98,39 @@ var _ = Describe("Object Manager: host record", func() {
 		aliases := []string{"abc.test.com"}
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
+			createObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enableDNS, dnsView, "", "", useTtl, ttl, comment, aliases),
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
+			getObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+		ea := make(ibclient.EA)
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
-		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		var actualRecord *HostRecord
+		var actualRecord *ibclient.HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateHostRecord(
@@ -158,47 +160,47 @@ var _ = Describe("Object Manager: host record", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := ibclient.NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
+		resultIPV6Addrs := ibclient.NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
 		useTtl := true
 		ttl := uint32(70)
 		comment := "test"
 		aliases := []string{"test1"}
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
+			createObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enabledns, dnsView, "", "", useTtl, ttl, comment, aliases),
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
+			getObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enabledns, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+		ea := make(ibclient.EA)
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
-		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		var actualRecord *HostRecord
+		var actualRecord *ibclient.HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateHostRecord(
@@ -229,8 +231,8 @@ var _ = Describe("Object Manager: host record", func() {
 		dnsView := "default"
 		recordName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
-		resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
+		resultIPV4Addrs := ibclient.NewHostRecordIpv4Addr(ipv4Addr, macAddr, enabledhcp, "")
+		resultIPV6Addrs := ibclient.NewHostRecordIpv6Addr(ipv6Addr, duid, enabledhcp, "")
 		enableDNS := true
 		useTtl := true
 		ttl := uint32(70)
@@ -238,39 +240,39 @@ var _ = Describe("Object Manager: host record", func() {
 		aliases := []string{"abc.test.com"}
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewHostRecord(
+			createObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enableDNS, dnsView, "", "", useTtl, ttl, comment, aliases),
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewHostRecord(
+			getObjectObj: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewHostRecord(
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewHostRecord(
 				netviewName, recordName,
-				"", "", []HostRecordIpv4Addr{*resultIPV4Addrs}, []HostRecordIpv6Addr{*resultIPV6Addrs},
+				"", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs}, []ibclient.HostRecordIpv6Addr{*resultIPV6Addrs},
 				nil, enableDNS, dnsView, "", fakeRefReturn, useTtl, ttl, comment, aliases),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		ea := make(EA)
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea = ea
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.createObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+		ea := make(ibclient.EA)
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.createObjectObj.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.resultObject.(*HostRecord).Ea = ea
-		aniFakeConnector.resultObject.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.resultObject.(*HostRecord).Ea["VM Name"] = vmName
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.resultObject.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea = ea
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM ID"] = vmID
-		aniFakeConnector.getObjectObj.(*HostRecord).Ea["VM Name"] = vmName
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea = ea
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea["VM ID"] = vmID
+		aniFakeConnector.getObjectObj.(*ibclient.HostRecord).Ea["VM Name"] = vmName
 
-		var actualRecord *HostRecord
+		var actualRecord *ibclient.HostRecord
 		var err error
 		It("should pass expected host record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateHostRecord(
@@ -293,7 +295,7 @@ var _ = Describe("Object Manager: host record", func() {
 		ipv4Addr := "10.0.0.1"
 		ipv6Addr := "2001:db8:abcd:14::1"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", hostName)
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"name":         hostName,
@@ -303,25 +305,25 @@ var _ = Describe("Object Manager: host record", func() {
 				"ipv6addr":     "2001:db8:abcd:14::1",
 			})
 		fipFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyHostRecord(),
+			getObjectObj:         ibclient.NewEmptyHostRecord(),
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject: []HostRecord{*NewHostRecord(
+			resultObject: []ibclient.HostRecord{*ibclient.NewHostRecord(
 				netview, hostName, ipv4Addr, ipv6Addr, nil, nil,
 				nil, true, dnsview, "", fakeRefReturn, false, 0, "", []string{})},
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(fipFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(fipFakeConnector, cmpType, tenantID)
 
-		var actualhostRecord *HostRecord
+		var actualhostRecord *ibclient.HostRecord
 		var err error
 		It("should pass expected Host record Object to GetObject", func() {
 			actualhostRecord, err = objMgr.GetHostRecord(netview, dnsview, hostName, ipv4Addr, ipv6Addr)
 		})
 
 		It("should return expected Host record Object", func() {
-			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]HostRecord)[0]))
+			Expect(*actualhostRecord).To(Equal(fipFakeConnector.resultObject.([]ibclient.HostRecord)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -331,19 +333,19 @@ var _ = Describe("Object Manager: host record", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		hostName := "test"
 		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%20%20", hostName)
-		resObj := NewEmptyHostRecord()
+		resObj := ibclient.NewEmptyHostRecord()
 		resObj.Ref = fakeRefReturn
 		ncFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyHostRecord(),
+			getObjectObj:         ibclient.NewEmptyHostRecord(),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 			resultObject:         resObj,
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualRec *HostRecord
+		var actualRec *ibclient.HostRecord
 		var err error
 		It("should pass expected host record object to GetObject", func() {
 			actualRec, err = objMgr.GetHostRecordByRef(fakeRefReturn)
@@ -357,10 +359,10 @@ var _ = Describe("Object Manager: host record", func() {
 	Describe("Update host record", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *HostRecord
+			actualObj *ibclient.HostRecord
 		)
 
 		cmpType := "Docker"
@@ -375,18 +377,18 @@ var _ = Describe("Object Manager: host record", func() {
 		It("Updating name, comment, aliases and EAs", func() {
 			enableDNS := true
 			ref = fmt.Sprintf("record:host/%s:%s", refBase, hostName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
 			initialAliases := []string{"abc.test.com", "xyz.test.com"}
-			initObj := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, initialEas, enableDNS, "someDNSview", "", "", useTtl, ttl, "old comment", initialAliases)
+			initObj := ibclient.NewHostRecord("", hostName, "", "", []ibclient.HostRecordIpv4Addr{},
+				[]ibclient.HostRecordIpv6Addr{}, initialEas, enableDNS, "someDNSview", "", "", useTtl, ttl, "old comment", initialAliases)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -397,17 +399,17 @@ var _ = Describe("Object Manager: host record", func() {
 			comment := "test comment 1"
 			updateUseTtl := false
 			updateTtl := uint32(0)
-			updateObjIn := NewHostRecord("", "host1.test.com", "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "someDNSview", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
+			updateObjIn := ibclient.NewHostRecord("", "host1.test.com", "", "", []ibclient.HostRecordIpv4Addr{},
+				[]ibclient.HostRecordIpv6Addr{}, expectedEas, enableDNS, "someDNSview", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewHostRecord("", "host1.test.com", "", "", []HostRecordIpv4Addr{},
-				[]HostRecordIpv6Addr{}, expectedEas, enableDNS, "someDNSview", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
+			expectedObj := ibclient.NewHostRecord("", "host1.test.com", "", "", []ibclient.HostRecordIpv4Addr{},
+				[]ibclient.HostRecordIpv6Addr{}, expectedEas, enableDNS, "someDNSview", "", "", updateUseTtl, updateTtl, comment, expectedAliases)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyHostRecord(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyHostRecord(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -418,7 +420,7 @@ var _ = Describe("Object Manager: host record", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateHostRecord(ref, true, false, "host1.test.com", "",
 				"someDNSview", "", "", "", "", "", "", updateUseTtl, updateTtl, comment, setEas, expectedAliases)
@@ -431,21 +433,21 @@ var _ = Describe("Object Manager: host record", func() {
 			enableDHCP := false
 			macAddr := "01:23:45:67:80:ab"
 			duid := "02:24:46:68:81:cd"
-			resultIPV4Addrs := NewHostRecordIpv4Addr(ipv4Addr, macAddr, enableDHCP, "")
-			resultIPV6Addrs := NewHostRecordIpv6Addr(ipv6Addr, duid, enableDHCP, "")
+			resultIPV4Addrs := ibclient.NewHostRecordIpv4Addr(ipv4Addr, macAddr, enableDHCP, "")
+			resultIPV6Addrs := ibclient.NewHostRecordIpv6Addr(ipv6Addr, duid, enableDHCP, "")
 			ref = fmt.Sprintf("record:host/%s:%s", refBase, hostName)
 
-			updateObjIn := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{*resultIPV4Addrs},
-				[]HostRecordIpv6Addr{*resultIPV6Addrs}, nil, enableDNS, "", "", "", useTtl, ttl, "", []string{})
+			updateObjIn := ibclient.NewHostRecord("", hostName, "", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs},
+				[]ibclient.HostRecordIpv6Addr{*resultIPV6Addrs}, nil, enableDNS, "", "", "", useTtl, ttl, "", []string{})
 			updateObjIn.Ref = ref
 
-			expectedObj := NewHostRecord("", hostName, "", "", []HostRecordIpv4Addr{*resultIPV4Addrs},
-				[]HostRecordIpv6Addr{*resultIPV6Addrs}, nil, enableDNS, "", "", "", useTtl, ttl, "", []string{})
+			expectedObj := ibclient.NewHostRecord("", hostName, "", "", []ibclient.HostRecordIpv4Addr{*resultIPV4Addrs},
+				[]ibclient.HostRecordIpv6Addr{*resultIPV6Addrs}, nil, enableDNS, "", "", "", useTtl, ttl, "", []string{})
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyHostRecord(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyHostRecord(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -456,7 +458,7 @@ var _ = Describe("Object Manager: host record", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateHostRecord(ref, enableDNS, false, hostName, "", "", "",
 				"", ipv4Addr, ipv6Addr, macAddr, duid, useTtl, ttl, "", nil, []string{})
@@ -476,7 +478,7 @@ var _ = Describe("Object Manager: host record", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

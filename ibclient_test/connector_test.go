@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/infobloxopen/infoblox-go-client/v2"
 	"net/http"
 	"net/url"
 	"strings"
@@ -13,11 +14,11 @@ import (
 )
 
 type FakeRequestBuilder struct {
-	hostCfg HostConfig
-	authCfg AuthConfig
+	hostCfg ibclient.HostConfig
+	authCfg ibclient.AuthConfig
 
-	r   RequestType
-	obj IBObject
+	r   ibclient.RequestType
+	obj ibclient.IBObject
 	ref string
 
 	urlStr  string
@@ -25,20 +26,20 @@ type FakeRequestBuilder struct {
 	req     *http.Request
 }
 
-func (rb *FakeRequestBuilder) Init(hostCfg HostConfig, authCfg AuthConfig) {
+func (rb *FakeRequestBuilder) Init(hostCfg ibclient.HostConfig, authCfg ibclient.AuthConfig) {
 	rb.authCfg = authCfg
 	rb.hostCfg = hostCfg
 }
 
-func (rb *FakeRequestBuilder) BuildUrl(r RequestType, objType string, ref string, returnFields []string, queryParams *QueryParams) string {
+func (rb *FakeRequestBuilder) BuildUrl(r ibclient.RequestType, objType string, ref string, returnFields []string, queryParams *ibclient.QueryParams) string {
 	return rb.urlStr
 }
 
-func (rb *FakeRequestBuilder) BuildBody(r RequestType, obj IBObject) []byte {
+func (rb *FakeRequestBuilder) BuildBody(r ibclient.RequestType, obj ibclient.IBObject) []byte {
 	return []byte{}
 }
 
-func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref string, queryParams *QueryParams) (*http.Request, error) {
+func (rb *FakeRequestBuilder) BuildRequest(r ibclient.RequestType, obj ibclient.IBObject, ref string, queryParams *ibclient.QueryParams) (*http.Request, error) {
 	Expect(r).To(Equal(rb.r))
 	if rb.obj == nil {
 		Expect(obj).To(BeNil())
@@ -51,14 +52,14 @@ func (rb *FakeRequestBuilder) BuildRequest(r RequestType, obj IBObject, ref stri
 }
 
 type FakeHttpRequestor struct {
-	authCfg AuthConfig
-	trCfg   TransportConfig
+	authCfg ibclient.AuthConfig
+	trCfg   ibclient.TransportConfig
 
 	req *http.Request
 	res []byte
 }
 
-func (hr *FakeHttpRequestor) Init(authCfg AuthConfig, trCfg TransportConfig) {
+func (hr *FakeHttpRequestor) Init(authCfg ibclient.AuthConfig, trCfg ibclient.TransportConfig) {
 	hr.authCfg = authCfg
 	hr.trCfg = trCfg
 }
@@ -69,7 +70,7 @@ func (hr *FakeHttpRequestor) SendRequest(req *http.Request) ([]byte, error) {
 	return hr.res, nil
 }
 
-func MockValidateConnector(c *Connector) (err error) {
+func MockValidateConnector(c *ibclient.Connector) (err error) {
 	return
 }
 
@@ -81,17 +82,17 @@ var _ = Describe("Connector", func() {
 		port := "443"
 		username := "myname"
 		password := "mysecrete!"
-		hostCfg := HostConfig{
+		hostCfg := ibclient.HostConfig{
 			Host:    host,
 			Version: version,
 			Port:    port,
 		}
-		authCfg := AuthConfig{
+		authCfg := ibclient.AuthConfig{
 			Username: username,
 			Password: password,
 		}
 
-		wrb, err := NewWapiRequestBuilder(hostCfg, authCfg)
+		wrb, err := ibclient.NewWapiRequestBuilder(hostCfg, authCfg)
 		if err != nil {
 			panic("NewWapiRequestBuilder() is not expected to return an error")
 		}
@@ -101,19 +102,19 @@ var _ = Describe("Connector", func() {
 				objType := "networkview"
 				ref := ""
 				returnFields := []string{}
-				queryParams := NewQueryParams(false, nil)
+				queryParams := ibclient.NewQueryParams(false, nil)
 				It("should return expected url string for CREATE request when forceProxy is false", func() {
-					queryParams.forceProxy = false //disable proxy
+					queryParams.SetForceProxy(false) //disable proxy
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 						host, port, version, objType)
-					urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, queryParams)
+					urlStr := wrb.BuildUrl(ibclient.CREATE, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 				})
 				It("should return expected url string for CREATE request when forceProxy is true", func() {
-					queryParams.forceProxy = true //proxy enabled
+					queryParams.SetForceProxy(true) //proxy enabled
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 						host, port, version, objType)
-					urlStr := wrb.BuildUrl(CREATE, objType, ref, returnFields, queryParams)
+					urlStr := wrb.BuildUrl(ibclient.CREATE, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 
 				})
@@ -123,20 +124,20 @@ var _ = Describe("Connector", func() {
 				ref := ""
 				returnFields := []string{"extattrs", "network", "network_view"}
 				returnFieldsStr := "_return_fields" + "=" + url.QueryEscape(strings.Join(returnFields, ","))
-				queryParams := NewQueryParams(false, nil)
+				queryParams := ibclient.NewQueryParams(false, nil)
 				It("should return expected url string for GET for the return fields when forceProxy is false", func() {
-					queryParams.forceProxy = false // disable proxy
+					queryParams.SetForceProxy(false) // disable proxy
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s",
 						host, port, version, objType, returnFieldsStr)
-					urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, queryParams)
+					urlStr := wrb.BuildUrl(ibclient.GET, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 				})
 				It("should return expected url string for GET for the return fields when forceProxy is true", func() {
-					queryParams.forceProxy = true // proxy enabled
+					queryParams.SetForceProxy(true) // proxy enabled
 					qry := "_proxy_search=GM"
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s?%s&%s",
 						host, port, version, objType, qry, returnFieldsStr)
-					urlStr := wrb.BuildUrl(GET, objType, ref, returnFields, queryParams)
+					urlStr := wrb.BuildUrl(ibclient.GET, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 				})
 			})
@@ -144,19 +145,19 @@ var _ = Describe("Connector", func() {
 				objType := ""
 				ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 				returnFields := []string{}
-				queryParams := NewQueryParams(false, nil)
+				queryParams := ibclient.NewQueryParams(false, nil)
 				It("should return expected url string for DELETE request when forceProxy is false", func() {
-					queryParams.forceProxy = false //disable proxy
+					queryParams.SetForceProxy(false) //disable proxy
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 						host, port, version, ref)
-					urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, queryParams)
+					urlStr := wrb.BuildUrl(ibclient.DELETE, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 				})
 				It("should return expected url string for DELETE request when forceProxy is true", func() {
-					queryParams.forceProxy = true //proxy enabled
+					queryParams.SetForceProxy(true) //proxy enabled
 					expectedURLStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 						host, port, version, ref)
-					urlStr := wrb.BuildUrl(DELETE, objType, ref, returnFields, queryParams)
+					urlStr := wrb.BuildUrl(ibclient.DELETE, objType, ref, returnFields, queryParams)
 					Expect(urlStr).To(Equal(expectedURLStr))
 				})
 			})
@@ -169,8 +170,8 @@ var _ = Describe("Connector", func() {
 				cidr := "172.22.18.0/24"
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
-				ea := EA{eaKey: eaVal}
-				nw := NewNetwork(networkView, cidr, false, "", ea)
+				ea := ibclient.EA{eaKey: eaVal}
+				nw := ibclient.NewNetwork(networkView, cidr, false, "", ea)
 
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
@@ -178,7 +179,7 @@ var _ = Describe("Connector", func() {
 				commentStr := `"comment":` + "" + `""`
 				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr, commentStr}, ",") + "}"
 
-				bodyStr := wrb.BuildBody(CREATE, nw)
+				bodyStr := wrb.BuildBody(ibclient.CREATE, nw)
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
 			})
 		})
@@ -189,9 +190,9 @@ var _ = Describe("Connector", func() {
 				cidr := "172.22.18.0/24"
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
-				eaSearch := EASearch{eaKey: eaVal}
-				nw := NewNetwork(networkView, cidr, false, "", nil)
-				nw.eaSearch = eaSearch
+				eaSearch := ibclient.EASearch{eaKey: eaVal}
+				nw := ibclient.NewNetwork(networkView, cidr, false, "", nil)
+				nw.SetEaSearch(eaSearch)
 
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
@@ -204,7 +205,7 @@ var _ = Describe("Connector", func() {
 					eaStr,
 					commentStr,
 					eaSearchStr}, ",") + "}"
-				bodyStr := wrb.BuildBody(GET, nw)
+				bodyStr := wrb.BuildBody(ibclient.GET, nw)
 
 				Expect(string(bodyStr)).To(Equal(expectedBodyStr))
 			})
@@ -216,18 +217,18 @@ var _ = Describe("Connector", func() {
 				cidr := "172.22.18.0/24"
 				eaKey := "Network Name"
 				eaVal := "yellow-net"
-				ea := EA{eaKey: eaVal}
-				nw := NewNetwork(networkView, cidr, false, "", ea)
+				ea := ibclient.EA{eaKey: eaVal}
+				nw := ibclient.NewNetwork(networkView, cidr, false, "", ea)
 				netviewStr := `"network_view":"` + networkView + `"`
 				networkStr := `"network":"` + cidr + `"`
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 				commentStr := `"comment":` + "" + `""`
 				expectedBodyStr := "{" + strings.Join([]string{netviewStr, networkStr, eaStr, commentStr}, ",") + "}"
-				queryParams := NewQueryParams(false, nil)
+				queryParams := ibclient.NewQueryParams(false, nil)
 				It("should return expected Http Request for CREATE request when forceProxy is false", func() {
-					queryParams.forceProxy = false //disable proxy
+					queryParams.SetForceProxy(false) //disable proxy
 					hostStr := fmt.Sprintf("%s:%s", host, port)
-					req, err := wrb.BuildRequest(CREATE, nw, "", queryParams)
+					req, err := wrb.BuildRequest(ibclient.CREATE, nw, "", queryParams)
 					Expect(err).To(BeNil())
 					Expect(req.Method).To(Equal("POST"))
 					Expect(req.URL.Host).To(Equal(hostStr))
@@ -248,9 +249,9 @@ var _ = Describe("Connector", func() {
 					Expect(actualBodyStr).To(Equal(expectedBodyStr))
 				})
 				It("should return expected Http Request for CREATE request when forceProxy is true", func() {
-					queryParams.forceProxy = true //proxy enabled
+					queryParams.SetForceProxy(true) //proxy enabled
 					hostStr := fmt.Sprintf("%s:%s", host, port)
-					req, err := wrb.BuildRequest(CREATE, nw, "", queryParams)
+					req, err := wrb.BuildRequest(ibclient.CREATE, nw, "", queryParams)
 					Expect(err).To(BeNil())
 					Expect(req.Method).To(Equal("POST"))
 					Expect(req.URL.Host).To(Equal(hostStr))
@@ -281,12 +282,12 @@ var _ = Describe("Connector", func() {
 		port := "443"
 		username := "myname"
 		password := "mysecrete!"
-		hostCfg := HostConfig{
+		hostCfg := ibclient.HostConfig{
 			Host:    host,
 			Version: version,
 			Port:    port,
 		}
-		authCfg := AuthConfig{
+		authCfg := ibclient.AuthConfig{
 			Username: username,
 			Password: password,
 		}
@@ -295,16 +296,16 @@ var _ = Describe("Connector", func() {
 		header.Add("x", "1")
 		header.Add("y", "2")
 
-		wrb, _ := NewWapiRequestBuilder(hostCfg, authCfg)
-		wrbh, err := NewWapiRequestBuilderWithHeaders(wrb, header)
+		wrb, _ := ibclient.NewWapiRequestBuilder(hostCfg, authCfg)
+		wrbh, err := ibclient.NewWapiRequestBuilderWithHeaders(wrb, header)
 		if err != nil {
 			panic("NewWapiRequestBuilderWithHeaders() is not expected to return an error")
 		}
 
 		Describe("BuildRequest", func() {
 			It("should set given headers to request", func() {
-				var obj IBObject
-				req, _ := wrbh.BuildRequest(GET, obj, "ref", nil)
+				var obj ibclient.IBObject
+				req, _ := wrbh.BuildRequest(ibclient.GET, obj, "ref", nil)
 				for k := range header {
 					Expect(header.Get(k)).To(Equal(req.Header.Get(k)))
 				}
@@ -322,31 +323,31 @@ var _ = Describe("Connector", func() {
 		httpRequestTimeout := 120
 		httpPoolConnections := 100
 
-		hostCfg := HostConfig{
+		hostCfg := ibclient.HostConfig{
 			Host:    host,
 			Version: version,
 			Port:    port,
 		}
-		authCfg := AuthConfig{
+		authCfg := ibclient.AuthConfig{
 			Username: username,
 			Password: password,
 		}
-		transportConfig := NewTransportConfig("false", httpRequestTimeout, httpPoolConnections)
+		transportConfig := ibclient.NewTransportConfig("false", httpRequestTimeout, httpPoolConnections)
 
 		Describe("CreateObject", func() {
 			netviewName := "private-view"
 			eaKey := "CMP Type"
 			eaVal := "OpenStack"
-			eas := EA{eaKey: eaVal}
-			netViewObj := NewNetworkView(netviewName, "", eas, "")
+			eas := ibclient.EA{eaKey: eaVal}
+			netViewObj := ibclient.NewNetworkView(netviewName, "", eas, "")
 
-			requestType := CREATE
+			requestType := ibclient.CREATE
 			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 			netviewStr := `"network_view":"` + netviewName + `"`
 			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 				host, port, version, netViewObj.ObjectType())
 			bodyStr := []byte("{" + strings.Join([]string{netviewStr, eaStr}, ",") + "}")
-			httpReq, _ := http.NewRequest(requestType.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+			httpReq, _ := http.NewRequest(requestType.ToMethod(), urlStr, bytes.NewBuffer(bodyStr))
 			frb := &FakeRequestBuilder{
 				r:   requestType,
 				obj: netViewObj,
@@ -366,10 +367,10 @@ var _ = Describe("Connector", func() {
 				res: []byte(fakeref),
 			}
 
-			OrigValidateConnector := ValidateConnector
-			ValidateConnector = MockValidateConnector
-			defer func() { ValidateConnector = OrigValidateConnector }()
-			conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
+			OrigValidateConnector := ibclient.ValidateConnector
+			ibclient.ValidateConnector = MockValidateConnector
+			defer func() { ibclient.ValidateConnector = OrigValidateConnector }()
+			conn, err := ibclient.NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 			if err != nil {
 				Fail("Error creating Connector")
@@ -385,11 +386,11 @@ var _ = Describe("Connector", func() {
 		Describe("DeleteObject", func() {
 			ref := "fixedaddress/ZG5zLmJpbmRfY25h:12.0.10.1/external"
 
-			requestType := DELETE
+			requestType := ibclient.DELETE
 			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 				host, port, version, ref)
 			bodyStr := []byte{}
-			httpReq, _ := http.NewRequest(requestType.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+			httpReq, _ := http.NewRequest(requestType.ToMethod(), urlStr, bytes.NewBuffer(bodyStr))
 			frb := &FakeRequestBuilder{
 				r:   requestType,
 				obj: nil,
@@ -409,10 +410,10 @@ var _ = Describe("Connector", func() {
 				res: []byte(fakeref),
 			}
 
-			OrigValidateConnector := ValidateConnector
-			ValidateConnector = MockValidateConnector
-			defer func() { ValidateConnector = OrigValidateConnector }()
-			conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
+			OrigValidateConnector := ibclient.ValidateConnector
+			ibclient.ValidateConnector = MockValidateConnector
+			defer func() { ibclient.ValidateConnector = OrigValidateConnector }()
+			conn, err := ibclient.NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 			if err != nil {
 				Fail("Error creating Connector")
@@ -430,16 +431,16 @@ var _ = Describe("Connector", func() {
 			netviewName := "private-view"
 			eaKey := "CMP Type"
 			eaVal := "OpenStack"
-			eas := EA{eaKey: eaVal}
-			netViewObj := NewNetworkView(netviewName, "", eas, "")
+			eas := ibclient.EA{eaKey: eaVal}
+			netViewObj := ibclient.NewNetworkView(netviewName, "", eas, "")
 
-			requestType := GET
+			requestType := ibclient.GET
 			eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 			netviewStr := `"network_view":"` + netviewName + `"`
 			urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 				host, port, version, netViewObj.ObjectType())
 			bodyStr := []byte("{" + strings.Join([]string{netviewStr, eaStr}, ",") + "}")
-			httpReq, _ := http.NewRequest(requestType.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+			httpReq, _ := http.NewRequest(requestType.ToMethod(), urlStr, bytes.NewBuffer(bodyStr))
 			frb := &FakeRequestBuilder{
 				r:   requestType,
 				obj: netViewObj,
@@ -451,8 +452,8 @@ var _ = Describe("Connector", func() {
 			}
 
 			expectRef := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-			eas = EA{eaKey: eaVal}
-			expectObj := NewNetworkView(netviewName, "", eas, expectRef)
+			eas = ibclient.EA{eaKey: eaVal}
+			expectObj := ibclient.NewNetworkView(netviewName, "", eas, expectRef)
 			expectRes, _ := json.Marshal(expectObj)
 
 			fhr := &FakeHttpRequestor{
@@ -462,19 +463,19 @@ var _ = Describe("Connector", func() {
 				res: expectRes,
 			}
 
-			OrigValidateConnector := ValidateConnector
-			ValidateConnector = MockValidateConnector
-			defer func() { ValidateConnector = OrigValidateConnector }()
+			OrigValidateConnector := ibclient.ValidateConnector
+			ibclient.ValidateConnector = MockValidateConnector
+			defer func() { ibclient.ValidateConnector = OrigValidateConnector }()
 
-			conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
+			conn, err := ibclient.NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 			if err != nil {
 				Fail("Error creating Connector")
 			}
 			It("should return expected object", func() {
-				actual := NewEmptyNetworkView()
+				actual := ibclient.NewEmptyNetworkView()
 				err := conn.GetObject(
-					netViewObj, "", NewQueryParams(false, nil), actual)
+					netViewObj, "", ibclient.NewQueryParams(false, nil), actual)
 				Expect(err).To(BeNil())
 				Expect(actual).To(Equal(expectObj))
 			})
@@ -485,18 +486,18 @@ var _ = Describe("Connector", func() {
 				eaKey := "CMP Type"
 				eaVal := "OpenStack"
 				ref := ""
-				queryParams := NewQueryParams(false, nil)
-				eas := EA{eaKey: eaVal}
-				netViewObj := NewNetworkView(netviewName, "", eas, "")
+				queryParams := ibclient.NewQueryParams(false, nil)
+				eas := ibclient.EA{eaKey: eaVal}
+				netViewObj := ibclient.NewNetworkView(netviewName, "", eas, "")
 
-				requestType := GET
+				requestType := ibclient.GET
 				eaStr := `"extattrs":{"` + eaKey + `":{"value":"` + eaVal + `"}}`
 				netviewStr := `"network_view":"` + netviewName + `"`
 				urlStr := fmt.Sprintf("https://%s:%s/wapi/v%s/%s",
 					host, port, version, netViewObj.ObjectType())
 
 				bodyStr := []byte("{" + strings.Join([]string{netviewStr, eaStr}, ",") + "}")
-				httpReq, _ := http.NewRequest(requestType.toMethod(), urlStr, bytes.NewBuffer(bodyStr))
+				httpReq, _ := http.NewRequest(requestType.ToMethod(), urlStr, bytes.NewBuffer(bodyStr))
 				frb := &FakeRequestBuilder{
 					r:   requestType,
 					obj: netViewObj,
@@ -508,8 +509,8 @@ var _ = Describe("Connector", func() {
 				}
 
 				expectRef := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-				eas = EA{eaKey: eaVal}
-				expectObj := NewNetworkView(netviewName, "", eas, expectRef)
+				eas = ibclient.EA{eaKey: eaVal}
+				expectObj := ibclient.NewNetworkView(netviewName, "", eas, expectRef)
 				expectRes, _ := json.Marshal(expectObj)
 
 				fhr := &FakeHttpRequestor{
@@ -519,26 +520,26 @@ var _ = Describe("Connector", func() {
 					res: expectRes,
 				}
 
-				OrigValidateConnector := ValidateConnector
-				ValidateConnector = MockValidateConnector
-				defer func() { ValidateConnector = OrigValidateConnector }()
+				OrigValidateConnector := ibclient.ValidateConnector
+				ibclient.ValidateConnector = MockValidateConnector
+				defer func() { ibclient.ValidateConnector = OrigValidateConnector }()
 
-				conn, err := NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
+				conn, err := ibclient.NewConnector(hostCfg, authCfg, transportConfig, frb, fhr)
 
 				if err != nil {
 					Fail("Error creating Connector")
 				}
-				actual := NewEmptyNetworkView()
+				actual := ibclient.NewEmptyNetworkView()
 				It("should return expected object when forceProxy is false", func() {
-					queryParams.forceProxy = false //disable proxy
-					res, err := conn.makeRequest(GET, netViewObj, ref, queryParams)
+					queryParams.SetForceProxy(false) //disable proxy
+					res, err := conn.MakeRequest(ibclient.GET, netViewObj, ref, queryParams)
 					err = json.Unmarshal(res, &actual)
 					Expect(err).To(BeNil())
 					Expect(actual).To(Equal(expectObj))
 				})
 				It("should return expected object when forceProxy is true", func() {
-					queryParams.forceProxy = true //enable proxy
-					res, err := conn.makeRequest(GET, netViewObj, ref, queryParams)
+					queryParams.SetForceProxy(true) //enable proxy
+					res, err := conn.MakeRequest(ibclient.GET, netViewObj, ref, queryParams)
 					err = json.Unmarshal(res, &actual)
 					Expect(err).To(BeNil())
 					Expect(actual).To(Equal(expectObj))

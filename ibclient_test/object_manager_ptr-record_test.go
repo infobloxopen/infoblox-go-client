@@ -1,11 +1,13 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
-	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 )
 
 var _ = Describe("Object Manager: PTR-record", func() {
@@ -20,22 +22,22 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		useTtl := true
 		ttl := uint32(70)
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv6Addr = &ipAddr
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Ipv6Addr = &ipAddr
 
-		var actualRecord *RecordPTR
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, "", "", ipAddr, useTtl, ttl, comment, eas)
@@ -57,22 +59,22 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		useTtl := true
 		ttl := uint32(70)
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.10.in-addr.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv4Addr = &ipAddr
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Ipv4Addr = &ipAddr
 
-		var actualRecord *RecordPTR
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, "", "", ipAddr, useTtl, ttl, comment, eas)
@@ -94,23 +96,23 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		dnsView := "default"
 		ptrdname := "test"
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		useTtl := true
 		ttl := uint32(70)
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.10.in-addr.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv4Addr = &ipAddr
-		var actualRecord *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Ipv4Addr = &ipAddr
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, ptrdname, "", cidr, "", useTtl, ttl, comment, eas)
@@ -132,23 +134,23 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		dnsView := "default"
 		ptrdname := "test"
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		useTtl := true
 		ttl := uint32(70)
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv6Addr = &ipAddr
-		var actualRecord *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Ipv6Addr = &ipAddr
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreatePTRRecord(netviewName, dnsView, ptrdname, "", cidr, "", useTtl, ttl, comment, eas)
@@ -168,23 +170,23 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		dnsView := "default"
 		ptrdname := "test"
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		useTtl := true
 		ttl := uint32(70)
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%s", recordName, dnsView)
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			createObjectObj:      ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordPTR(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, comment, eas),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Name = &recordName
-		var actualRecord *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Name = &recordName
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreatePTRRecord("", dnsView, ptrdname, recordName, "", "", useTtl, ttl, comment, eas)
@@ -203,18 +205,18 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		vmName := "dummyvm"
 		dnsView := "default"
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		useTtl := true
 		ttl := uint32(70)
 
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
+			createObjectObj:   ibclient.NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
 			createObjectError: fmt.Errorf("ptrdname is a required field to create a PTR record"),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Name = &recordName
-		var actualRecord, expectedObj *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Name = &recordName
+		var actualRecord, expectedObj *ibclient.RecordPTR
 		var err error
 		expectedObj = nil
 		It("should pass expected PTR record Object to CreateObject", func() {
@@ -233,18 +235,18 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		vmName := "dummyvm"
 		dnsView := "default"
 		comment := "creation test"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		useTtl := true
 		ttl := uint32(70)
 
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
+			createObjectObj:   ibclient.NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
 			createObjectError: fmt.Errorf("%s is an invalid IP address", ipAddr),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.createObjectObj.(*RecordPTR).Ipv4Addr = &ipAddr
-		var actualRecord, expectedObj *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.createObjectObj.(*ibclient.RecordPTR).Ipv4Addr = &ipAddr
+		var actualRecord, expectedObj *ibclient.RecordPTR
 		var err error
 		expectedObj = nil
 		It("should pass expected PTR record Object to CreateObject", func() {
@@ -262,19 +264,19 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		dnsView := "default"
 		comment := "creation test"
 		ptrdname := "ptr-test.infoblox.com"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		useTtl := true
 		ttl := uint32(70)
 
 		conn := &fakeConnector{
-			createObjectObj: NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
+			createObjectObj: ibclient.NewRecordPTR(dnsView, "", useTtl, ttl, comment, eas),
 			createObjectError: fmt.Errorf("CIDR and network view are required to allocate a next available IP address\n" +
 				"IP address is required to create PTR record in reverse mapping zone\n" +
 				"record name is required to create a record in forwarrd mapping zone"),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		var actualRecord, expectedObj *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *ibclient.RecordPTR
 		var err error
 		expectedObj = nil
 		It("should pass expected PTR record Object to CreateObject", func() {
@@ -294,7 +296,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		ttl := uint32(70)
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.10.in-addr.arpa/default")
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"view":     dnsView,
@@ -303,22 +305,22 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
+			resultObject:         []ibclient.RecordPTR{*ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.resultObject.([]RecordPTR)[0].Ipv4Addr = &ipAddr
-		var actualRecord *RecordPTR
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.resultObject.([]ibclient.RecordPTR)[0].Ipv4Addr = &ipAddr
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetPTRRecord(dnsView, ptrdname, "", ipAddr)
 		})
 
 		It("should return expected PTR record Object", func() {
-			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordPTR)[0]))
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]ibclient.RecordPTR)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -333,7 +335,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		ttl := uint32(70)
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default")
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"view":     dnsView,
@@ -342,22 +344,22 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
+			resultObject:         []ibclient.RecordPTR{*ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualRecord *RecordPTR
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetPTRRecord(dnsView, ptrdname, "", ipAddr)
 		})
 
 		It("should return expected PTR record Object", func() {
-			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordPTR)[0]))
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]ibclient.RecordPTR)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -372,7 +374,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 		ttl := uint32(70)
 		fakeRefReturn := fmt.Sprintf("record:ptr/ZG5zLmJpbmRfY25h:%s/%s", recordName, dnsView)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"view":     dnsView,
@@ -381,22 +383,22 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordPTR(),
+			getObjectObj:         ibclient.NewEmptyRecordPTR(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordPTR{*NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
+			resultObject:         []ibclient.RecordPTR{*ibclient.NewRecordPTR(dnsView, ptrdname, useTtl, ttl, "", nil)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualRecord *RecordPTR
+		var actualRecord *ibclient.RecordPTR
 		var err error
 		It("should pass expected PTR record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetPTRRecord(dnsView, ptrdname, recordName, "")
 		})
 
 		It("should return expected PTR record Object", func() {
-			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordPTR)[0]))
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]ibclient.RecordPTR)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -404,10 +406,10 @@ var _ = Describe("Object Manager: PTR-record", func() {
 	Describe("Update PTR record", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *RecordPTR
+			actualObj *ibclient.RecordPTR
 		)
 
 		cmpType := "Docker"
@@ -425,17 +427,17 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 		It("IPv4, updating ptrdname, IPv4 address, comment and EAs", func() {
 			ref = fmt.Sprintf("record:ptr/%s:1.0.0.10.in-addr.arpa/default", refBase)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := ibclient.NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
 			initObj.Ipv4Addr = &ipv4Addr
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -448,12 +450,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update-ptr.test.com"
 			updateIpAddr := "10.0.0.2"
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv4Addr = &updateIpAddr
 			updateObjIn.Name = utils.StringPtr("")
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv4Addr = &updateIpAddr
 
@@ -465,8 +467,8 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj.Name = updateObjIn.Name
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordPTR(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -477,7 +479,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdatePTRRecord(ref, "", newPtrdname, "", "", updateIpAddr, updateUseTtl, updateTtl, comment, setEas)
 			Expect(err).To(BeNil())
@@ -486,17 +488,17 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 		It("IPv6: updating ptrdname, TTl fields, IPv6 address, comment and EAs", func() {
 			ref = fmt.Sprintf("record:ptr/%s:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := ibclient.NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
 			initObj.Ipv4Addr = &ipv6Addr
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -509,12 +511,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update"
 			updateIpAddr := "2001:db8:abcd:14::2"
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv6Addr = &updateIpAddr
 			updateObjIn.Name = utils.StringPtr("")
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv6Addr = &updateIpAddr
 
@@ -526,8 +528,8 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj.Name = updateObjIn.Name
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordPTR(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -538,7 +540,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdatePTRRecord(ref, "", newPtrdname, "", "", updateIpAddr, updateUseTtl, updateTtl, comment, setEas)
 			Expect(err).To(BeNil())
@@ -547,17 +549,17 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 		It("IPv4, updating ptrdname, IPv4 address by passing cidr and network view, comment and EAs", func() {
 			ref = fmt.Sprintf("record:ptr/%s:1.0.0.10.in-addr.arpa/default", refBase)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := ibclient.NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
 			initObj.Ipv4Addr = &ipv4Addr
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -570,12 +572,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update-ptr.test.com"
 			updateIpAddr := fmt.Sprintf("func:nextavailableip:%s,%s", ipv4cidr, netview)
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.10.in-addr.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv4Addr = &updateIpAddr
 			updateObjIn.Name = utils.StringPtr("")
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv4Addr = &updateIpAddr
 
@@ -587,8 +589,8 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj.Name = updateObjIn.Name
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordPTR(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -599,7 +601,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdatePTRRecord(ref, netview, newPtrdname, "", ipv4cidr, "", updateUseTtl, updateTtl, comment, setEas)
 			Expect(err).To(BeNil())
@@ -608,17 +610,17 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 		It("IPv6, updating ptrdname, IPv6 address by passing cidr and network view, comment and EAs", func() {
 			ref = fmt.Sprintf("record:ptr/%s:1.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := ibclient.NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
 			initObj.Ipv6Addr = &ipv6Addr
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -631,12 +633,12 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update-ptr.test.com"
 			updateIpAddr := fmt.Sprintf("func:nextavailableip:%s,%s", ipv6cidr, netview)
 			updatedRef := fmt.Sprintf("record:ptr/%s:2.0.0.0.0.0.0.0.0.0.0.0.0.0.0.0.4.1.0.0.d.c.b.a.8.b.d.0.1.0.0.2.ip6.arpa/default", refBase)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
 			updateObjIn.Ipv6Addr = &updateIpAddr
 			updateObjIn.Name = utils.StringPtr("")
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Ipv6Addr = &updateIpAddr
 
@@ -648,8 +650,8 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			expectedObj.Name = updateObjIn.Name
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordPTR(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -660,7 +662,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdatePTRRecord(ref, netview, newPtrdname, "", ipv6cidr, "", updateUseTtl, updateTtl, comment, setEas)
 			Expect(err).To(BeNil())
@@ -669,17 +671,17 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 		It("Updating ptrdname, TTl fields, record name, comment and EAs", func() {
 			ref = fmt.Sprintf("record:ptr/%s:%s/default", refBase, recordName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
+			initObj := ibclient.NewRecordPTR("", ptrdname, useTtl, ttl, "old comment", initialEas)
 			initObj.Ref = ref
 			initObj.Name = &recordName
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -692,17 +694,17 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newPtrdname := "test-update"
 			updateName := "test-ptr-update"
 			updatedRef := fmt.Sprintf("record:ptr/%s:%s/20", refBase, newPtrdname)
-			updateObjIn := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			updateObjIn := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			updateObjIn.Ref = ref
 			updateObjIn.Name = &updateName
 
-			expectedObj := NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
+			expectedObj := ibclient.NewRecordPTR("", newPtrdname, updateUseTtl, updateTtl, comment, expectedEas)
 			expectedObj.Ref = updatedRef
 			expectedObj.Name = &updateName
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordPTR(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordPTR(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -713,7 +715,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdatePTRRecord(ref, "", newPtrdname, updateName, "", "", updateUseTtl, updateTtl, comment, setEas)
 			Expect(err).To(BeNil())
@@ -724,10 +726,10 @@ var _ = Describe("Object Manager: PTR-record", func() {
 	Describe("Update PTR record", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *RecordCNAME
+			actualObj *ibclient.RecordCNAME
 		)
 
 		cmpType := "Docker"
@@ -740,16 +742,16 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 		It("IPv4, updating ptrdname, IPv4 address, comment and EAs", func() {
 			ref = fmt.Sprintf("record:cname/%s:%s", refBase, recordName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewRecordCNAME("", canonical, recordName, useTtl, ttl, "old comment", initialEas, ref)
+			initObj := ibclient.NewRecordCNAME("", canonical, recordName, useTtl, ttl, "old comment", initialEas, ref)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
@@ -762,13 +764,13 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			newCanonical := "test-canonical-update.domain.com"
 			newRecordName := "test-update.domain.com"
 			updatedRef := fmt.Sprintf("record:cname/%s:%s", refBase, newRecordName)
-			updateObjIn := NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, ref)
+			updateObjIn := ibclient.NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, ref)
 
-			expectedObj := NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, updatedRef)
+			expectedObj := ibclient.NewRecordCNAME("", newCanonical, newRecordName, updateUseTtl, updateTtl, comment, expectedEas, updatedRef)
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordCNAME(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordCNAME(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -779,7 +781,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateCNAMERecord(ref, newCanonical, newRecordName, updateUseTtl, updateTtl, comment, setEas)
 			Expect(err).To(BeNil())
@@ -798,7 +800,7 @@ var _ = Describe("Object Manager: PTR-record", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

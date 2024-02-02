@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: network view", func() {
@@ -13,17 +15,17 @@ var _ = Describe("Object Manager: network view", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		netviewName := "Default View"
 		comment := "test client"
-		setEas := EA{"Cloud API Owned": true}
+		setEas := ibclient.EA{"Cloud API Owned": true}
 		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
 		nvFakeConnector := &fakeConnector{
-			createObjectObj: NewNetworkView(netviewName, comment, setEas, ""),
-			resultObject:    NewNetworkView(netviewName, comment, setEas, fakeRefReturn),
+			createObjectObj: ibclient.NewNetworkView(netviewName, comment, setEas, ""),
+			resultObject:    ibclient.NewNetworkView(netviewName, comment, setEas, fakeRefReturn),
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nvFakeConnector, cmpType, tenantID)
 
-		var actualNetworkView *NetworkView
+		var actualNetworkView *ibclient.NetworkView
 		var err error
 		It("should pass expected NetworkView Object to CreateObject", func() {
 			actualNetworkView, err = objMgr.CreateNetworkView(netviewName, comment, setEas)
@@ -40,28 +42,28 @@ var _ = Describe("Object Manager: network view", func() {
 		netviewName := "Default View"
 		fakeRefReturn := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"name": netviewName,
 			})
 
 		nvFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyNetworkView(),
+			getObjectObj:         ibclient.NewEmptyNetworkView(),
 			getObjectQueryParams: queryParams,
 			getObjectRef:         "",
-			resultObject:         []NetworkView{*NewNetworkView(netviewName, "", nil, fakeRefReturn)},
+			resultObject:         []ibclient.NetworkView{*ibclient.NewNetworkView(netviewName, "", nil, fakeRefReturn)},
 		}
 
-		objMgr := NewObjectManager(nvFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nvFakeConnector, cmpType, tenantID)
 
-		var actualNetworkView *NetworkView
+		var actualNetworkView *ibclient.NetworkView
 		var err error
 		It("should pass expected NetworkView Object to GetObject", func() {
 			actualNetworkView, err = objMgr.GetNetworkView(netviewName)
 		})
 		It("should return expected NetworkView Object", func() {
-			Expect(*actualNetworkView).To(Equal(nvFakeConnector.resultObject.([]NetworkView)[0]))
+			Expect(*actualNetworkView).To(Equal(nvFakeConnector.resultObject.([]ibclient.NetworkView)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -69,10 +71,10 @@ var _ = Describe("Object Manager: network view", func() {
 	Describe("Update Network View", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *NetworkView
+			actualObj *ibclient.NetworkView
 		)
 
 		cmpType := "Docker"
@@ -82,33 +84,33 @@ var _ = Describe("Object Manager: network view", func() {
 
 		It("Updating comment and EAs", func() {
 			ref = fmt.Sprintf("networkview/%s:%s", refBase, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetworkView(netviewName, "old comment", initialEas, ref)
+			initObj := ibclient.NewNetworkView(netviewName, "old comment", initialEas, ref)
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := NewEmptyNetworkView()
+			getObjIn := ibclient.NewEmptyNetworkView()
 
 			comment := "test comment 1"
 			updateNetviewName := "default_view"
 			updatedRef := fmt.Sprintf("networkview/%s:%s", refBase, updateNetviewName)
-			updateObjIn := NewNetworkView(updateNetviewName, comment, expectedEas, ref)
+			updateObjIn := ibclient.NewNetworkView(updateNetviewName, comment, expectedEas, ref)
 
-			expectedObj := NewNetworkView(updateNetviewName, comment, expectedEas, updatedRef)
+			expectedObj := ibclient.NewNetworkView(updateNetviewName, comment, expectedEas, updatedRef)
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -119,7 +121,7 @@ var _ = Describe("Object Manager: network view", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetworkView(ref, updateNetviewName, comment, setEas)
 			Expect(err).To(BeNil())
@@ -137,7 +139,7 @@ var _ = Describe("Object Manager: network view", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

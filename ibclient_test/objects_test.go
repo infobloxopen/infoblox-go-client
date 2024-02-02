@@ -3,27 +3,29 @@ package ibclient
 import (
 	"encoding/json"
 
-	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 )
 
 var _ = Describe("Objects", func() {
 
 	Context("Grid object", func() {
 
-		tesNtpserver := &NTPserver{
+		tesNtpserver := &ibclient.NTPserver{
 			Address:              "16.4.1.2",
 			Burst:                true,
 			EnableAuthentication: true,
 			IBurst:               true,
 			Preferred:            true,
 		}
-		grid := Grid{Name: utils.StringPtr("test"), NTPSetting: &NTPSetting{EnableNTP: true,
+		grid := ibclient.Grid{Name: utils.StringPtr("test"), NTPSetting: &ibclient.NTPSetting{EnableNTP: true,
 			NTPAcl:     nil,
 			NTPKeys:    nil,
 			NTPKod:     false,
-			NTPServers: []*NTPserver{tesNtpserver},
+			NTPServers: []*ibclient.NTPserver{tesNtpserver},
 		},
 		}
 		gridJSON := `{
@@ -56,7 +58,7 @@ var _ = Describe("Objects", func() {
 
 		Context("Unmarshalling", func() {
 			Context("expected object is returned", func() {
-				var actualGrid Grid
+				var actualGrid ibclient.Grid
 				err := json.Unmarshal([]byte(gridJSON), &actualGrid)
 
 				It("should not error", func() {
@@ -73,11 +75,11 @@ var _ = Describe("Objects", func() {
 
 	Context("EA Object", func() {
 
-		ea := EA{
-			"Cloud API Owned":   Bool(true),
+		ea := ibclient.EA{
+			"Cloud API Owned":   ibclient.Bool(true),
 			"Tenant Name":       "Engineering01",
 			"Maximum Wait Time": 120,
-			"DNS Support":       Bool(false),
+			"DNS Support":       ibclient.Bool(false),
 			"Routers":           []string{"10.1.2.234", "10.1.2.235"},
 		}
 		eaJSON := `{"Cloud API Owned":{"value":"True"},` +
@@ -102,7 +104,7 @@ var _ = Describe("Objects", func() {
 
 		Context("Unmarshalling", func() {
 			Context("expected object is returned", func() {
-				var actualEA EA
+				var actualEA ibclient.EA
 				err := json.Unmarshal([]byte(eaJSON), &actualEA)
 
 				It("should not error", func() {
@@ -118,7 +120,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Context("EA Search Object", func() {
-		eas := EASearch{
+		eas := ibclient.EASearch{
 			"Network Name": "Shared-Net",
 			"Network View": "Global",
 		}
@@ -141,7 +143,7 @@ var _ = Describe("Objects", func() {
 	})
 
 	Context("EADefListValue Object", func() {
-		eadListVal := EADefListValue{"Host Record"}
+		eadListVal := ibclient.EADefListValue{"Host Record"}
 
 		eadListValJSON := `{"value": "Host Record"}`
 
@@ -161,7 +163,7 @@ var _ = Describe("Objects", func() {
 
 		Context("Unmarshalling", func() {
 			Context("expected object is returned", func() {
-				var actualEadListVal EADefListValue
+				var actualEadListVal ibclient.EADefListValue
 				err := json.Unmarshal([]byte(eadListValJSON), &actualEadListVal)
 
 				It("should not error", func() {
@@ -180,9 +182,9 @@ var _ = Describe("Objects", func() {
 		Context("NetworkView object", func() {
 			name := "myview"
 			comment := "test client"
-			setEas := EA{"Tenant ID": "client"}
+			setEas := ibclient.EA{"Tenant ID": "client"}
 			ref := "networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-			nv := NewNetworkView(name, comment, setEas, ref)
+			nv := ibclient.NewNetworkView(name, comment, setEas, ref)
 
 			It("should set fields correctly", func() {
 				Expect(*nv.Name).To(Equal(name))
@@ -201,10 +203,10 @@ var _ = Describe("Objects", func() {
 			cidr := "123.0.0.0/24"
 			netviewName := "localview"
 			comment := "test"
-			ea := EA{"Tenant Name": "Engineering"}
-			nw := NewNetwork(netviewName, cidr, false, comment, ea)
-			searchEAs := EASearch{"Network Name": "shared-net"}
-			nw.eaSearch = searchEAs
+			ea := ibclient.EA{"Tenant Name": "Engineering"}
+			nw := ibclient.NewNetwork(netviewName, cidr, false, comment, ea)
+			searchEAs := ibclient.EASearch{"Network Name": "shared-net"}
+			nw.SetEaSearch(searchEAs)
 
 			It("should set fields correctly", func() {
 				Expect(nw.Cidr).To(Equal(cidr))
@@ -224,10 +226,10 @@ var _ = Describe("Objects", func() {
 			cidr := "fc00::0100/56"
 			netviewName := "localview"
 			comment := "test"
-			ea := EA{"Tenant Name": "Engineering"}
-			nw := NewNetwork(netviewName, cidr, true, comment, ea)
-			searchEAs := EASearch{"Network Name": "shared-net"}
-			nw.eaSearch = searchEAs
+			ea := ibclient.EA{"Tenant Name": "Engineering"}
+			nw := ibclient.NewNetwork(netviewName, cidr, true, comment, ea)
+			searchEAs := ibclient.EASearch{"Network Name": "shared-net"}
+			nw.SetEaSearch(searchEAs)
 
 			It("should set fields correctly", func() {
 				Expect(nw.Cidr).To(Equal(cidr))
@@ -247,7 +249,7 @@ var _ = Describe("Objects", func() {
 			cidr := "74.0.8.0/24"
 			netviewName := "globalview"
 			comment := "some comment"
-			nwc := NewNetworkContainer(netviewName, cidr, false, comment, nil)
+			nwc := ibclient.NewNetworkContainer(netviewName, cidr, false, comment, nil)
 
 			It("should set fields correctly", func() {
 				Expect(nwc.Cidr).To(Equal(cidr))
@@ -264,14 +266,14 @@ var _ = Describe("Objects", func() {
 		Context("IPv6 NetworkContainer object, with EAs", func() {
 			cidr := "fc00::0100/56"
 			netviewName := "default"
-			eas := EA{
+			eas := ibclient.EA{
 				"ea1": "ea1 value",
 				"ea2": "ea2 value",
 				"ea3 list": []string{
 					"ea3 text1",
 					"ea3 text2"}}
 			comment := "some comment"
-			nwc := NewNetworkContainer(netviewName, cidr, true, comment, eas)
+			nwc := ibclient.NewNetworkContainer(netviewName, cidr, true, comment, eas)
 
 			It("should set fields correctly", func() {
 				Expect(nwc.Cidr).To(Equal(cidr))
@@ -293,8 +295,8 @@ var _ = Describe("Objects", func() {
 			mac := "11:22:33:44:55:66"
 			matchClient := "MAC_ADDRESS"
 			comment := "test"
-			ea := EA{"Tenant Name": "Engineering"}
-			fixedAddr := NewFixedAddress(
+			ea := ibclient.EA{"Tenant Name": "Engineering"}
+			fixedAddr := ibclient.NewFixedAddress(
 				netviewName, "",
 				ipAddress, cidr, mac,
 				matchClient, ea, "", false, comment)
@@ -320,8 +322,8 @@ var _ = Describe("Objects", func() {
 			ipAddress := "fc00::0100"
 			duid := "11:22:33:44:55:66"
 			comment := "test"
-			ea := EA{"Tenant Name": "Engineering"}
-			fixedAddr := NewFixedAddress(
+			ea := ibclient.EA{"Tenant Name": "Engineering"}
+			fixedAddr := ibclient.NewFixedAddress(
 				netviewName, "",
 				ipAddress, cidr, duid,
 				"", ea, "", true, comment)
@@ -343,11 +345,11 @@ var _ = Describe("Objects", func() {
 		Context("EADefinition object", func() {
 			comment := "Test Extensible Attribute"
 			flags := "CGV"
-			listValues := []*EADefListValue{{"True"}, {"False"}}
+			listValues := []*ibclient.EADefListValue{{"True"}, {"False"}}
 			name := "Test EA"
 			eaType := "string"
 			allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
-			eaDef := NewEADefinition(EADefinition{
+			eaDef := ibclient.NewEADefinition(ibclient.EADefinition{
 				Name:               &name,
 				Comment:            &comment,
 				Flags:              &flags,
@@ -371,7 +373,7 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("UserProfile object", func() {
-			userprofile := NewUserProfile(UserProfile{})
+			userprofile := ibclient.NewUserProfile(ibclient.UserProfile{})
 
 			It("should set base fields correctly", func() {
 				Expect(userprofile.ObjectType()).To(Equal("userprofile"))
@@ -387,12 +389,12 @@ var _ = Describe("Objects", func() {
 			ttl := uint32(500)
 			useTTL := true
 			comment := "testcomment"
-			eas := EA{
+			eas := ibclient.EA{
 				"TestEA1":  "testea1 value",
 				"Location": "east coast",
 			}
 
-			ra := NewRecordA(view, zone, name, ipv4addr, ttl, useTTL, comment, eas, "")
+			ra := ibclient.NewRecordA(view, zone, name, ipv4addr, ttl, useTTL, comment, eas, "")
 
 			It("should set fields correctly", func() {
 				Expect(*ra.Ipv4Addr).To(Equal(ipv4addr))
@@ -420,9 +422,9 @@ var _ = Describe("Objects", func() {
 			useTtl := true
 			ttl := uint32(10)
 			comment := "test comment"
-			ea := EA{"VM Name": "test-vm"}
+			ea := ibclient.EA{"VM Name": "test-vm"}
 
-			ra := NewRecordAAAA(view, name, ipv6addr, useTtl, ttl, comment, ea, "")
+			ra := ibclient.NewRecordAAAA(view, name, ipv6addr, useTtl, ttl, comment, ea, "")
 
 			It("should set fields correctly", func() {
 				Expect(*ra.Ipv6Addr).To(Equal(ipv6addr))
@@ -449,9 +451,9 @@ var _ = Describe("Objects", func() {
 			useTtl := true
 			ttl := uint32(70)
 			comment := "test client"
-			eas := EA{"VM Name": "test"}
+			eas := ibclient.EA{"VM Name": "test"}
 
-			rptr := NewRecordPTR(view, ptrdname, useTtl, ttl, comment, eas)
+			rptr := ibclient.NewRecordPTR(view, ptrdname, useTtl, ttl, comment, eas)
 			rptr.Zone = zone
 			rptr.Ipv4Addr = &ipv4addr
 			rptr.Ipv6Addr = &ipv6addr
@@ -491,9 +493,9 @@ var _ = Describe("Objects", func() {
 			ttl := uint32(0)
 			view := "default"
 			comment := "test CNAME"
-			eas := EA{"VM Name": "test"}
+			eas := ibclient.EA{"VM Name": "test"}
 
-			rc := NewRecordCNAME(view, canonical, name, useTtl, ttl, comment, eas, "")
+			rc := ibclient.NewRecordCNAME(view, canonical, name, useTtl, ttl, comment, eas, "")
 
 			It("should set fields correctly", func() {
 				Expect(*rc.Canonical).To(Equal(canonical))
@@ -515,7 +517,7 @@ var _ = Describe("Objects", func() {
 			ipAddress := "25.0.7.59/24"
 			mac := "11:22:33:44:55:66"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv4Addr(ipAddress, mac, enableDHCP, "")
+			hostAddr := ibclient.NewHostRecordIpv4Addr(ipAddress, mac, enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(*hostAddr.Ipv4Addr).To(Equal(ipAddress))
@@ -531,7 +533,7 @@ var _ = Describe("Objects", func() {
 		Context("RecordHostIpv4Addr macaddress empty", func() {
 			ipAddress := "25.0.7.59"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv4Addr(ipAddress, "", enableDHCP, "")
+			hostAddr := ibclient.NewHostRecordIpv4Addr(ipAddress, "", enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(*hostAddr.Ipv4Addr).To(Equal(ipAddress))
@@ -547,7 +549,7 @@ var _ = Describe("Objects", func() {
 			ipAddress := "fc00::0100"
 			duid := "11:22:33:44:55:66"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv6Addr(ipAddress, duid, enableDHCP, "")
+			hostAddr := ibclient.NewHostRecordIpv6Addr(ipAddress, duid, enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(*hostAddr.Ipv6Addr).To(Equal(ipAddress))
@@ -562,7 +564,7 @@ var _ = Describe("Objects", func() {
 		Context("RecordHostIpv6Addr duid empty", func() {
 			ipAddress := "fc00::0100"
 			enableDHCP := false
-			hostAddr := NewHostRecordIpv6Addr(ipAddress, "", enableDHCP, "")
+			hostAddr := ibclient.NewHostRecordIpv6Addr(ipAddress, "", enableDHCP, "")
 
 			It("should set fields correctly", func() {
 				Expect(*hostAddr.Ipv6Addr).To(Equal(ipAddress))
@@ -574,8 +576,8 @@ var _ = Describe("Objects", func() {
 		})
 
 		Context("RecordHost object", func() {
-			ipv4addrs := []HostRecordIpv4Addr{{Ipv4Addr: utils.StringPtr("1.1.1.1")}, {Ipv4Addr: utils.StringPtr("2.2.2.2")}}
-			ipv6addrs := []HostRecordIpv6Addr{{Ipv6Addr: utils.StringPtr("fc00::0100")}, {Ipv6Addr: utils.StringPtr("fc00::0101")}}
+			ipv4addrs := []ibclient.HostRecordIpv4Addr{{Ipv4Addr: utils.StringPtr("1.1.1.1")}, {Ipv4Addr: utils.StringPtr("2.2.2.2")}}
+			ipv6addrs := []ibclient.HostRecordIpv6Addr{{Ipv6Addr: utils.StringPtr("fc00::0100")}, {Ipv6Addr: utils.StringPtr("fc00::0101")}}
 			name := "bind_host.domain.com"
 			view := "default"
 			zone := "domain.com"
@@ -584,7 +586,7 @@ var _ = Describe("Objects", func() {
 			comment := "test"
 			aliases := []string{"bind_host1.domain.com"}
 
-			rh := NewHostRecord(
+			rh := ibclient.NewHostRecord(
 				"", name, "", "", ipv4addrs, ipv6addrs,
 				nil, true, view, zone, "", useTtl, ttl, comment, aliases)
 
@@ -613,9 +615,9 @@ var _ = Describe("Objects", func() {
 			ttl := uint32(70)
 			useTtl := true
 			comment := "test comment"
-			eas := EA{"Country": "test"}
+			eas := ibclient.EA{"Country": "test"}
 
-			rm := NewRecordMX(RecordMX{
+			rm := ibclient.NewRecordMX(ibclient.RecordMX{
 				Name:          &fqdn,
 				MailExchanger: &mx,
 				View:          &dnsView,
@@ -653,9 +655,9 @@ var _ = Describe("Objects", func() {
 			ttl := uint32(300)
 			useTtl := true
 			comment := "test comment"
-			eas := EA{"Country": "test"}
+			eas := ibclient.EA{"Country": "test"}
 
-			rv := NewRecordSRV(RecordSRV{
+			rv := ibclient.NewRecordSRV(ibclient.RecordSRV{
 				View:     dnsView,
 				Name:     &name,
 				Priority: &priority,
@@ -694,9 +696,9 @@ var _ = Describe("Objects", func() {
 			ttl := uint32(70)
 			useTtl := true
 			comment := "test client"
-			eas := EA{"Country": "test"}
+			eas := ibclient.EA{"Country": "test"}
 
-			rt := NewRecordTXT(view, "", name, text, ttl, useTtl, comment, eas)
+			rt := ibclient.NewRecordTXT(view, "", name, text, ttl, useTtl, comment, eas)
 
 			It("should set fields correctly", func() {
 				Expect(*rt.View).To(Equal(view))
@@ -714,7 +716,7 @@ var _ = Describe("Objects", func() {
 			fqdn := "domain.com"
 			view := "default"
 
-			za := NewZoneAuth(ZoneAuth{
+			za := ibclient.NewZoneAuth(ibclient.ZoneAuth{
 				Fqdn: fqdn,
 				View: &view})
 
@@ -733,7 +735,7 @@ var _ = Describe("Objects", func() {
 			fqdn := "delegated_zone.domain.com"
 			view := "default"
 
-			za := NewZoneDelegated(ZoneDelegated{
+			za := ibclient.NewZoneDelegated(ibclient.ZoneDelegated{
 				Fqdn: fqdn,
 				View: &view})
 
@@ -753,7 +755,7 @@ var _ = Describe("Objects", func() {
 	Context("Unmarshalling malformed JSON", func() {
 		Context("for EA", func() {
 			badJSON := `""`
-			var ea EA
+			var ea ibclient.EA
 			err := json.Unmarshal([]byte(badJSON), &ea)
 
 			It("should return an error", func() {
@@ -763,7 +765,7 @@ var _ = Describe("Objects", func() {
 
 		Context("for EADefListValue", func() {
 			badJSON := `""`
-			var ead EADefListValue
+			var ead ibclient.EADefListValue
 			err := json.Unmarshal([]byte(badJSON), &ead)
 
 			It("should return an error", func() {

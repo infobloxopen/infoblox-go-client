@@ -1,8 +1,10 @@
-package ibclient
+package ibclient_test
 
 import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: EA definition", func() {
@@ -11,11 +13,11 @@ var _ = Describe("Object Manager: EA definition", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "Test Extensible Attribute"
 		flags := "CGV"
-		listValues := []*EADefListValue{{"True"}, {"False"}}
+		listValues := []*ibclient.EADefListValue{{"True"}, {"False"}}
 		name := "TestEA"
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
-		ead := EADefinition{
+		ead := ibclient.EADefinition{
 			Name:               &name,
 			Comment:            &comment,
 			Flags:              &flags,
@@ -24,15 +26,15 @@ var _ = Describe("Object Manager: EA definition", func() {
 			AllowedObjectTypes: allowedTypes}
 		fakeRefReturn := "extensibleattributedef/ZG5zLm5ldHdvcmtfdmlldyQyMw:TestEA"
 		eadFakeConnector := &fakeConnector{
-			createObjectObj: NewEADefinition(ead),
-			resultObject:    NewEADefinition(ead),
+			createObjectObj: ibclient.NewEADefinition(ead),
+			resultObject:    ibclient.NewEADefinition(ead),
 			fakeRefReturn:   fakeRefReturn,
 		}
-		eadFakeConnector.resultObject.(*EADefinition).Ref = fakeRefReturn
+		eadFakeConnector.resultObject.(*ibclient.EADefinition).Ref = fakeRefReturn
 
-		objMgr := NewObjectManager(eadFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(eadFakeConnector, cmpType, tenantID)
 
-		var actualEADef *EADefinition
+		var actualEADef *ibclient.EADefinition
 		var err error
 		It("should pass expected EA Definintion Object to CreateObject", func() {
 			actualEADef, err = objMgr.CreateEADefinition(ead)
@@ -48,15 +50,15 @@ var _ = Describe("Object Manager: EA definition", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "Test Extensible Attribute"
 		flags := "CGV"
-		listValues := []*EADefListValue{{"True"}, {"False"}}
+		listValues := []*ibclient.EADefListValue{{"True"}, {"False"}}
 		name := "TestEA"
 		eaType := "string"
 		allowedTypes := []string{"arecord", "aaarecord", "ptrrecord"}
-		ead := EADefinition{
+		ead := ibclient.EADefinition{
 			Name: &name,
 		}
 		fakeRefReturn := "extensibleattributedef/ZG5zLm5ldHdvcmtfdmlldyQyMw:TestEA"
-		eadRes := EADefinition{
+		eadRes := ibclient.EADefinition{
 			Name:               &name,
 			Comment:            &comment,
 			Flags:              &flags,
@@ -66,29 +68,29 @@ var _ = Describe("Object Manager: EA definition", func() {
 			Ref:                fakeRefReturn,
 		}
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"name": name,
 			})
 
 		eadFakeConnector := &fakeConnector{
-			getObjectObj:         NewEADefinition(ead),
+			getObjectObj:         ibclient.NewEADefinition(ead),
 			getObjectRef:         "",
 			getObjectQueryParams: queryParams,
-			resultObject:         []EADefinition{*NewEADefinition(eadRes)},
+			resultObject:         []ibclient.EADefinition{*ibclient.NewEADefinition(eadRes)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(eadFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(eadFakeConnector, cmpType, tenantID)
 
-		var actualEADef *EADefinition
+		var actualEADef *ibclient.EADefinition
 		var err error
 		It("should pass expected EA Definintion Object to GetObject", func() {
 			actualEADef, err = objMgr.GetEADefinition(name)
 		})
 		It("should return expected EA Definition Object", func() {
-			Expect(*actualEADef).To(Equal(eadFakeConnector.resultObject.([]EADefinition)[0]))
+			Expect(*actualEADef).To(Equal(eadFakeConnector.resultObject.([]ibclient.EADefinition)[0]))
 			Expect(err).To(BeNil())
 		})
 	})

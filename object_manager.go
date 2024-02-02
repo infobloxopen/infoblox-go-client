@@ -114,7 +114,7 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 
 	conn := objMgr.connector.(*Connector)
 	queryParams := NewQueryParams(false, nil)
-	res, err := conn.makeRequest(CREATE, req, "", queryParams)
+	res, err := conn.MakeRequest(CREATE, req, "", queryParams)
 
 	if err != nil {
 		return nil, err

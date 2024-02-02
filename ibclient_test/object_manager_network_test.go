@@ -1,9 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: network", func() {
@@ -14,24 +17,24 @@ var _ = Describe("Object Manager: network", func() {
 		cidr := "43.0.11.0/24"
 		networkName := "private-net"
 		fakeRefReturn := "network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:43.0.11.0/24/default_view"
-		ea := EA{"Lock": "added", "Region": "East"}
+		ea := ibclient.EA{"Lock": "added", "Region": "East"}
 		comment := "Test network view"
 		connector := &fakeConnector{
-			createObjectObj: NewNetwork(netviewName, cidr, false, comment, ea),
-			resultObject:    NewNetwork(netviewName, cidr, false, comment, ea),
+			createObjectObj: ibclient.NewNetwork(netviewName, cidr, false, comment, ea),
+			resultObject:    ibclient.NewNetwork(netviewName, cidr, false, comment, ea),
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*Network).Ea = ea
-		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.Network).Ea = ea
+		connector.createObjectObj.(*ibclient.Network).Ea["Network Name"] = networkName
 
-		connector.resultObject.(*Network).Ref = fakeRefReturn
-		connector.resultObject.(*Network).Ea = ea
-		connector.resultObject.(*Network).Ea["Network Name"] = networkName
+		connector.resultObject.(*ibclient.Network).Ref = fakeRefReturn
+		connector.resultObject.(*ibclient.Network).Ea = ea
+		connector.resultObject.(*ibclient.Network).Ea["Network Name"] = networkName
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		var err error
 		It("should pass expected Network Object to CreateObject", func() {
 			actualNetwork, err = objMgr.CreateNetwork(
@@ -51,24 +54,24 @@ var _ = Describe("Object Manager: network", func() {
 		cidrRef := " 2001%3Adb8%3Aabcd%3A14%3A%3A/64"
 		networkName := "private-net"
 		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/default_view", cidrRef)
-		ea := EA{"Lock": "added", "Region": "East"}
+		ea := ibclient.EA{"Lock": "added", "Region": "East"}
 		comment := "Test network view"
 		connector := &fakeConnector{
-			createObjectObj: NewNetwork(netviewName, cidr, true, comment, ea),
-			resultObject:    NewNetwork(netviewName, cidr, true, comment, ea),
+			createObjectObj: ibclient.NewNetwork(netviewName, cidr, true, comment, ea),
+			resultObject:    ibclient.NewNetwork(netviewName, cidr, true, comment, ea),
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*Network).Ea = ea
-		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.Network).Ea = ea
+		connector.createObjectObj.(*ibclient.Network).Ea["Network Name"] = networkName
 
-		connector.resultObject.(*Network).Ref = fakeRefReturn
-		connector.resultObject.(*Network).Ea = ea
-		connector.resultObject.(*Network).Ea["Network Name"] = networkName
+		connector.resultObject.(*ibclient.Network).Ref = fakeRefReturn
+		connector.resultObject.(*ibclient.Network).Ea = ea
+		connector.resultObject.(*ibclient.Network).Ea["Network Name"] = networkName
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		var err error
 		It("should pass expected Network Object to CreateObject", func() {
 			actualNetwork, err = objMgr.CreateNetwork(
@@ -89,21 +92,21 @@ var _ = Describe("Object Manager: network", func() {
 		networkName := "private-net"
 		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		ea := EA{"Lock": "added", "Region": "East"}
+		ea := ibclient.EA{"Lock": "added", "Region": "East"}
 		comment := "Test network view"
-		resObj, err := BuildNetworkFromRef(fakeRefReturn)
+		resObj, err := ibclient.BuildNetworkFromRef(fakeRefReturn)
 		connector := &fakeConnector{
-			createObjectObj: NewNetwork(netviewName, cidr1, false, comment, ea),
+			createObjectObj: ibclient.NewNetwork(netviewName, cidr1, false, comment, ea),
 			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*Network).Ea = ea
-		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.Network).Ea = ea
+		connector.createObjectObj.(*ibclient.Network).Ea["Network Name"] = networkName
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		It("should pass expected Network Object to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateNetwork(
 				netviewName, cidr, false, prefixLen, comment, ea)
@@ -123,21 +126,21 @@ var _ = Describe("Object Manager: network", func() {
 		networkName := "private-net"
 		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		ea := EA{"Lock": "added", "Region": "East"}
+		ea := ibclient.EA{"Lock": "added", "Region": "East"}
 		comment := "Test network view"
-		resObj, err := BuildNetworkFromRef(fakeRefReturn)
+		resObj, err := ibclient.BuildNetworkFromRef(fakeRefReturn)
 		connector := &fakeConnector{
-			createObjectObj: NewNetwork(netviewName, cidr1, false, comment, ea),
+			createObjectObj: ibclient.NewNetwork(netviewName, cidr1, false, comment, ea),
 			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*Network).Ea = ea
-		connector.createObjectObj.(*Network).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.Network).Ea = ea
+		connector.createObjectObj.(*ibclient.Network).Ea["Network Name"] = networkName
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		It("should pass expected Network Object with invalid Cidr value to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateNetwork(
 				netviewName, cidr, false, prefixLen, comment, ea)
@@ -157,19 +160,19 @@ var _ = Describe("Object Manager: network", func() {
 		networkName := "private-net"
 		cidr1 := fmt.Sprintf("func:nextavailablenetwork:%s,%s,%d", cidr, netviewName, prefixLen)
 		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		ea := EA{"Lock": "added", "Region": "East", "Network Name": networkName}
+		ea := ibclient.EA{"Lock": "added", "Region": "East", "Network Name": networkName}
 		comment := "Test network view"
 
-		resObj, err := BuildIPv6NetworkFromRef(fakeRefReturn)
+		resObj, err := ibclient.BuildIPv6NetworkFromRef(fakeRefReturn)
 		connector := &fakeConnector{
-			createObjectObj: NewNetwork(netviewName, cidr1, true, comment, ea),
+			createObjectObj: ibclient.NewNetwork(netviewName, cidr1, true, comment, ea),
 			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		It("should pass expected Network Object to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateNetwork(
 				netviewName, cidr, true, prefixLen, comment, ea)
@@ -186,10 +189,10 @@ var _ = Describe("Object Manager: network", func() {
 		netviewName := "default_view"
 		cidr := "28.0.42.0/24"
 		networkName := "private-net"
-		ea := EA{"Network Name": networkName}
+		ea := ibclient.EA{"Network Name": networkName}
 		fakeRefReturn := fmt.Sprintf("network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -197,25 +200,25 @@ var _ = Describe("Object Manager: network", func() {
 			})
 
 		connector := &fakeConnector{
-			getObjectObj:         NewNetwork(netviewName, cidr, false, "", ea),
+			getObjectObj:         ibclient.NewNetwork(netviewName, cidr, false, "", ea),
 			getObjectRef:         "",
 			getObjectQueryParams: queryParams,
-			resultObject:         []Network{*NewNetwork(netviewName, cidr, false, "", ea)},
+			resultObject:         []ibclient.Network{*ibclient.NewNetwork(netviewName, cidr, false, "", ea)},
 		}
 
-		connector.resultObject.([]Network)[0].Ref = fakeRefReturn
-		connector.getObjectObj.(*Network).eaSearch = EASearch(ea)
-		connector.resultObject.([]Network)[0].eaSearch = EASearch(ea)
+		connector.resultObject.([]ibclient.Network)[0].Ref = fakeRefReturn
+		connector.getObjectObj.(*ibclient.Network).SetEaSearch(ibclient.EASearch(ea))
+		connector.resultObject.([]ibclient.Network)[0].SetEaSearch(ibclient.EASearch(ea))
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		var err error
 		It("should pass expected Network Object to GetObject", func() {
 			actualNetwork, err = objMgr.GetNetwork(netviewName, cidr, false, ea)
 		})
 		It("should return expected Network Object", func() {
-			Expect(*actualNetwork).To(Equal(connector.resultObject.([]Network)[0]))
+			Expect(*actualNetwork).To(Equal(connector.resultObject.([]ibclient.Network)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -226,18 +229,18 @@ var _ = Describe("Object Manager: network", func() {
 		netviewName := ""
 		cidr := "10.0.0.0/24"
 		networkName := "private-net"
-		ea := EA{"Network Name": networkName}
+		ea := ibclient.EA{"Network Name": networkName}
 		comment := "Test network view"
 		connector := &fakeConnector{
-			getObjectObj:         NewNetwork(netviewName, cidr, false, comment, ea),
+			getObjectObj:         ibclient.NewNetwork(netviewName, cidr, false, comment, ea),
 			getObjectRef:         "",
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 		}
 
-		connector.getObjectObj.(*Network).eaSearch = EASearch(ea)
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		connector.getObjectObj.(*ibclient.Network).SetEaSearch(ibclient.EASearch(ea))
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		var actualNetwork, resultObj *Network
+		var actualNetwork, resultObj *ibclient.Network
 		resultObj = nil
 		var err error
 		It("should pass expected Network Object to GetObject", func() {
@@ -256,10 +259,10 @@ var _ = Describe("Object Manager: network", func() {
 		cidr := "2001:db8:abcd:14::/64"
 		cidrRef := " 2001%3Adb8%3Aabcd%3A14%3A%3A/64"
 		networkName := "private-net"
-		ea := EA{"Network Name": networkName}
+		ea := ibclient.EA{"Network Name": networkName}
 		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRef, netviewName)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -267,25 +270,25 @@ var _ = Describe("Object Manager: network", func() {
 			})
 
 		connector := &fakeConnector{
-			getObjectObj:         NewNetwork(netviewName, cidr, true, "", ea),
+			getObjectObj:         ibclient.NewNetwork(netviewName, cidr, true, "", ea),
 			getObjectRef:         "",
 			getObjectQueryParams: queryParams,
-			resultObject:         []Network{*NewNetwork(netviewName, cidr, true, "", ea)},
+			resultObject:         []ibclient.Network{*ibclient.NewNetwork(netviewName, cidr, true, "", ea)},
 		}
 
-		connector.resultObject.([]Network)[0].Ref = fakeRefReturn
-		connector.getObjectObj.(*Network).eaSearch = EASearch(ea)
-		connector.resultObject.([]Network)[0].eaSearch = EASearch(ea)
+		connector.resultObject.([]ibclient.Network)[0].Ref = fakeRefReturn
+		connector.getObjectObj.(*ibclient.Network).SetEaSearch(ibclient.EASearch(ea))
+		connector.resultObject.([]ibclient.Network)[0].SetEaSearch(ibclient.EASearch(ea))
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		var err error
 		It("should pass expected Network Object to GetObject", func() {
 			actualNetwork, err = objMgr.GetNetwork(netviewName, cidr, true, ea)
 		})
 		It("should return expected Network Object", func() {
-			Expect(*actualNetwork).To(Equal(connector.resultObject.([]Network)[0]))
+			Expect(*actualNetwork).To(Equal(connector.resultObject.([]ibclient.Network)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -296,18 +299,18 @@ var _ = Describe("Object Manager: network", func() {
 		netviewName := "Default View"
 		cidr := "43.0.11.0/24"
 		fakeRefReturn := "network/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-		resObj := NewNetwork(netviewName, cidr, false, "", nil)
+		resObj := ibclient.NewNetwork(netviewName, cidr, false, "", nil)
 		resObj.Ref = fakeRefReturn
 		ncFakeConnector := &fakeConnector{
-			getObjectObj:         NewNetwork("", "", false, "", nil),
+			getObjectObj:         ibclient.NewNetwork("", "", false, "", nil),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 			resultObject:         resObj,
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualNetwork *Network
+		var actualNetwork *ibclient.Network
 		var err error
 		It("should pass expected Network Object to GetObject", func() {
 			actualNetwork, err = objMgr.GetNetworkByRef(fakeRefReturn)
@@ -321,10 +324,10 @@ var _ = Describe("Object Manager: network", func() {
 	Describe("Update network", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *Network
+			actualObj *ibclient.Network
 		)
 
 		cmpType := "Docker"
@@ -335,36 +338,36 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("Updating comment and EAs", func() {
 			ref = fmt.Sprintf("network/%s:%s", refBase, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetwork(netviewName, cidr, false, "old comment", initialEas)
+			initObj := ibclient.NewNetwork(netviewName, cidr, false, "old comment", initialEas)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork("", cidr, false, comment, expectedEas)
+			updateObjIn := ibclient.NewNetwork("", cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetwork(netviewName, cidr, false, comment, expectedEas)
+			expectedObj := ibclient.NewNetwork(netviewName, cidr, false, comment, expectedEas)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -375,7 +378,7 @@ var _ = Describe("Object Manager: network", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetwork(ref, setEas, comment)
 			Expect(err).To(BeNil())
@@ -384,29 +387,29 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("removing all EAs", func() {
 			ref = fmt.Sprintf("network/%s:%s", refBase, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea3": "ea3_value",
 				"ea4": "ea4_value"}
-			initObj := NewNetwork(netviewName, cidr, false, "old comment", initialEas)
+			initObj := ibclient.NewNetwork(netviewName, cidr, false, "old comment", initialEas)
 			initObj.Ref = ref
 
-			setEas := EA{}
+			setEas := ibclient.EA{}
 			expectedEas := setEas
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork("", cidr, false, comment, expectedEas)
+			updateObjIn := ibclient.NewNetwork("", cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetwork(netviewName, cidr, false, comment, expectedEas)
+			expectedObj := ibclient.NewNetwork(netviewName, cidr, false, comment, expectedEas)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -417,7 +420,7 @@ var _ = Describe("Object Manager: network", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetwork(ref, setEas, comment)
 			Expect(err).To(BeNil())
@@ -426,25 +429,25 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("Negative case: updating a IPv4 network which does not exist", func() {
 			ref = fmt.Sprintf("network/%s:%s", refBase, netviewName)
-			initObj := NewNetwork(netviewName, cidr, false, "", nil)
+			initObj := ibclient.NewNetwork(netviewName, cidr, false, "", nil)
 			initObj.Ref = ref
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := "test comment 1"
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       fmt.Errorf("test error"),
 				resultObject:         initObj,
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			_, err = objMgr.UpdateNetwork(ref, nil, comment)
 			Expect(err).ToNot(BeNil())
@@ -452,20 +455,20 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("Negative case: updating an IPv4 network with no update access", func() {
 			ref = fmt.Sprintf("network/%s:%s", refBase, netviewName)
-			initObj := NewNetwork(netviewName, cidr, false, "old comment", nil)
+			initObj := ibclient.NewNetwork(netviewName, cidr, false, "old comment", nil)
 			initObj.Ref = ref
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork("", cidr, false, comment, nil)
+			updateObjIn := ibclient.NewNetwork("", cidr, false, comment, nil)
 			updateObjIn.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -476,7 +479,7 @@ var _ = Describe("Object Manager: network", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetwork(ref, nil, comment)
 			Expect(err).ToNot(BeNil())
@@ -484,23 +487,23 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("Clearing the comment field", func() {
 			ref = fmt.Sprintf("network/%s:%s", refBase, netviewName)
-			initObj := NewNetwork(netviewName, cidr, false, "old comment", nil)
+			initObj := ibclient.NewNetwork(netviewName, cidr, false, "old comment", nil)
 			initObj.Ref = ref
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := ""
-			updateObjIn := NewNetwork("", cidr, false, comment, nil)
+			updateObjIn := ibclient.NewNetwork("", cidr, false, comment, nil)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetwork(netviewName, cidr, false, comment, nil)
+			expectedObj := ibclient.NewNetwork(netviewName, cidr, false, comment, nil)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -511,7 +514,7 @@ var _ = Describe("Object Manager: network", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetwork(ref, nil, comment)
 			Expect(err).To(BeNil())
@@ -520,36 +523,36 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("Updating EAs only. Comment field unchanged.", func() {
 			ref = fmt.Sprintf("network/%s:%s", refBase, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetwork(netviewName, cidr, false, "old comment", initialEas)
+			initObj := ibclient.NewNetwork(netviewName, cidr, false, "old comment", initialEas)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork("", cidr, false, comment, expectedEas)
+			updateObjIn := ibclient.NewNetwork("", cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetwork(netviewName, cidr, false, comment, expectedEas)
+			expectedObj := ibclient.NewNetwork(netviewName, cidr, false, comment, expectedEas)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -560,7 +563,7 @@ var _ = Describe("Object Manager: network", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetwork(ref, setEas, comment)
 			Expect(err).To(BeNil())
@@ -569,36 +572,36 @@ var _ = Describe("Object Manager: network", func() {
 
 		It("IPv6, Updating comment and EAs", func() {
 			ref = fmt.Sprintf("ipv6network/%s:%s", refBase, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetwork(netviewName, cidr, true, "old comment", initialEas)
+			initObj := ibclient.NewNetwork(netviewName, cidr, true, "old comment", initialEas)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := &Network{}
-			getObjIn.objectType = "ipv6network"
-			getObjIn.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+			getObjIn := &ibclient.Network{}
+			getObjIn.SetObjectType("ipv6network")
+			getObjIn.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetwork("", cidr, true, comment, expectedEas)
+			updateObjIn := ibclient.NewNetwork("", cidr, true, comment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetwork(netviewName, cidr, true, comment, expectedEas)
+			expectedObj := ibclient.NewNetwork(netviewName, cidr, true, comment, expectedEas)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -609,7 +612,7 @@ var _ = Describe("Object Manager: network", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetwork(ref, setEas, comment)
 			Expect(err).To(BeNil())
@@ -629,7 +632,7 @@ var _ = Describe("Object Manager: network", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
 		var actualRef string
 		var err error
@@ -654,7 +657,7 @@ var _ = Describe("Object Manager: network", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
 		var actualRef string
 		var err error
@@ -672,11 +675,11 @@ var _ = Describe("Object Manager: network", func() {
 		cidr := "23.11.0.0/24"
 		networkRef := fmt.Sprintf("network/ZG5zLm5ldHdvcmtfdmlldyQyMw:%s/%s", cidr, netviewName)
 
-		expectedNetwork := Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
-		expectedNetwork.objectType = "network"
-		expectedNetwork.returnFields = []string{"extattrs", "network", "network_view", "comment"}
-		resObj, err := BuildNetworkFromRef(networkRef)
-		resObj1, err1 := BuildNetworkFromRef("network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
+		expectedNetwork := ibclient.Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
+		expectedNetwork.SetObjectType("network")
+		expectedNetwork.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
+		resObj, err := ibclient.BuildNetworkFromRef(networkRef)
+		resObj1, err1 := ibclient.BuildNetworkFromRef("network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
 		It("should return expected Network Object", func() {
 			Expect(*resObj).To(Equal(expectedNetwork))
 			Expect(err).To(BeNil())
@@ -693,11 +696,11 @@ var _ = Describe("Object Manager: network", func() {
 		cidrRef := "2001%3Adb8%3Aabcd%3A14%3A%3A/64"
 		networkRef := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmtfdmlldyQyMw:%s/%s", cidrRef, netviewName)
 
-		expectedNetwork := Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
-		expectedNetwork.objectType = "ipv6network"
-		expectedNetwork.returnFields = []string{"extattrs", "network", "network_view", "comment"}
-		resObj, err := BuildIPv6NetworkFromRef(networkRef)
-		resObj1, err1 := BuildIPv6NetworkFromRef("ipv6network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
+		expectedNetwork := ibclient.Network{Ref: networkRef, NetviewName: netviewName, Cidr: cidr}
+		expectedNetwork.SetObjectType("ipv6network")
+		expectedNetwork.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
+		resObj, err := ibclient.BuildIPv6NetworkFromRef(networkRef)
+		resObj1, err1 := ibclient.BuildIPv6NetworkFromRef("ipv6network/ZG5zLm5ldHdvcmtfdmlldyQyMw")
 		It("should return expected Network Object", func() {
 			Expect(*resObj).To(Equal(expectedNetwork))
 			Expect(err).To(BeNil())

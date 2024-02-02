@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	"github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: TXT-record", func() {
@@ -17,21 +19,21 @@ var _ = Describe("Object Manager: TXT-record", func() {
 		useTtl := true
 		ttl := uint32(70)
 		comment := "creation test"
-		eas := EA{"Country": "test"}
+		eas := ibclient.EA{"Country": "test"}
 		fakeRefReturn := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj:      NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas),
+			createObjectObj:      ibclient.NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordTXT(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas),
+			getObjectObj:         ibclient.NewEmptyRecordTXT(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordTXT(dnsView, "", recordName, text, ttl, useTtl, comment, eas),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		var actualRecord *RecordTXT
+		var actualRecord *ibclient.RecordTXT
 		var err error
 		It("should pass expected TXT record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateTXTRecord(dnsView, recordName, text, ttl, useTtl, comment, eas)
@@ -45,10 +47,10 @@ var _ = Describe("Object Manager: TXT-record", func() {
 	Describe("Update TXT record", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *RecordTXT
+			actualObj *ibclient.RecordTXT
 		)
 
 		cmpType := "Docker"
@@ -57,26 +59,26 @@ var _ = Describe("Object Manager: TXT-record", func() {
 
 		It("Updating text, ttl, useTtl, comment and EAs", func() {
 			ref = fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-			initialEas := EA{"Country": "old value"}
-			initObj := NewRecordTXT("", "", recordName, "old-text", uint32(70), true, "old comment", initialEas)
+			initialEas := ibclient.EA{"Country": "old value"}
+			initObj := ibclient.NewRecordTXT("", "", recordName, "old-text", uint32(70), true, "old comment", initialEas)
 			initObj.Ref = ref
 
-			expectedEas := EA{"Country": "new value"}
+			expectedEas := ibclient.EA{"Country": "new value"}
 
 			updateText := ""
 			updateComment := "new comment"
 			updateUseTtl := true
 			updateTtl := uint32(10)
 			updatedRef := fmt.Sprintf("record:txt/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-			updateObjIn := NewRecordTXT("", "", recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
+			updateObjIn := ibclient.NewRecordTXT("", "", recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewRecordTXT("", "", recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
+			expectedObj := ibclient.NewRecordTXT("", "", recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
 			expectedObj.Ref = updatedRef
 
 			conn = &fakeConnector{
-				getObjectObj:         NewEmptyRecordTXT(),
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectObj:         ibclient.NewEmptyRecordTXT(),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         updatedRef,
 				getObjectError:       nil,
 				resultObject:         expectedObj,
@@ -87,7 +89,7 @@ var _ = Describe("Object Manager: TXT-record", func() {
 
 				fakeRefReturn: updatedRef,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateTXTRecord(ref, recordName, updateText, updateTtl, updateUseTtl, updateComment, expectedEas)
 			Expect(err).To(BeNil())
@@ -106,7 +108,7 @@ var _ = Describe("Object Manager: TXT-record", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error
@@ -123,12 +125,12 @@ var _ = Describe("Object Manager: TXT-record", func() {
 		netviewName := "default_view"
 		netviewRef := fmt.Sprintf("networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:%s/false", netviewName)
 
-		expectedNetworkView := NetworkView{Ref: netviewRef, Name: &netviewName}
+		expectedNetworkView := ibclient.NetworkView{Ref: netviewRef, Name: &netviewName}
 		It("should return expected Network View Object", func() {
-			Expect(*BuildNetworkViewFromRef(netviewRef)).To(Equal(expectedNetworkView))
+			Expect(*ibclient.BuildNetworkViewFromRef(netviewRef)).To(Equal(expectedNetworkView))
 		})
 		It("should failed if bad Network View Ref is provided", func() {
-			Expect(BuildNetworkViewFromRef("bad")).To(BeNil())
+			Expect(ibclient.BuildNetworkViewFromRef("bad")).To(BeNil())
 		})
 	})
 })

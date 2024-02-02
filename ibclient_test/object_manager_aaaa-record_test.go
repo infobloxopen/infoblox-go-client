@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: AAAA-record", func() {
@@ -18,21 +20,21 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		recordName := "test.domain.com"
 		comment := "Test creation"
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		ea := EA{"VM Name": vmName, "VM ID": vmID}
+		ea := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		conn := &fakeConnector{
-			createObjectObj: NewRecordAAAA(
+			createObjectObj: ibclient.NewRecordAAAA(
 				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordAAAA(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordAAAA(
+			getObjectObj:         ibclient.NewEmptyRecordAAAA(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewRecordAAAA(
 				dnsView, recordName, ipAddr, false, 0, comment, ea, fakeRefReturn),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualRecord *RecordAAAA
+		var actualRecord *ibclient.RecordAAAA
 		var err error
 		It("should pass expected AAAA record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateAAAARecord("", dnsView, recordName, "", ipAddr, false, uint32(0), comment, ea)
@@ -55,21 +57,21 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		recordName := "test.domain.com"
 		comment := "Test creation"
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		ea := EA{"VM Name": vmName, "VM ID": vmID}
+		ea := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		conn := &fakeConnector{
-			createObjectObj: NewRecordAAAA(
+			createObjectObj: ibclient.NewRecordAAAA(
 				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordAAAA(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordAAAA(
+			getObjectObj:         ibclient.NewEmptyRecordAAAA(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewRecordAAAA(
 				dnsView, recordName, ipAddr, false, 0, comment, ea, fakeRefReturn),
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualRecord *RecordAAAA
+		var actualRecord *ibclient.RecordAAAA
 		var err error
 		It("should pass expected AAAA record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateAAAARecord(netviewName, dnsView, recordName, cidr, "", false, uint32(0), comment, ea)
@@ -91,16 +93,16 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		dnsView := "default"
 		recordName := "test.domain.com"
 		comment := "Test creation"
-		ea := EA{"VM Name": vmName, "VM ID": vmID}
+		ea := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 		conn := &fakeConnector{
-			createObjectObj: NewRecordAAAA(
+			createObjectObj: ibclient.NewRecordAAAA(
 				dnsView, recordName, ipAddr, false, 0, comment, ea, ""),
 			createObjectError: fmt.Errorf("cannot parse CIDR value: invalid CIDR address: 10.0.0./24"),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
 
-		var actualRecord, expectedObj *RecordAAAA
+		var actualRecord, expectedObj *ibclient.RecordAAAA
 		var err error
 		It("should pass expected AAAA record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateAAAARecord(netviewName, dnsView, recordName, cidr, "", false, uint32(0), comment, ea)
@@ -119,7 +121,7 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		ipAddr := "2001:db8:abcd:14::1"
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/default", recordName)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"view":     dnsView,
@@ -128,22 +130,22 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectObj:         ibclient.NewEmptyRecordAAAA(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordAAAA{*NewRecordAAAA(dnsView, recordName, ipAddr, false, 0, "", nil, fakeRefReturn)},
+			resultObject:         []ibclient.RecordAAAA{*ibclient.NewRecordAAAA(dnsView, recordName, ipAddr, false, 0, "", nil, fakeRefReturn)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		conn.resultObject.([]RecordAAAA)[0].Ipv6Addr = &ipAddr
-		var actualRecord *RecordAAAA
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		conn.resultObject.([]ibclient.RecordAAAA)[0].Ipv6Addr = &ipAddr
+		var actualRecord *ibclient.RecordAAAA
 		var err error
 		It("should pass expected AAAA record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetAAAARecord(dnsView, recordName, ipAddr)
 		})
 
 		It("should return expected AAAA record Object", func() {
-			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordAAAA)[0]))
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]ibclient.RecordAAAA)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -155,7 +157,7 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		ipAddr := "2001:db8:abcd:14::1"
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/default", recordName)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"name":     recordName,
@@ -163,14 +165,14 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectObj:         ibclient.NewEmptyRecordAAAA(),
 			getObjectQueryParams: queryParams,
 			fakeRefReturn:        fakeRefReturn,
 			getObjectError:       fmt.Errorf("DNS view, IPv6 address and record name of the record are required to retreive a unique AAAA record"),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		var actualRecord, expectedObj *RecordAAAA
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *ibclient.RecordAAAA
 		var err error
 		It("should pass expected AAAA record Object to GetObject", func() {
 			actualRecord, err = objMgr.GetAAAARecord("", recordName, ipAddr)
@@ -185,7 +187,7 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 	Describe("Update AAAA-record, literal value", func() {
 		var (
 			err    error
-			objMgr IBObjectManager
+			objMgr ibclient.IBObjectManager
 			conn   *fakeConnector
 		)
 
@@ -205,17 +207,17 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			initRef := fmt.Sprintf(
 				"record:aaaa/%s:%s/%s",
 				refBase, recordName, dnsView)
-			getObjIn := NewEmptyRecordAAAA()
+			getObjIn := ibclient.NewEmptyRecordAAAA()
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         initRef,
 				getObjectError:       fmt.Errorf("test error"),
-				resultObject:         NewEmptyRecordAAAA(),
+				resultObject:         ibclient.NewEmptyRecordAAAA(),
 				fakeRefReturn:        "",
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			_, err = objMgr.UpdateAAAARecord(initRef, "", newRecordName, "", newIpAddr, newUseTtl, newTtl, "some comment", nil)
 			Expect(err).ToNot(BeNil())
@@ -225,29 +227,29 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 			initRef := fmt.Sprintf(
 				"record:aaaa/%s:%s/%s",
 				refBase, recordName, dnsView)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
 			initComment := "initial comment"
-			initObj := NewRecordAAAA(dnsView, recordName, initIpAddr, initUseTtl, newTtl, initComment, initialEas, initRef)
+			initObj := ibclient.NewRecordAAAA(dnsView, recordName, initIpAddr, initUseTtl, newTtl, initComment, initialEas, initRef)
 
-			getObjIn := NewEmptyRecordAAAA()
+			getObjIn := ibclient.NewEmptyRecordAAAA()
 
-			newEas := EA{
+			newEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 
 			newComment := "test comment 1"
-			updateObjIn := NewRecordAAAA("", newRecordName, newIpAddr, newUseTtl, newTtl, newComment, newEas, initRef)
+			updateObjIn := ibclient.NewRecordAAAA("", newRecordName, newIpAddr, newUseTtl, newTtl, newComment, newEas, initRef)
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         initRef,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -257,7 +259,7 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 				updateObjectError: fmt.Errorf("test error"),
 				fakeRefReturn:     "",
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			_, err = objMgr.UpdateAAAARecord(initRef, "", newRecordName, newIpAddr, "", newUseTtl, newTtl, newComment, newEas)
 			Expect(err).ToNot(BeNil())

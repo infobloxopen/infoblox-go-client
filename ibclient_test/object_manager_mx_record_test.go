@@ -1,11 +1,13 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
-	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
+	"github.com/infobloxopen/infoblox-go-client/v2/utils"
 )
 
 var _ = Describe("Object Manager: MX-record", func() {
@@ -24,12 +26,12 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 		fakeRefReturn := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 
-		eas := make(EA)
+		eas := make(ibclient.EA)
 		eas["VM ID"] = vmID
 		eas["VM Name"] = vmName
 
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewRecordMX(RecordMX{
+			createObjectObj: ibclient.NewRecordMX(ibclient.RecordMX{
 				View:          &dnsView,
 				Name:          &fqdn,
 				MailExchanger: &mx,
@@ -40,13 +42,13 @@ var _ = Describe("Object Manager: MX-record", func() {
 				Ea:            eas,
 			}),
 			getObjectRef: fakeRefReturn,
-			getObjectObj: NewRecordMX(RecordMX{
+			getObjectObj: ibclient.NewRecordMX(ibclient.RecordMX{
 				Name:          &fqdn,
 				MailExchanger: &mx,
 				Preference:    &preference,
 				Ref:           fakeRefReturn,
 			}),
-			resultObject: NewRecordMX(RecordMX{
+			resultObject: ibclient.NewRecordMX(ibclient.RecordMX{
 				View:          &dnsView,
 				Name:          &fqdn,
 				MailExchanger: &mx,
@@ -60,9 +62,9 @@ var _ = Describe("Object Manager: MX-record", func() {
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		var actualRecord *RecordMX
+		var actualRecord *ibclient.RecordMX
 		var err error
 		It("should pass expected MX record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateMXRecord(dnsView, fqdn, mx, preference, ttl, useTtl, comment, eas)
@@ -76,10 +78,10 @@ var _ = Describe("Object Manager: MX-record", func() {
 	Describe("Update MX Record", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *RecordMX
+			actualObj *ibclient.RecordMX
 		)
 
 		cmpType := "Docker"
@@ -90,9 +92,9 @@ var _ = Describe("Object Manager: MX-record", func() {
 		initMx := "mx.test.example.com"
 		initComment := "test comment"
 		ref = fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-		initialEas := EA{"Country": "old value"}
+		initialEas := ibclient.EA{"Country": "old value"}
 
-		initObj := NewRecordMX(RecordMX{
+		initObj := ibclient.NewRecordMX(ibclient.RecordMX{
 			Ref:           ref,
 			View:          &dnsView,
 			Name:          &fqdn,
@@ -104,14 +106,14 @@ var _ = Describe("Object Manager: MX-record", func() {
 			Ea:            initialEas,
 		})
 
-		updatedEAs := EA{"Country": "new value"}
+		updatedEAs := ibclient.EA{"Country": "new value"}
 		updatedFqdn := "new.example.com"
 		updatedMx := "mx.new.example.com"
 		updatedComment := "new comment"
 		updatedTtl := uint32(100)
 		updatedPreference := uint32(15)
 		updatedRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-		updateObjIn := NewRecordMX(RecordMX{
+		updateObjIn := ibclient.NewRecordMX(ibclient.RecordMX{
 			Ref:           ref,
 			View:          &dnsView,
 			Name:          &updatedFqdn,
@@ -123,7 +125,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 			Ea:            updatedEAs,
 		})
 
-		expectedObj := NewRecordMX(RecordMX{
+		expectedObj := ibclient.NewRecordMX(ibclient.RecordMX{
 			Ref:           ref,
 			View:          &dnsView,
 			Name:          &updatedFqdn,
@@ -136,8 +138,8 @@ var _ = Describe("Object Manager: MX-record", func() {
 		})
 
 		conn = &fakeConnector{
-			getObjectObj:         NewEmptyRecordMX(),
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectObj:         ibclient.NewEmptyRecordMX(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 			getObjectRef:         updatedRef,
 			getObjectError:       nil,
 			resultObject:         initObj,
@@ -148,7 +150,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 			fakeRefReturn: updatedRef,
 		}
-		objMgr = NewObjectManager(conn, cmpType, tenantID)
+		objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 		It("should pass updated MX record arguments", func() {
 			actualObj, err = objMgr.UpdateMXRecord(ref, dnsView, updatedFqdn, updatedMx, updatedPreference, updatedTtl, true, updatedComment, updatedEAs)
 		})
@@ -172,7 +174,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 		fakeRefReturn := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
 
-		eas := make(EA)
+		eas := make(ibclient.EA)
 		eas["VM ID"] = "93f9249abc039284"
 		eas["VM Name"] = "dummyvm"
 
@@ -183,9 +185,9 @@ var _ = Describe("Object Manager: MX-record", func() {
 			"preference":     fmt.Sprintf("%d", preference),
 		}
 		nwFakeConnector := &fakeConnector{
-			getObjectObj:         NewEmptyRecordMX(),
-			getObjectQueryParams: NewQueryParams(false, sf),
-			resultObject: []RecordMX{*NewRecordMX(RecordMX{
+			getObjectObj:         ibclient.NewEmptyRecordMX(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, sf),
+			resultObject: []ibclient.RecordMX{*ibclient.NewRecordMX(ibclient.RecordMX{
 				View:          &dnsView,
 				Name:          &fqdn,
 				MailExchanger: &mx,
@@ -199,16 +201,16 @@ var _ = Describe("Object Manager: MX-record", func() {
 			fakeRefReturn: fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
-		var actualRecord *RecordMX
+		var actualRecord *ibclient.RecordMX
 		var err error
 		It("should pass expected MX record object to GetObject", func() {
 			actualRecord, err = objMgr.GetMXRecord(dnsView, fqdn, mx, preference)
 		})
 		It("should return expected MX record Object", func() {
 			Expect(actualRecord).NotTo(BeNil())
-			Expect(*actualRecord).To(Equal(nwFakeConnector.resultObject.([]RecordMX)[0]))
+			Expect(*actualRecord).To(Equal(nwFakeConnector.resultObject.([]ibclient.RecordMX)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -220,15 +222,15 @@ var _ = Describe("Object Manager: MX-record", func() {
 
 		fqdn := "test.example.com"
 		readObjRef := fmt.Sprintf("record:mx/ZG5zLmhvc3RjkuMC4xLg:%s/%s", fqdn, dnsView)
-		eas := EA{
+		eas := ibclient.EA{
 			"VM ID":   "93f9249abc039284",
 			"VM Name": "dummyvm",
 		}
 		nwFakeConnector := &fakeConnector{
 			getObjectRef:         readObjRef,
-			getObjectObj:         NewEmptyRecordMX(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject: NewRecordMX(RecordMX{
+			getObjectObj:         ibclient.NewEmptyRecordMX(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject: ibclient.NewRecordMX(ibclient.RecordMX{
 				View:          &dnsView,
 				Name:          &fqdn,
 				MailExchanger: utils.StringPtr("example.com"),
@@ -242,9 +244,9 @@ var _ = Describe("Object Manager: MX-record", func() {
 			fakeRefReturn: readObjRef,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
-		var actualRecord *RecordMX
+		var actualRecord *ibclient.RecordMX
 		var err error
 		It("should pass expected MX record ref to GetObject", func() {
 			actualRecord, err = objMgr.GetMXRecordByRef(readObjRef)
@@ -267,7 +269,7 @@ var _ = Describe("Object Manager: MX-record", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

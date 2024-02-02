@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: network container", func() {
@@ -14,17 +16,17 @@ var _ = Describe("Object Manager: network container", func() {
 		netviewName := "Default View"
 		cidr := "43.0.11.0/24"
 		fakeRefReturn := "networkcontainer/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-		resObj := NewNetworkContainer(netviewName, cidr, false, "", nil)
+		resObj := ibclient.NewNetworkContainer(netviewName, cidr, false, "", nil)
 		resObj.Ref = fakeRefReturn
 		ncFakeConnector := &fakeConnector{
-			createObjectObj: NewNetworkContainer(netviewName, cidr, false, "", nil),
+			createObjectObj: ibclient.NewNetworkContainer(netviewName, cidr, false, "", nil),
 			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualNetworkContainer *NetworkContainer
+		var actualNetworkContainer *ibclient.NetworkContainer
 		var err error
 		It("should pass expected NetworkContainer Object to CreateObject", func() {
 			actualNetworkContainer, err = objMgr.CreateNetworkContainer(
@@ -46,23 +48,23 @@ var _ = Describe("Object Manager: network container", func() {
 			"ipv6networkcontainer/ZZl7Lm5ldHdvcmtfdmlldyQyMw:%s/%s",
 			cidrRef, netviewName)
 
-		resObj := &NetworkContainer{
+		resObj := &ibclient.NetworkContainer{
 			NetviewName: netviewName,
 			Cidr:        cidr,
 		}
-		resObj.objectType = "ipv6networkcontainer"
-		resObj.returnFields = []string{"extattrs", "network", "network_view", "comment"}
+		resObj.SetObjectType("ipv6networkcontainer")
+		resObj.SetReturnFields([]string{"extattrs", "network", "network_view", "comment"})
 		resObj.Ref = fakeRefReturn
 
 		ncFakeConnector := &fakeConnector{
-			createObjectObj: NewNetworkContainer(netviewName, cidr, true, "", nil),
+			createObjectObj: ibclient.NewNetworkContainer(netviewName, cidr, true, "", nil),
 			resultObject:    resObj,
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualNetworkContainer *NetworkContainer
+		var actualNetworkContainer *ibclient.NetworkContainer
 		var err error
 		It("should pass expected NetworkContainer Object to CreateObject", func() {
 			ncFakeConnector.createObjectError = nil
@@ -75,12 +77,12 @@ var _ = Describe("Object Manager: network container", func() {
 
 		// Negative test case: error may be returned by some reason.
 		It("should pass expected NetworkContainer Object to CreateObject", func() {
-			ncFakeConnector.createObjectError = NewNotFoundError("test error")
+			ncFakeConnector.createObjectError = ibclient.NewNotFoundError("test error")
 			actualNetworkContainer, err = objMgr.CreateNetworkContainer(netviewName, cidr, true, "", nil)
 		})
 		It("should return an error", func() {
 			Expect(err).ToNot(BeNil())
-			_, ok := err.(*NotFoundError)
+			_, ok := err.(*ibclient.NotFoundError)
 			Expect(ok).To(BeTrue())
 		})
 	})
@@ -91,10 +93,10 @@ var _ = Describe("Object Manager: network container", func() {
 		netviewName := "Default View"
 		cidr := "43.0.11.0/24"
 		fakeRefReturn := "networkcontainer/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-		resObj := NewNetworkContainer(netviewName, cidr, false, "", nil)
+		resObj := ibclient.NewNetworkContainer(netviewName, cidr, false, "", nil)
 		resObj.Ref = fakeRefReturn
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -102,22 +104,22 @@ var _ = Describe("Object Manager: network container", func() {
 			})
 
 		ncFakeConnector := &fakeConnector{
-			getObjectObj:         NewNetworkContainer(netviewName, cidr, false, "", nil),
+			getObjectObj:         ibclient.NewNetworkContainer(netviewName, cidr, false, "", nil),
 			getObjectRef:         "",
 			getObjectQueryParams: queryParams,
-			resultObject:         []NetworkContainer{*resObj},
+			resultObject:         []ibclient.NetworkContainer{*resObj},
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualNetworkContainer *NetworkContainer
+		var actualNetworkContainer *ibclient.NetworkContainer
 		var err error
 		It("should pass expected NetworkContainer Object to GetObject", func() {
 			actualNetworkContainer, err = objMgr.GetNetworkContainer(netviewName, cidr, false, nil)
 		})
 		It("should return expected NetworkContainer Object", func() {
 			Expect(err).To(BeNil())
-			Expect(*actualNetworkContainer).To(Equal(ncFakeConnector.resultObject.([]NetworkContainer)[0]))
+			Expect(*actualNetworkContainer).To(Equal(ncFakeConnector.resultObject.([]ibclient.NetworkContainer)[0]))
 		})
 	})
 
@@ -127,18 +129,18 @@ var _ = Describe("Object Manager: network container", func() {
 		netviewName := "Default View"
 		cidr := "43.0.11.0/24"
 		fakeRefReturn := "networkcontainer/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false"
-		resObj := NewNetworkContainer(netviewName, cidr, false, "", nil)
+		resObj := ibclient.NewNetworkContainer(netviewName, cidr, false, "", nil)
 		resObj.Ref = fakeRefReturn
 		ncFakeConnector := &fakeConnector{
-			getObjectObj:         NewNetworkContainer("", "", false, "", nil),
+			getObjectObj:         ibclient.NewNetworkContainer("", "", false, "", nil),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 			resultObject:         resObj,
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualNetworkContainer *NetworkContainer
+		var actualNetworkContainer *ibclient.NetworkContainer
 		var err error
 		It("should pass expected NetworkContainer Object to GetObject", func() {
 			actualNetworkContainer, err = objMgr.GetNetworkContainerByRef(fakeRefReturn)
@@ -159,15 +161,15 @@ var _ = Describe("Object Manager: network container", func() {
 			"ipv6networkcontainer/ZZl7Lm5ldHdvcmtfdmlldyQyMw:%s/%s",
 			cidrRef, netviewName)
 
-		resObj := NetworkContainer{
+		resObj := ibclient.NetworkContainer{
 			NetviewName: netviewName,
 			Cidr:        cidr,
 		}
-		resObj.objectType = "ipv6networkcontainer"
-		resObj.returnFields = []string{"extattrs", "network", "network_view"}
+		resObj.SetObjectType("ipv6networkcontainer")
+		resObj.SetReturnFields([]string{"extattrs", "network", "network_view"})
 		resObj.Ref = fakeRefReturn
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"network_view": netviewName,
@@ -175,19 +177,19 @@ var _ = Describe("Object Manager: network container", func() {
 			})
 
 		ncFakeConnector := &fakeConnector{
-			getObjectObj: NewNetworkContainer(
+			getObjectObj: ibclient.NewNetworkContainer(
 				netviewName, cidr, true, "", nil),
 			getObjectQueryParams: queryParams,
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(ncFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(ncFakeConnector, cmpType, tenantID)
 
-		var actualNetworkContainer *NetworkContainer
+		var actualNetworkContainer *ibclient.NetworkContainer
 		var err error
 		It("should pass expected NetworkContainer Object to GetObject", func() {
-			resObj.Ea = make(EA)
-			ncFakeConnector.resultObject = []NetworkContainer{resObj}
+			resObj.Ea = make(ibclient.EA)
+			ncFakeConnector.resultObject = []ibclient.NetworkContainer{resObj}
 			ncFakeConnector.getObjectError = nil
 			actualNetworkContainer, err = objMgr.GetNetworkContainer(netviewName, cidr, true, nil)
 		})
@@ -202,18 +204,18 @@ var _ = Describe("Object Manager: network container", func() {
 			actualNetworkContainer, err = objMgr.GetNetworkContainer(netviewName, cidr, true, nil)
 		})
 		It("should return an error", func() {
-			_, ok := err.(*NotFoundError)
+			_, ok := err.(*ibclient.NotFoundError)
 			Expect(ok).To(BeFalse())
 		})
 
 		// Negative test case: empty result set.
 		It("should pass expected NetworkContainer Object to GetObject", func() {
 			ncFakeConnector.getObjectError = nil
-			ncFakeConnector.resultObject = []NetworkContainer{}
+			ncFakeConnector.resultObject = []ibclient.NetworkContainer{}
 			actualNetworkContainer, err = objMgr.GetNetworkContainer(netviewName, cidr, true, nil)
 		})
 		It("should return an error", func() {
-			_, ok := err.(*NotFoundError)
+			_, ok := err.(*ibclient.NotFoundError)
 			Expect(ok).To(BeTrue())
 		})
 	})
@@ -221,10 +223,10 @@ var _ = Describe("Object Manager: network container", func() {
 	Describe("Update network container", func() {
 		var (
 			err       error
-			objMgr    IBObjectManager
+			objMgr    ibclient.IBObjectManager
 			conn      *fakeConnector
 			ref       string
-			actualObj *NetworkContainer
+			actualObj *ibclient.NetworkContainer
 		)
 
 		cmpType := "Docker"
@@ -237,35 +239,35 @@ var _ = Describe("Object Manager: network container", func() {
 
 		It("IPv4, updating comment and EAs", func() {
 			ref = fmt.Sprintf("networkcontainer/%s:%s", refBase, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetworkContainer(netviewName, ipv4Cidr, false, "old comment", initialEas)
+			initObj := ibclient.NewNetworkContainer(netviewName, ipv4Cidr, false, "old comment", initialEas)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := &NetworkContainer{}
-			getObjIn.returnFields = []string{"extattrs", "comment"}
+			getObjIn := &ibclient.NetworkContainer{}
+			getObjIn.SetReturnFields([]string{"extattrs", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetworkContainer("", ipv4Cidr, false, comment, expectedEas)
+			updateObjIn := ibclient.NewNetworkContainer("", ipv4Cidr, false, comment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetworkContainer(netviewName, ipv4Cidr, false, comment, expectedEas)
+			expectedObj := ibclient.NewNetworkContainer(netviewName, ipv4Cidr, false, comment, expectedEas)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -276,7 +278,7 @@ var _ = Describe("Object Manager: network container", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetworkContainer(ref, setEas, comment)
 			Expect(err).To(BeNil())
@@ -285,24 +287,24 @@ var _ = Describe("Object Manager: network container", func() {
 
 		It("Negative case: updating a network container which does not exist", func() {
 			ref = fmt.Sprintf("networkcontainer/%s:%s", refBase, netviewName)
-			initObj := NewNetworkContainer(netviewName, ipv4Cidr, false, "", nil)
+			initObj := ibclient.NewNetworkContainer(netviewName, ipv4Cidr, false, "", nil)
 			initObj.Ref = ref
 
-			getObjIn := &NetworkContainer{}
-			getObjIn.returnFields = []string{"extattrs", "comment"}
+			getObjIn := &ibclient.NetworkContainer{}
+			getObjIn.SetReturnFields([]string{"extattrs", "comment"})
 
 			comment := "test comment 1"
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       fmt.Errorf("test error"),
 				resultObject:         initObj,
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetworkContainer(ref, nil, comment)
 			Expect(err).ToNot(BeNil())
@@ -310,19 +312,19 @@ var _ = Describe("Object Manager: network container", func() {
 
 		It("Negative case: updating a network container with no update access", func() {
 			ref = fmt.Sprintf("networkcontainer/%s:%s", refBase, netviewName)
-			initObj := NewNetworkContainer(netviewName, ipv4Cidr, false, "old comment", nil)
+			initObj := ibclient.NewNetworkContainer(netviewName, ipv4Cidr, false, "old comment", nil)
 			initObj.Ref = ref
 
-			getObjIn := &NetworkContainer{}
-			getObjIn.returnFields = []string{"extattrs", "comment"}
+			getObjIn := &ibclient.NetworkContainer{}
+			getObjIn.SetReturnFields([]string{"extattrs", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetworkContainer("", ipv4Cidr, false, comment, nil)
+			updateObjIn := ibclient.NewNetworkContainer("", ipv4Cidr, false, comment, nil)
 			updateObjIn.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -333,7 +335,7 @@ var _ = Describe("Object Manager: network container", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetworkContainer(ref, nil, comment)
 			Expect(err).ToNot(BeNil())
@@ -343,35 +345,35 @@ var _ = Describe("Object Manager: network container", func() {
 			ref = fmt.Sprintf(
 				"ipv6networkcontainer/%s:%s:%s",
 				refBase, ipv6CidrRef, netviewName)
-			initialEas := EA{
+			initialEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_old_value",
 				"ea3": "ea3_value",
 				"ea4": "ea4_value",
 				"ea5": "ea5_old_value"}
-			initObj := NewNetworkContainer(netviewName, ipv6Cidr, true, "", initialEas)
+			initObj := ibclient.NewNetworkContainer(netviewName, ipv6Cidr, true, "", initialEas)
 			initObj.Ref = ref
 
-			setEas := EA{
+			setEas := ibclient.EA{
 				"ea0": "ea0_old_value",
 				"ea1": "ea1_new_value",
 				"ea2": "ea2_new_value",
 				"ea5": "ea5_old_value"}
 			expectedEas := setEas
 
-			getObjIn := &NetworkContainer{}
-			getObjIn.returnFields = []string{"extattrs", "comment"}
+			getObjIn := &ibclient.NetworkContainer{}
+			getObjIn.SetReturnFields([]string{"extattrs", "comment"})
 
 			comment := "test comment 1"
-			updateObjIn := NewNetworkContainer("", ipv6Cidr, true, comment, expectedEas)
+			updateObjIn := ibclient.NewNetworkContainer("", ipv6Cidr, true, comment, expectedEas)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewNetworkContainer(netviewName, ipv6Cidr, true, comment, expectedEas)
+			expectedObj := ibclient.NewNetworkContainer(netviewName, ipv6Cidr, true, comment, expectedEas)
 			expectedObj.Ref = ref
 
 			conn = &fakeConnector{
 				getObjectObj:         getObjIn,
-				getObjectQueryParams: NewQueryParams(false, nil),
+				getObjectQueryParams: ibclient.NewQueryParams(false, nil),
 				getObjectRef:         ref,
 				getObjectError:       nil,
 				resultObject:         initObj,
@@ -382,7 +384,7 @@ var _ = Describe("Object Manager: network container", func() {
 
 				fakeRefReturn: ref,
 			}
-			objMgr = NewObjectManager(conn, cmpType, tenantID)
+			objMgr = ibclient.NewObjectManager(conn, cmpType, tenantID)
 
 			actualObj, err = objMgr.UpdateNetworkContainer(ref, setEas, comment)
 			Expect(err).To(BeNil())
@@ -399,7 +401,7 @@ var _ = Describe("Object Manager: network container", func() {
 		deleteRefIPv4 := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		deleteRefIPv6 := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidrRefIPv6, netviewName)
 		connector := &fakeConnector{}
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
 		var actualRef string
 		var err error
@@ -460,12 +462,12 @@ var _ = Describe("Object Manager: network container", func() {
 		prefixLen := uint(28)
 		networkName := "private-net"
 		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		ea := EA{"Site": "test"}
+		ea := ibclient.EA{"Site": "test"}
 		comment := "Test network container"
-		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
+		resObj, err := ibclient.BuildNetworkContainerFromRef(fakeRefReturn)
 
-		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
-		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+		containerInfo := ibclient.NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
+		container := ibclient.NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -473,12 +475,12 @@ var _ = Describe("Object Manager: network container", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.NetworkContainerNextAvailable).Ea = ea
+		connector.createObjectObj.(*ibclient.NetworkContainerNextAvailable).Ea["Network Name"] = networkName
 
-		var actualNetwork *NetworkContainer
+		var actualNetwork *ibclient.NetworkContainer
 		It("should pass expected Network Container Object to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateNetworkContainer(
 				netviewName, cidr, false, prefixLen, comment, ea)
@@ -497,12 +499,12 @@ var _ = Describe("Object Manager: network container", func() {
 		prefixLen := uint(65)
 		networkName := "private-net"
 		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		ea := EA{"Site": "test"}
+		ea := ibclient.EA{"Site": "test"}
 		comment := "Test network container"
-		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
+		resObj, err := ibclient.BuildNetworkContainerFromRef(fakeRefReturn)
 
-		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
-		container := NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
+		containerInfo := ibclient.NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, false)
+		container := ibclient.NewNetworkContainerNextAvailable(containerInfo, false, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -510,12 +512,12 @@ var _ = Describe("Object Manager: network container", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.NetworkContainerNextAvailable).Ea = ea
+		connector.createObjectObj.(*ibclient.NetworkContainerNextAvailable).Ea["Network Name"] = networkName
 
-		var actualNetwork *NetworkContainer
+		var actualNetwork *ibclient.NetworkContainer
 		It("should pass expected Network Container Object with invalid Cidr value to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateNetworkContainer(
 				netviewName, cidr, false, prefixLen, comment, ea)
@@ -534,11 +536,11 @@ var _ = Describe("Object Manager: network container", func() {
 		prefixLen := uint(28)
 		networkName := "private-net"
 		fakeRefReturn := fmt.Sprintf("ipv6networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
-		ea := EA{"Site": "test"}
+		ea := ibclient.EA{"Site": "test"}
 		comment := "Test network container"
-		resObj, err := BuildIPv6NetworkContainerFromRef(fakeRefReturn)
-		containerInfo := NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, true)
-		container := NewNetworkContainerNextAvailable(containerInfo, true, comment, ea)
+		resObj, err := ibclient.BuildIPv6NetworkContainerFromRef(fakeRefReturn)
+		containerInfo := ibclient.NewNetworkContainerNextAvailableInfo(netviewName, cidr, prefixLen, true)
+		container := ibclient.NewNetworkContainerNextAvailable(containerInfo, true, comment, ea)
 
 		connector := &fakeConnector{
 			createObjectObj: container,
@@ -546,12 +548,12 @@ var _ = Describe("Object Manager: network container", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(connector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(connector, cmpType, tenantID)
 
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea = ea
-		connector.createObjectObj.(*NetworkContainerNextAvailable).Ea["Network Name"] = networkName
+		connector.createObjectObj.(*ibclient.NetworkContainerNextAvailable).Ea = ea
+		connector.createObjectObj.(*ibclient.NetworkContainerNextAvailable).Ea["Network Name"] = networkName
 
-		var actualNetwork *NetworkContainer
+		var actualNetwork *ibclient.NetworkContainer
 		It("should pass expected Network Container Object to CreateObject", func() {
 			actualNetwork, err = objMgr.AllocateNetworkContainer(
 				netviewName, cidr, true, prefixLen, comment, ea)

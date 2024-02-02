@@ -1,10 +1,12 @@
-package ibclient
+package ibclient_test
 
 import (
 	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 var _ = Describe("Object Manager: CNAME-record", func() {
@@ -20,19 +22,19 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 		ttl := uint32(0)
 		comment := "test CNAME record creation"
 		fakeRefReturn := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, ""),
+			createObjectObj:      ibclient.NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, ""),
 			getObjectRef:         fakeRefReturn,
-			getObjectObj:         NewEmptyRecordCNAME(),
-			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, fakeRefReturn),
+			getObjectObj:         ibclient.NewEmptyRecordCNAME(),
+			getObjectQueryParams: ibclient.NewQueryParams(false, nil),
+			resultObject:         ibclient.NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, comment, eas, fakeRefReturn),
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		var actualRecord *RecordCNAME
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord *ibclient.RecordCNAME
 		var err error
 		It("should pass expected CNAME record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateCNAMERecord(dnsView, canonical, recordName, useTtl, ttl, comment, eas)
@@ -52,15 +54,15 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 		useTtl := false
 		ttl := uint32(0)
 		comment := "test CNAME record creation"
-		eas := EA{"VM Name": vmName, "VM ID": vmID}
+		eas := ibclient.EA{"VM Name": vmName, "VM ID": vmID}
 
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordCNAME(dnsView, "", "", useTtl, ttl, comment, eas, ""),
+			createObjectObj:   ibclient.NewRecordCNAME(dnsView, "", "", useTtl, ttl, comment, eas, ""),
 			createObjectError: fmt.Errorf("canonical name and record name fields are required to create a CNAME record"),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		var actualRecord, expectedObj *RecordCNAME
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *ibclient.RecordCNAME
 		var err error
 		It("should pass expected CNAME record Object to CreateObject", func() {
 			actualRecord, err = objMgr.CreateCNAMERecord(dnsView, "", "", useTtl, ttl, comment, eas)
@@ -81,7 +83,7 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 		ttl := uint32(0)
 		fakeRefReturn := fmt.Sprintf("record:cname/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"view":      dnsView,
@@ -90,20 +92,20 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectObj:         ibclient.NewEmptyRecordCNAME(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []RecordCNAME{*NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, "", nil, fakeRefReturn)},
+			resultObject:         []ibclient.RecordCNAME{*ibclient.NewRecordCNAME(dnsView, canonical, recordName, useTtl, ttl, "", nil, fakeRefReturn)},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		var actualRecord *RecordCNAME
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord *ibclient.RecordCNAME
 		var err error
 		It("should pass expected CNAME record Object to CreateObject", func() {
 			actualRecord, err = objMgr.GetCNAMERecord(dnsView, canonical, recordName)
 		})
 		It("should return expected CNAME record Object", func() {
-			Expect(*actualRecord).To(Equal(conn.resultObject.([]RecordCNAME)[0]))
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]ibclient.RecordCNAME)[0]))
 			Expect(err).To(BeNil())
 		})
 	})
@@ -114,7 +116,7 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 		canonical := "test-canonical.domain.com"
 		recordName := "test.domain.com"
 
-		queryParams := NewQueryParams(
+		queryParams := ibclient.NewQueryParams(
 			false,
 			map[string]string{
 				"canonical": canonical,
@@ -122,13 +124,13 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 			})
 		conn := &fakeConnector{
 			getObjectRef:         "",
-			getObjectObj:         NewEmptyRecordCNAME(),
+			getObjectObj:         ibclient.NewEmptyRecordCNAME(),
 			getObjectQueryParams: queryParams,
 			getObjectError:       fmt.Errorf("DNS view, canonical name and record name of the record are required to retreive a unique CNAME record"),
 		}
 
-		objMgr := NewObjectManager(conn, cmpType, tenantID)
-		var actualRecord, expectedObj *RecordCNAME
+		objMgr := ibclient.NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *ibclient.RecordCNAME
 		var err error
 		expectedObj = nil
 		It("should pass expected CNAME record Object to CreateObject", func() {
@@ -151,7 +153,7 @@ var _ = Describe("Object Manager: CNAME-record", func() {
 			fakeRefReturn:   fakeRefReturn,
 		}
 
-		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
+		objMgr := ibclient.NewObjectManager(nwFakeConnector, cmpType, tenantID)
 
 		var actualRef string
 		var err error

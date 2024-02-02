@@ -99,6 +99,7 @@ type IBObject interface {
 	ReturnFields() []string
 	EaSearch() EASearch
 	SetReturnFields([]string)
+	SetEaSearch(search EASearch)
 }
 
 func (obj *IBBase) ReturnFields() []string {
@@ -113,7 +114,11 @@ func (obj *IBBase) EaSearch() EASearch {
 	return obj.eaSearch
 }
 
-// QueryParams is a general struct to add query params used in makeRequest
+func (obj *IBBase) SetEaSearch(search EASearch) {
+	obj.eaSearch = search
+}
+
+// QueryParams is a general struct to add query params used in MakeRequest
 type QueryParams struct {
 	forceProxy bool
 
@@ -129,6 +134,10 @@ func NewQueryParams(forceProxy bool, searchFields map[string]string) *QueryParam
 	}
 
 	return &qp
+}
+
+func (q *QueryParams) SetForceProxy(forceProxy bool) {
+	q.forceProxy = forceProxy
 }
 
 type RequestBody struct {
@@ -314,6 +323,10 @@ func (n Network) ObjectType() string {
 	return n.objectType
 }
 
+func (n *Network) SetObjectType(objType string) {
+	n.objectType = objType
+}
+
 func NewNetwork(netview string, cidr string, isIPv6 bool, comment string, ea EA) *Network {
 	var res Network
 	res.NetviewName = netview
@@ -342,6 +355,10 @@ type NetworkContainer struct {
 
 func (nc NetworkContainer) ObjectType() string {
 	return nc.objectType
+}
+
+func (nc *NetworkContainer) SetObjectType(objType string) {
+	nc.objectType = objType
 }
 
 func NewNetworkContainer(netview, cidr string, isIPv6 bool, comment string, ea EA) *NetworkContainer {
