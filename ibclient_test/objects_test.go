@@ -1,4 +1,4 @@
-package ibclient
+package ibclient_test
 
 import (
 	"encoding/json"

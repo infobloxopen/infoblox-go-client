@@ -1,16 +1,17 @@
-package ibclient
+package ibclient_test
 
 import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/infobloxopen/infoblox-go-client/v2"
 	"net/http"
 	"net/url"
 	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+
+	ibclient "github.com/infobloxopen/infoblox-go-client/v2"
 )
 
 type FakeRequestBuilder struct {
