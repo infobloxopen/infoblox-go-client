@@ -79,13 +79,13 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 	Entry(
 		"Awsrte53taskgroup",
 		&Awsrte53taskgroup{},
-		[]string{"account_id", "comment", "disabled", "name", "sync_status"},
+		[]string{"account_id", "comment", "disabled", "name", "sync_child_accounts", "sync_status"},
 		"awsrte53taskgroup",
 	),
 	Entry(
 		"Awsuser",
 		&Awsuser{},
-		[]string{"access_key_id", "account_id", "name"},
+		[]string{"access_key_id", "account_id", "govcloud_enabled", "name"},
 		"awsuser",
 	),
 	Entry(
@@ -131,16 +131,16 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 		"certificate:authservice",
 	),
 	Entry(
-		"CiscoiseEndpoint",
-		&CiscoiseEndpoint{},
-		[]string{"address", "disable", "resolved_address", "type", "version"},
-		"ciscoise:endpoint",
-	),
-	Entry(
 		"Csvimporttask",
 		&Csvimporttask{},
-		[]string{"action", "admin_name", "end_time", "file_name", "file_size", "import_id", "lines_failed", "lines_processed", "lines_warning", "on_error", "operation", "separator", "start_time", "status", "update_method"},
+		[]string{"admin_name", "end_time", "file_name", "file_size", "import_id", "lines_failed", "lines_processed", "lines_warning", "on_error", "operation", "separator", "start_time", "status", "update_method"},
 		"csvimporttask",
+	),
+	Entry(
+		"Datacollectioncluster",
+		&Datacollectioncluster{},
+		[]string{},
+		"datacollectioncluster",
 	),
 	Entry(
 		"DbObjects",
@@ -497,6 +497,18 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 		"ftpuser",
 	),
 	Entry(
+		"Gmcgroup",
+		&Gmcgroup{},
+		[]string{"name"},
+		"gmcgroup",
+	),
+	Entry(
+		"Gmcschedule",
+		&Gmcschedule{},
+		[]string{"activate_gmc_group_schedule"},
+		"gmcschedule",
+	),
+	Entry(
 		"Grid",
 		&Grid{},
 		[]string{},
@@ -641,16 +653,16 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 		"hsm:allgroups",
 	),
 	Entry(
-		"HsmSafenetgroup",
-		&HsmSafenetgroup{},
-		[]string{"comment", "hsm_version", "name"},
-		"hsm:safenetgroup",
+		"HsmEntrustnshieldgroup",
+		&HsmEntrustnshieldgroup{},
+		[]string{"comment", "key_server_ip", "name"},
+		"hsm:entrustnshieldgroup",
 	),
 	Entry(
-		"HsmThalesgroup",
-		&HsmThalesgroup{},
-		[]string{"comment", "key_server_ip", "name"},
-		"hsm:thalesgroup",
+		"HsmThaleslunagroup",
+		&HsmThaleslunagroup{},
+		[]string{"comment", "hsm_version", "name"},
+		"hsm:thaleslunagroup",
 	),
 	Entry(
 		"IpamStatistics",
@@ -825,6 +837,12 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 		&MemberThreatprotection{},
 		[]string{},
 		"member:threatprotection",
+	),
+	Entry(
+		"Memberclouddnssync",
+		&Memberclouddnssync{},
+		[]string{},
+		"memberclouddnssync",
 	),
 	Entry(
 		"Memberdfp",
@@ -1009,7 +1027,7 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 	Entry(
 		"ParentalcontrolSubscribersite",
 		&ParentalcontrolSubscribersite{},
-		[]string{"block_size", "dca_sub_bw_list", "dca_sub_query_count", "first_port", "name", "stop_anycast", "strict_nat"},
+		[]string{"block_size", "dca_sub_bw_list", "dca_sub_query_count", "enable_global_allow_list_rpz", "enable_rpz_filtering_bypass", "first_port", "global_allow_list_rpz", "name", "stop_anycast", "strict_nat"},
 		"parentalcontrol:subscribersite",
 	),
 	Entry(
@@ -1609,7 +1627,7 @@ var _ = DescribeTable("Common methods of WAPI Objects",
 )
 
 var _ = Describe("WAPI_VERSION metadata", func() {
-	It("Should be equal to 2.12.1", func() {
-		Expect(WAPI_VERSION).To(Equal("2.12.1"))
+	It("Should be equal to 2.13.4", func() {
+		Expect(WAPI_VERSION).To(Equal("2.13.4"))
 	})
 })
