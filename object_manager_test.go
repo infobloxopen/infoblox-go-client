@@ -117,6 +117,10 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
 		case *RecordMX:
 			**res.(**RecordMX) = *c.resultObject.(*RecordMX)
+		case *Dns:
+			*res.(*[]Dns) = c.resultObject.([]Dns)
+		case *Dhcp:
+			*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
 		}
 	}
 
