@@ -98,6 +98,101 @@ type IBObjectManager interface {
 	UpdateDhcpStatus(ref string, status bool) (Dhcp, error)
 }
 
+// Map of record type to its corresponding object
+var getRecordTypeMap = map[string]func() IBObject{
+	"A": func() IBObject {
+		return NewEmptyRecordA()
+	},
+	"AAAA": func() IBObject {
+		return NewEmptyRecordAAAA()
+	},
+	"CNAME": func() IBObject {
+		return NewEmptyRecordCNAME()
+	},
+	"MX": func() IBObject {
+		return NewEmptyRecordMX()
+	},
+}
+
+// Map returns the object with search fields with the given record type
+var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error){
+	"A": func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordA).Ref != "" {
+			return res, nil
+		}
+
+		err := objMgr.connector.GetObject(NewEmptyRecordA(), "", NewQueryParams(false, sf), &res)
+		var newVal []RecordA
+		byteVal, err := json.Marshal(res)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(byteVal, &newVal)
+		if err != nil {
+			return nil, err
+		}
+		res = newVal
+		return res, err
+	},
+	"AAAA": func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordAAAA).Ref != "" {
+			return res, nil
+		}
+
+		err := objMgr.connector.GetObject(NewEmptyRecordAAAA(), "", NewQueryParams(false, sf), &res)
+		var newVal []RecordAAAA
+		byteVal, err := json.Marshal(res)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(byteVal, &newVal)
+		if err != nil {
+			return nil, err
+		}
+		res = newVal
+		return res, err
+	},
+	"CNAME": func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordCNAME).Ref != "" {
+			return res, nil
+		}
+		err := objMgr.connector.GetObject(NewEmptyRecordCNAME(), "", NewQueryParams(false, sf), &res)
+		var newVal []RecordCNAME
+		byteVal, err := json.Marshal(res)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(byteVal, &newVal)
+		if err != nil {
+			return nil, err
+		}
+		res = newVal
+		return res, err
+	},
+	"MX": func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordMX).Ref != "" {
+			return res, nil
+		}
+		err := objMgr.connector.GetObject(NewEmptyRecordMX(), "", NewQueryParams(false, sf), &res)
+		var newVal []RecordMX
+		byteVal, err := json.Marshal(res)
+		if err != nil {
+			return nil, err
+		}
+		err = json.Unmarshal(byteVal, &newVal)
+		if err != nil {
+			return nil, err
+		}
+		res = newVal
+		return res, err
+
+	},
+}
+
 type ObjectManager struct {
 	connector IBConnector
 	cmpType   string
@@ -162,7 +257,8 @@ func (objMgr *ObjectManager) GetAllMembers() ([]Member, error) {
 
 	memberObj := NewMember(Member{})
 	err := objMgr.connector.GetObject(
-		memberObj, "", NewQueryParams(false, nil), &res)
+		memberObj, "", NewQueryParams(false, nil), &res,
+	)
 	return res, err
 }
 
@@ -186,7 +282,8 @@ func (objMgr *ObjectManager) GetLicense() ([]License, error) {
 
 	licenseObj := NewLicense(License{})
 	err := objMgr.connector.GetObject(
-		licenseObj, "", NewQueryParams(false, nil), &res)
+		licenseObj, "", NewQueryParams(false, nil), &res,
+	)
 	return res, err
 }
 
@@ -196,7 +293,8 @@ func (objMgr *ObjectManager) GetGridLicense() ([]License, error) {
 
 	licenseObj := NewGridLicense(License{})
 	err := objMgr.connector.GetObject(
-		licenseObj, "", NewQueryParams(false, nil), &res)
+		licenseObj, "", NewQueryParams(false, nil), &res,
+	)
 	return res, err
 }
 
@@ -206,7 +304,8 @@ func (objMgr *ObjectManager) GetGridInfo() ([]Grid, error) {
 
 	gridObj := NewGrid(Grid{})
 	err := objMgr.connector.GetObject(
-		gridObj, "", NewQueryParams(false, nil), &res)
+		gridObj, "", NewQueryParams(false, nil), &res,
+	)
 	return res, err
 }
 
@@ -215,9 +314,11 @@ func (objMgr *ObjectManager) CreateZoneAuth(
 	fqdn string,
 	eas EA) (*ZoneAuth, error) {
 
-	zoneAuth := NewZoneAuth(ZoneAuth{
-		Fqdn: fqdn,
-		Ea:   eas})
+	zoneAuth := NewZoneAuth(
+		ZoneAuth{
+			Fqdn: fqdn,
+			Ea:   eas},
+	)
 
 	ref, err := objMgr.connector.CreateObject(zoneAuth)
 	zoneAuth.Ref = ref
@@ -233,7 +334,8 @@ func (objMgr *ObjectManager) GetZoneAuthByRef(ref string) (*ZoneAuth, error) {
 	}
 
 	err := objMgr.connector.GetObject(
-		res, ref, NewQueryParams(false, nil), res)
+		res, ref, NewQueryParams(false, nil), res,
+	)
 	return res, err
 }
 
@@ -248,7 +350,8 @@ func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 
 	zoneAuth := NewZoneAuth(ZoneAuth{})
 	err := objMgr.connector.GetObject(
-		zoneAuth, "", NewQueryParams(false, nil), &res)
+		zoneAuth, "", NewQueryParams(false, nil), &res,
+	)
 
 	return res, err
 }
@@ -277,9 +380,11 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 
 // CreateZoneDelegated creates delegated zone
 func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
-	zoneDelegated := NewZoneDelegated(ZoneDelegated{
-		Fqdn:       fqdn,
-		DelegateTo: delegate_to})
+	zoneDelegated := NewZoneDelegated(
+		ZoneDelegated{
+			Fqdn:       fqdn,
+			DelegateTo: delegate_to},
+	)
 
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref
@@ -289,9 +394,11 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []Name
 
 // UpdateZoneDelegated updates delegated zone
 func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
-	zoneDelegated := NewZoneDelegated(ZoneDelegated{
-		Ref:        ref,
-		DelegateTo: delegate_to})
+	zoneDelegated := NewZoneDelegated(
+		ZoneDelegated{
+			Ref:        ref,
+			DelegateTo: delegate_to},
+	)
 
 	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
 	zoneDelegated.Ref = refResp
@@ -311,20 +418,13 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 		return nil, fmt.Errorf("internal ID must not be empty")
 	}
 
-	var recordType GenericObj
-
-	switch objType {
-	case "A":
-		recordType = NewEmptyRecordA()
-	case "AAAA":
-		recordType = NewEmptyRecordAAAA()
-	case "CNAME":
-		recordType = NewEmptyRecordCNAME()
-	case "MX":
-		recordType = NewEmptyRecordMX()
-	default:
+	var recordType IBObject
+	if getRecordTypeMap[objType] != nil {
+		recordType = getRecordTypeMap[objType]()
+	} else {
 		return nil, fmt.Errorf("unknown record type")
 	}
+
 	var res interface{}
 	if ref != "" {
 		if err := objMgr.connector.GetObject(recordType, ref, NewQueryParams(false, nil), &res); err != nil {
@@ -338,52 +438,12 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 	sf := map[string]string{
 		fmt.Sprintf("*%s", eaNameForInternalId): internalId,
 	}
-	var val interface{}
-	switch objType {
-	case "A":
-		if recordType.(*RecordA).Ref != "" {
-			return &res, nil
-		}
 
-		err = objMgr.connector.GetObject(NewEmptyRecordA(), "", NewQueryParams(false, sf), &val)
-		//res = make([]HostRecord, 0)
-		var newVal []RecordA
-		byteVal, _ := json.Marshal(val)
-		json.Unmarshal(byteVal, &newVal)
-		res = newVal
-	case "AAAA":
-		if recordType.(*RecordAAAA).Ref != "" {
-			return &res, nil
-		}
-
-		err = objMgr.connector.GetObject(NewEmptyRecordAAAA(), "", NewQueryParams(false, sf), &val)
-		//res = make([]HostRecord, 0)
-		var newVal []RecordAAAA
-		byteVal, _ := json.Marshal(val)
-		json.Unmarshal(byteVal, &newVal)
-		res = newVal
-	case "CNAME":
-		if recordType.(*RecordCNAME).Ref != "" {
-			return &res, nil
-		}
-
-		err = objMgr.connector.GetObject(NewEmptyRecordCNAME(), "", NewQueryParams(false, sf), &val)
-		//res = make([]HostRecord, 0)
-		var newVal []RecordCNAME
-		byteVal, _ := json.Marshal(val)
-		json.Unmarshal(byteVal, &newVal)
-		res = newVal
-	case "MX":
-		if recordType.(*RecordMX).Ref != "" {
-			return &res, nil
-		}
-
-		err = objMgr.connector.GetObject(NewEmptyRecordMX(), "", NewQueryParams(false, sf), &val)
-		//res = make([]HostRecord, 0)
-		var newVal []RecordMX
-		byteVal, _ := json.Marshal(val)
-		json.Unmarshal(byteVal, &newVal)
-		res = newVal
+	// Fetch the object by search fields
+	if getObjectWithSearchFieldsMap[objType] != nil {
+		res, err = getObjectWithSearchFieldsMap[objType](recordType, objMgr, sf)
+	} else {
+		return nil, fmt.Errorf("unknown record type")
 	}
 
 	if err != nil {
