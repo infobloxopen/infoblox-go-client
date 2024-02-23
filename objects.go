@@ -469,7 +469,7 @@ type Dns struct {
 	Comment     string `json:"comment,omitempty"`
 	HostName    string `json:"host_name,omitempty"`
 	IPv4Address string `json:"ipv4addr,omitempty"`
-	EnableDns   bool   `json:"enable_dns,omitempty"`
+	EnableDns   bool   `json:"enable_dns"`
 }
 
 func (d Dns) ObjectType() string {
@@ -492,7 +492,7 @@ type Dhcp struct {
 	Comment     string `json:"comment,omitempty"`
 	HostName    string `json:"host_name,omitempty"`
 	IPv4Address string `json:"ipv4addr,omitempty"`
-	EnableDns   bool   `json:"enable_dns,omitempty"`
+	EnableDns   bool   `json:"enable_dns"`
 }
 
 func (d Dhcp) ObjectType() string {
