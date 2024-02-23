@@ -425,22 +425,20 @@ func (objMgr *ObjectManager) DeleteZoneDelegated(ref string) (string, error) {
 // Generic function to search object by alternate id
 func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 	objType string, ref string, internalId string, eaNameForInternalId string) (interface{}, error) {
-	var err error
-	if internalId == "" {
-		return nil, fmt.Errorf("internal ID must not be empty")
-	}
+	var (
+		err        error
+		recordType IBObject
+		res        interface{}
+	)
 
-	var recordType IBObject
 	if getRecordTypeMap[objType] != nil {
 		recordType = getRecordTypeMap[objType]()
 	} else {
 		return nil, fmt.Errorf("unknown record type")
 	}
 
-	var res interface{}
 	if ref != "" {
 		if err := objMgr.connector.GetObject(recordType, ref, NewQueryParams(false, nil), &res); err != nil {
-			fmt.Println("Error ", err.Error())
 			if _, ok := err.(*NotFoundError); !ok {
 				return nil, err
 			}
@@ -448,6 +446,10 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 		if res != nil {
 			return res, nil
 		}
+	}
+
+	if internalId == "" {
+		return nil, err
 	}
 
 	sf := map[string]string{
