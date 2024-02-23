@@ -132,6 +132,9 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		if err != nil {
 			return nil, err
 		}
+		if newVal == nil || len(newVal) == 0 {
+			return nil, NewNotFoundError("record not found")
+		}
 		res = newVal
 		return res, err
 	},
@@ -151,6 +154,9 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		if err != nil {
 			return nil, err
 		}
+		if newVal == nil || len(newVal) == 0 {
+			return nil, NewNotFoundError("record not found")
+		}
 		res = newVal
 		return res, err
 	},
@@ -169,6 +175,9 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		if err != nil {
 			return nil, err
 		}
+		if newVal == nil || len(newVal) == 0 {
+			return nil, NewNotFoundError("record not found")
+		}
 		res = newVal
 		return res, err
 	},
@@ -186,6 +195,9 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err = json.Unmarshal(byteVal, &newVal)
 		if err != nil {
 			return nil, err
+		}
+		if newVal == nil || len(newVal) == 0 {
+			return nil, NewNotFoundError("record not found")
 		}
 		res = newVal
 		return res, err
