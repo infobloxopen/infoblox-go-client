@@ -445,6 +445,9 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 				return nil, err
 			}
 		}
+		if res != nil {
+			return res, nil
+		}
 	}
 
 	sf := map[string]string{
