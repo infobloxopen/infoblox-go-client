@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"regexp"
 )
 
 // Compile-time interface checks
@@ -99,41 +100,63 @@ type IBObjectManager interface {
 }
 
 const (
-	ARecord         = "A"
-	AaaaRecord      = "AAAA"
-	CnameRecord     = "CNAME"
-	MxRecord        = "MX"
-	SrvRecord       = "SRV"
-	TxtRecord       = "TXT"
-	PtrRecord       = "PTR"
-	HostRecordConst = "Host"
+	ARecord               = "A"
+	AaaaRecord            = "AAAA"
+	CnameRecord           = "CNAME"
+	MxRecord              = "MX"
+	SrvRecord             = "SRV"
+	TxtRecord             = "TXT"
+	PtrRecord             = "PTR"
+	HostRecordConst       = "Host"
+	DnsViewConst          = "DNSView"
+	ZoneAuthConst         = "ZoneAuth"
+	NetworkViewConst      = "NetworkView"
+	NetworkConst          = "Network"
+	NetworkContainerConst = "NetworkContainer"
 )
 
 // Map of record type to its corresponding object
-var getRecordTypeMap = map[string]func() IBObject{
-	ARecord: func() IBObject {
+var getRecordTypeMap = map[string]func(ref string) IBObject{
+	ARecord: func(ref string) IBObject {
 		return NewEmptyRecordA()
 	},
-	AaaaRecord: func() IBObject {
+	AaaaRecord: func(ref string) IBObject {
 		return NewEmptyRecordAAAA()
 	},
-	CnameRecord: func() IBObject {
+	CnameRecord: func(ref string) IBObject {
 		return NewEmptyRecordCNAME()
 	},
-	MxRecord: func() IBObject {
+	MxRecord: func(ref string) IBObject {
 		return NewEmptyRecordMX()
 	},
-	SrvRecord: func() IBObject {
+	SrvRecord: func(ref string) IBObject {
 		return NewEmptyRecordSRV()
 	},
-	TxtRecord: func() IBObject {
+	TxtRecord: func(ref string) IBObject {
 		return NewEmptyRecordTXT()
 	},
-	PtrRecord: func() IBObject {
+	PtrRecord: func(ref string) IBObject {
 		return NewEmptyRecordPTR()
 	},
-	HostRecordConst: func() IBObject {
+	HostRecordConst: func(ref string) IBObject {
 		return NewEmptyHostRecord()
+	},
+	DnsViewConst: func(ref string) IBObject {
+		return NewEmptyDNSView()
+	},
+	ZoneAuthConst: func(ref string) IBObject {
+		return NewZoneAuth(ZoneAuth{})
+	},
+	NetworkViewConst: func(ref string) IBObject {
+		return NewEmptyNetworkView()
+	},
+	NetworkContainerConst: func(ref string) IBObject {
+		return NewNetworkContainer("", "", false, "", nil)
+	},
+	NetworkConst: func(ref string) IBObject {
+		r := regexp.MustCompile("^ipv6network\\/.+")
+		isIPv6 := r.MatchString(ref)
+		return NewNetwork("", "", isIPv6, "", nil)
 	},
 }
 
@@ -233,6 +256,69 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyHostRecord(), "", NewQueryParams(false, sf), &hostRecordList)
 		if err == nil && len(hostRecordList) > 0 {
 			res = hostRecordList[0]
+		}
+		return res, err
+	},
+	DnsViewConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*View).Ref != "" {
+			return res, nil
+		}
+		var dnsViewList []*View
+		err := objMgr.connector.GetObject(NewEmptyDNSView(), "", NewQueryParams(false, sf), &dnsViewList)
+		if err == nil && len(dnsViewList) > 0 {
+			res = dnsViewList[0]
+		}
+		return res, err
+	},
+	ZoneAuthConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*ZoneAuth).Ref != "" {
+			return res, nil
+		}
+		var zoneAuthList []*ZoneAuth
+		err := objMgr.connector.GetObject(NewZoneAuth(ZoneAuth{}), "", NewQueryParams(false, sf), &zoneAuthList)
+		if err == nil && len(zoneAuthList) > 0 {
+			res = zoneAuthList[0]
+		}
+		return res, err
+	},
+	NetworkViewConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*NetworkView).Ref != "" {
+			return res, nil
+		}
+		var networkViewList []*NetworkView
+		err := objMgr.connector.GetObject(NewEmptyNetworkView(), "", NewQueryParams(false, sf), &networkViewList)
+		if err == nil && len(networkViewList) > 0 {
+			res = networkViewList[0]
+		}
+		return res, err
+	},
+	// TODO: Do we need to add netview string, cidr string, isIPv6 bool, ea EA to create network container
+	NetworkContainerConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*NetworkContainer).Ref != "" {
+			return res, nil
+		}
+		var networkContainerList []*NetworkContainer
+		err := objMgr.connector.GetObject(NewNetworkContainer("", "", false, "", nil), "", NewQueryParams(false, sf), &networkContainerList)
+		if err == nil && len(networkContainerList) > 0 {
+			res = networkContainerList[0]
+		}
+		return res, err
+
+	},
+	//TODO: Do we need to add netview string, cidr string, isIPv6 bool, ea EA to create network
+	NetworkConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*Network).Ref != "" {
+			return res, nil
+		}
+		var networkList []*Network
+		err := objMgr.connector.GetObject(NewNetwork("", "", false, "", nil), "", NewQueryParams(false, sf), &networkList)
+		if err == nil && len(networkList) > 0 {
+			res = networkList[0]
 		}
 		return res, err
 	},
@@ -467,7 +553,7 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 	if !ok {
 		return nil, fmt.Errorf("unknown record type")
 	}
-	recordType = val()
+	recordType = val(ref)
 
 	if ref != "" {
 		if err := objMgr.connector.GetObject(recordType, ref, NewQueryParams(false, nil), &res); err != nil {
