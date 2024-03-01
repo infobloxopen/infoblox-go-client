@@ -561,7 +561,10 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 				return nil, err
 			}
 		}
-		if res != nil {
+		success, err := validateObjByRef(res, internalId, eaNameForInternalId)
+		if err != nil {
+			return nil, err
+		} else if success {
 			return res, nil
 		}
 	}
@@ -588,4 +591,29 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 	}
 
 	return &res, nil
+}
+
+func validateObjByRef(res interface{}, internalId, eaNameForInternalId string) (bool, error) {
+	var success bool
+	if res == nil {
+		return success, nil
+	}
+	byteObj, err := json.Marshal(res)
+	if err != nil {
+		return success, fmt.Errorf("error marshaling JSON: %v", err)
+	}
+	obj := make(map[string]interface{})
+	err = json.Unmarshal(byteObj, &obj)
+	if err != nil {
+		return success, fmt.Errorf("error unmarshaling JSON: %v", err)
+	}
+	extAttrs, found := obj["extattrs"].(map[string]interface{})
+	if found {
+		resInternalId := extAttrs[eaNameForInternalId].(map[string]interface{})["value"]
+		if resInternalId != nil && resInternalId.(string) == internalId {
+			success = true
+			return success, nil
+		}
+	}
+	return success, nil
 }
