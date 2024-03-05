@@ -78,7 +78,7 @@ type IBObjectManager interface {
 	GetAllMembers() ([]Member, error)
 	GetGridInfo() ([]Grid, error)
 	GetGridLicense() ([]License, error)
-	SearchDnsObjectByAltId(objType string, internalId string, ref string, eaNameForInternalId string) (interface{}, error)
+	SearchObjectByAltId(objType string, internalId string, ref string, eaNameForInternalId string) (interface{}, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, isIPv6 bool, macAddr string) (string, error)
 	UpdateAAAARecord(ref string, netView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordAAAA, error)
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
@@ -541,8 +541,8 @@ func (objMgr *ObjectManager) DeleteZoneDelegated(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-// Generic function to search object by alternate id
-func (objMgr *ObjectManager) SearchDnsObjectByAltId(
+// SearchObjectByAltId is a generic function to search object by alternate id
+func (objMgr *ObjectManager) SearchObjectByAltId(
 	objType string, ref string, internalId string, eaNameForInternalId string) (interface{}, error) {
 	var (
 		err        error
@@ -556,21 +556,18 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 	recordType = val(ref)
 
 	if ref != "" {
+		// Fetching object by reference
 		if err := objMgr.connector.GetObject(recordType, ref, NewQueryParams(false, nil), &res); err != nil {
-			if _, ok := err.(*NotFoundError); !ok {
+			if _, ok := err.(*NotFoundError); !ok || internalId == "" {
 				return nil, err
 			}
 		}
-		success, err := validateObjByRef(res, internalId, eaNameForInternalId)
+		success, err := validateObjByInternalId(res, internalId, eaNameForInternalId)
 		if err != nil {
 			return nil, err
 		} else if success {
 			return res, nil
 		}
-	}
-
-	if internalId == "" {
-		return nil, err
 	}
 
 	sf := map[string]string{
@@ -593,7 +590,8 @@ func (objMgr *ObjectManager) SearchDnsObjectByAltId(
 	return &res, nil
 }
 
-func validateObjByRef(res interface{}, internalId, eaNameForInternalId string) (bool, error) {
+// validateObjByInternalId validates the object by comparing the given internal with the object's internal id
+func validateObjByInternalId(res interface{}, internalId, eaNameForInternalId string) (bool, error) {
 	var success bool
 	if res == nil {
 		return success, nil
