@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 // Compile-time interface checks
@@ -558,7 +559,7 @@ func (objMgr *ObjectManager) SearchObjectByAltId(
 	if ref != "" {
 		// Fetching object by reference
 		if err := objMgr.connector.GetObject(recordType, ref, NewQueryParams(false, nil), &res); err != nil {
-			if _, ok := err.(*NotFoundError); !ok || internalId == "" {
+			if _, ok := err.(*NotFoundError); !ok {
 				return nil, err
 			}
 		}
@@ -593,7 +594,7 @@ func (objMgr *ObjectManager) SearchObjectByAltId(
 // validateObjByInternalId validates the object by comparing the given internal with the object's internal id
 func validateObjByInternalId(res interface{}, internalId, eaNameForInternalId string) (bool, error) {
 	var success bool
-	if res == nil {
+	if res == nil || strings.TrimSpace(internalId) == "" {
 		return success, nil
 	}
 	byteObj, err := json.Marshal(res)
