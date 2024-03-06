@@ -606,13 +606,22 @@ func validateObjByInternalId(res interface{}, internalId, eaNameForInternalId st
 	if err != nil {
 		return success, fmt.Errorf("error unmarshaling JSON: %v", err)
 	}
-	extAttrs, found := obj["extattrs"].(map[string]interface{})
-	if found {
-		resInternalId := extAttrs[eaNameForInternalId].(map[string]interface{})["value"]
-		if resInternalId != nil && resInternalId.(string) == internalId {
+	extAttrs, err := getInterfaceValueFromMap(obj, "extattrs")
+	if err != nil {
+		resInternalId, err := getInterfaceValueFromMap(extAttrs, eaNameForInternalId)
+		if err != nil && resInternalId["value"] != nil && resInternalId["value"].(string) == internalId {
 			success = true
 			return success, nil
 		}
 	}
 	return success, nil
+}
+
+// getInterfaceValueFromMap returns the value, after converting it into a map[string]interface{}, of the given key from the map
+func getInterfaceValueFromMap(m map[string]interface{}, key string) (map[string]interface{}, error) {
+	if val, ok := m[key]; ok && val != nil {
+		res := val.(map[string]interface{})
+		return res, nil
+	}
+	return nil, fmt.Errorf("key %s not found in map", key)
 }
