@@ -594,7 +594,11 @@ func (objMgr *ObjectManager) SearchObjectByAltId(
 // validateObjByInternalId validates the object by comparing the given internal with the object's internal id
 func validateObjByInternalId(res interface{}, internalId, eaNameForInternalId string) (bool, error) {
 	var success bool
-	if res == nil || strings.TrimSpace(internalId) == "" {
+	if res == nil {
+		return success, nil
+	} else if strings.TrimSpace(internalId) == "" {
+		// return object if internal id is empty
+		success = true
 		return success, nil
 	}
 	byteObj, err := json.Marshal(res)
@@ -607,14 +611,16 @@ func validateObjByInternalId(res interface{}, internalId, eaNameForInternalId st
 		return success, fmt.Errorf("error unmarshaling JSON: %v", err)
 	}
 	extAttrs, err := getInterfaceValueFromMap(obj, "extattrs")
-	if err != nil {
+	if err == nil {
 		resInternalId, err := getInterfaceValueFromMap(extAttrs, eaNameForInternalId)
-		if err != nil && resInternalId["value"] != nil && resInternalId["value"].(string) == internalId {
+		if err == nil && resInternalId["value"] != nil && resInternalId["value"].(string) == internalId {
+			// return object if object's internal id matches with the given internal id
 			success = true
 			return success, nil
 		}
+		return success, err
 	}
-	return success, nil
+	return success, err
 }
 
 // getInterfaceValueFromMap returns the value, after converting it into a map[string]interface{}, of the given key from the map
