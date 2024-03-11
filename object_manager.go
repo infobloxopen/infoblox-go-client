@@ -146,7 +146,21 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		return NewEmptyDNSView()
 	},
 	ZoneAuthConst: func(ref string) IBObject {
-		return NewZoneAuth(ZoneAuth{})
+		zone := &ZoneAuth{}
+		zone.SetReturnFields(append(
+			zone.ReturnFields(),
+			"comment",
+			"ns_group",
+			"soa_default_ttl",
+			"soa_expire",
+			"soa_negative_ttl",
+			"soa_refresh",
+			"soa_retry",
+			"view",
+			"zone_format",
+			"extattrs",
+		))
+		return zone
 	},
 	NetworkViewConst: func(ref string) IBObject {
 		return NewEmptyNetworkView()
@@ -277,8 +291,9 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		if recordType.(*ZoneAuth).Ref != "" {
 			return res, nil
 		}
+		zoneAuth := recordType.(*ZoneAuth)
 		var zoneAuthList []*ZoneAuth
-		err := objMgr.connector.GetObject(NewZoneAuth(ZoneAuth{}), "", NewQueryParams(false, sf), &zoneAuthList)
+		err := objMgr.connector.GetObject(zoneAuth, "", NewQueryParams(false, sf), &zoneAuthList)
 		if err == nil && len(zoneAuthList) > 0 {
 			res = zoneAuthList[0]
 		}
