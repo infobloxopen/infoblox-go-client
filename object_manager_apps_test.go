@@ -133,7 +133,7 @@ var _ = Describe("Object Manager: apps", func() {
 				returnFields: []string{"enable_dhcp", "host_name"},
 				eaSearch:     nil,
 			},
-			EnableDns:  false,
+			EnableDhcp: false,
 			objectType: "member:dhcpproperties",
 		}
 		ncFakeConnector := &fakeConnector{
