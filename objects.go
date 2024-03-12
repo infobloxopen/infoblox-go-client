@@ -492,7 +492,7 @@ type Dhcp struct {
 	Comment     string `json:"comment,omitempty"`
 	HostName    string `json:"host_name,omitempty"`
 	IPv4Address string `json:"ipv4addr,omitempty"`
-	EnableDns   bool   `json:"enable_dns"`
+	EnableDhcp  bool   `json:"enable_dhcp"`
 }
 
 func (d Dhcp) ObjectType() string {

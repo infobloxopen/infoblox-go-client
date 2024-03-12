@@ -45,7 +45,7 @@ func (objMgr *ObjectManager) UpdateDnsStatus(ref string, status bool) (Dns, erro
 
 func (objMgr *ObjectManager) UpdateDhcpStatus(ref string, status bool) (Dhcp, error) {
 	dhcp := NewDhcp(Dhcp{})
-	dhcp.EnableDns = status
+	dhcp.EnableDhcp = status
 	resp, err := objMgr.connector.UpdateObject(dhcp, ref)
 	if err != nil {
 		return *dhcp, err
