@@ -6,7 +6,7 @@ import (
 )
 
 var _ = Describe("Object Manager: apps", func() {
-
+	sf := map[string]string{"host_name": "infoblox.localdomain"}
 	Describe("Get DNS member by reference", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
@@ -18,7 +18,7 @@ var _ = Describe("Object Manager: apps", func() {
 		ncFakeConnector := &fakeConnector{
 			getObjectObj:         NewDns(Dns{}),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: NewQueryParams(false, sf),
 			resultObject:         resObj,
 		}
 
@@ -27,7 +27,7 @@ var _ = Describe("Object Manager: apps", func() {
 		var actualDns []Dns
 		var err error
 		It("should pass expected Dns Object to GetObject", func() {
-			actualDns, err = objMgr.GetDnsMember(fakeRefReturn)
+			actualDns, err = objMgr.GetDnsMember(sf, fakeRefReturn)
 		})
 		It("should return expected Dns Object", func() {
 			Expect(err).To(BeNil())
@@ -46,7 +46,7 @@ var _ = Describe("Object Manager: apps", func() {
 		ncFakeConnector := &fakeConnector{
 			getObjectObj:         NewDns(Dns{}),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: NewQueryParams(false, sf),
 			resultObject:         resObj,
 		}
 
@@ -55,7 +55,7 @@ var _ = Describe("Object Manager: apps", func() {
 		var actualDns []Dns
 		var err error
 		It("should pass expected Dns Object to GetObject", func() {
-			actualDns, err = objMgr.GetDnsMember(fakeRefReturn)
+			actualDns, err = objMgr.GetDnsMember(sf, fakeRefReturn)
 		})
 		It("should return expected Dns Object", func() {
 			Expect(err).To(BeNil())
@@ -74,7 +74,7 @@ var _ = Describe("Object Manager: apps", func() {
 		ncFakeConnector := &fakeConnector{
 			getObjectObj:         NewDhcp(Dhcp{}),
 			getObjectRef:         fakeRefReturn,
-			getObjectQueryParams: NewQueryParams(false, nil),
+			getObjectQueryParams: NewQueryParams(false, sf),
 			resultObject:         resObj,
 		}
 
@@ -83,7 +83,7 @@ var _ = Describe("Object Manager: apps", func() {
 		var actualDhcp []Dhcp
 		var err error
 		It("should pass expected Dhcp Object to GetObject", func() {
-			actualDhcp, err = objMgr.GetDhcpMember(fakeRefReturn)
+			actualDhcp, err = objMgr.GetDhcpMember(sf, fakeRefReturn)
 		})
 		It("should return expected Dhcp Object", func() {
 			Expect(err).To(BeNil())

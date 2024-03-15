@@ -2,9 +2,9 @@ package ibclient
 
 import "fmt"
 
-func (objMgr *ObjectManager) GetDnsMember(ref string) ([]Dns, error) {
+func (objMgr *ObjectManager) GetDnsMember(searchFields map[string]string, ref string) ([]Dns, error) {
 	var res []Dns
-	queryParams := NewQueryParams(false, nil)
+	queryParams := NewQueryParams(false, searchFields)
 	dns := NewDns(Dns{})
 	err := objMgr.connector.GetObject(dns, ref, queryParams, &res)
 	if err != nil {
@@ -17,9 +17,9 @@ func (objMgr *ObjectManager) GetDnsMember(ref string) ([]Dns, error) {
 	return res, nil
 }
 
-func (objMgr *ObjectManager) GetDhcpMember(ref string) ([]Dhcp, error) {
+func (objMgr *ObjectManager) GetDhcpMember(searchFields map[string]string, ref string) ([]Dhcp, error) {
 	var res []Dhcp
-	queryParams := NewQueryParams(false, nil)
+	queryParams := NewQueryParams(false, searchFields)
 	dhcp := NewDhcp(Dhcp{})
 	err := objMgr.connector.GetObject(dhcp, ref, queryParams, &res)
 	if err != nil {
