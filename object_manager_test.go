@@ -88,6 +88,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]RecordA) = c.resultObject.([]RecordA)
 		case *RecordMX:
 			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
+		case *Range:
+			*res.(*[]Range) = c.resultObject.([]Range)
 		}
 	} else {
 		switch obj.(type) {
@@ -121,6 +123,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]Dns) = c.resultObject.([]Dns)
 		case *Dhcp:
 			*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
+		case *Range:
+			*res.(*[]Range) = c.resultObject.([]Range)
 		}
 	}
 

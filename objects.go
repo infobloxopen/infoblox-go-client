@@ -506,3 +506,7 @@ func NewDhcp(dhcp Dhcp) *Dhcp {
 	result.returnFields = returnFields
 	return &result
 }
+
+func NewEmptyRange() *Range {
+	return &Range{}
+}
