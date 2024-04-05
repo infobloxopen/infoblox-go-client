@@ -1,5 +1,16 @@
 # Infoblox Go Client Release Notes
 
+## v2.5.0
+
+### Release Summary
+
+- Added a generic function to fetch objects by internal id.
+
+### Major Changes
+
+- Added a generic function `SearchObjectByAltId` to fetch objects by internal id.
+- Added validations for objects fetched by internal id.
+
 ## v2.4.0
 
 ### Release Summary
