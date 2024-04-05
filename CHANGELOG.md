@@ -5,11 +5,17 @@
 ### Release Summary
 
 - Added a generic function to fetch objects by internal id.
+- Added support for the http calls with headers to WAPI.
 
 ### Major Changes
 
 - Added a generic function `SearchObjectByAltId` to fetch objects by internal id.
 - Added validations for objects fetched by internal id.
+
+### Minor Changes
+
+- Added two functions `GetDnsMember` and `GetDhcpMember` to fetch DNS and DHCP members respectively.
+- Added two functions `UpdateDnsStatus` and `UpdateDhcpStatus` to update DNS and DHCP status respectively.
 
 ## v2.4.0
 
