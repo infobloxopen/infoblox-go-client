@@ -1,6 +1,6 @@
 # Infoblox Go Client Release Notes
 
-## v2.5.0
+## v2.6.0
 
 ### Release Summary
 
