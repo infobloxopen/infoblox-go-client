@@ -377,6 +377,29 @@ func (objMgr *ObjectManager) CreateMultiObject(req *MultiRequest) ([]map[string]
 	return result, nil
 }
 
+// DoMultiRequest executes the given MultiRequest and unmarshals the response into a list
+// of arbitrary values.
+// Result entries are - depending on the executed request - either [][]interface{} or []map[string]interface{}.
+func (objMgr *ObjectManager) DoMultiRequest(req *MultiRequest) ([]interface{}, error) {
+
+	conn := objMgr.connector.(*Connector)
+	queryParams := NewQueryParams(false, nil)
+	res, err := conn.makeRequest(CREATE, req, "", queryParams)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to execute multi object request: %w", err)
+	}
+
+	var result []interface{}
+	err = json.Unmarshal(res, &result)
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse multi object request response: %w", err)
+	}
+
+	return result, nil
+}
+
 // GetUpgradeStatus returns the grid upgrade information
 func (objMgr *ObjectManager) GetUpgradeStatus(statusType string) ([]UpgradeStatus, error) {
 	var res []UpgradeStatus
