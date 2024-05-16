@@ -74,6 +74,7 @@ type IBObjectManager interface {
 	GetTXTRecordByRef(ref string) (*RecordTXT, error)
 	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
 	GetZoneDelegated(fqdn string) (*ZoneDelegated, error)
+	GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error)
 	GetCapacityReport(name string) ([]CapacityReport, error)
 	GetUpgradeStatus(statusType string) ([]UpgradeStatus, error)
 	GetAllMembers() ([]Member, error)
@@ -501,6 +502,17 @@ func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 	)
 
 	return res, err
+}
+
+// GetZoneDelegatedByRef returns the delegated zone by ref
+func (objMgr *ObjectManager) GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error) {
+	zoneDelegated := NewZoneDelegated(ZoneDelegated{})
+	err := objMgr.connector.GetObject(
+		zoneDelegated, ref, NewQueryParams(false, nil), &zoneDelegated)
+	if err != nil {
+		return nil, err
+	}
+	return zoneDelegated, nil
 }
 
 // GetZoneDelegated returns the delegated zone
