@@ -35,7 +35,6 @@ func (objMgr *ObjectManager) DeleteZoneForward(ref string) (string, error) {
 
 func (objMgr *ObjectManager) GetZoneForwardByRef(ref string) (*ZoneForward, error) {
 	zoneForward := NewEmptyZoneForward()
-	zoneForward.SetReturnFields(append(zoneForward.ReturnFields(), "zone_format", "ns_group", "comment", "disable", "extattrs", "forwarders_only", "forwarding_servers"))
 	err := objMgr.connector.GetObject(zoneForward, ref, NewQueryParams(false, nil), &zoneForward)
 	if err != nil {
 		return nil, err
@@ -47,7 +46,6 @@ func (objMgr *ObjectManager) GetZoneForwardFilters(filters map[string]string) ([
 
 	var res []ZoneForward
 	zoneForward := NewEmptyZoneForward()
-	zoneForward.SetReturnFields(append(zoneForward.ReturnFields(), "zone_format", "ns_group", "comment", "disable", "extattrs", "forwarders_only", "forwarding_servers"))
 
 	err := objMgr.connector.GetObject(
 		zoneForward, "", NewQueryParams(false, filters), &res)
@@ -87,13 +85,14 @@ func (objMgr *ObjectManager) UpdateZoneForward(
 		return nil, err
 	}
 	zoneForward.Ref = new_ref
-	//fz.Fqdn = fqdn
 	return zoneForward, nil
 
 }
 
 func NewEmptyZoneForward() *ZoneForward {
-	return &ZoneForward{}
+	zoneForward := &ZoneForward{}
+	zoneForward.SetReturnFields(append(zoneForward.ReturnFields(), "zone_format", "ns_group", "comment", "disable", "extattrs", "forwarders_only", "forwarding_servers"))
+	return zoneForward
 }
 
 func NewZoneForward(comment string,
@@ -108,6 +107,7 @@ func NewZoneForward(comment string,
 	zoneFormat string) *ZoneForward {
 
 	zoneForward := NewEmptyZoneForward()
+
 	zoneForward.Comment = &comment
 	zoneForward.Disable = &disable
 	zoneForward.Ea = eas
