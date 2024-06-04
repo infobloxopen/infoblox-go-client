@@ -15,7 +15,7 @@ func (objMgr *ObjectManager) CreateZoneForward(
 	nsGroup string,
 	view string,
 	zoneFormat string) (*ZoneForward, error) {
-	if fqdn == "" || forwardTo == nil {
+	if fqdn == "" && forwardTo == nil {
 		return nil, fmt.Errorf("FQDN and forwardTo fields are required to create a forward zone")
 	}
 
