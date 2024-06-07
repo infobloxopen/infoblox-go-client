@@ -99,7 +99,7 @@ type IBObjectManager interface {
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
 	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
-	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo []NameServer, forwardersOnly bool, forwardingServers []*Forwardingmemberserver, nsGroup string) (*ZoneForward, error)
+	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo []NameServer, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string) (*ZoneForward, error)
 	GetDnsMember(ref string) ([]Dns, error)
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
 	GetDhcpMember(ref string) ([]Dhcp, error)
