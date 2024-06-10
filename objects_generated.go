@@ -22019,7 +22019,7 @@ type ZoneForward struct {
 
 	// The information for the Grid members to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
-	ForwardingServers []*Forwardingmemberserver `json:"forwarding_servers,omitempty"`
+	ForwardingServers *NullableForwardingServers `json:"forwarding_servers,omitempty"`
 
 	// The name of this DNS zone. For a reverse zone, this is in "address/cidr"
 	// format. For other zones, this is in FQDN format. This value can be in
@@ -22071,7 +22071,7 @@ type ZoneForward struct {
 	MsSyncMasterName string `json:"ms_sync_master_name,omitempty"`
 
 	// A forwarding member name server group.
-	NsGroup *string `json:"ns_group,omitempty"`
+	NsGroup *string `json:"ns_group"`
 
 	// The parent zone of this zone. Note that when searching for reverse zones,
 	// the "in-addr.arpa" notation should be used.
