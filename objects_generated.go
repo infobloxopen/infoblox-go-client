@@ -25436,7 +25436,7 @@ type Forwardingmemberserver struct {
 	ForwardTo []NameServer `json:"forward_to,omitempty"`
 
 	// Use flag for: forward_to
-	UseOverrideForwarders bool `json:"use_override_forwarders,omitempty"`
+	UseOverrideForwarders bool `json:"use_override_forwarders"`
 }
 
 // GridAttackdetect represents Infoblox struct grid:attackdetect
