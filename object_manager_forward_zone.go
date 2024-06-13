@@ -39,12 +39,13 @@ func (objMgr *ObjectManager) CreateZoneForward(
 	fqdn string,
 	nsGroup string,
 	view string,
-	zoneFormat string) (*ZoneForward, error) {
-	if fqdn == "" && forwardTo == nil {
-		return nil, fmt.Errorf("FQDN and forwardTo fields are required to create a forward zone")
+	zoneFormat string,
+	externalNsGroup string) (*ZoneForward, error) {
+	if fqdn == "" && (forwardTo == nil || externalNsGroup == "") {
+		return nil, fmt.Errorf("FQDN with forwardTo / external_ns_group fields are required to create a forward zone")
 	}
 
-	zoneForward := NewZoneForward(comment, disable, eas, forwardTo, forwardersOnly, forwardingServers, fqdn, nsGroup, view, zoneFormat, "")
+	zoneForward := NewZoneForward(comment, disable, eas, forwardTo, forwardersOnly, forwardingServers, fqdn, nsGroup, view, zoneFormat, "", externalNsGroup)
 	ref, err := objMgr.connector.CreateObject(zoneForward)
 	if err != nil {
 		return nil, err
@@ -89,7 +90,8 @@ func (objMgr *ObjectManager) UpdateZoneForward(
 	forwardTo []NameServer,
 	forwardersOnly bool,
 	forwardingServers *NullableForwardingServers,
-	nsGroup string) (*ZoneForward, error) {
+	nsGroup string,
+	externlNsGroup string) (*ZoneForward, error) {
 
 	zoneForward := NewEmptyZoneForward()
 
@@ -108,6 +110,11 @@ func (objMgr *ObjectManager) UpdateZoneForward(
 	} else {
 		zoneForward.NsGroup = nil
 	}
+	if externlNsGroup != "" {
+		zoneForward.ExternalNsGroup = &externlNsGroup
+	} else {
+		zoneForward.ExternalNsGroup = nil
+	}
 
 	new_ref, err := objMgr.connector.UpdateObject(zoneForward, ref)
 	if err != nil {
@@ -120,7 +127,7 @@ func (objMgr *ObjectManager) UpdateZoneForward(
 
 func NewEmptyZoneForward() *ZoneForward {
 	zoneForward := &ZoneForward{}
-	zoneForward.SetReturnFields(append(zoneForward.ReturnFields(), "zone_format", "ns_group", "comment", "disable", "extattrs", "forwarders_only", "forwarding_servers"))
+	zoneForward.SetReturnFields(append(zoneForward.ReturnFields(), "zone_format", "ns_group", "external_ns_group", "comment", "disable", "extattrs", "forwarders_only", "forwarding_servers"))
 	return zoneForward
 }
 
@@ -134,7 +141,8 @@ func NewZoneForward(comment string,
 	nsGroup string,
 	view string,
 	zoneFormat string,
-	ref string) *ZoneForward {
+	ref string,
+	externalNsGroup string) *ZoneForward {
 
 	zoneForward := NewEmptyZoneForward()
 
@@ -152,6 +160,11 @@ func NewZoneForward(comment string,
 		zoneForward.NsGroup = nil
 	} else {
 		zoneForward.NsGroup = &nsGroup
+	}
+	if externalNsGroup == "" {
+		zoneForward.ExternalNsGroup = nil
+	} else {
+		zoneForward.ExternalNsGroup = &externalNsGroup
 	}
 	if view == "" {
 		view = "default"

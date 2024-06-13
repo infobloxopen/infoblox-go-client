@@ -22007,7 +22007,7 @@ type ZoneForward struct {
 	Ea EA `json:"extattrs"`
 
 	// A forward stub server name server group.
-	ExternalNsGroup *string `json:"external_ns_group,omitempty"`
+	ExternalNsGroup *string `json:"external_ns_group"`
 
 	// The information for the remote name servers to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
