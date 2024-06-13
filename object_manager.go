@@ -99,6 +99,10 @@ type IBObjectManager interface {
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
 	GetDhcpMember(ref string) ([]Dhcp, error)
 	UpdateDhcpStatus(ref string, status bool) (Dhcp, error)
+	CreateRange(netView, name, startAddr, endAddr, comment string, disable bool, exclude []*Exclusionrange) (*Range, error)
+	UpdateRange(ref, name, startAddr, endAddr, comment string, disable bool, exclude []*Exclusionrange) (*Range, error)
+	GetRange(ref string) (*Range, error)
+	DeleteRange(ref string) error
 }
 
 const (
