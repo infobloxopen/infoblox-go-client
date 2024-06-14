@@ -6,6 +6,31 @@ import (
 	"reflect"
 )
 
+// Handle FORWARD_TO to be [] list
+type NullForwardTo struct {
+	ForwardTo []NameServer
+	IsNull    bool
+}
+
+func (nft NullForwardTo) MarshalJSON() ([]byte, error) {
+	if reflect.DeepEqual(nft.ForwardTo, []NameServer{}) {
+		return []byte("[]"), nil
+	}
+
+	return json.Marshal(nft.ForwardTo)
+}
+
+func (nft *NullForwardTo) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		nft.IsNull = true
+		nft.ForwardTo = nil
+		return nil
+	}
+	nft.IsNull = false
+	return json.Unmarshal(data, &nft.ForwardTo)
+}
+
+// Forwarding Server to be [] list
 type NullableForwardingServers struct {
 	Servers []*Forwardingmemberserver
 	IsNull  bool // Indicates if the entire slice should be null
@@ -33,7 +58,7 @@ func (objMgr *ObjectManager) CreateZoneForward(
 	comment string,
 	disable bool,
 	eas EA,
-	forwardTo []NameServer,
+	forwardTo NullForwardTo,
 	forwardersOnly bool,
 	forwardingServers []*Forwardingmemberserver,
 	fqdn string,
@@ -41,8 +66,10 @@ func (objMgr *ObjectManager) CreateZoneForward(
 	view string,
 	zoneFormat string,
 	externalNsGroup string) (*ZoneForward, error) {
-	if fqdn == "" && (forwardTo == nil || externalNsGroup == "") {
-		return nil, fmt.Errorf("FQDN with forwardTo / external_ns_group fields are required to create a forward zone")
+	// check if required fields are present
+	// Check for FQDN
+	if fqdn == "" {
+		return nil, fmt.Errorf("FQDN is required to create a forward zone")
 	}
 
 	zoneForward := NewZoneForward(comment, disable, eas, forwardTo, forwardersOnly, forwardingServers, fqdn, nsGroup, view, zoneFormat, "", externalNsGroup)
@@ -87,7 +114,7 @@ func (objMgr *ObjectManager) UpdateZoneForward(
 	comment string,
 	disable bool,
 	eas EA,
-	forwardTo []NameServer,
+	forwardTo NullForwardTo,
 	forwardersOnly bool,
 	forwardingServers *NullableForwardingServers,
 	nsGroup string,
@@ -134,7 +161,7 @@ func NewEmptyZoneForward() *ZoneForward {
 func NewZoneForward(comment string,
 	disable bool,
 	eas EA,
-	forwardTo []NameServer,
+	forwardTo NullForwardTo,
 	forwardersOnly bool,
 	forwardingServers []*Forwardingmemberserver,
 	fqdn string,

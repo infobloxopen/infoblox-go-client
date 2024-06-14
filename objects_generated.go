@@ -22011,7 +22011,7 @@ type ZoneForward struct {
 
 	// The information for the remote name servers to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
-	ForwardTo []NameServer `json:"forward_to,omitempty"`
+	ForwardTo NullForwardTo `json:"forward_to,omitempty"`
 
 	// Determines if the appliance sends queries to forwarders only, and not to
 	// other internal or Internet root servers.
@@ -25433,7 +25433,7 @@ type Forwardingmemberserver struct {
 
 	// The information for the remote name server to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
-	ForwardTo []NameServer `json:"forward_to,omitempty"`
+	ForwardTo NullForwardTo `json:"forward_to,omitempty"`
 
 	// Use flag for: forward_to
 	UseOverrideForwarders bool `json:"use_override_forwarders"`
