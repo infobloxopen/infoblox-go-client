@@ -99,7 +99,7 @@ var _ = Describe("Object Manager: forward zone", func() {
 		var actualRecord []ZoneForward
 		var err error
 		It("should pass expected Forward Zone Object to GetObject", func() {
-			actualRecord, err = objMgr.GetZoneForwardFilters(queryParams.searchFields)
+			actualRecord, err = objMgr.GetZoneForwardFilters(*queryParams)
 		})
 		It("should return expected Forward Zone Object", func() {
 			Expect(actualRecord).To(Equal(conn.resultObject.([]ZoneForward)))

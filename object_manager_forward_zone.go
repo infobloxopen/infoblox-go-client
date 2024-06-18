@@ -95,13 +95,13 @@ func (objMgr *ObjectManager) GetZoneForwardByRef(ref string) (*ZoneForward, erro
 	return zoneForward, nil
 }
 
-func (objMgr *ObjectManager) GetZoneForwardFilters(filters map[string]string) ([]ZoneForward, error) {
+func (objMgr *ObjectManager) GetZoneForwardFilters(queryParams *QueryParams) ([]ZoneForward, error) {
 
 	var res []ZoneForward
 	zoneForward := NewEmptyZoneForward()
 
 	err := objMgr.connector.GetObject(
-		zoneForward, "", NewQueryParams(false, filters), &res)
+		zoneForward, "", queryParams, &res)
 	if err != nil {
 		return nil, err
 	}
