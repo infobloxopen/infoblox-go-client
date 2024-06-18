@@ -78,7 +78,7 @@ type IBObjectManager interface {
 	GetZoneDelegated(fqdn string) (*ZoneDelegated, error)
 	GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error)
 	GetZoneForwardByRef(ref string) (*ZoneForward, error)
-	GetZoneForwardFilters(filters map[string]string) ([]ZoneForward, error)
+	GetZoneForwardFilters(queryParams *QueryParams) ([]ZoneForward, error)
 	GetCapacityReport(name string) ([]CapacityReport, error)
 	GetUpgradeStatus(statusType string) ([]UpgradeStatus, error)
 	GetAllMembers() ([]Member, error)
