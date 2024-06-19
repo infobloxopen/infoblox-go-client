@@ -60,7 +60,7 @@ func (objMgr *ObjectManager) CreateZoneForward(
 	eas EA,
 	forwardTo NullForwardTo,
 	forwardersOnly bool,
-	forwardingServers []*Forwardingmemberserver,
+	forwardingServers *NullableForwardingServers,
 	fqdn string,
 	nsGroup string,
 	view string,
@@ -71,7 +71,11 @@ func (objMgr *ObjectManager) CreateZoneForward(
 	if fqdn == "" {
 		return nil, fmt.Errorf("FQDN is required to create a forward zone")
 	}
-
+	if forwardingServers != nil && forwardingServers.Servers != nil {
+		forwardingServers = &NullableForwardingServers{Servers: forwardingServers.Servers}
+	} else {
+		forwardingServers = nil
+	}
 	zoneForward := NewZoneForward(comment, disable, eas, forwardTo, forwardersOnly, forwardingServers, fqdn, nsGroup, view, zoneFormat, "", externalNsGroup)
 	ref, err := objMgr.connector.CreateObject(zoneForward)
 	if err != nil {
@@ -163,7 +167,7 @@ func NewZoneForward(comment string,
 	eas EA,
 	forwardTo NullForwardTo,
 	forwardersOnly bool,
-	forwardingServers []*Forwardingmemberserver,
+	forwardingServers *NullableForwardingServers,
 	fqdn string,
 	nsGroup string,
 	view string,
@@ -178,9 +182,7 @@ func NewZoneForward(comment string,
 	zoneForward.Ea = eas
 	zoneForward.ForwardTo = forwardTo
 	zoneForward.ForwardersOnly = &forwardersOnly
-	if forwardingServers != nil {
-		zoneForward.ForwardingServers = &NullableForwardingServers{Servers: forwardingServers}
-	}
+	zoneForward.ForwardingServers = forwardingServers
 
 	zoneForward.Fqdn = fqdn
 	if nsGroup == "" {
