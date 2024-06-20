@@ -2086,3 +2086,253 @@ var _ = Describe("Go Client", func() {
 		Expect(err).To(MatchError(ibclient.NewNotFoundError("requested object not found")))
 	})
 })
+
+var _ = Describe("DNS Forward Zone", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a DNS Forward Zone", func() {
+		// Create a DNS Forward Zone
+		zone := &ibclient.ZoneForward{
+			Fqdn: "example.com",
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "2.3.4.5"},
+				},
+				IsNull: false,
+			},
+		}
+		ref, err := connector.CreateObject(zone)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^zone_forward.*"))
+	})
+
+	It("Should create a DNS Forward Zone with all params", func() {
+		// Create a DNS Forward Zone
+		zone := &ibclient.ZoneForward{
+			Fqdn: "example.com",
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "2.3.4.5"},
+				},
+				IsNull: false,
+			},
+			Comment:        utils.StringPtr("wapi added"),
+			ForwardersOnly: utils.BoolPtr(true),
+			ForwardingServers: &ibclient.NullableForwardingServers{
+				[]*ibclient.Forwardingmemberserver{
+					{
+						Name:           "infoblox.localdomain",
+						ForwardersOnly: true,
+						ForwardTo: ibclient.NullForwardTo{
+							ForwardTo: []ibclient.NameServer{
+								{Name: "test", Address: "1.2.3.4"},
+								{Name: "test2", Address: "2.3.4.5"},
+							},
+							IsNull: false,
+						},
+						UseOverrideForwarders: false,
+					}},
+				false,
+			},
+		}
+		ref, err := connector.CreateObject(zone)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^zone_forward.*"))
+	})
+
+	It("Should get the DNS Forward Zone", func() {
+		zone := &ibclient.ZoneForward{
+			Fqdn: "example.com",
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "2.3.4.5"},
+				},
+				IsNull: false,
+			},
+			Comment: utils.StringPtr("wapi added"),
+		}
+		ref, err := connector.CreateObject(zone)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^zone_forward.*"))
+
+		var res []ibclient.ZoneForward
+		search := &ibclient.ZoneForward{}
+		errCode := connector.GetObject(search, "", nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Ref).To(MatchRegexp("^zone_forward.*"))
+	})
+
+	It("Should update the DNS Forward Zone", func() {
+		// Create a DNS Forward Zone
+		zoneCreate := &ibclient.ZoneForward{
+			Fqdn: "example.com",
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "1.2.3.5"},
+				},
+				IsNull: false,
+			},
+			Comment: utils.StringPtr("wapi added"),
+		}
+		ref, errCode := connector.CreateObject(zoneCreate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^zone_forward.*"))
+
+		// Update a DNS Forward Zone
+		zone := &ibclient.ZoneForward{
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "1.2.3.6"},
+				},
+				IsNull: false,
+			},
+			Comment: utils.StringPtr("wapi added"),
+		}
+
+		var res []ibclient.ZoneForward
+		search := &ibclient.ZoneForward{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(zone, res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^zone_forward.*"))
+	})
+
+	It("Should delete the DNS Forward Zone", func() {
+		// Create a DNS Forward Zone
+		zoneCreate := &ibclient.ZoneForward{
+			Fqdn: "example.com",
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "1.2.3.5"},
+				},
+				IsNull: false,
+			},
+			Comment: utils.StringPtr("wapi added"),
+		}
+		refCreate, errCode := connector.CreateObject(zoneCreate)
+		Expect(errCode).To(BeNil())
+		Expect(refCreate).To(MatchRegexp("^zone_forward.*"))
+
+		var res []ibclient.ZoneForward
+		search := &ibclient.ZoneForward{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err := connector.DeleteObject(res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^zone_forward.*"))
+	})
+
+	It("Should fail to create a DNS Forward Zone with invalid data", func() {
+		zone := &ibclient.ZoneForward{
+			Fqdn: "invalid..com", // Invalid FQDN
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "1.2.3.5"},
+				},
+				IsNull: false,
+			},
+			Comment:        utils.StringPtr("wapi added"),
+			ForwardersOnly: utils.BoolPtr(true),
+		}
+		_, err := connector.CreateObject(zone)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent DNS Forward Zone", func() {
+		var res []ibclient.ZoneForward
+		search := &ibclient.ZoneForward{Fqdn: "nonexistent.com"}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent DNS Forward Zone", func() {
+		zone := &ibclient.ZoneForward{
+			Fqdn: "nonexistent.com",
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "1.2.3.6"},
+				},
+				IsNull: false,
+			},
+			Comment: utils.StringPtr("wapi added"),
+		}
+
+		_, err := connector.UpdateObject(zone, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent DNS Forward Zone", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to create a DNS Forward Zone without mandatory parameters", func() {
+		zone := &ibclient.ZoneForward{
+			// Missing mandatory parameters like Fqdn and ForwardTo
+			Comment:        utils.StringPtr("wapi added"),
+			ForwardersOnly: utils.BoolPtr(true),
+		}
+		_, err := connector.CreateObject(zone)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to create a DNS Forward Zone without fqdn parameter", func() {
+		zone := &ibclient.ZoneForward{
+			// Missing mandatory parameter Fqdn
+			ForwardTo: ibclient.NullForwardTo{
+				ForwardTo: []ibclient.NameServer{
+					{Name: "test", Address: "1.2.3.4"},
+					{Name: "test2", Address: "1.2.3.5"},
+				},
+				IsNull: false,
+			},
+			Comment:        utils.StringPtr("wapi added"),
+			ForwardersOnly: utils.BoolPtr(true),
+		}
+		_, err := connector.CreateObject(zone)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to create a DNS Forward Zone without forward_to parameter", func() {
+		zone := &ibclient.ZoneForward{
+			// Missing mandatory parameter ForwardTo
+			Fqdn:           "example.com",
+			Comment:        utils.StringPtr("wapi added"),
+			ForwardersOnly: utils.BoolPtr(true),
+		}
+		_, err := connector.CreateObject(zone)
+		Expect(err).NotTo(BeNil())
+	})
+})
