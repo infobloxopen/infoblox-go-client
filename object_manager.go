@@ -95,9 +95,9 @@ type IBObjectManager interface {
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
 	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
-	GetDnsMember(ref string) ([]Dns, error)
+	GetDnsMember(searchFields map[string]string, ref string) ([]Dns, error)
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
-	GetDhcpMember(ref string) ([]Dhcp, error)
+	GetDhcpMember(searchFields map[string]string, ref string) ([]Dhcp, error)
 	UpdateDhcpStatus(ref string, status bool) (Dhcp, error)
 }
 
