@@ -12,7 +12,7 @@
 - Added Create, Update and Delete operations for zone-forward record.
 - Added `GetZoneForwardByRef` function to fetch zone-forward record by reference.
 - Added `GetZoneForwardFilters` function to fetch all zone-forward records with the given filters.
-- Added wrapper struct `NullableForwardingServers` and `NullForwardTo` to handle omitempty fields `Forwardingmemberserver` and `ForwardTo` of ZoneForward struct.
+- Added wrapper structs `NullableForwardingServers` and `NullForwardTo` to handle omitempty fields `Forwardingmemberserver` and `ForwardTo` of ZoneForward struct.
 
 ## v2.6.0
 
