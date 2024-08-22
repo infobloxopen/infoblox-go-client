@@ -31,7 +31,7 @@ type IBObjectManager interface {
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
-	CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error)
+	CreateZoneDelegated(fqdn string, delegate_to NullForwardTo, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
@@ -76,6 +76,7 @@ type IBObjectManager interface {
 	GetTXTRecordByRef(ref string) (*RecordTXT, error)
 	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
 	GetZoneDelegated(fqdn string) (*ZoneDelegated, error)
+	GetZoneDelegatedByFilters(queryParams *QueryParams) ([]ZoneDelegated, error)
 	GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error)
 	GetZoneForwardByRef(ref string) (*ZoneForward, error)
 	GetZoneForwardFilters(queryParams *QueryParams) ([]ZoneForward, error)
@@ -98,7 +99,7 @@ type IBObjectManager interface {
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
-	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
+	UpdateZoneDelegated(ref string, delegate_to NullForwardTo, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA) (*ZoneDelegated, error)
 	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo NullForwardTo, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string, externalNsGroup string) (*ZoneForward, error)
 	GetDnsMember(ref string) ([]Dns, error)
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
@@ -121,6 +122,7 @@ const (
 	NetworkConst          = "Network"
 	NetworkContainerConst = "NetworkContainer"
 	ZoneForwardConst      = "ZoneForward"
+	ZoneDelegatedConst    = "ZoneDelegated"
 )
 
 // Map of record type to its corresponding object
@@ -194,6 +196,21 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 			"forwarding_servers",
 		))
 		return zoneForward
+	},
+	ZoneDelegatedConst: func(ref string) IBObject {
+		zoneDelegated := &ZoneDelegated{}
+		zoneDelegated.SetReturnFields(append(
+			zoneDelegated.ReturnFields(),
+			"comment",
+			"disable",
+			"locked",
+			"ns_group",
+			"delegated_ttl",
+			"use_delegated_ttl",
+			"zone_format",
+			"extattrs",
+		))
+		return zoneDelegated
 	},
 }
 
@@ -372,6 +389,24 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
+	ZoneDelegatedConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*ZoneDelegated).Ref != "" {
+			return res, nil
+		}
+		var zoneDelegatedList []*ZoneDelegated
+		err := objMgr.connector.GetObject(NewEmptyZoneDelegated(), "", NewQueryParams(false, sf), &zoneDelegatedList)
+		if err == nil && len(zoneDelegatedList) > 0 {
+			res = zoneDelegatedList[0]
+		}
+		return res, err
+	},
+}
+
+func NewEmptyZoneDelegated() *ZoneDelegated {
+	zoneDelegated := &ZoneDelegated{}
+	zoneDelegated.SetReturnFields(append(zoneDelegated.ReturnFields(), "comment", "disable", "locked", "ns_group", "delegated_ttl", "zone_format"))
+	return zoneDelegated
 }
 
 type ObjectManager struct {
@@ -537,6 +572,55 @@ func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 	return res, err
 }
 
+//// Handle Delegate_To to be []
+//type NullDelegateTo struct {
+//	DelegateTo []NameServer
+//	IsNull     bool
+//}
+//
+//func (ndt NullDelegateTo) MarshalJSON() ([]byte, error) {
+//	if reflect.DeepEqual(ndt.DelegateTo, []NameServer{}) {
+//		return []byte("[]"), nil
+//	}
+//
+//	return json.Marshal(ndt.DelegateTo)
+//}
+//
+//func (ndt *NullDelegateTo) UnmarshalJSON(data []byte) error {
+//	if string(data) == "null" {
+//		ndt.IsNull = true
+//		ndt.DelegateTo = nil
+//		return nil
+//	}
+//	ndt.IsNull = false
+//	return json.Unmarshal(data, &ndt.DelegateTo)
+//}
+//
+//// NullType is a generic struct that can wrap any slice of types.
+//type NullType[T any] struct {
+//	Value  []T
+//	IsNull bool
+//}
+//
+//// MarshalJSON for the NullType struct.
+//func (nw *NullType[T]) MarshalJSON() ([]byte, error) {
+//	if reflect.DeepEqual(nw.Value, []T{}) {
+//		return []byte("[]"), nil
+//	}
+//	return json.Marshal(nw.Value)
+//}
+//
+//// UnmarshalJSON for the NullType struct.
+//func (nw *NullType[T]) UnmarshalJSON(data []byte) error {
+//	if string(data) == "null" {
+//		nw.IsNull = true
+//		nw.Value = nil
+//		return nil
+//	}
+//	nw.IsNull = false
+//	return json.Unmarshal(data, &nw.Value)
+//}
+
 // GetZoneDelegatedByRef returns the delegated zone by ref
 func (objMgr *ObjectManager) GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{})
@@ -570,14 +654,50 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 	return &res[0], nil
 }
 
+// GetZoneDelegateByFiletrs returns the delegated zone by filters
+func (objMgr *ObjectManager) GetZoneDelegatedByFilters(queryParams *QueryParams) ([]ZoneDelegated, error) {
+	var res []ZoneDelegated
+
+	zoneDelegated := NewEmptyZoneDelegated()
+	err := objMgr.connector.GetObject(zoneDelegated, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
+}
+
 // CreateZoneDelegated creates delegated zone
-func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
+func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to NullForwardTo, comment string,
+	disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error) {
+
+	if fqdn == "" {
+		return nil, fmt.Errorf("FQDN is required to create zone-delegated")
+	}
+	if view == "" {
+		view = "default"
+	}
+	if zoneFormat == "" {
+		zoneFormat = "FORWARD"
+	}
 	zoneDelegated := NewZoneDelegated(
 		ZoneDelegated{
-			Fqdn:       fqdn,
-			DelegateTo: delegate_to},
+			Fqdn:            fqdn,
+			DelegateTo:      delegate_to,
+			Comment:         &comment,
+			Disable:         &disable,
+			Locked:          &locked,
+			DelegatedTtl:    &delegatedTtl,
+			UseDelegatedTtl: &useDelegatedTtl,
+			Ea:              ea,
+			View:            &view,
+			ZoneFormat:      zoneFormat,
+		},
 	)
-
+	if nsGroup != "" {
+		zoneDelegated.NsGroup = &nsGroup
+	} else {
+		zoneDelegated.NsGroup = nil
+	}
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref
 
@@ -585,15 +705,47 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []Name
 }
 
 // UpdateZoneDelegated updates delegated zone
-func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
+func (objMgr *ObjectManager) UpdateZoneDelegated(
+	ref string,
+	delegate_to NullForwardTo,
+	comment string,
+	disable bool,
+	locked bool,
+	nsGroup string,
+	delegatedTtl uint32,
+	useDelegatedTtl bool,
+	ea EA) (*ZoneDelegated, error) {
+
 	zoneDelegated := NewZoneDelegated(
 		ZoneDelegated{
-			Ref:        ref,
-			DelegateTo: delegate_to},
+			DelegateTo:      delegate_to,
+			Comment:         &comment,
+			Disable:         &disable,
+			Locked:          &locked,
+			DelegatedTtl:    &delegatedTtl,
+			UseDelegatedTtl: &useDelegatedTtl,
+			Ea:              ea,
+			Ref:             ref,
+		},
 	)
 
-	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
-	zoneDelegated.Ref = refResp
+	//zoneDelegated := NewEmptyZoneDelegated()
+	//zoneDelegated.Ref = ref
+	//zoneDelegated.DelegateTo = delegate_to
+	//zoneDelegated.Comment = &comment
+	//zoneDelegated.Disable = &disable
+	//zoneDelegated.Locked = &locked
+	//zoneDelegated.DelegatedTtl = &delegatedTtl
+	//zoneDelegated.UseDelegatedTtl = &useDelegatedTtl
+	//zoneDelegated.Ea = ea
+
+	if nsGroup != "" {
+		zoneDelegated.NsGroup = &nsGroup
+	} else {
+		zoneDelegated.NsGroup = nil
+	}
+	newRef, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
+	zoneDelegated.Ref = newRef
 	return zoneDelegated, err
 }
 

@@ -21846,7 +21846,7 @@ type ZoneDelegated struct {
 	// This provides information for the remote name server that maintains data for
 	// the delegated zone. The Infoblox appliance redirects queries for data for
 	// the delegated zone to this remote name server.
-	DelegateTo []NameServer `json:"delegate_to,omitempty"`
+	DelegateTo NullForwardTo `json:"delegate_to,omitempty"`
 
 	// You can specify the Time to Live (TTL) values of auto-generated NS and glue
 	// records for a delegated zone. This value is the number of seconds that data
@@ -21926,7 +21926,7 @@ type ZoneDelegated struct {
 	MsSyncMasterName string `json:"ms_sync_master_name,omitempty"`
 
 	// The delegation NS group bound with delegated zone.
-	NsGroup *string `json:"ns_group,omitempty"`
+	NsGroup *string `json:"ns_group"`
 
 	// The parent zone of this zone. Note that when searching for reverse zones,
 	// the "in-addr.arpa" notation should be used.
@@ -21964,7 +21964,7 @@ func (obj ZoneDelegated) ReturnFields() []string {
 
 func NewZoneDelegated(za ZoneDelegated) *ZoneDelegated {
 	res := za
-	res.returnFields = []string{"extattrs", "fqdn", "view", "delegate_to"}
+	res.SetReturnFields(append(res.ReturnFields(), "comment", "disable", "locked", "ns_group", "delegated_ttl", "use_delegated_ttl", "zone_format", "extattrs"))
 
 	return &res
 }
