@@ -3,7 +3,6 @@ package ibclient
 import (
 	"errors"
 	"fmt"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -125,6 +124,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
 		case *ZoneForward:
 			*res.(**ZoneForward) = c.resultObject.(*ZoneForward)
+		case *ZoneDelegated:
+			*res.(**ZoneDelegated) = c.resultObject.(*ZoneDelegated)
 		}
 	}
 
@@ -454,14 +455,25 @@ var _ = Describe("Object Manager", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		fqdn := "dzone.example.com"
-		delegateTo := []NameServer{
+		delegateTo := NullForwardTo{IsNull: false, ForwardTo: []NameServer{
 			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
-			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
-		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}}
+		comment := "test comment"
+		disable := false
+		var ea EA
+		locked := false
+		var delegatedTtl uint32
+		useDelegatedTtl := false
+		zoneFormat := "FORWARD"
+		view := "default"
+		fakeRefReturn := "zone_delegated/LmdzbGJpYmNsaWVudA:dzone.example.com/default"
 		zdFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo}),
-			resultObject:    NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn}),
-			fakeRefReturn:   fakeRefReturn,
+			createObjectObj: NewZoneDelegated(
+				ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Comment: &comment, Disable: &disable, Ea: ea, Locked: &locked,
+					DelegatedTtl: &delegatedTtl, UseDelegatedTtl: &useDelegatedTtl, ZoneFormat: zoneFormat, View: &view}),
+			resultObject: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn, Comment: &comment,
+				Disable: &disable, Ea: ea, Locked: &locked, DelegatedTtl: &delegatedTtl, UseDelegatedTtl: &useDelegatedTtl, ZoneFormat: zoneFormat, View: &view}),
+			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
@@ -469,7 +481,7 @@ var _ = Describe("Object Manager", func() {
 		var actualZoneDelegated *ZoneDelegated
 		var err error
 		It("should pass expected ZoneDelegated Object to CreateObject", func() {
-			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegateTo)
+			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegateTo, "test comment", false, false, "", 0, false, nil, "", "")
 		})
 		It("should return expected ZoneDelegated Object", func() {
 			Expect(actualZoneDelegated).To(Equal(zdFakeConnector.resultObject))
@@ -478,32 +490,104 @@ var _ = Describe("Object Manager", func() {
 	})
 
 	Describe("Update Zone Delegated", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
-		delegateTo := []NameServer{
-			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
-			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
+		var (
+			err          error
+			objMgr       IBObjectManager
+			conn         *fakeConnector
+			ref          string
+			actualRecord *ZoneDelegated
+		)
 
-		receiveUpdateObject := NewZoneDelegated(ZoneDelegated{Ref: fakeRefReturn, DelegateTo: delegateTo})
-		returnUpdateObject := NewZoneDelegated(ZoneDelegated{DelegateTo: delegateTo, Ref: fakeRefReturn})
-		zdFakeConnector := &fakeConnector{
-			fakeRefReturn:   fakeRefReturn,
-			resultObject:    returnUpdateObject,
-			updateObjectObj: receiveUpdateObject,
-			updateObjectRef: fakeRefReturn,
-		}
+		BeforeEach(func() {
+			cmpType := "Docker"
+			tenantID := "01234567890abcdef01234567890abcdef"
 
-		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+			ref = "zone_delegated/LmdzbGJpYmNsaWVudA:dzone.example.com/default"
+			fqdn := "dzone.example.com"
+			delegateTo := NullForwardTo{IsNull: false, ForwardTo: []NameServer{{Address: "20.20.0.1", Name: "aa.bb.com"}}}
+			comment := "test comment"
+			nsGroup := "testgroup"
+			disable := false
+			locked := false
+			delegatedTtl := uint32(1800)
+			useDelegatedTtl := true
+			eas := EA{"Country": "test"}
+			view := "default"
+			zoneFormat := "FORWARD"
 
-		var updatedObject *ZoneDelegated
-		var err error
-		It("should pass expected updated object to UpdateObject", func() {
-			updatedObject, err = objMgr.UpdateZoneDelegated(fakeRefReturn, delegateTo)
-		})
-		It("should update zone with new delegation server list with no error", func() {
-			Expect(updatedObject).To(Equal(returnUpdateObject))
-			Expect(err).To(BeNil())
+			newEas := EA{"Country": "new value"}
+			updatedRef := "zone_delegated/ZG5zLmhvc3RjkugC4xLg:dzone.example.com/default"
+			newTtl := uint32(300)
+
+			It("updating Ttl, Extra attributes", func() {
+
+				initObject := NewZoneDelegated(ZoneDelegated{
+					Fqdn:            fqdn,
+					DelegateTo:      delegateTo,
+					Comment:         &comment,
+					Disable:         &disable,
+					Locked:          &locked,
+					NsGroup:         &nsGroup,
+					DelegatedTtl:    &delegatedTtl,
+					UseDelegatedTtl: &useDelegatedTtl,
+					Ea:              eas,
+					View:            &view,
+					ZoneFormat:      zoneFormat,
+				})
+				//initObject, _ := objMgr.CreateZoneDelegated(fqdn, delegateTo, comment, disable, locked, nsGroup, delegatedTtl, useDelegatedTtl, eas, view, zoneFormat)
+				initObject.Ref = ref
+
+				updatedObjIn := NewZoneDelegated(ZoneDelegated{
+					Fqdn:            fqdn,
+					DelegateTo:      delegateTo,
+					Comment:         &comment,
+					Disable:         &disable,
+					Locked:          &locked,
+					NsGroup:         &nsGroup,
+					DelegatedTtl:    &newTtl,
+					UseDelegatedTtl: &useDelegatedTtl,
+					Ea:              newEas,
+					View:            &view,
+					ZoneFormat:      zoneFormat,
+				})
+				updatedObjIn.Ref = ref
+
+				conn = &fakeConnector{
+					getObjectObj:         NewEmptyZoneDelegated(),
+					getObjectQueryParams: NewQueryParams(false, nil),
+					getObjectRef:         updatedRef,
+					getObjectError:       nil,
+
+					updateObjectObj:   updatedObjIn,
+					updateObjectRef:   ref,
+					updateObjectError: nil,
+
+					fakeRefReturn: updatedRef,
+				}
+				objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+				actualRecord, _ = objMgr.UpdateZoneDelegated(ref, delegateTo, comment, disable, locked, nsGroup, newTtl, useDelegatedTtl, newEas)
+			})
+			It("should return expected Zone-delegated obj", func() {
+				expectedObj := NewZoneDelegated(ZoneDelegated{
+					Fqdn:            fqdn,
+					DelegateTo:      delegateTo,
+					Comment:         &comment,
+					Disable:         &disable,
+					Locked:          &locked,
+					NsGroup:         &nsGroup,
+					DelegatedTtl:    &newTtl,
+					UseDelegatedTtl: &useDelegatedTtl,
+					Ea:              newEas,
+					View:            &view,
+					ZoneFormat:      zoneFormat,
+				})
+				expectedObj.Ref = updatedRef
+
+				Expect(err).To(BeNil())
+				Expect(actualRecord).NotTo(BeNil())
+				Expect(*actualRecord).To(BeEquivalentTo(*expectedObj))
+			})
 		})
 	})
 
