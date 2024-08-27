@@ -11,9 +11,9 @@ import (
 
 func TestE2EInfobloxGoClient(t *testing.T) {
 	RegisterFailHandler(Fail)
-	_, reporterConfig := GinkgoConfiguration()
-	reporterConfig.SlowSpecThreshold = time.Minute * 10
-	RunSpecs(t, "InfobloxGoClient E2E Test Suite", reporterConfig)
+	suiteConfig, reporterConfig := GinkgoConfiguration()
+	suiteConfig.PollProgressInterval = time.Second * 10
+	RunSpecs(t, "InfobloxGoClient E2E Test Suite", suiteConfig, reporterConfig)
 }
 
 // ConnectorFacadeE2E is an end-to-end test facade for the ibclient.Connector.
