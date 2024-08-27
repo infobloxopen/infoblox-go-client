@@ -572,55 +572,6 @@ func (objMgr *ObjectManager) GetZoneAuth() ([]ZoneAuth, error) {
 	return res, err
 }
 
-//// Handle Delegate_To to be []
-//type NullDelegateTo struct {
-//	DelegateTo []NameServer
-//	IsNull     bool
-//}
-//
-//func (ndt NullDelegateTo) MarshalJSON() ([]byte, error) {
-//	if reflect.DeepEqual(ndt.DelegateTo, []NameServer{}) {
-//		return []byte("[]"), nil
-//	}
-//
-//	return json.Marshal(ndt.DelegateTo)
-//}
-//
-//func (ndt *NullDelegateTo) UnmarshalJSON(data []byte) error {
-//	if string(data) == "null" {
-//		ndt.IsNull = true
-//		ndt.DelegateTo = nil
-//		return nil
-//	}
-//	ndt.IsNull = false
-//	return json.Unmarshal(data, &ndt.DelegateTo)
-//}
-//
-//// NullType is a generic struct that can wrap any slice of types.
-//type NullType[T any] struct {
-//	Value  []T
-//	IsNull bool
-//}
-//
-//// MarshalJSON for the NullType struct.
-//func (nw *NullType[T]) MarshalJSON() ([]byte, error) {
-//	if reflect.DeepEqual(nw.Value, []T{}) {
-//		return []byte("[]"), nil
-//	}
-//	return json.Marshal(nw.Value)
-//}
-//
-//// UnmarshalJSON for the NullType struct.
-//func (nw *NullType[T]) UnmarshalJSON(data []byte) error {
-//	if string(data) == "null" {
-//		nw.IsNull = true
-//		nw.Value = nil
-//		return nil
-//	}
-//	nw.IsNull = false
-//	return json.Unmarshal(data, &nw.Value)
-//}
-
 // GetZoneDelegatedByRef returns the delegated zone by ref
 func (objMgr *ObjectManager) GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error) {
 	zoneDelegated := NewZoneDelegated(ZoneDelegated{})
@@ -728,16 +679,6 @@ func (objMgr *ObjectManager) UpdateZoneDelegated(
 			Ref:             ref,
 		},
 	)
-
-	//zoneDelegated := NewEmptyZoneDelegated()
-	//zoneDelegated.Ref = ref
-	//zoneDelegated.DelegateTo = delegate_to
-	//zoneDelegated.Comment = &comment
-	//zoneDelegated.Disable = &disable
-	//zoneDelegated.Locked = &locked
-	//zoneDelegated.DelegatedTtl = &delegatedTtl
-	//zoneDelegated.UseDelegatedTtl = &useDelegatedTtl
-	//zoneDelegated.Ea = ea
 
 	if nsGroup != "" {
 		zoneDelegated.NsGroup = &nsGroup
