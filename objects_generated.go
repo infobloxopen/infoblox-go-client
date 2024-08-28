@@ -21846,7 +21846,7 @@ type ZoneDelegated struct {
 	// This provides information for the remote name server that maintains data for
 	// the delegated zone. The Infoblox appliance redirects queries for data for
 	// the delegated zone to this remote name server.
-	DelegateTo NullForwardTo `json:"delegate_to,omitempty"`
+	DelegateTo NullableNameServers `json:"delegate_to,omitempty"`
 
 	// You can specify the Time to Live (TTL) values of auto-generated NS and glue
 	// records for a delegated zone. This value is the number of seconds that data
@@ -22011,7 +22011,7 @@ type ZoneForward struct {
 
 	// The information for the remote name servers to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
-	ForwardTo NullForwardTo `json:"forward_to,omitempty"`
+	ForwardTo NullableNameServers `json:"forward_to,omitempty"`
 
 	// Determines if the appliance sends queries to forwarders only, and not to
 	// other internal or Internet root servers.
@@ -25433,7 +25433,7 @@ type Forwardingmemberserver struct {
 
 	// The information for the remote name server to which you want the Infoblox
 	// appliance to forward queries for a specified domain name.
-	ForwardTo NullForwardTo `json:"forward_to,omitempty"`
+	ForwardTo NullableNameServers `json:"forward_to,omitempty"`
 
 	// Use flag for: forward_to
 	UseOverrideForwarders bool `json:"use_override_forwarders"`

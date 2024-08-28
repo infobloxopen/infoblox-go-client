@@ -21,7 +21,7 @@ type IBObjectManager interface {
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
-	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullForwardTo, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
+	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, enabledhcp bool, recordName string, netview string, dnsview string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddr string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string) (*HostRecord, error)
 	CreateMXRecord(dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
@@ -31,7 +31,7 @@ type IBObjectManager interface {
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
-	CreateZoneDelegated(fqdn string, delegate_to NullForwardTo, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
+	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
@@ -99,8 +99,8 @@ type IBObjectManager interface {
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
-	UpdateZoneDelegated(ref string, delegate_to NullForwardTo, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA) (*ZoneDelegated, error)
-	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo NullForwardTo, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string, externalNsGroup string) (*ZoneForward, error)
+	UpdateZoneDelegated(ref string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA) (*ZoneDelegated, error)
+	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string, externalNsGroup string) (*ZoneForward, error)
 	GetDnsMember(ref string) ([]Dns, error)
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
 	GetDhcpMember(ref string) ([]Dhcp, error)
@@ -618,7 +618,7 @@ func (objMgr *ObjectManager) GetZoneDelegatedByFilters(queryParams *QueryParams)
 }
 
 // CreateZoneDelegated creates delegated zone
-func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to NullForwardTo, comment string,
+func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string,
 	disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error) {
 
 	if fqdn == "" {
@@ -633,7 +633,7 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to NullFo
 	zoneDelegated := NewZoneDelegated(
 		ZoneDelegated{
 			Fqdn:            fqdn,
-			DelegateTo:      delegate_to,
+			DelegateTo:      delegateTo,
 			Comment:         &comment,
 			Disable:         &disable,
 			Locked:          &locked,
@@ -658,7 +658,7 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to NullFo
 // UpdateZoneDelegated updates delegated zone
 func (objMgr *ObjectManager) UpdateZoneDelegated(
 	ref string,
-	delegate_to NullForwardTo,
+	delegateTo NullableNameServers,
 	comment string,
 	disable bool,
 	locked bool,
@@ -669,7 +669,7 @@ func (objMgr *ObjectManager) UpdateZoneDelegated(
 
 	zoneDelegated := NewZoneDelegated(
 		ZoneDelegated{
-			DelegateTo:      delegate_to,
+			DelegateTo:      delegateTo,
 			Comment:         &comment,
 			Disable:         &disable,
 			Locked:          &locked,

@@ -407,8 +407,8 @@ var _ = Describe("Go Client", func() {
 			// Create a DNS Forward Zone
 			zone := &ibclient.ZoneDelegated{
 				Fqdn: "example1.wapi.com",
-				DelegateTo: ibclient.NullForwardTo{
-					ForwardTo: []ibclient.NameServer{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
 						{Name: "test", Address: "1.2.3.4"},
 						{Name: "test2", Address: "2.3.4.5"},
 					},
@@ -424,8 +424,8 @@ var _ = Describe("Go Client", func() {
 		It("Should get the Zone delegated", func() {
 			zone := &ibclient.ZoneDelegated{
 				Fqdn: "example2.wapi.com",
-				DelegateTo: ibclient.NullForwardTo{
-					ForwardTo: []ibclient.NameServer{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
 						{Name: "test", Address: "1.2.3.4"},
 						{Name: "test2", Address: "2.3.4.5"},
 					},
@@ -447,8 +447,8 @@ var _ = Describe("Go Client", func() {
 			// Create a Zone delegated
 			zoneCreate := &ibclient.ZoneDelegated{
 				Fqdn: "example3.wapi.com",
-				DelegateTo: ibclient.NullForwardTo{
-					ForwardTo: []ibclient.NameServer{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
 						{Name: "test", Address: "1.2.3.4"},
 						{Name: "test2", Address: "1.2.3.5"},
 					},
@@ -462,8 +462,8 @@ var _ = Describe("Go Client", func() {
 
 			// Update a Zone-delegated
 			zone := &ibclient.ZoneDelegated{
-				DelegateTo: ibclient.NullForwardTo{
-					ForwardTo: []ibclient.NameServer{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
 						{Name: "test", Address: "1.2.3.4"},
 						{Name: "test2", Address: "1.2.3.6"},
 					},
@@ -484,8 +484,8 @@ var _ = Describe("Go Client", func() {
 			// Create a DNS Zone-delegated
 			zoneCreate := &ibclient.ZoneDelegated{
 				Fqdn: "example4.wapi.com",
-				DelegateTo: ibclient.NullForwardTo{
-					ForwardTo: []ibclient.NameServer{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
 						{Name: "test", Address: "1.2.3.4"},
 						{Name: "test2", Address: "1.2.3.5"},
 					},
@@ -525,8 +525,8 @@ var _ = Describe("Go Client", func() {
 		It("Should fail to update a non-existent DNS Zone-delegated", func() {
 			zone := &ibclient.ZoneDelegated{
 				Fqdn: "nonexistent.com",
-				DelegateTo: ibclient.NullForwardTo{
-					ForwardTo: []ibclient.NameServer{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
 						{Name: "test", Address: "1.2.3.4"},
 						{Name: "test2", Address: "1.2.3.6"},
 					},
@@ -2260,8 +2260,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2277,8 +2277,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2291,8 +2291,8 @@ var _ = Describe("DNS Forward Zone", func() {
 					{
 						Name:           "infoblox.localdomain",
 						ForwardersOnly: true,
-						ForwardTo: ibclient.NullForwardTo{
-							ForwardTo: []ibclient.NameServer{
+						ForwardTo: ibclient.NullableNameServers{
+							NameServers: []ibclient.NameServer{
 								{Name: "test", Address: "1.2.3.4"},
 								{Name: "test2", Address: "2.3.4.5"},
 							},
@@ -2311,8 +2311,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should get the DNS Forward Zone", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2335,8 +2335,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zoneCreate := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2350,8 +2350,8 @@ var _ = Describe("DNS Forward Zone", func() {
 
 		// Update a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.6"},
 				},
@@ -2372,8 +2372,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zoneCreate := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2396,8 +2396,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to create a DNS Forward Zone with invalid data", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "invalid..com", // Invalid FQDN
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2420,8 +2420,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to update a non-existent DNS Forward Zone", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "nonexistent.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.6"},
 				},
@@ -2452,8 +2452,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to create a DNS Forward Zone without fqdn parameter", func() {
 		zone := &ibclient.ZoneForward{
 			// Missing mandatory parameter Fqdn
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},

@@ -455,7 +455,7 @@ var _ = Describe("Object Manager", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		fqdn := "dzone.example.com"
-		delegateTo := NullForwardTo{IsNull: false, ForwardTo: []NameServer{
+		delegateTo := NullableNameServers{IsNull: false, NameServers: []NameServer{
 			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
 			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}}
 		comment := "test comment"
@@ -504,7 +504,7 @@ var _ = Describe("Object Manager", func() {
 
 			ref = "zone_delegated/LmdzbGJpYmNsaWVudA:dzone.example.com/default"
 			fqdn := "dzone.example.com"
-			delegateTo := NullForwardTo{IsNull: false, ForwardTo: []NameServer{{Address: "20.20.0.1", Name: "aa.bb.com"}}}
+			delegateTo := NullableNameServers{IsNull: false, NameServers: []NameServer{{Address: "20.20.0.1", Name: "aa.bb.com"}}}
 			comment := "test comment"
 			nsGroup := "testgroup"
 			disable := false

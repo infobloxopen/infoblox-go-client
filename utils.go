@@ -1,9 +1,11 @@
 package ibclient
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/url"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -27,6 +29,30 @@ type GenericObj interface {
 	ReturnFields() []string
 	EaSearch() EASearch
 	SetReturnFields([]string)
+}
+
+// Handle []NameServer to be [] list
+type NullableNameServers struct {
+	NameServers []NameServer
+	IsNull      bool
+}
+
+func (ns NullableNameServers) MarshalJSON() ([]byte, error) {
+	if reflect.DeepEqual(ns.NameServers, []NameServer{}) {
+		return []byte("[]"), nil
+	}
+
+	return json.Marshal(ns.NameServers)
+}
+
+func (ns *NullableNameServers) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		ns.IsNull = true
+		ns.NameServers = nil
+		return nil
+	}
+	ns.IsNull = false
+	return json.Unmarshal(data, &ns.NameServers)
 }
 
 func BuildNetworkViewFromRef(ref string) *NetworkView {
