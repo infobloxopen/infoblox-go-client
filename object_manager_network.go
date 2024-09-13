@@ -41,6 +41,64 @@ func (objMgr *ObjectManager) AllocateNetwork(
 	return
 }
 
+func (objMgr *ObjectManager) AllocateNetworkByEA(
+	netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen int, object string) (network *Network, err error) {
+
+	var (
+		containerObject string
+		objectType      string
+	)
+
+	//if isIPv6 {
+	//	objectType = "ipv6network"
+	//} else {
+	//	objectType = "network"
+	//}
+	objectType = getNetworkObjectType(isIPv6, "network", "ipv6network")
+
+	if object == "network" {
+		//if isIPv6 {
+		//	containerObject = "ipv6network"
+		//} else {
+		//	containerObject = "network"
+		//}
+		containerObject = getNetworkObjectType(isIPv6, "network", "ipv6network")
+	} else {
+		//if isIPv6 {
+		//	containerObject = "ipv6networkcontainer"
+		//} else {
+		//	containerObject = "networkcontainer"
+		//}
+		containerObject = getNetworkObjectType(isIPv6, "networkcontainer", "ipv6networkcontainer")
+	}
+
+	nextAvailableNetworkInfo := NetworkContainerNextAvailableInfo{
+		Function:     "next_available_network",
+		ResultField:  "networks",
+		Object:       containerObject,
+		ObjectParams: eaMap,
+		Params:       map[string]uint{"cidr": uint(prefixLen)},
+	}
+
+	net := NetworkContainerNextAvailable{
+		Network:     &nextAvailableNetworkInfo,
+		objectType:  objectType,
+		Comment:     comment,
+		Ea:          eas,
+		NetviewName: netview,
+	}
+	fmt.Println("net: ", net)
+	ref, err := objMgr.connector.CreateObject(&net)
+	if err == nil {
+		if isIPv6 {
+			network, err = BuildIPv6NetworkFromRef(ref)
+		} else {
+			network, err = BuildNetworkFromRef(ref)
+		}
+	}
+	return
+}
+
 func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, isIPv6 bool, ea EA) (*Network, error) {
 	if netview != "" && cidr != "" {
 		var res []Network

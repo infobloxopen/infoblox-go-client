@@ -70,6 +70,13 @@ func BuildNetworkViewFromRef(ref string) *NetworkView {
 	}
 }
 
+func getNetworkObjectType(isIPv6 bool, ipv4Object string, ipv6Object string) string {
+	if isIPv6 {
+		return ipv6Object
+	}
+	return ipv4Object
+}
+
 func BuildNetworkFromRef(ref string) (*Network, error) {
 	// network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:89.0.0.0/24/global_view
 	r := regexp.MustCompile(`network/\w+:(\d+\.\d+\.\d+\.\d+/\d+)/(.+)`)
