@@ -405,7 +405,7 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 
 func NewEmptyZoneDelegated() *ZoneDelegated {
 	zoneDelegated := &ZoneDelegated{}
-	zoneDelegated.SetReturnFields(append(zoneDelegated.ReturnFields(), "comment", "disable", "locked", "ns_group", "delegated_ttl", "zone_format"))
+	zoneDelegated.SetReturnFields(append(zoneDelegated.ReturnFields(), "comment", "disable", "locked", "ns_group", "delegated_ttl", "extattrs", "zone_format"))
 	return zoneDelegated
 }
 
