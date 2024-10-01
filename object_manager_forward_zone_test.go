@@ -12,8 +12,8 @@ var _ = Describe("Object Manager: forward zone", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "test client"
 		disable := false
-		forwardTo := NullForwardTo{
-			ForwardTo: []NameServer{
+		forwardTo := NullableNameServers{
+			NameServers: []NameServer{
 				{Name: "fz1.test.com", Address: "10.0.0.1"},
 				{Name: "fz2.test.com", Address: "10.0.0.2"},
 			},
@@ -46,8 +46,8 @@ var _ = Describe("Object Manager: forward zone", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "test client"
 		disable := false
-		forwardTo := NullForwardTo{
-			ForwardTo: []NameServer{
+		forwardTo := NullableNameServers{
+			NameServers: []NameServer{
 				{Name: "fz1.test.com", Address: "10.0.0.1"},
 				{Name: "fz2.test.com", Address: "10.0.0.2"},
 			},
@@ -82,8 +82,8 @@ var _ = Describe("Object Manager: forward zone", func() {
 		comment := "test client"
 		view := "default"
 
-		forwardTo := NullForwardTo{
-			ForwardTo: []NameServer{
+		forwardTo := NullableNameServers{
+			NameServers: []NameServer{
 				{Name: "fz1.test.com", Address: "10.0.0.1"},
 				{Name: "fz2.test.com", Address: "10.0.0.2"},
 			},
@@ -127,8 +127,8 @@ var _ = Describe("Object Manager: forward zone", func() {
 		view := "default"
 		//eas := EA{"Cloud API Owned": true}
 		//forwardTo := []NameServer{{Name: "fz1.test.com", Address: "10.0.0.1"}, {Name: "fz2.test.com", Address: "10.0.0.2"}}
-		forwardTo := NullForwardTo{
-			ForwardTo: []NameServer{
+		forwardTo := NullableNameServers{
+			NameServers: []NameServer{
 				{Name: "fz1.test.com", Address: "10.0.0.1"},
 				{Name: "fz2.test.com", Address: "10.0.0.2"},
 			},
