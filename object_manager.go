@@ -14,7 +14,7 @@ var _ IBObjectManager = new(ObjectManager)
 type IBObjectManager interface {
 	GetDNSView(name string) (*View, error)
 	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string, name string, comment string, eas EA) (*FixedAddress, error)
-	AllocateNextAvailableIp(name string, objectType string, objectParams map[string]string, params map[string][]string, useEaInheritance bool, isIpv6 bool, ea EA, comment string, disable bool) (interface{}, error)
+	AllocateNextAvailableIp(name string, objectType string, objectParams map[string]string, params map[string][]string, useEaInheritance bool, isIpv6 bool, ea EA, comment string, disable bool, n *int) (interface{}, error)
 	AllocateNetwork(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (network *Network, err error)
 	AllocateNetworkByEA(netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen int, object string) (network *Network, err error)
 	AllocateNetworkContainer(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (netContainer *NetworkContainer, err error)

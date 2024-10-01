@@ -50,9 +50,9 @@ func (objMgr *ObjectManager) AllocateNextAvailableIp(
 	isIpv6 bool,
 	ea EA,
 	comment string,
-	disable bool) (interface{}, error) {
+	disable bool, n *int) (interface{}, error) {
 
-	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, isIpv6, ea, comment, disable)
+	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, isIpv6, ea, comment, disable, n)
 
 	ref, err := objMgr.connector.CreateObject(networkIp)
 	if err != nil {
@@ -64,12 +64,10 @@ func (objMgr *ObjectManager) AllocateNextAvailableIp(
 		return objMgr.GetARecordByRef(ref)
 	case "record:aaaa":
 		return objMgr.GetAAAARecordByRef(ref)
+	case "record:host":
+		return objMgr.GetHostRecordByRef(ref)
 	}
-	//newRec, err := objMgr.GetARecordByRef(ref)
-	//if err != nil {
-	//	return nil, err
-	//}
-	//
+
 	return nil, err
 }
 
