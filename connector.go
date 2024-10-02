@@ -22,6 +22,7 @@ import (
 type AuthConfig struct {
 	Username string
 	Password string
+	Ibapauth string
 
 	ClientCert []byte
 	ClientKey  []byte
@@ -356,8 +357,15 @@ func (wrb *WapiRequestBuilder) BuildRequest(t RequestType, obj IBObject, ref str
 		return
 	}
 	req.Header.Set("Content-Type", "application/json")
+
+	if wrb.authCfg.Ibapauth != "" {
+		req.AddCookie(&http.Cookie{Name: "ibapauth", Value: wrb.authCfg.Ibapauth})
+		return
+	}
+
 	if wrb.authCfg.Username != "" {
 		req.SetBasicAuth(wrb.authCfg.Username, wrb.authCfg.Password)
+		return
 	}
 
 	return
