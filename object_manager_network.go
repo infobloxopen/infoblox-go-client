@@ -41,6 +41,79 @@ func (objMgr *ObjectManager) AllocateNetwork(
 	return
 }
 
+func (objMgr *ObjectManager) AllocateNextAvailableIp(
+	name string,
+	objectType string,
+	objectParams map[string]string,
+	params map[string][]string,
+	useEaInheritance bool,
+	isIpv6 bool,
+	ea EA,
+	comment string,
+	disable bool, n *int) (interface{}, error) {
+
+	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, isIpv6, ea, comment, disable, n)
+
+	ref, err := objMgr.connector.CreateObject(networkIp)
+	if err != nil {
+		return nil, err
+	}
+
+	switch objectType {
+	case "record:a":
+		return objMgr.GetARecordByRef(ref)
+	case "record:aaaa":
+		return objMgr.GetAAAARecordByRef(ref)
+	case "record:host":
+		return objMgr.GetHostRecordByRef(ref)
+	}
+
+	return nil, err
+}
+
+func (objMgr *ObjectManager) AllocateNetworkByEA(
+	netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen int, object string) (network *Network, err error) {
+
+	var (
+		containerObject string
+		objectType      string
+	)
+
+	objectType = getNetworkObjectType(isIPv6, "network", "ipv6network")
+
+	if object == "network" {
+		containerObject = getNetworkObjectType(isIPv6, "network", "ipv6network")
+	} else {
+		containerObject = getNetworkObjectType(isIPv6, "networkcontainer", "ipv6networkcontainer")
+	}
+
+	nextAvailableNetworkInfo := NetworkContainerNextAvailableInfo{
+		Function:     "next_available_network",
+		ResultField:  "networks",
+		Object:       containerObject,
+		ObjectParams: eaMap,
+		Params:       map[string]uint{"cidr": uint(prefixLen)},
+	}
+
+	nextAvailableNetwork := NetworkContainerNextAvailable{
+		Network:     &nextAvailableNetworkInfo,
+		objectType:  objectType,
+		Comment:     comment,
+		Ea:          eas,
+		NetviewName: netview,
+	}
+
+	ref, err := objMgr.connector.CreateObject(&nextAvailableNetwork)
+	if err == nil {
+		if isIPv6 {
+			network, err = BuildIPv6NetworkFromRef(ref)
+		} else {
+			network, err = BuildNetworkFromRef(ref)
+		}
+	}
+	return
+}
+
 func (objMgr *ObjectManager) GetNetwork(netview string, cidr string, isIPv6 bool, ea EA) (*Network, error) {
 	if netview != "" && cidr != "" {
 		var res []Network

@@ -173,6 +173,90 @@ func (SingleRequest) ObjectType() string {
 	return "request"
 }
 
+type NextavailableIPv4Addrs struct {
+	NextavailableIPv4Addr IpNextAvailableInfo `json:"ipv4addr,omitempty"`
+}
+
+type NextavailableIPv6Addrs struct {
+	NextavailableIPv6Addr IpNextAvailableInfo `json:"ipv6addr,omitempty"`
+}
+
+type IpNextAvailable struct {
+	IBBase                 `json:"-"`
+	objectType             string
+	Name                   string                   `json:"name"`
+	NextAvailableIPv4Addr  *IpNextAvailableInfo     `json:"ipv4addr,omitempty"`
+	NextAvailableIPv6Addr  *IpNextAvailableInfo     `json:"ipv6addr,omitempty"`
+	NextAvailableIPv4Addrs []NextavailableIPv4Addrs `json:"ipv4addrs,omitempty"`
+	NextAvailableIPv6Addrs []NextavailableIPv6Addrs `json:"ipv6addrs,omitempty"`
+	Comment                string                   `json:"comment"`
+	Ea                     EA                       `json:"extattrs"`
+	Disable                bool                     `json:"disable,omitempty"`
+	//NetviewName string                             `json:"network_view,omitempty"`
+}
+
+func (ni *IpNextAvailable) ObjectType() string {
+	return ni.objectType
+}
+
+type IpNextAvailableInfo struct {
+	Function         string              `json:"_object_function"`
+	ResultField      string              `json:"_result_field"`
+	Object           string              `json:"_object"`
+	ObjectParams     map[string]string   `json:"_object_parameters"`
+	Params           map[string][]string `json:"_parameters"`
+	NetviewName      string              `json:"network_view,omitempty"`
+	UseEaInheritance bool                `json:"use_for_ea_inheritance"`
+}
+
+func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]string, useEaInheritance bool, isIpv6 bool) *IpNextAvailableInfo {
+	nextAvailableIpInfo := IpNextAvailableInfo{
+		Function:         "next_available_ip",
+		ResultField:      "ips",
+		ObjectParams:     objectParams,
+		Params:           params,
+		UseEaInheritance: useEaInheritance,
+	}
+
+	if isIpv6 {
+		nextAvailableIpInfo.Object = "ipv6network"
+	} else {
+		nextAvailableIpInfo.Object = "network"
+	}
+
+	return &nextAvailableIpInfo
+}
+
+func NewIpNextAvailable(name string, objectType string, objectParams map[string]string, params map[string][]string,
+	useEaInheritance bool, isIpv6 bool, ea EA, comment string, disable bool, n *int) *IpNextAvailable {
+	nextAvailableIP := IpNextAvailable{
+		Name:       name,
+		objectType: objectType,
+		Ea:         ea,
+		Comment:    comment,
+		Disable:    disable,
+	}
+	if n != nil && *n >= 1 {
+		ipInfo := make([]IpNextAvailableInfo, *n)
+		for i := 0; i < *n; i++ {
+			ipInfo[i] = *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, isIpv6)
+			if isIpv6 {
+				nextAvailableIP.NextAvailableIPv6Addrs = append(nextAvailableIP.NextAvailableIPv6Addrs, NextavailableIPv6Addrs{NextavailableIPv6Addr: ipInfo[i]})
+			} else {
+				nextAvailableIP.NextAvailableIPv4Addrs = append(nextAvailableIP.NextAvailableIPv4Addrs, NextavailableIPv4Addrs{NextavailableIPv4Addr: ipInfo[i]})
+			}
+		}
+	} else {
+		if isIpv6 {
+			nextAvailableIP.NextAvailableIPv6Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, isIpv6)
+		} else {
+			nextAvailableIP.NextAvailableIPv4Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, isIpv6)
+		}
+	}
+
+	return &nextAvailableIP
+}
+
 type NetworkContainerNextAvailable struct {
 	IBBase      `json:"-"`
 	objectType  string
