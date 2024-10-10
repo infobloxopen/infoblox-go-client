@@ -47,12 +47,12 @@ func (objMgr *ObjectManager) AllocateNextAvailableIp(
 	objectParams map[string]string,
 	params map[string][]string,
 	useEaInheritance bool,
-	isIpv6 bool,
 	ea EA,
 	comment string,
-	disable bool, n *int) (interface{}, error) {
+	disable bool,
+	n *int, ipAddrType string) (interface{}, error) {
 
-	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, isIpv6, ea, comment, disable, n)
+	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, ea, comment, disable, n, ipAddrType)
 
 	ref, err := objMgr.connector.CreateObject(networkIp)
 	if err != nil {
@@ -72,7 +72,7 @@ func (objMgr *ObjectManager) AllocateNextAvailableIp(
 }
 
 func (objMgr *ObjectManager) AllocateNetworkByEA(
-	netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen int, object string) (network *Network, err error) {
+	netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen uint, object string) (network *Network, err error) {
 
 	var (
 		containerObject string
@@ -92,7 +92,7 @@ func (objMgr *ObjectManager) AllocateNetworkByEA(
 		ResultField:  "networks",
 		Object:       containerObject,
 		ObjectParams: eaMap,
-		Params:       map[string]uint{"cidr": uint(prefixLen)},
+		Params:       map[string]uint{"cidr": prefixLen},
 	}
 
 	nextAvailableNetwork := NetworkContainerNextAvailable{

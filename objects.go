@@ -209,7 +209,7 @@ type IpNextAvailableInfo struct {
 	UseEaInheritance bool                `json:"use_for_ea_inheritance"`
 }
 
-func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]string, useEaInheritance bool, isIpv6 bool) *IpNextAvailableInfo {
+func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]string, useEaInheritance bool, ipAddrType string) *IpNextAvailableInfo {
 	nextAvailableIpInfo := IpNextAvailableInfo{
 		Function:         "next_available_ip",
 		ResultField:      "ips",
@@ -218,7 +218,7 @@ func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]
 		UseEaInheritance: useEaInheritance,
 	}
 
-	if isIpv6 {
+	if ipAddrType == "IPV6" {
 		nextAvailableIpInfo.Object = "ipv6network"
 	} else {
 		nextAvailableIpInfo.Object = "network"
@@ -228,7 +228,7 @@ func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]
 }
 
 func NewIpNextAvailable(name string, objectType string, objectParams map[string]string, params map[string][]string,
-	useEaInheritance bool, isIpv6 bool, ea EA, comment string, disable bool, n *int) *IpNextAvailable {
+	useEaInheritance bool, ea EA, comment string, disable bool, n *int, ipAddrType string) *IpNextAvailable {
 	nextAvailableIP := IpNextAvailable{
 		Name:       name,
 		objectType: objectType,
@@ -236,24 +236,37 @@ func NewIpNextAvailable(name string, objectType string, objectParams map[string]
 		Comment:    comment,
 		Disable:    disable,
 	}
-	if n != nil && *n >= 1 {
+	if n != nil && *n > 1 {
 		ipInfo := make([]IpNextAvailableInfo, *n)
 		for i := 0; i < *n; i++ {
-			ipInfo[i] = *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, isIpv6)
-			if isIpv6 {
+			ipInfo[i] = *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, ipAddrType)
+			if ipAddrType == "IPV6" {
 				nextAvailableIP.NextAvailableIPv6Addrs = append(nextAvailableIP.NextAvailableIPv6Addrs, NextavailableIPv6Addrs{NextavailableIPv6Addr: ipInfo[i]})
 			} else {
 				nextAvailableIP.NextAvailableIPv4Addrs = append(nextAvailableIP.NextAvailableIPv4Addrs, NextavailableIPv4Addrs{NextavailableIPv4Addr: ipInfo[i]})
 			}
 		}
 	} else {
-		if isIpv6 {
-			nextAvailableIP.NextAvailableIPv6Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, isIpv6)
-		} else {
-			nextAvailableIP.NextAvailableIPv4Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, isIpv6)
+		switch objectType {
+		case "record:a":
+			nextAvailableIP.NextAvailableIPv4Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")
+		case "record:aaaa":
+			nextAvailableIP.NextAvailableIPv6Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")
+		case "record:host":
+			{
+				switch ipAddrType {
+				case "IPV4":
+					nextAvailableIP.NextAvailableIPv4Addrs = []NextavailableIPv4Addrs{{*NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")}}
+				case "IPV6":
+					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{*NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")}}
+				case "Both":
+					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{NextavailableIPv6Addr: *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")}}
+					nextAvailableIP.NextAvailableIPv4Addrs = []NextavailableIPv4Addrs{{NextavailableIPv4Addr: *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")}}
+				}
+			}
 		}
-	}
 
+	}
 	return &nextAvailableIP
 }
 

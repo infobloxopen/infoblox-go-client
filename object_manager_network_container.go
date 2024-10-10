@@ -108,13 +108,8 @@ func (objMgr *ObjectManager) AllocateNetworkContainer(
 }
 
 func (objMgr *ObjectManager) AllocateNetworkContainerByEA(
-	netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen int) (*NetworkContainer, error) {
+	netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen uint) (*NetworkContainer, error) {
 
-	//if isIPv6 {
-	//	object = "ipv6networkcontainer"
-	//} else {
-	//	object = "networkcontainer"
-	//}
 	var object string
 	object = getNetworkObjectType(isIPv6, "networkcontainer", "ipv6networkcontainer")
 
@@ -123,7 +118,7 @@ func (objMgr *ObjectManager) AllocateNetworkContainerByEA(
 		ResultField:  "networks",
 		Object:       object,
 		ObjectParams: eaMap,
-		Params:       map[string]uint{"cidr": uint(prefixLen)},
+		Params:       map[string]uint{"cidr": prefixLen},
 	}
 
 	net := NetworkContainerNextAvailable{

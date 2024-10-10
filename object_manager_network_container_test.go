@@ -561,4 +561,48 @@ var _ = Describe("Object Manager: network container", func() {
 			Expect(err).To(BeNil())
 		})
 	})
+
+	Describe("Allocate IPV4 Network Container by EA", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		cidr := "20.20.1.0/24"
+		prefixLen := uint(24)
+		netviewName := "default"
+		fakeRefReturn := fmt.Sprintf("networkcontainer/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
+		ea := EA{"Site": "test"}
+		eaMap := map[string]string{"Site": "Turkey"}
+		comment := "Test network container"
+		resObj, err := BuildNetworkContainerFromRef(fakeRefReturn)
+		container := &NetworkContainerNextAvailable{
+			objectType: "networkcontainer",
+			Network: &NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params:       map[string]uint{"cidr": prefixLen},
+				NetviewName:  "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		connector := &fakeConnector{
+			createObjectObj: container,
+			resultObject:    resObj,
+			fakeRefReturn:   fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		var actualNetwork *NetworkContainer
+		It("should pass expected Network Container Object to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetworkContainerByEA(netviewName, false, comment, ea, eaMap, prefixLen)
+		})
+		It("should return expected Network container Object", func() {
+			Expect(actualNetwork).To(Equal(connector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
 })
