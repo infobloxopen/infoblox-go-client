@@ -128,7 +128,6 @@ func (objMgr *ObjectManager) AllocateNetworkContainerByEA(
 		Ea:          eas,
 		NetviewName: netview,
 	}
-	fmt.Println("net: ", net)
 	ref, err := objMgr.connector.CreateObject(&net)
 
 	if err != nil {

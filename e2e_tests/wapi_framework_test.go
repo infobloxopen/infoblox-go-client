@@ -2477,3 +2477,288 @@ var _ = Describe("DNS Forward Zone", func() {
 		Expect(err).NotTo(BeNil())
 	})
 })
+
+var _ = Describe("Allocate next available network", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		var (
+			netView = "default"
+			comment = "ipv4 network container"
+			ea      = ibclient.EA{"Site": "Burma"}
+			cidr    = "18.12.1.0/24"
+			err1    error
+
+			ipv4Comment = "ipv4 network"
+			ipv4Ea      = ibclient.EA{"Site": "Namibia"}
+			ipv4Cidr    = "15.12.1.0/24"
+
+			ipv6Comment = "ipv6 network"
+			ipv6Ea      = ibclient.EA{"Site": "Norway"}
+			ipv6Cidr    = "2002:db8:85a4::/64"
+
+			ipv6NCComment = "ipv6 network container"
+			ipv6NCEa      = ibclient.EA{"Site": "Sri Lanka"}
+			ipv6NCCidr    = "3002:db8:85a4::/64"
+
+			ipv4Comment1 = "ipv4 network2"
+			ipv4Ea1      = ibclient.EA{"Site": "Japan"}
+			ipv4Cidr1    = "22.12.1.0/24"
+
+			ipv6Comment1 = "ipv6 network2"
+			ipv6Ea1      = ibclient.EA{"Site": "Japan"}
+			ipv6Cidr1    = "4002:db8:85a4::/64"
+		)
+
+		nv := &ibclient.ZoneAuth{
+			View: utils.StringPtr("default"),
+			Fqdn: "wapi.com",
+		}
+		_, err1 = connector.CreateObject(nv)
+		Expect(err1).To(BeNil())
+
+		nc := ibclient.NewNetworkContainer(netView, cidr, false, comment, ea)
+		_, err1 = connector.CreateObject(nc)
+		Expect(err1).To(BeNil())
+
+		ipv6Network := ibclient.NewNetwork(netView, ipv6Cidr, true, ipv6Comment, ipv6Ea)
+		_, err1 = connector.CreateObject(ipv6Network)
+		Expect(err1).To(BeNil())
+
+		ipv4Network := ibclient.NewNetwork(netView, ipv4Cidr, false, ipv4Comment, ipv4Ea)
+		_, err1 = connector.CreateObject(ipv4Network)
+		Expect(err1).To(BeNil())
+
+		ipv6NWC := ibclient.NewNetworkContainer(netView, ipv6NCCidr, true, ipv6NCComment, ipv6NCEa)
+		_, err1 = connector.CreateObject(ipv6NWC)
+		Expect(err1).To(BeNil())
+
+		ipv6Network1 := ibclient.NewNetwork(netView, ipv6Cidr1, true, ipv6Comment1, ipv6Ea1)
+		_, err1 = connector.CreateObject(ipv6Network1)
+		Expect(err1).To(BeNil())
+
+		ipv4Network1 := ibclient.NewNetwork(netView, ipv4Cidr1, false, ipv4Comment1, ipv4Ea1)
+		_, err1 = connector.CreateObject(ipv4Network1)
+		Expect(err1).To(BeNil())
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a ipv4 network within a networkcontainer with EA", func() {
+		// Create an ipv4 network within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Burma"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^network.*"))
+	})
+
+	It("Should create a ipv4 networkconatiner within a networkcontainer with EA", func() {
+		// Create an ipv4 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Burma"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^network.*"))
+	})
+
+	It("Should create a ipv6 network within a networkconatiner with EA", func() {
+		// Create an ipv6 network within a network with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Sri Lanka"}
+		prefixLen := uint(66)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("ipv6network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^ipv6network.*"))
+	})
+
+	It("Should create a ipv6 networkcontainer within a networkcontainer with EA", func() {
+		// Create an ipv6 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network Container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Sri Lanka"}
+		prefixLen := uint(67)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			//objectType: "ipv6network",
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		networkinfo.SetObjectType("ipv6networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^ipv6networkcontainer.*"))
+	})
+
+	It("Should create a record:a within a network with EA", func() {
+		// Create Record:A within a network with EA
+		ea := ibclient.EA{"Site": "Basavangudi"}
+		comment := "Test next_available_ip for record:a"
+		eaMap := map[string]string{"*Site": "Namibia"}
+		name := "testa.wapi.com"
+		recordA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv4Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV4"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordA.SetObjectType("record:a")
+		ref, err := connector.CreateObject(&recordA)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:a.*"))
+	})
+
+	It("Should create a record:aaaa within a network with EA", func() {
+		// Create Record:AAAA within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:aaaa"
+		eaMap := map[string]string{"*Site": "Norway"}
+		name := "testaaaa.wapi.com"
+		recordAAAA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv6Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV6"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordAAAA.SetObjectType("record:aaaa")
+		ref, err := connector.CreateObject(&recordAAAA)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:aaaa.*"))
+	})
+
+	It("Should create a record:host within a ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:host with ipv6"
+		eaMap := map[string]string{"*Site": "Norway"}
+		name := "testhost1.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV6")
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should create a record:host within a ipv4 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4"
+		eaMap := map[string]string{"*Site": "Namibia"}
+		name := "testhost2.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV4")
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should create a record:host within a ipv4 and ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
+		eaMap := map[string]string{"*Site": "Japan"}
+		name := "testhost3.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both")
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+})

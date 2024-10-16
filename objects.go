@@ -199,6 +199,10 @@ func (ni *IpNextAvailable) ObjectType() string {
 	return ni.objectType
 }
 
+func (ni *IpNextAvailable) SetObjectType(objectType string) {
+	ni.objectType = objectType
+}
+
 type IpNextAvailableInfo struct {
 	Function         string              `json:"_object_function"`
 	ResultField      string              `json:"_result_field"`
@@ -281,6 +285,10 @@ type NetworkContainerNextAvailable struct {
 
 func (nc *NetworkContainerNextAvailable) ObjectType() string {
 	return nc.objectType
+}
+
+func (nc *NetworkContainerNextAvailable) SetObjectType(objectType string) {
+	nc.objectType = objectType
 }
 
 type NetworkContainerNextAvailableInfo struct {
