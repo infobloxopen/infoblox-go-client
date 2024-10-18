@@ -245,6 +245,7 @@ func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]
 func NewIpNextAvailable(name string, objectType string, objectParams map[string]string, params map[string][]string,
 	useEaInheritance bool, ea EA, comment string, disable bool, n *int, ipAddrType string,
 	enableDns bool, enableDhcp bool, macAddr string, duid string, networkView string, dnsView string, useTtl bool, ttl uint32, aliases []string) *IpNextAvailable {
+
 	nextAvailableIP := IpNextAvailable{
 		Name:       name,
 		objectType: objectType,
@@ -265,6 +266,7 @@ func NewIpNextAvailable(name string, objectType string, objectParams map[string]
 			if ipAddrType == "IPV6" {
 				ipInfo[i].EnableDhcp = enableDhcpv6
 				ipInfo[i].Duid = duid
+
 				nextAvailableIP.NextAvailableIPv6Addrs = append(nextAvailableIP.NextAvailableIPv6Addrs, NextavailableIPv6Addrs{NextavailableIPv6Addr: ipInfo[i]})
 			} else {
 				ipInfo[i].EnableDhcp = enableDhcpv4
@@ -305,7 +307,6 @@ func NewIpNextAvailable(name string, objectType string, objectParams map[string]
 					ipv6Info.EnableDhcp = enableDhcpv6
 					ipv6Info.Duid = duid
 					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{*ipv6Info}}
-
 				}
 			}
 		}
