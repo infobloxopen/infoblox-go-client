@@ -284,6 +284,228 @@ var _ = Describe("Object Manager: host record", func() {
 		})
 	})
 
+	Describe("Allocate next available IPV4 for host Record by EA", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default"
+		recordName := "tt.test.com"
+		ipv4Addr := "10.1.1.0"
+		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%s", recordName, netviewName)
+		comment := "test"
+		eaMap := map[string]string{"*Site": "Finland"}
+		enableDns := false
+
+		nextIpInfo := IpNextAvailableInfo{
+			Object:           "network",
+			Function:         "next_available_ip",
+			Params:           nil,
+			ObjectParams:     eaMap,
+			ResultField:      "ips",
+			UseEaInheritance: false,
+		}
+
+		nextIp := &IpNextAvailable{
+			Comment:                comment,
+			Ea:                     nil,
+			Name:                   recordName,
+			objectType:             "record:host",
+			NextAvailableIPv4Addrs: []NextavailableIPv4Addrs{{nextIpInfo}},
+		}
+		hostRecord := &HostRecord{
+			Comment:     &comment,
+			Ea:          nil,
+			Ipv4Addrs:   []HostRecordIpv4Addr{*NewHostRecordIpv4Addr(ipv4Addr, "", false, "")},
+			Name:        &recordName,
+			NetworkView: netviewName,
+			EnableDns:   &enableDns,
+			View:        &netviewName,
+		}
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj:      nextIp,
+			fakeRefReturn:        fakeRefReturn,
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyHostRecord(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         hostRecord,
+		}
+
+		aniFakeConnector.resultObject.(*HostRecord).Comment = &comment
+		aniFakeConnector.resultObject.(*HostRecord).Name = &recordName
+		aniFakeConnector.resultObject.(*HostRecord).Ipv4Addrs = []HostRecordIpv4Addr{{Ipv4Addr: &ipv4Addr}}
+		aniFakeConnector.resultObject.(*HostRecord).NetworkView = netviewName
+		aniFakeConnector.resultObject.(*HostRecord).View = &netviewName
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		var actualRecord *HostRecord
+		var err error
+		var result interface{}
+
+		It("should pass expected host record Object to CreateObject", func() {
+			result, err = objMgr.AllocateNextAvailableIp(recordName, "record:host", eaMap, nil, false, nil, comment, false, nil, "IPV4")
+			if result != nil {
+				actualRecord = result.(*HostRecord)
+			}
+		})
+		It("should return expected host record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate next available IPV6 for host Record by EA", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default"
+		recordName := "tt.test.com"
+		ipv6Addr := "2001:db8:85a4::"
+		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%s", recordName, netviewName)
+		comment := "test"
+		eaMap := map[string]string{"*Site": "Finland"}
+		enableDns := false
+
+		nextIpInfo := IpNextAvailableInfo{
+			Object:           "ipv6network",
+			Function:         "next_available_ip",
+			Params:           nil,
+			ObjectParams:     eaMap,
+			ResultField:      "ips",
+			UseEaInheritance: false,
+		}
+
+		nextIp := &IpNextAvailable{
+			Comment:                comment,
+			Ea:                     nil,
+			Name:                   recordName,
+			objectType:             "record:host",
+			NextAvailableIPv6Addrs: []NextavailableIPv6Addrs{{nextIpInfo}},
+		}
+		hostRecord := &HostRecord{
+			Comment:     &comment,
+			Ea:          nil,
+			Ipv6Addrs:   []HostRecordIpv6Addr{*NewHostRecordIpv6Addr(ipv6Addr, "", false, "")},
+			Name:        &recordName,
+			NetworkView: netviewName,
+			EnableDns:   &enableDns,
+			View:        &netviewName,
+		}
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj:      nextIp,
+			fakeRefReturn:        fakeRefReturn,
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyHostRecord(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         hostRecord,
+		}
+
+		aniFakeConnector.resultObject.(*HostRecord).Comment = &comment
+		aniFakeConnector.resultObject.(*HostRecord).Name = &recordName
+		aniFakeConnector.resultObject.(*HostRecord).Ipv6Addrs = []HostRecordIpv6Addr{{Ipv6Addr: &ipv6Addr}}
+		aniFakeConnector.resultObject.(*HostRecord).NetworkView = netviewName
+		aniFakeConnector.resultObject.(*HostRecord).View = &netviewName
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		var actualRecord *HostRecord
+		var err error
+		var result interface{}
+
+		It("should pass expected host record Object to CreateObject", func() {
+			result, err = objMgr.AllocateNextAvailableIp(recordName, "record:host", eaMap, nil, false, nil, comment, false, nil, "IPV6")
+			if result != nil {
+				actualRecord = result.(*HostRecord)
+			}
+		})
+		It("should return expected host record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Allocate next available IPv6 and IPv4 host Record without dns by EA", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default"
+		recordName := "tt.test.com"
+		ipv4Addr := "10.1.11.0"
+		ipv6Addr := "3001:db8:85a4::"
+		fakeRefReturn := fmt.Sprintf("record:host/ZG5zLmJpbmRfY25h:%s/%s", recordName, netviewName)
+		comment := "test"
+		eaMap := map[string]string{"*Site": "Finland"}
+		enableDns := false
+
+		nextIpv4Info := IpNextAvailableInfo{
+			Object:           "network",
+			Function:         "next_available_ip",
+			Params:           nil,
+			ObjectParams:     eaMap,
+			ResultField:      "ips",
+			UseEaInheritance: false,
+		}
+		nextIpv6Info := IpNextAvailableInfo{
+			Object:           "ipv6network",
+			Function:         "next_available_ip",
+			Params:           nil,
+			ObjectParams:     eaMap,
+			ResultField:      "ips",
+			UseEaInheritance: false,
+		}
+
+		nextIp := &IpNextAvailable{
+			Comment:                comment,
+			Ea:                     nil,
+			Name:                   recordName,
+			objectType:             "record:host",
+			NextAvailableIPv4Addrs: []NextavailableIPv4Addrs{{nextIpv4Info}},
+			NextAvailableIPv6Addrs: []NextavailableIPv6Addrs{{nextIpv6Info}},
+		}
+		hostRecord := &HostRecord{
+			Comment:     &comment,
+			Ea:          nil,
+			Ipv4Addrs:   []HostRecordIpv4Addr{*NewHostRecordIpv4Addr(ipv4Addr, "", false, "")},
+			Ipv6Addrs:   []HostRecordIpv6Addr{*NewHostRecordIpv6Addr(ipv6Addr, "", false, "")},
+			Name:        &recordName,
+			NetworkView: netviewName,
+			EnableDns:   &enableDns,
+			View:        &netviewName,
+		}
+
+		aniFakeConnector := &fakeConnector{
+			createObjectObj:      nextIp,
+			fakeRefReturn:        fakeRefReturn,
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyHostRecord(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         hostRecord,
+		}
+
+		aniFakeConnector.resultObject.(*HostRecord).Comment = &comment
+		aniFakeConnector.resultObject.(*HostRecord).Name = &recordName
+		aniFakeConnector.resultObject.(*HostRecord).Ipv4Addrs = []HostRecordIpv4Addr{{Ipv4Addr: &ipv4Addr}}
+		aniFakeConnector.resultObject.(*HostRecord).Ipv6Addrs = []HostRecordIpv6Addr{{Ipv6Addr: &ipv6Addr}}
+		aniFakeConnector.resultObject.(*HostRecord).NetworkView = netviewName
+		aniFakeConnector.resultObject.(*HostRecord).View = &netviewName
+
+		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
+
+		var actualRecord *HostRecord
+		var err error
+		var result interface{}
+
+		It("should pass expected host record Object to CreateObject", func() {
+			result, err = objMgr.AllocateNextAvailableIp(recordName, "record:host", eaMap, nil, false, nil, comment, false, nil, "Both")
+			if result != nil {
+				actualRecord = result.(*HostRecord)
+			}
+		})
+		It("should return expected host record Object", func() {
+			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
+			Expect(err).To(BeNil())
+		})
+	})
+
 	Describe("Get Ipv4 and IPv6 Host Record Without DNS", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"

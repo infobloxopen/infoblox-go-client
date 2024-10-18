@@ -192,11 +192,23 @@ type IpNextAvailable struct {
 	Comment                string                   `json:"comment"`
 	Ea                     EA                       `json:"extattrs"`
 	Disable                bool                     `json:"disable,omitempty"`
-	//NetviewName string                             `json:"network_view,omitempty"`
+	EnableDns              bool                     `json:"configure_for_dns,omitempty"`
+	EnableDhcp             bool                     `json:"configure_for_dhcp,omitempty"`
+	MacAddr                string                   `json:"mac,omitempty"`
+	Duid                   string                   `json:"duid,omitempty"`
+	NetworkView            string                   `json:"network_view,omitempty"`
+	DnsView                string                   `json:"view,omitempty"`
+	UseTtl                 bool                     `json:"use_ttl,omitempty"`
+	Ttl                    uint32                   `json:"ttl,omitempty"`
+	Aliases                []string                 `json:"aliases,omitempty"`
 }
 
 func (ni *IpNextAvailable) ObjectType() string {
 	return ni.objectType
+}
+
+func (ni *IpNextAvailable) SetObjectType(objectType string) {
+	ni.objectType = objectType
 }
 
 type IpNextAvailableInfo struct {
@@ -207,6 +219,9 @@ type IpNextAvailableInfo struct {
 	Params           map[string][]string `json:"_parameters"`
 	NetviewName      string              `json:"network_view,omitempty"`
 	UseEaInheritance bool                `json:"use_for_ea_inheritance"`
+	EnableDhcp       bool                `json:"configure_for_dhcp,omitempty"`
+	MacAddr          string              `json:"mac,omitempty"`
+	Duid             string              `json:"duid,omitempty"`
 }
 
 func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]string, useEaInheritance bool, ipAddrType string) *IpNextAvailableInfo {
@@ -228,40 +243,70 @@ func NewIpNextAvailableInfo(objectParams map[string]string, params map[string][]
 }
 
 func NewIpNextAvailable(name string, objectType string, objectParams map[string]string, params map[string][]string,
-	useEaInheritance bool, ea EA, comment string, disable bool, n *int, ipAddrType string) *IpNextAvailable {
+	useEaInheritance bool, ea EA, comment string, disable bool, n *int, ipAddrType string,
+	enableDns bool, enableDhcp bool, macAddr string, duid string, networkView string, dnsView string, useTtl bool, ttl uint32, aliases []string) *IpNextAvailable {
+
 	nextAvailableIP := IpNextAvailable{
 		Name:       name,
 		objectType: objectType,
 		Ea:         ea,
 		Comment:    comment,
 		Disable:    disable,
+		UseTtl:     useTtl,
+		Ttl:        ttl,
 	}
+
+	enableDhcpv6 := enableDhcp && duid != ""
+	enableDhcpv4 := enableDhcp && macAddr != "" && macAddr != MACADDR_ZERO
+
 	if n != nil && *n > 1 {
 		ipInfo := make([]IpNextAvailableInfo, *n)
 		for i := 0; i < *n; i++ {
 			ipInfo[i] = *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, ipAddrType)
 			if ipAddrType == "IPV6" {
+				ipInfo[i].EnableDhcp = enableDhcpv6
+				ipInfo[i].Duid = duid
+
 				nextAvailableIP.NextAvailableIPv6Addrs = append(nextAvailableIP.NextAvailableIPv6Addrs, NextavailableIPv6Addrs{NextavailableIPv6Addr: ipInfo[i]})
 			} else {
+				ipInfo[i].EnableDhcp = enableDhcpv4
+				ipInfo[i].MacAddr = macAddr
 				nextAvailableIP.NextAvailableIPv4Addrs = append(nextAvailableIP.NextAvailableIPv4Addrs, NextavailableIPv4Addrs{NextavailableIPv4Addr: ipInfo[i]})
 			}
 		}
 	} else {
+		ipInfo := NewIpNextAvailableInfo(objectParams, params, useEaInheritance, ipAddrType)
 		switch objectType {
 		case "record:a":
-			nextAvailableIP.NextAvailableIPv4Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")
+			nextAvailableIP.NextAvailableIPv4Addr = ipInfo
 		case "record:aaaa":
-			nextAvailableIP.NextAvailableIPv6Addr = NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")
+			nextAvailableIP.NextAvailableIPv6Addr = ipInfo
 		case "record:host":
 			{
+				nextAvailableIP.EnableDns = enableDns
+				nextAvailableIP.NetworkView = networkView
+				nextAvailableIP.DnsView = dnsView
+				nextAvailableIP.Aliases = aliases
+
 				switch ipAddrType {
 				case "IPV4":
-					nextAvailableIP.NextAvailableIPv4Addrs = []NextavailableIPv4Addrs{{*NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")}}
+					ipInfo.EnableDhcp = enableDhcpv4
+					ipInfo.MacAddr = macAddr
+					nextAvailableIP.NextAvailableIPv4Addrs = []NextavailableIPv4Addrs{{*ipInfo}}
 				case "IPV6":
-					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{*NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")}}
+					ipInfo.EnableDhcp = enableDhcpv6
+					ipInfo.Duid = duid
+					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{*ipInfo}}
 				case "Both":
-					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{NextavailableIPv6Addr: *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")}}
-					nextAvailableIP.NextAvailableIPv4Addrs = []NextavailableIPv4Addrs{{NextavailableIPv4Addr: *NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")}}
+					ipv4Info := NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV4")
+					ipv4Info.EnableDhcp = enableDhcpv4
+					ipv4Info.MacAddr = macAddr
+					nextAvailableIP.NextAvailableIPv4Addrs = []NextavailableIPv4Addrs{{*ipv4Info}}
+
+					ipv6Info := NewIpNextAvailableInfo(objectParams, params, useEaInheritance, "IPV6")
+					ipv6Info.EnableDhcp = enableDhcpv6
+					ipv6Info.Duid = duid
+					nextAvailableIP.NextAvailableIPv6Addrs = []NextavailableIPv6Addrs{{*ipv6Info}}
 				}
 			}
 		}
@@ -281,6 +326,10 @@ type NetworkContainerNextAvailable struct {
 
 func (nc *NetworkContainerNextAvailable) ObjectType() string {
 	return nc.objectType
+}
+
+func (nc *NetworkContainerNextAvailable) SetObjectType(objectType string) {
+	nc.objectType = objectType
 }
 
 type NetworkContainerNextAvailableInfo struct {

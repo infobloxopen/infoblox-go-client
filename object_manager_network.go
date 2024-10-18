@@ -50,9 +50,14 @@ func (objMgr *ObjectManager) AllocateNextAvailableIp(
 	ea EA,
 	comment string,
 	disable bool,
-	n *int, ipAddrType string) (interface{}, error) {
+	n *int, ipAddrType string,
+	enableDns bool, enableDhcp bool,
+	macAddr string, duid string,
+	networkView string, dnsView string,
+	useTtl bool, ttl uint32, aliases []string) (interface{}, error) {
 
-	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, ea, comment, disable, n, ipAddrType)
+	networkIp := NewIpNextAvailable(name, objectType, objectParams, params, useEaInheritance, ea, comment, disable, n, ipAddrType,
+		enableDns, enableDhcp, macAddr, duid, networkView, dnsView, useTtl, ttl, aliases)
 
 	ref, err := objMgr.connector.CreateObject(networkIp)
 	if err != nil {
