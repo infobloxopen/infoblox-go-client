@@ -192,7 +192,7 @@ type IpNextAvailable struct {
 	Comment                string                   `json:"comment"`
 	Ea                     EA                       `json:"extattrs"`
 	Disable                bool                     `json:"disable,omitempty"`
-	EnableDns              bool                     `json:"configure_for_dns,omitempty"`
+	EnableDns              bool                     `json:"configure_for_dns"`
 	EnableDhcp             bool                     `json:"configure_for_dhcp,omitempty"`
 	MacAddr                string                   `json:"mac,omitempty"`
 	Duid                   string                   `json:"duid,omitempty"`
