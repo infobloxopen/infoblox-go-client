@@ -74,7 +74,8 @@ var _ = Describe("Object Manager: A-record", func() {
 			recordName,
 			netviewName)
 
-		objectForCreation := NewIpNextAvailable(netviewName, objectType, nil, params, false, eas, comment, false, nil, ipAddrType)
+		objectForCreation := NewIpNextAvailable(recordName, objectType, nil, params, false, eas, comment, false, nil, ipAddrType,
+			false, false, "", "", netviewName, "", false, 0, nil)
 		objectAsResult := NewRecordA(
 			dnsView, "", recordName, "53.0.0.1", 5, true, comment, eas, fakeRefReturn)
 
@@ -91,7 +92,8 @@ var _ = Describe("Object Manager: A-record", func() {
 
 		It("should create A record with next available IP", func() {
 			// Call the function to allocate next available IP and create A record
-			result, err := objMgr.AllocateNextAvailableIp(netviewName, objectType, nil, params, false, eas, comment, false, nil, ipAddrType)
+			result, err := objMgr.AllocateNextAvailableIp(recordName, objectType, nil, params, false, eas, comment, false, nil, ipAddrType,
+				false, false, "", "", netviewName, "", false, 0, nil)
 
 			// Assert no error occurred
 			Expect(err).To(BeNil())

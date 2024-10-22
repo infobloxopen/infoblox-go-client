@@ -2478,7 +2478,7 @@ var _ = Describe("DNS Forward Zone", func() {
 	})
 })
 
-var _ = Describe("Allocate next available network", func() {
+var _ = Describe("Allocate next available using EA", func() {
 	var connector *ConnectorFacadeE2E
 
 	BeforeEach(func() {
@@ -2725,7 +2725,8 @@ var _ = Describe("Allocate next available network", func() {
 		comment := "Test next_available_ip for record:host with ipv6"
 		eaMap := map[string]string{"*Site": "Norway"}
 		name := "testhost1.wapi.com"
-		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV6")
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV6",
+			false, false, "", "", "", "", false, 0, nil)
 
 		recordHost.SetObjectType("record:host")
 		ref, err := connector.CreateObject(recordHost)
@@ -2739,7 +2740,8 @@ var _ = Describe("Allocate next available network", func() {
 		comment := "Test next_available_ip for record:host with ipv4"
 		eaMap := map[string]string{"*Site": "Namibia"}
 		name := "testhost2.wapi.com"
-		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV4")
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV4",
+			false, false, "", "", "", "", false, 0, nil)
 
 		recordHost.SetObjectType("record:host")
 		ref, err := connector.CreateObject(recordHost)
@@ -2753,7 +2755,8 @@ var _ = Describe("Allocate next available network", func() {
 		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
 		eaMap := map[string]string{"*Site": "Japan"}
 		name := "testhost3.wapi.com"
-		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both")
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both",
+			false, false, "", "", "", "", false, 0, nil)
 
 		recordHost.SetObjectType("record:host")
 		ref, err := connector.CreateObject(recordHost)

@@ -96,7 +96,8 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 
 		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
 
-		objectForCreation := NewIpNextAvailable("", objectType, nil, params, false, ea, comment, false, nil, ipAddrType)
+		objectForCreation := NewIpNextAvailable(recordName, objectType, nil, params, false, ea, comment, false, nil, ipAddrType,
+			false, false, "", "", "", "", false, 0, nil)
 		objectAsResult := NewRecordAAAA(
 			dnsView, recordName, "2001:db8:abcd:14::1", false, 0, comment, ea, fakeRefReturn)
 
@@ -113,7 +114,8 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 
 		It("should allocate next available IP and create AAAA record", func() {
 			// Call AllocateNextAvailableIp for AAAA record
-			result, err := objMgr.AllocateNextAvailableIp("", objectType, nil, params, false, ea, comment, false, nil, ipAddrType)
+			result, err := objMgr.AllocateNextAvailableIp(recordName, objectType, nil, params, false, ea, comment, false, nil, ipAddrType,
+				false, false, "", "", "", "", false, 0, nil)
 
 			// Assert no error occurred
 			Expect(err).To(BeNil())
