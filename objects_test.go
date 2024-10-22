@@ -586,7 +586,7 @@ var _ = Describe("Objects", func() {
 
 			rh := NewHostRecord(
 				"", name, "", "", ipv4addrs, ipv6addrs,
-				nil, true, view, zone, "", useTtl, ttl, comment, aliases)
+				nil, true, view, zone, "", useTtl, ttl, comment, aliases, false)
 
 			It("should set fields correctly", func() {
 				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))

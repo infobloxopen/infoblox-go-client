@@ -15966,7 +15966,8 @@ func NewHostRecord(
 	useTtl bool,
 	ttl uint32,
 	comment string,
-	aliases []string) *HostRecord {
+	aliases []string,
+	disable bool) *HostRecord {
 
 	res := NewEmptyHostRecord()
 	res.NetworkView = netView
@@ -15979,6 +15980,7 @@ func NewHostRecord(
 	res.Zone = zone
 	res.Ref = ref
 	res.Comment = &comment
+	res.Disable = &disable
 	//res.Ipv4Addr = ipv4Addr
 	//res.Ipv6Addr = ipv6Addr
 	res.Ipv4Addrs = ipv4AddrList

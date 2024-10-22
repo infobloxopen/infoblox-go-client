@@ -192,7 +192,7 @@ type IpNextAvailable struct {
 	Comment                string                   `json:"comment"`
 	Ea                     EA                       `json:"extattrs"`
 	Disable                bool                     `json:"disable,omitempty"`
-	EnableDns              bool                     `json:"configure_for_dns,omitempty"`
+	EnableDns              *bool                    `json:"configure_for_dns,omitempty"`
 	EnableDhcp             bool                     `json:"configure_for_dhcp,omitempty"`
 	MacAddr                string                   `json:"mac,omitempty"`
 	Duid                   string                   `json:"duid,omitempty"`
@@ -283,7 +283,7 @@ func NewIpNextAvailable(name string, objectType string, objectParams map[string]
 			nextAvailableIP.NextAvailableIPv6Addr = ipInfo
 		case "record:host":
 			{
-				nextAvailableIP.EnableDns = enableDns
+				nextAvailableIP.EnableDns = &enableDns
 				nextAvailableIP.NetworkView = networkView
 				nextAvailableIP.DnsView = dnsView
 				nextAvailableIP.Aliases = aliases
