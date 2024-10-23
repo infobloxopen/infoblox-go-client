@@ -803,6 +803,48 @@ var _ = Describe("Go Client", func() {
 			},
 		)
 
+		It("Should add Host record [h1.wapi.com] with both ipv4addrs and aliases fields when dns is enabled",
+			Label("ID:44", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name:      utils.StringPtr("h1.wapi.com"),
+					View:      utils.StringPtr("default"),
+					EnableDns: utils.BoolPtr(true),
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.20")},
+						{Ipv4Addr: utils.StringPtr("20.20.20.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.40")},
+					},
+					Aliases: []string{
+						"alias1.wapi.com",
+						"alias2.wapi.com",
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+			},
+		)
+		It("Should add Host record [h1.wapi.com] with ipv4addrs  and aliases fields when dns is disabled",
+			Label("ID:45", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name:      utils.StringPtr("h1.wapi.com"),
+					View:      utils.StringPtr("default"),
+					EnableDns: utils.BoolPtr(false),
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.20")},
+						{Ipv4Addr: utils.StringPtr("20.20.20.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.40")},
+					},
+					Aliases: []string{
+						"alias1",
+						"alias2.wapi.com",
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com(/.*)?$"))
+			},
+		)
 		When("Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields exits",
 			Label("RW"), func() {
 				BeforeEach(func() {
