@@ -254,6 +254,7 @@ func NewIpNextAvailable(name string, objectType string, objectParams map[string]
 		Disable:    disable,
 		UseTtl:     useTtl,
 		Ttl:        ttl,
+		DnsView:    dnsView,
 	}
 
 	enableDhcpv6 := enableDhcp && duid != ""
@@ -285,7 +286,6 @@ func NewIpNextAvailable(name string, objectType string, objectParams map[string]
 			{
 				nextAvailableIP.EnableDns = &enableDns
 				nextAvailableIP.NetworkView = networkView
-				nextAvailableIP.DnsView = dnsView
 				nextAvailableIP.Aliases = aliases
 
 				switch ipAddrType {
