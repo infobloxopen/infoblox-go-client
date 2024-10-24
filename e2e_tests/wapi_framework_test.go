@@ -2806,4 +2806,117 @@ var _ = Describe("Allocate next available using EA", func() {
 		Expect(ref).To(MatchRegexp("^record:host.*"))
 	})
 
+	It("Should fail to create a ipv4 network within a networkcontainer with EA", func() {
+		// Create an ipv4 network within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Madagascar"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a ipv6 networkcontainer within a networkcontainer with EA", func() {
+		// Create an ipv6 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network Container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Lakshwadeep"}
+		prefixLen := uint(67)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			//objectType: "ipv6network",
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		networkinfo.SetObjectType("ipv6networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:a within a network with EA", func() {
+		// Create Record:A within a network with EA
+		ea := ibclient.EA{"Site": "Basavangudi"}
+		comment := "Test next_available_ip for record:a"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testa.wapi.com"
+		recordA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv4Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV4"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordA.SetObjectType("record:a")
+		ref, err := connector.CreateObject(&recordA)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:aaaa within a network with EA", func() {
+		// Create Record:AAAA within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:aaaa"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testaaaa.wapi.com"
+		recordAAAA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv6Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV6"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordAAAA.SetObjectType("record:aaaa")
+		ref, err := connector.CreateObject(&recordAAAA)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:host within a ipv4 and ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testhost3.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
 })

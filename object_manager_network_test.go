@@ -191,7 +191,7 @@ var _ = Describe("Object Manager: network", func() {
 		fakeRefReturn := fmt.Sprintf("ipv6network/ZG5zLm5ldHdvcmskODkuMC4wLjAvMjQvMjU:%s/%s", cidr, netviewName)
 		ea := EA{"Region": "East", "Network Name": networkName}
 		comment := "Test network view"
-		eaMap := map[string]string{"Site": "Turkey"}
+		eaMap := map[string]string{"*Site": "Turkey"}
 
 		var err error
 		resObj, err := BuildIPv6NetworkFromRef(fakeRefReturn)
@@ -227,6 +227,50 @@ var _ = Describe("Object Manager: network", func() {
 		It("should return expected Network Object", func() {
 			Expect(actualNetwork).To(Equal(connector.resultObject))
 			Expect(err).To(BeNil())
+		})
+	})
+
+	Describe("Negative scenario: Allocate IPv4 Network By EA", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "default"
+		prefixLen := uint(28)
+		networkName := "default"
+		ea := EA{"Region": "East", "Network Name": networkName}
+		comment := "Test network view"
+		eaMap := map[string]string{"*Site": "Namibia"}
+
+		var err error
+		createobj := &NetworkContainerNextAvailable{
+			objectType: "network",
+			Network: &NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "network",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		connector := &fakeConnector{
+			createObjectObj: createobj,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		var actualNetwork, expectedNetwork *Network
+		It("should pass expected Network Object to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetworkByEA(
+				netviewName, false, comment, ea, eaMap, prefixLen, "network")
+		})
+		It("should fail to create IPV4 Network Object", func() {
+			Expect(actualNetwork).To(Equal(expectedNetwork))
+			Expect(err).NotTo(BeNil())
 		})
 	})
 
