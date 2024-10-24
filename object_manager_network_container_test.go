@@ -605,4 +605,46 @@ var _ = Describe("Object Manager: network container", func() {
 			Expect(err).To(BeNil())
 		})
 	})
+
+	Describe("Negative scenario: Allocate IPV6 Network Container by EA", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		prefixLen := uint(24)
+		netviewName := "default"
+		ea := EA{"Site": "test"}
+		eaMap := map[string]string{"*Site": "Namibia"}
+		comment := "Test network container"
+		container := &NetworkContainerNextAvailable{
+			objectType: "ipv6networkcontainer",
+			Network: &NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params:       map[string]uint{"cidr": prefixLen},
+				NetviewName:  "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		connector := &fakeConnector{
+			createObjectObj: container,
+		}
+
+		objMgr := NewObjectManager(connector, cmpType, tenantID)
+
+		var (
+			actualNetwork, expectedNetwork *NetworkContainer
+			err                            error
+		)
+		It("should pass expected Network Container Object to CreateObject", func() {
+			actualNetwork, err = objMgr.AllocateNetworkContainerByEA(netviewName, true, comment, ea, eaMap, prefixLen)
+		})
+		It("should fail to create Network container Object", func() {
+			Expect(actualNetwork).To(Equal(expectedNetwork))
+			Expect(err).NotTo(BeNil())
+		})
+	})
 })
