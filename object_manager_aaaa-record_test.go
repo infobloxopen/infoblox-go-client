@@ -80,6 +80,55 @@ var _ = Describe("Object Manager: AAAA-record", func() {
 		})
 	})
 
+	Describe("AllocateNextAvailableIp for AAAA Record", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test.domain.com"
+		comment := "Test creation"
+		ipAddrType := "IPV6"
+		objectType := "record:aaaa"
+		params := make(map[string][]string)
+
+		ea := EA{"VM Name": vmName, "VM ID": vmID}
+
+		fakeRefReturn := fmt.Sprintf("record:aaaa/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
+
+		objectForCreation := NewIpNextAvailable(recordName, objectType, nil, params, false, ea, comment, false, nil, ipAddrType,
+			false, false, "", "", "", "", false, 0, nil)
+		objectAsResult := NewRecordAAAA(
+			dnsView, recordName, "2001:db8:abcd:14::1", false, 0, comment, ea, fakeRefReturn)
+
+		fakeConnector := &fakeConnector{
+			createObjectObj:      objectForCreation,
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordAAAA(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         objectAsResult,
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(fakeConnector, cmpType, tenantID)
+
+		It("should allocate next available IP and create AAAA record", func() {
+			// Call AllocateNextAvailableIp for AAAA record
+			result, err := objMgr.AllocateNextAvailableIp(recordName, objectType, nil, params, false, ea, comment, false, nil, ipAddrType,
+				false, false, "", "", "", "", false, 0, nil)
+
+			// Assert no error occurred
+			Expect(err).To(BeNil())
+
+			// Assert that the result is a valid AAAA record
+			actualRecord, ok := result.(*RecordAAAA)
+			Expect(ok).To(BeTrue())
+
+			// Assert the record matches the expected result
+			Expect(actualRecord).To(Equal(fakeConnector.resultObject))
+		})
+	})
+
 	Describe("Negative case: returns an error message when an IPv4 address is passed", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"

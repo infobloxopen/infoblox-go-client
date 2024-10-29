@@ -401,6 +401,156 @@ var _ = Describe("Go Client", func() {
 			var err error
 			refZoneAuth, err = connector.CreateObject(nv)
 			Expect(err).To(BeNil())
+
+			ipv4Cidr := "16.12.1.0/24"
+			netView := "default"
+			ipv4Comment := "ipv4 network"
+			ipv4Ea := ibclient.EA{"Site": "Namibia"}
+			ipv4Network := ibclient.NewNetwork(netView, ipv4Cidr, false, ipv4Comment, ipv4Ea)
+			_, err1 := connector.CreateObject(ipv4Network)
+			Expect(err1).To(BeNil())
+
+		})
+
+		It("Should create a Zone delegation", func() {
+			// Create a DNS Forward Zone
+			zone := &ibclient.ZoneDelegated{
+				Fqdn: "example1.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "2.3.4.5"},
+					},
+					IsNull: false,
+				},
+				DelegatedTtl:    utils.Uint32Ptr(3600),
+				UseDelegatedTtl: utils.BoolPtr(true),
+			}
+			ref, err := connector.CreateObject(zone)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+		It("Should get the Zone delegated", func() {
+			zone := &ibclient.ZoneDelegated{
+				Fqdn: "example2.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "2.3.4.5"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+			ref, err := connector.CreateObject(zone)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{}
+			errCode := connector.GetObject(search, "", nil, &res)
+			Expect(errCode).To(BeNil())
+			Expect(res[0].Ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+		It("Should update the Zone delegated", func() {
+			// Create a Zone delegated
+			zoneCreate := &ibclient.ZoneDelegated{
+				Fqdn: "example3.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.5"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+			ref, errCode := connector.CreateObject(zoneCreate)
+			Expect(errCode).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+
+			// Update a Zone-delegated
+			zone := &ibclient.ZoneDelegated{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.6"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{}
+			err := connector.GetObject(search, "", nil, &res)
+			ref, err = connector.UpdateObject(zone, res[0].Ref)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+
+		It("Should delete the Zone-delegated", func() {
+			// Create a DNS Zone-delegated
+			zoneCreate := &ibclient.ZoneDelegated{
+				Fqdn: "example4.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.5"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+			refCreate, errCode := connector.CreateObject(zoneCreate)
+			Expect(errCode).To(BeNil())
+			Expect(refCreate).To(MatchRegexp("^zone_delegated.*"))
+
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{}
+			err := connector.GetObject(search, "", nil, &res)
+			ref, err := connector.DeleteObject(res[0].Ref)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+
+		It("Should fail to create a DNS Zone-delegated without mandatory parameters", func() {
+			zone := &ibclient.ZoneDelegated{
+				// Missing mandatory parameters like Fqdn and DelegatedTo oe NsGroup
+				Comment:      utils.StringPtr("wapi added"),
+				DelegatedTtl: utils.Uint32Ptr(3600),
+			}
+			_, err := connector.CreateObject(zone)
+			Expect(err).NotTo(BeNil())
+		})
+
+		It("Should fail to get a non-existent DNS Zone-delegated", func() {
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{Fqdn: "nonexistent.test_fwzone.com"}
+			err := connector.GetObject(search, "", nil, &res)
+			Expect(err).NotTo(BeNil())
+		})
+
+		It("Should fail to update a non-existent DNS Zone-delegated", func() {
+			zone := &ibclient.ZoneDelegated{
+				Fqdn: "nonexistent.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.6"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+
+			_, err := connector.UpdateObject(zone, "nonexistent_ref")
+			Expect(err).NotTo(BeNil())
+		})
+
+		It("Should fail to delete a non-existent DNS Zone-delegated", func() {
+			_, err := connector.DeleteObject("nonexistent_ref")
+			Expect(err).NotTo(BeNil())
 		})
 
 		It("Should add CNAME Record [cname.wapi.com]", Label("ID: 40", "RW"), func() {
@@ -662,6 +812,48 @@ var _ = Describe("Go Client", func() {
 			},
 		)
 
+		It("Should add Host record [h1.wapi.com] with both ipv4addrs and aliases fields when dns is enabled",
+			Label("ID:44", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name:      utils.StringPtr("h1.wapi.com"),
+					View:      utils.StringPtr("default"),
+					EnableDns: utils.BoolPtr(true),
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.20")},
+						{Ipv4Addr: utils.StringPtr("20.20.20.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.40")},
+					},
+					Aliases: []string{
+						"alias1.wapi.com",
+						"alias2.wapi.com",
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+			},
+		)
+		It("Should add Host record [h1.wapi.com] with ipv4addrs  and aliases fields when dns is disabled",
+			Label("ID:45", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name:      utils.StringPtr("h1.wapi.com"),
+					View:      utils.StringPtr("default"),
+					EnableDns: utils.BoolPtr(false),
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("16.12.1.20")},
+						{Ipv4Addr: utils.StringPtr("16.12.1.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("16.12.1.40")},
+					},
+					Aliases: []string{
+						"alias1",
+						"alias2.wapi.com",
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com(/.*)?$"))
+			},
+		)
 		When("Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields exits",
 			Label("RW"), func() {
 				BeforeEach(func() {
@@ -2119,8 +2311,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2136,8 +2328,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2150,8 +2342,8 @@ var _ = Describe("DNS Forward Zone", func() {
 					{
 						Name:           "infoblox.localdomain",
 						ForwardersOnly: true,
-						ForwardTo: ibclient.NullForwardTo{
-							ForwardTo: []ibclient.NameServer{
+						ForwardTo: ibclient.NullableNameServers{
+							NameServers: []ibclient.NameServer{
 								{Name: "test", Address: "1.2.3.4"},
 								{Name: "test2", Address: "2.3.4.5"},
 							},
@@ -2170,8 +2362,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should get the DNS Forward Zone", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2194,8 +2386,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zoneCreate := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2209,8 +2401,8 @@ var _ = Describe("DNS Forward Zone", func() {
 
 		// Update a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.6"},
 				},
@@ -2231,8 +2423,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zoneCreate := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2255,8 +2447,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to create a DNS Forward Zone with invalid data", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "invalid..com", // Invalid FQDN
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2279,8 +2471,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to update a non-existent DNS Forward Zone", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "nonexistent.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.6"},
 				},
@@ -2311,8 +2503,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to create a DNS Forward Zone without fqdn parameter", func() {
 		zone := &ibclient.ZoneForward{
 			// Missing mandatory parameter Fqdn
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2335,4 +2527,405 @@ var _ = Describe("DNS Forward Zone", func() {
 		_, err := connector.CreateObject(zone)
 		Expect(err).NotTo(BeNil())
 	})
+})
+
+var _ = Describe("Allocate next available using EA", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		var (
+			netView = "default"
+			comment = "ipv4 network container"
+			ea      = ibclient.EA{"Site": "Burma"}
+			cidr    = "18.12.1.0/24"
+			err1    error
+
+			ipv4Comment = "ipv4 network"
+			ipv4Ea      = ibclient.EA{"Site": "Namibia"}
+			ipv4Cidr    = "15.12.1.0/24"
+
+			ipv6Comment = "ipv6 network"
+			ipv6Ea      = ibclient.EA{"Site": "Norway"}
+			ipv6Cidr    = "2002:db8:85a4::/64"
+
+			ipv6NCComment = "ipv6 network container"
+			ipv6NCEa      = ibclient.EA{"Site": "Sri Lanka"}
+			ipv6NCCidr    = "3002:db8:85a4::/64"
+
+			ipv4Comment1 = "ipv4 network2"
+			ipv4Ea1      = ibclient.EA{"Site": "Japan"}
+			ipv4Cidr1    = "22.12.1.0/24"
+
+			ipv6Comment1 = "ipv6 network2"
+			ipv6Ea1      = ibclient.EA{"Site": "Japan"}
+			ipv6Cidr1    = "4002:db8:85a4::/64"
+		)
+
+		nv := &ibclient.ZoneAuth{
+			View: utils.StringPtr("default"),
+			Fqdn: "wapi.com",
+		}
+		_, err1 = connector.CreateObject(nv)
+		Expect(err1).To(BeNil())
+
+		nc := ibclient.NewNetworkContainer(netView, cidr, false, comment, ea)
+		_, err1 = connector.CreateObject(nc)
+		Expect(err1).To(BeNil())
+
+		ipv6Network := ibclient.NewNetwork(netView, ipv6Cidr, true, ipv6Comment, ipv6Ea)
+		_, err1 = connector.CreateObject(ipv6Network)
+		Expect(err1).To(BeNil())
+
+		ipv4Network := ibclient.NewNetwork(netView, ipv4Cidr, false, ipv4Comment, ipv4Ea)
+		_, err1 = connector.CreateObject(ipv4Network)
+		Expect(err1).To(BeNil())
+
+		ipv6NWC := ibclient.NewNetworkContainer(netView, ipv6NCCidr, true, ipv6NCComment, ipv6NCEa)
+		_, err1 = connector.CreateObject(ipv6NWC)
+		Expect(err1).To(BeNil())
+
+		ipv6Network1 := ibclient.NewNetwork(netView, ipv6Cidr1, true, ipv6Comment1, ipv6Ea1)
+		_, err1 = connector.CreateObject(ipv6Network1)
+		Expect(err1).To(BeNil())
+
+		ipv4Network1 := ibclient.NewNetwork(netView, ipv4Cidr1, false, ipv4Comment1, ipv4Ea1)
+		_, err1 = connector.CreateObject(ipv4Network1)
+		Expect(err1).To(BeNil())
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a ipv4 network within a networkcontainer with EA", func() {
+		// Create an ipv4 network within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Burma"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^network.*"))
+	})
+
+	It("Should create a ipv4 networkconatiner within a networkcontainer with EA", func() {
+		// Create an ipv4 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Burma"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^network.*"))
+	})
+
+	It("Should create a ipv6 network within a networkconatiner with EA", func() {
+		// Create an ipv6 network within a network with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Sri Lanka"}
+		prefixLen := uint(66)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("ipv6network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^ipv6network.*"))
+	})
+
+	It("Should create a ipv6 networkcontainer within a networkcontainer with EA", func() {
+		// Create an ipv6 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network Container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Sri Lanka"}
+		prefixLen := uint(67)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			//objectType: "ipv6network",
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		networkinfo.SetObjectType("ipv6networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^ipv6networkcontainer.*"))
+	})
+
+	It("Should create a record:a within a network with EA", func() {
+		// Create Record:A within a network with EA
+		ea := ibclient.EA{"Site": "Basavangudi"}
+		comment := "Test next_available_ip for record:a"
+		eaMap := map[string]string{"*Site": "Namibia"}
+		name := "testa.wapi.com"
+		recordA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv4Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV4"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordA.SetObjectType("record:a")
+		ref, err := connector.CreateObject(&recordA)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:a.*"))
+	})
+
+	It("Should create a record:aaaa within a network with EA", func() {
+		// Create Record:AAAA within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:aaaa"
+		eaMap := map[string]string{"*Site": "Norway"}
+		name := "testaaaa.wapi.com"
+		recordAAAA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv6Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV6"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordAAAA.SetObjectType("record:aaaa")
+		ref, err := connector.CreateObject(&recordAAAA)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:aaaa.*"))
+	})
+
+	It("Should create a record:host within a ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:host with ipv6"
+		eaMap := map[string]string{"*Site": "Norway"}
+		name := "testhost1.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV6",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should create a record:host within a ipv4 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4"
+		eaMap := map[string]string{"*Site": "Namibia"}
+		name := "testhost2.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV4",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should create a record:host within a ipv4 and ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
+		eaMap := map[string]string{"*Site": "Japan"}
+		name := "testhost3.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should fail to create a ipv4 network within a networkcontainer with EA", func() {
+		// Create an ipv4 network within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Madagascar"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a ipv6 networkcontainer within a networkcontainer with EA", func() {
+		// Create an ipv6 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network Container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Lakshwadeep"}
+		prefixLen := uint(67)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			//objectType: "ipv6network",
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		networkinfo.SetObjectType("ipv6networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:a within a network with EA", func() {
+		// Create Record:A within a network with EA
+		ea := ibclient.EA{"Site": "Basavangudi"}
+		comment := "Test next_available_ip for record:a"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testa.wapi.com"
+		recordA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv4Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV4"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordA.SetObjectType("record:a")
+		ref, err := connector.CreateObject(&recordA)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:aaaa within a network with EA", func() {
+		// Create Record:AAAA within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:aaaa"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testaaaa.wapi.com"
+		recordAAAA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv6Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV6"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordAAAA.SetObjectType("record:aaaa")
+		ref, err := connector.CreateObject(&recordAAAA)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:host within a ipv4 and ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testhost3.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
 })

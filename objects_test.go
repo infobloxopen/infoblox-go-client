@@ -586,7 +586,7 @@ var _ = Describe("Objects", func() {
 
 			rh := NewHostRecord(
 				"", name, "", "", ipv4addrs, ipv6addrs,
-				nil, true, view, zone, "", useTtl, ttl, comment, aliases)
+				nil, true, view, zone, "", useTtl, ttl, comment, aliases, false)
 
 			It("should set fields correctly", func() {
 				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))
@@ -744,7 +744,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(za.ObjectType()).To(Equal("zone_delegated"))
-				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view", "delegate_to"))
+				Expect(za.ReturnFields()).To(ConsistOf("delegate_to", "fqdn", "view", "comment", "disable", "locked", "ns_group", "delegated_ttl", "use_delegated_ttl", "zone_format", "extattrs"))
 			})
 		})
 

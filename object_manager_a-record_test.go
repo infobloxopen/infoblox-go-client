@@ -53,6 +53,59 @@ var _ = Describe("Object Manager: A-record", func() {
 			Expect(actualRecord).To(Equal(aniFakeConnector.resultObject))
 		})
 	})
+	Describe("Create an A-Record using AllocateNextAvailableIp", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		netviewName := "private"
+		vmID := "93f9249abc039284"
+		vmName := "dummyvm"
+		dnsView := "default"
+		recordName := "test"
+		comment := "test comment"
+		ipAddrType := "IPV4" // Specify IP address type as IPv4
+		objectType := "record:a"
+		eas := make(EA)
+		eas["VM ID"] = vmID
+		eas["VM Name"] = vmName
+		params := make(map[string][]string)
+
+		fakeRefReturn := fmt.Sprintf(
+			"record:a/ZG5zLmJpbmRfY25h:%s/%s",
+			recordName,
+			netviewName)
+
+		objectForCreation := NewIpNextAvailable(recordName, objectType, nil, params, false, eas, comment, false, nil, ipAddrType,
+			false, false, "", "", netviewName, "", false, 0, nil)
+		objectAsResult := NewRecordA(
+			dnsView, "", recordName, "53.0.0.1", 5, true, comment, eas, fakeRefReturn)
+
+		fakeConnector := &fakeConnector{
+			createObjectObj:      objectForCreation,
+			getObjectRef:         fakeRefReturn,
+			getObjectObj:         NewEmptyRecordA(),
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         objectAsResult,
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(fakeConnector, cmpType, tenantID)
+
+		It("should create A record with next available IP", func() {
+			// Call the function to allocate next available IP and create A record
+			result, err := objMgr.AllocateNextAvailableIp(recordName, objectType, nil, params, false, eas, comment, false, nil, ipAddrType,
+				false, false, "", "", netviewName, "", false, 0, nil)
+
+			// Assert no error occurred
+			Expect(err).To(BeNil())
+
+			// Assert the returned result is a valid A record
+			actualRecord, ok := result.(*RecordA)
+			Expect(ok).To(BeTrue())
+
+			// Assert the returned record matches the expected result
+			Expect(actualRecord).To(Equal(fakeConnector.resultObject))
+		})
+	})
 
 	Describe("Get A record", func() {
 		cmpType := "Docker"
