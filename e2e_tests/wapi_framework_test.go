@@ -401,6 +401,15 @@ var _ = Describe("Go Client", func() {
 			var err error
 			refZoneAuth, err = connector.CreateObject(nv)
 			Expect(err).To(BeNil())
+
+			ipv4Cidr := "16.12.1.0/24"
+			netView := "default"
+			ipv4Comment := "ipv4 network"
+			ipv4Ea := ibclient.EA{"Site": "Namibia"}
+			ipv4Network := ibclient.NewNetwork(netView, ipv4Cidr, false, ipv4Comment, ipv4Ea)
+			_, err1 := connector.CreateObject(ipv4Network)
+			Expect(err1).To(BeNil())
+
 		})
 
 		It("Should create a Zone delegation", func() {
@@ -831,9 +840,9 @@ var _ = Describe("Go Client", func() {
 					View:      utils.StringPtr("default"),
 					EnableDns: utils.BoolPtr(false),
 					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
-						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.20")},
-						{Ipv4Addr: utils.StringPtr("20.20.20.30")},
-						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.40")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("16.12.1.20")},
+						{Ipv4Addr: utils.StringPtr("16.12.1.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("16.12.1.40")},
 					},
 					Aliases: []string{
 						"alias1",
