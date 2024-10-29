@@ -84,6 +84,7 @@ func (objMgr *ObjectManager) SearchHostRecordByAltId(
 	}
 
 	recordHost := NewEmptyHostRecord()
+	recordHost.SetReturnFields(append(recordHost.ReturnFields(), "disable"))
 	if ref != "" {
 		if err := objMgr.connector.GetObject(recordHost, ref, NewQueryParams(false, nil), &recordHost); err != nil {
 			if _, ok := err.(*NotFoundError); !ok {
