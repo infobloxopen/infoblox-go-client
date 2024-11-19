@@ -452,30 +452,30 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
-	//DtcPoolConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
-	//	var res interface{}
-	//	if recordType.(*DtcPool).Ref != "" {
-	//		return res, nil
-	//	}
-	//	var dtcPoolList []*DtcPool
-	//	err := objMgr.connector.GetObject(NewEmptyDtcPool(), "", NewQueryParams(false, sf), &dtcPoolList)
-	//	if err == nil && len(dtcPoolList) > 0 {
-	//		res = dtcPoolList[0]
-	//	}
-	//	return res, err
-	//},
-	//DtcServerConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
-	//	var res interface{}
-	//	if recordType.(*DtcServer).Ref != "" {
-	//		return res, nil
-	//	}
-	//	var dtcServerList []*DtcServer
-	//	err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
-	//	if err == nil && len(dtcServerList) > 0 {
-	//		res = dtcServerList[0]
-	//	}
-	//	return res, err
-	//},
+	DtcPoolConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcPool).Ref != "" {
+			return res, nil
+		}
+		var dtcPoolList []*DtcPool
+		err := objMgr.connector.GetObject(NewEmptyDtcPool(), "", NewQueryParams(false, sf), &dtcPoolList)
+		if err == nil && len(dtcPoolList) > 0 {
+			res = dtcPoolList[0]
+		}
+		return res, err
+	},
+	DtcServerConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcServer).Ref != "" {
+			return res, nil
+		}
+		var dtcServerList []*DtcServer
+		err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
+		if err == nil && len(dtcServerList) > 0 {
+			res = dtcServerList[0]
+		}
+		return res, err
+	},
 }
 
 func NewEmptyZoneDelegated() *ZoneDelegated {
