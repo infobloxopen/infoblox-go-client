@@ -67,6 +67,7 @@ type IBObjectManager interface {
 	GetDtcPool(name string) (*DtcPool, error)
 	GetDtcServer(name string) (*DtcServer, error)
 	GetDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error)
+	GetDtcLbdnByRef(ref string) (*DtcLbdn, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
@@ -142,6 +143,8 @@ const (
 	ZoneForwardConst      = "ZoneForward"
 	ZoneDelegatedConst    = "ZoneDelegated"
 	DtcLbdnConst          = "DtcLbdn"
+	DtcPoolConst          = "DtcPool"
+	DtcServerConst        = "DtcServer"
 )
 
 // Map of record type to its corresponding object
@@ -236,6 +239,17 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		lbdn.SetReturnFields(append(lbdn.ReturnFields(),
 			"extattrs", "disable", "auto_consolidated_monitors", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "ttl", "use_ttl"))
 		return lbdn
+	},
+	DtcPoolConst: func(ref string) IBObject {
+		pool := &DtcPool{}
+		pool.SetReturnFields(append(pool.ReturnFields(), "lb_preferred_method", "servers", "lb_dynamic_ratio_preferred", "monitors", "auto_consolidated_monitors",
+			"consolidated_monitors", "disable", "extattrs", "health", "lb_alternate_method", "lb_alternate_topology", "lb_dynamic_ratio_alternate", "lb_preferred_topology", "quorum", "ttl", "use_ttl", "availability"))
+		return pool
+	},
+	DtcServerConst: func(ref string) IBObject {
+		dtcServer := &DtcServer{}
+		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
+		return dtcServer
 	},
 }
 
@@ -438,6 +452,30 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
+	//DtcPoolConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+	//	var res interface{}
+	//	if recordType.(*DtcPool).Ref != "" {
+	//		return res, nil
+	//	}
+	//	var dtcPoolList []*DtcPool
+	//	err := objMgr.connector.GetObject(NewEmptyDtcPool(), "", NewQueryParams(false, sf), &dtcPoolList)
+	//	if err == nil && len(dtcPoolList) > 0 {
+	//		res = dtcPoolList[0]
+	//	}
+	//	return res, err
+	//},
+	//DtcServerConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+	//	var res interface{}
+	//	if recordType.(*DtcServer).Ref != "" {
+	//		return res, nil
+	//	}
+	//	var dtcServerList []*DtcServer
+	//	err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
+	//	if err == nil && len(dtcServerList) > 0 {
+	//		res = dtcServerList[0]
+	//	}
+	//	return res, err
+	//},
 }
 
 func NewEmptyZoneDelegated() *ZoneDelegated {

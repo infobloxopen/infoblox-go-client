@@ -192,6 +192,15 @@ func (objMgr *ObjectManager) GetDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, er
 	return res, nil
 }
 
+func (objMgr *ObjectManager) GetDtcLbdnByRef(ref string) (*DtcLbdn, error) {
+	dtcLbdn := NewEmptyDtcLbdn()
+	err := objMgr.connector.GetObject(dtcLbdn, ref, NewQueryParams(false, nil), &dtcLbdn)
+	if err != nil {
+		return nil, err
+	}
+	return dtcLbdn, nil
+}
+
 func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authzone []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 
@@ -224,5 +233,9 @@ func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authzone []s
 		return nil, fmt.Errorf("error updating DtcLbdn object %s, err: %s", name, err)
 	}
 	dtcLbdn.Ref = newRef
+	dtcLbdn, err = objMgr.GetDtcLbdnByRef(newRef)
+	if err != nil {
+		return nil, fmt.Errorf("error getting updated DtcLbdn object %s, err: %s", name, err)
+	}
 	return dtcLbdn, nil
 }
