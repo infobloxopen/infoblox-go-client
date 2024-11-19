@@ -27,6 +27,8 @@ type IBObjectManager interface {
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
+	CreateDtcLbdn(name string, authzone []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
+		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, enabledhcp bool, recordName string, netview string, dnsview string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddr string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
@@ -40,6 +42,7 @@ type IBObjectManager interface {
 	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
+	DeleteDtcLbdn(ref string) (string, error)
 	DeleteDtcPool(ref string) (string, error)
 	DeleteDtcServer(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
@@ -63,6 +66,7 @@ type IBObjectManager interface {
 	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetDtcPool(name string) (*DtcPool, error)
 	GetDtcServer(name string) (*DtcServer, error)
+	GetDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
@@ -101,6 +105,8 @@ type IBObjectManager interface {
 	UpdateDtcPool(ref string, comment string, name string, LbPreferredMethod string, LbDynamicRatioPreferred *SettingDynamicratio, servers []*DtcServerLink, monitors []Monitor, LbPreferredTopology *string, LbAlternateMethod string, LbAlternateTopology *string, LbDynamicRatioAlternate *SettingDynamicratio, eas EA, AutoConsolidatedMonitors *bool, Availability string, ConsolidatedMonitors []map[string]interface{}, ttl uint32, useTTL bool, disable bool, Quorum uint32) (*DtcPool, error)
 	UpdateDtcServer(ref string, comment string, name string, host string, AutoCreateHostRecord bool, disable bool, ea EA, Monitors []map[string]interface{}, SniHostname string, UseSniHostname bool) (*DtcServer, error)
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
+	UpdateDtcLbdn(ref string, name string, authzone []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
+		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
 	UpdateMXRecord(ref string, dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
@@ -135,6 +141,7 @@ const (
 	NetworkContainerConst = "NetworkContainer"
 	ZoneForwardConst      = "ZoneForward"
 	ZoneDelegatedConst    = "ZoneDelegated"
+	DtcLbdnConst          = "DtcLbdn"
 )
 
 // Map of record type to its corresponding object
@@ -223,6 +230,12 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 			"extattrs",
 		))
 		return zoneDelegated
+	},
+	DtcLbdnConst: func(ref string) IBObject {
+		lbdn := &DtcLbdn{}
+		lbdn.SetReturnFields(append(lbdn.ReturnFields(),
+			"extattrs", "disable", "auto_consolidated_monitors", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "ttl", "use_ttl"))
+		return lbdn
 	},
 }
 
@@ -410,6 +423,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyZoneDelegated(), "", NewQueryParams(false, sf), &zoneDelegatedList)
 		if err == nil && len(zoneDelegatedList) > 0 {
 			res = zoneDelegatedList[0]
+		}
+		return res, err
+	},
+	DtcLbdnConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcLbdn).Ref != "" {
+			return res, nil
+		}
+		var dtcLbdnList []*DtcLbdn
+		err := objMgr.connector.GetObject(NewEmptyDtcLbdn(), "", NewQueryParams(false, sf), &dtcLbdnList)
+		if err == nil && len(dtcLbdnList) > 0 {
+			res = dtcLbdnList[0]
 		}
 		return res, err
 	},
