@@ -89,6 +89,10 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
 		case *ZoneForward:
 			*res.(*[]ZoneForward) = c.resultObject.([]ZoneForward)
+		case *DtcLbdn:
+			*res.(*[]DtcLbdn) = c.resultObject.([]DtcLbdn)
+		case *DtcPool:
+			*res.(*[]DtcPool) = c.resultObject.([]DtcPool)
 		}
 	} else {
 		switch obj.(type) {
@@ -126,6 +130,10 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 			*res.(**ZoneForward) = c.resultObject.(*ZoneForward)
 		case *ZoneDelegated:
 			*res.(**ZoneDelegated) = c.resultObject.(*ZoneDelegated)
+		case *DtcLbdn:
+			*res.(*DtcLbdn) = *c.resultObject.(*DtcLbdn)
+		case *DtcPool:
+			*res.(*DtcPool) = *c.resultObject.(*DtcPool)
 		}
 	}
 
