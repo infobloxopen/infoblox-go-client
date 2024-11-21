@@ -5,6 +5,7 @@ import (
 	"fmt"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"reflect"
 )
 
 type fakeConnector struct {
@@ -43,97 +44,121 @@ func (c *fakeConnector) CreateObject(obj IBObject) (string, error) {
 }
 
 func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res interface{}) (err error) {
-	Expect(obj).To(Equal(c.getObjectObj))
-	Expect(qp).To(Equal(c.getObjectQueryParams))
-	Expect(ref).To(Equal(c.getObjectRef))
 
-	if ref == "" {
+	if reflect.TypeOf(c.getObjectObj).Kind() == reflect.Map {
 		switch obj.(type) {
-		case *NetworkView:
-			*res.(*[]NetworkView) = c.resultObject.([]NetworkView)
-		case *NetworkContainer:
-			*res.(*[]NetworkContainer) = c.resultObject.([]NetworkContainer)
-		case *Network:
-			*res.(*[]Network) = c.resultObject.([]Network)
-		case *FixedAddress:
-			*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
-		case *EADefinition:
-			*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
-		case *CapacityReport:
-			*res.(*[]CapacityReport) = c.resultObject.([]CapacityReport)
-		case *UpgradeStatus:
-			*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
-		case *Member:
-			*res.(*[]Member) = c.resultObject.([]Member)
-		case *Grid:
-			*res.(*[]Grid) = c.resultObject.([]Grid)
-		case *License:
-			*res.(*[]License) = c.resultObject.([]License)
-		case *HostRecord:
-			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
-		case *RecordAAAA:
-			*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
-		case *RecordPTR:
-			*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
-		case *RecordSRV:
-			*res.(*[]RecordSRV) = c.resultObject.([]RecordSRV)
-		case *RecordTXT:
-			*res.(*[]RecordTXT) = c.resultObject.([]RecordTXT)
-		case *ZoneDelegated:
-			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
-		case *RecordCNAME:
-			*res.(*[]RecordCNAME) = c.resultObject.([]RecordCNAME)
-		case *RecordA:
-			*res.(*[]RecordA) = c.resultObject.([]RecordA)
-		case *RecordMX:
-			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
-		case *ZoneForward:
-			*res.(*[]ZoneForward) = c.resultObject.([]ZoneForward)
-		case *DtcLbdn:
-			*res.(*[]DtcLbdn) = c.resultObject.([]DtcLbdn)
 		case *DtcPool:
-			*res.(*[]DtcPool) = c.resultObject.([]DtcPool)
+			Expect(obj).To(Equal(c.getObjectObj.(map[string]interface{})["DtcPool"].(*DtcPool)))
+			Expect(qp).To(Equal(c.getObjectQueryParams.(map[string]*QueryParams)["DtcPool"]))
+			*res.(*[]DtcPool) = c.resultObject.(map[string]interface{})["DtcPool"].([]DtcPool)
+		case *DtcTopology:
+			Expect(obj).To(Equal(c.getObjectObj.(map[string]interface{})["DtcTopology"].(*DtcTopology)))
+			Expect(qp).To(Equal(c.getObjectQueryParams.(map[string]*QueryParams)["DtcTopology"]))
+			*res.(*[]DtcTopology) = c.resultObject.(map[string]interface{})["DtcTopology"].([]DtcTopology)
+		case *ZoneAuth:
+			Expect(obj).To(Equal(c.getObjectObj.(map[string]interface{})["ZoneAuth"].(*ZoneAuth)))
+			Expect(qp).To(Equal(c.getObjectQueryParams.(map[string]*QueryParams)["ZoneAuth"]))
+			*res.(*[]ZoneAuth) = c.resultObject.(map[string]interface{})["ZoneAuth"].([]ZoneAuth)
+		default:
+			return fmt.Errorf("unsupported object type")
 		}
 	} else {
-		switch obj.(type) {
-		case *ZoneAuth:
-			*res.(*ZoneAuth) = *c.resultObject.(*ZoneAuth)
-		case *NetworkView:
-			*res.(*NetworkView) = *c.resultObject.(*NetworkView)
-		case *NetworkContainer:
-			*res.(*NetworkContainer) = *c.resultObject.(*NetworkContainer)
-		case *Network:
-			*res.(*Network) = *c.resultObject.(*Network)
-		case *FixedAddress:
-			**res.(**FixedAddress) = *c.resultObject.(*FixedAddress)
-		case *HostRecord:
-			**res.(**HostRecord) = *c.resultObject.(*HostRecord)
-		case *RecordPTR:
-			**res.(**RecordPTR) = *c.resultObject.(*RecordPTR)
-		case *RecordSRV:
-			**res.(**RecordSRV) = *c.resultObject.(*RecordSRV)
-		case *RecordTXT:
-			**res.(**RecordTXT) = *c.resultObject.(*RecordTXT)
-		case *RecordCNAME:
-			**res.(**RecordCNAME) = *c.resultObject.(*RecordCNAME)
-		case *RecordA:
-			**res.(**RecordA) = *c.resultObject.(*RecordA)
-		case *RecordAAAA:
-			**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
-		case *RecordMX:
-			**res.(**RecordMX) = *c.resultObject.(*RecordMX)
-		case *Dns:
-			*res.(*[]Dns) = c.resultObject.([]Dns)
-		case *Dhcp:
-			*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
-		case *ZoneForward:
-			*res.(**ZoneForward) = c.resultObject.(*ZoneForward)
-		case *ZoneDelegated:
-			*res.(**ZoneDelegated) = c.resultObject.(*ZoneDelegated)
-		case *DtcLbdn:
-			*res.(*DtcLbdn) = *c.resultObject.(*DtcLbdn)
-		case *DtcPool:
-			*res.(*DtcPool) = *c.resultObject.(*DtcPool)
+		Expect(obj).To(Equal(c.getObjectObj))
+		Expect(qp).To(Equal(c.getObjectQueryParams))
+		Expect(ref).To(Equal(c.getObjectRef))
+
+		if ref == "" {
+			switch obj.(type) {
+			case *NetworkView:
+				*res.(*[]NetworkView) = c.resultObject.([]NetworkView)
+			case *NetworkContainer:
+				*res.(*[]NetworkContainer) = c.resultObject.([]NetworkContainer)
+			case *Network:
+				*res.(*[]Network) = c.resultObject.([]Network)
+			case *FixedAddress:
+				*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
+			case *EADefinition:
+				*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
+			case *CapacityReport:
+				*res.(*[]CapacityReport) = c.resultObject.([]CapacityReport)
+			case *UpgradeStatus:
+				*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
+			case *Member:
+				*res.(*[]Member) = c.resultObject.([]Member)
+			case *Grid:
+				*res.(*[]Grid) = c.resultObject.([]Grid)
+			case *License:
+				*res.(*[]License) = c.resultObject.([]License)
+			case *HostRecord:
+				*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
+			case *RecordAAAA:
+				*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
+			case *RecordPTR:
+				*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
+			case *RecordSRV:
+				*res.(*[]RecordSRV) = c.resultObject.([]RecordSRV)
+			case *RecordTXT:
+				*res.(*[]RecordTXT) = c.resultObject.([]RecordTXT)
+			case *ZoneDelegated:
+				*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
+			case *RecordCNAME:
+				*res.(*[]RecordCNAME) = c.resultObject.([]RecordCNAME)
+			case *RecordA:
+				*res.(*[]RecordA) = c.resultObject.([]RecordA)
+			case *RecordMX:
+				*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
+			case *ZoneForward:
+				*res.(*[]ZoneForward) = c.resultObject.([]ZoneForward)
+			case *DtcLbdn:
+				*res.(*[]DtcLbdn) = c.resultObject.([]DtcLbdn)
+			case *DtcPool:
+				*res.(*[]DtcPool) = c.resultObject.([]DtcPool)
+			case *DtcTopology:
+				*res.(*[]DtcTopology) = c.resultObject.([]DtcTopology)
+			}
+		} else {
+			switch obj.(type) {
+			case *ZoneAuth:
+				*res.(*ZoneAuth) = *c.resultObject.(*ZoneAuth)
+			case *NetworkView:
+				*res.(*NetworkView) = *c.resultObject.(*NetworkView)
+			case *NetworkContainer:
+				*res.(*NetworkContainer) = *c.resultObject.(*NetworkContainer)
+			case *Network:
+				*res.(*Network) = *c.resultObject.(*Network)
+			case *FixedAddress:
+				**res.(**FixedAddress) = *c.resultObject.(*FixedAddress)
+			case *HostRecord:
+				**res.(**HostRecord) = *c.resultObject.(*HostRecord)
+			case *RecordPTR:
+				**res.(**RecordPTR) = *c.resultObject.(*RecordPTR)
+			case *RecordSRV:
+				**res.(**RecordSRV) = *c.resultObject.(*RecordSRV)
+			case *RecordTXT:
+				**res.(**RecordTXT) = *c.resultObject.(*RecordTXT)
+			case *RecordCNAME:
+				**res.(**RecordCNAME) = *c.resultObject.(*RecordCNAME)
+			case *RecordA:
+				**res.(**RecordA) = *c.resultObject.(*RecordA)
+			case *RecordAAAA:
+				**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
+			case *RecordMX:
+				**res.(**RecordMX) = *c.resultObject.(*RecordMX)
+			case *Dns:
+				*res.(*[]Dns) = c.resultObject.([]Dns)
+			case *Dhcp:
+				*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
+			case *ZoneForward:
+				*res.(**ZoneForward) = c.resultObject.(*ZoneForward)
+			case *ZoneDelegated:
+				*res.(**ZoneDelegated) = c.resultObject.(*ZoneDelegated)
+			case *DtcLbdn:
+				*res.(*DtcLbdn) = *c.resultObject.(*DtcLbdn)
+			case *DtcPool:
+				*res.(*DtcPool) = *c.resultObject.(*DtcPool)
+			case *DtcTopology:
+				*res.(*DtcTopology) = *c.resultObject.(*DtcTopology)
+			}
 		}
 	}
 

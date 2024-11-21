@@ -54,8 +54,8 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authzone []string, comme
 	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 	// todo: add health and status_member fields
 
-	if name == "" || pools == nil || lbMethod == "" {
-		return nil, fmt.Errorf("name, pools and lbMethod fields are required to create a DtcLbdn object")
+	if name == "" || lbMethod == "" {
+		return nil, fmt.Errorf("name and lbMethod fields are required to create a DtcLbdn object")
 	}
 	// get ref id of authzones and replace
 	var zones []*ZoneAuth
@@ -68,15 +68,21 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authzone []string, comme
 	}
 
 	// get ref id of pools and replace
-	dtcPoolLink, err := getPools(pools, objMgr)
-	if err != nil {
-		return nil, err
+	var dtcPoolLink []*DtcPoolLink
+	if len(pools) > 0 {
+		dtcPoolLink, err = getPools(pools, objMgr)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	//get ref id of topology and replace
-	topologyRef, err := getTopology(lbMethod, topology, objMgr)
-	if err != nil {
-		return nil, err
+	var topologyRef string
+	if lbMethod == "TOPOLOGY" {
+		topologyRef, err = getTopology(topology, objMgr)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	dtcLbdn := NewDtcLbdn("", name, zones, comment, disable, autoConsolidatedMonitors, ea,
@@ -89,22 +95,23 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authzone []string, comme
 	return dtcLbdn, nil
 }
 
-func getTopology(lbMethod string, topology string, objMgr *ObjectManager) (string, error) {
+func getTopology(topology string, objMgr *ObjectManager) (string, error) {
 	var dtcTopology []DtcTopology
 	var topologyRef string
-	if lbMethod == "TOPOLOGY" {
-		if topology == "" {
-			return "", fmt.Errorf("topology field is required when lbMethod is TOPOLOGY")
-		}
-		sf := map[string]string{
-			"name": topology,
-		}
-		err := objMgr.connector.GetObject(&DtcTopology{}, "", NewQueryParams(false, sf), &dtcTopology)
-		if err != nil {
-			return "", fmt.Errorf("error getting %s DtcTopology object: %s", topology, err)
-		}
-		topologyRef = dtcTopology[0].Ref
+	if topology == "" {
+		return "", fmt.Errorf("topology field is required when lbMethod is TOPOLOGY")
 	}
+	sf := map[string]string{
+		"name": topology,
+	}
+	err := objMgr.connector.GetObject(&DtcTopology{}, "", NewQueryParams(false, sf), &dtcTopology)
+	if err != nil {
+		return "", fmt.Errorf("error getting %s DtcTopology object: %s", topology, err)
+	}
+	if len(dtcTopology) == 0 {
+		return "", fmt.Errorf("no DtcTopology object found for %s", topology)
+	}
+	topologyRef = dtcTopology[0].Ref
 	return topologyRef, nil
 }
 
@@ -221,7 +228,7 @@ func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authzone []s
 	}
 
 	//get ref id of topology and replace
-	topologyRef, err := getTopology(lbMethod, topology, objMgr)
+	topologyRef, err := getTopology(topology, objMgr)
 	if err != nil {
 		return nil, err
 	}
