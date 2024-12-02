@@ -6,6 +6,7 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
+	"strings"
 )
 
 var _ = Describe("Go Client", func() {
@@ -2926,6 +2927,336 @@ var _ = Describe("Allocate next available using EA", func() {
 		ref, err := connector.CreateObject(recordHost)
 		Expect(err).NotTo(BeNil())
 		Expect(ref).To(BeEmpty())
+	})
+
+})
+
+var _ = Describe("DTC LBDN and server object", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a DTC LBDN object with minimum parameters", func() {
+		// Create a DTC LBDN object
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("test-LBDN1"),
+			LbMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&lbdn)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+	})
+
+	It("Should create a DTC LBDN object with maximum parameters", func() {
+
+		var (
+			topologyRef, poolRef string
+			err                  error
+		)
+		addr := os.Getenv("INFOBLOX_SERVER")
+		nameServer := "infoblox." + strings.ReplaceAll(addr, ".", "_")
+		// create zoneAuth
+		zones := ibclient.ZoneAuth{
+			Fqdn:        "wapi.com",
+			GridPrimary: []*ibclient.Memberserver{{Name: nameServer}},
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+		// create server
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("TestServer123"),
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		serverRef, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(serverRef).To(MatchRegexp("^dtc:server.*"))
+
+		// create pools
+		pool := ibclient.DtcPool{
+			Name:              utils.StringPtr("test-pool1"),
+			LbPreferredMethod: "ROUND_ROBIN",
+			Servers: []*ibclient.DtcServerLink{{
+				Server: serverRef,
+				Ratio:  uint32(2),
+			}},
+		}
+
+		poolRef, err = connector.CreateObject(&pool)
+		Expect(err).To(BeNil())
+		Expect(poolRef).To(MatchRegexp("^dtc:pool.*"))
+
+		// create topology
+		topology := ibclient.DtcTopology{
+			Name: utils.StringPtr("test-topology"),
+			Rules: []*ibclient.DtcTopologyRule{
+				{
+					DestType:        "POOL",
+					DestinationLink: utils.StringPtr(poolRef),
+				},
+			},
+		}
+		topologyRef, err = connector.CreateObject(&topology)
+		Expect(err).To(BeNil())
+
+		// Create a DTC LBDN object with maximum parameters
+		lbdn := ibclient.DtcLbdn{
+			Name:      utils.StringPtr("test-LBDN12"),
+			LbMethod:  "TOPOLOGY",
+			Topology:  utils.StringPtr(topologyRef),
+			AuthZones: []*ibclient.ZoneAuth{&zones},
+			Pools:     []*ibclient.DtcPoolLink{{Pool: poolRef, Ratio: uint32(3)}},
+			Types:     []string{"A", "CNAME", "AAAA"},
+			Patterns:  []string{"*wapi.com"},
+		}
+
+		ref, err := connector.CreateObject(&lbdn)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+	})
+
+	It("Should get the DTC LBDN object TestLBDN222", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN222"),
+			LbMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&lbdn)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+
+		var res []ibclient.DtcLbdn
+		search := &ibclient.DtcLbdn{}
+		errCode := connector.GetObject(search, "", nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Ref).To(MatchRegexp("^dtc:lbdn.*"))
+	})
+
+	It("Should update the DTC LBDN object TestLBDN11", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN11"),
+			LbMethod: "ROUND_ROBIN",
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A"},
+		}
+		ref, errCode := connector.CreateObject(&lbdn)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+
+		// Update the DTC Lbdn object
+		lbdnUpdated := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN1111"),
+			Comment:  utils.StringPtr("sample comment updated"),
+			LbMethod: "RATIO",
+		}
+
+		var res []ibclient.DtcLbdn
+		search := &ibclient.DtcLbdn{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&lbdnUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(HaveSuffix("TestLBDN1111"))
+	})
+
+	It("Should delete the DTC LBDN object TestLBDN22", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN22"),
+			LbMethod: "ROUND_ROBIN",
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A", "CNAME"},
+		}
+		ref, errCode := connector.CreateObject(&lbdn)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create a DTC LBDN object TestLBDN33", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN33"),
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A", "CNAME"},
+		}
+		_, err := connector.CreateObject(&lbdn)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent DTC LBDN object Testlbdn1010", func() {
+		var res []ibclient.DtcLbdn
+		sf := map[string]string{"name": "Testlbdn1010"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.DtcLbdn{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent DTC LBDN object TestLBDN44", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN44"),
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A", "CNAME"},
+		}
+
+		_, err := connector.UpdateObject(&lbdn, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent DTC LBDN object", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	// create DTC server object
+	It("Should create DTC server object with minimum params", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server1"),
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+	})
+
+	// create DTC server object with maximum params
+	It("Should create DTC server object with maximum params", func() {
+
+		monitor := ibclient.DtcMonitorHttp{
+			Name: utils.StringPtr("test-monitor"),
+		}
+		monitorRef, err := connector.CreateObject(&monitor)
+		Expect(err).To(BeNil())
+		Expect(monitorRef).To(MatchRegexp("^dtc:monitor:http.*"))
+		server := ibclient.DtcServer{
+			Name:                 utils.StringPtr("test-server111"),
+			Host:                 utils.StringPtr("12.12.1.11"),
+			Comment:              utils.StringPtr("test comment"),
+			UseSniHostname:       utils.BoolPtr(true),
+			SniHostname:          utils.StringPtr("test-sni"),
+			AutoCreateHostRecord: utils.BoolPtr(true),
+			Disable:              utils.BoolPtr(true),
+			Ea:                   ibclient.EA{"Site": "India"},
+			Monitors: []*ibclient.DtcServerMonitor{{
+				Monitor: monitorRef,
+				Host:    "1.2.3.4",
+			}},
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+	})
+
+	// get Dtc server
+	It("Should get Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server2"),
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		var res ibclient.DtcServer
+		err = connector.GetObject(&ibclient.DtcServer{}, ref, nil, &res)
+		Expect(err).To(BeNil())
+		Expect(*res.Name).To(MatchRegexp("test-server2"))
+	})
+
+	// update Dtc server
+	It("Should get Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name:    utils.StringPtr("test-server3"),
+			Host:    utils.StringPtr("12.12.1.2"),
+			Comment: utils.StringPtr("test comment"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		updatedServer := ibclient.DtcServer{
+			Name:    utils.StringPtr("test-server22"),
+			Host:    utils.StringPtr("11.11.1.1"),
+			Comment: utils.StringPtr("test comment updated"),
+		}
+		ref, err = connector.UpdateObject(&updatedServer, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(HaveSuffix("test-server22"))
+	})
+
+	// delete Dtc server
+	It("Should delete a Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server3"),
+			Host: utils.StringPtr("12.12.1.3"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("^dtc:server.*"))
+	})
+
+	// create DTC server object, -ve scenario
+	It("Should fail to create DTC server object with minimum params", func() {
+		server := ibclient.DtcServer{
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		_, err := connector.CreateObject(&server)
+		Expect(err).NotTo(BeNil())
+	})
+
+	// get Dtc server, -ve scenario
+	It("Should fail to get a non existent Dtc server", func() {
+		var res []ibclient.DtcServer
+		err := connector.GetObject(&ibclient.DtcServer{}, "nonexistent_ref", nil, &res)
+		Expect(res).To(BeNil())
+		Expect(err).NotTo(BeNil())
+	})
+
+	// update Dtc server, -ve scenario
+	It("Should fail to update a Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server4"),
+			Host: utils.StringPtr("12.12.1.4"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		_, err = connector.UpdateObject(&server, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	// delete Dtc server, -ve scenario
+	It("Should fail to delete a non existent Dtc server", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
 	})
 
 })

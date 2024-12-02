@@ -19,7 +19,7 @@ func (d *DtcLbdn) MarshalJSON() ([]byte, error) {
 	// Convert AuthZones to a slice of strings
 
 	for _, zone := range d.AuthZones {
-		if zone != nil {
+		if zone != nil && zone.Ref != "" {
 			aux.AuthZones = append(aux.AuthZones, zone.Ref)
 		}
 	}
@@ -147,7 +147,7 @@ func getAuthZones(authzone []string, objMgr *ObjectManager) ([]*ZoneAuth, error)
 		if err != nil {
 			return nil, fmt.Errorf("error getting %s ZoneAuth object: %s", authzone[i], err)
 		}
-		zones = append(zones, &ZoneAuth{Ref: zoneAuth[0].Ref})
+		zones = append(zones, &zoneAuth[0])
 	}
 	return zones, nil
 }
@@ -222,15 +222,21 @@ func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authzone []s
 	}
 
 	// get ref id of pools and replace
-	dtcPoolLink, err := getPools(pools, objMgr)
-	if err != nil {
-		return nil, err
+	var dtcPoolLink []*DtcPoolLink
+	if len(pools) > 0 {
+		dtcPoolLink, err = getPools(pools, objMgr)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	//get ref id of topology and replace
-	topologyRef, err := getTopology(topology, objMgr)
-	if err != nil {
-		return nil, err
+	var topologyRef string
+	if lbMethod == "TOPOLOGY" {
+		topologyRef, err = getTopology(topology, objMgr)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	dtcLbdn := NewDtcLbdn(ref, name, zones, comment, disable, autoConsolidatedMonitors, ea,

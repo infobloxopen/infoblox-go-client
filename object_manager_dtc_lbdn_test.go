@@ -20,24 +20,22 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		patterns := []string{"*info.com"}
 		persistence := uint32(60)
 		priority := uint32(1)
-		topology := "test-topo"
-		pools := []*DtcPoolLink{{Pool: "test-pool", Ratio: 3}}
+		topology := ""
 		types := []string{"A", "CNAME"}
 		ttl := uint32(60)
 		useTtl := true
 
 		conn := &fakeConnector{
-			createObjectObj:      NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl),
+			createObjectObj:      NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl),
 			getObjectObj:         &DtcLbdn{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl),
+			resultObject:         NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl),
 			fakeRefReturn:        fakeRefReturn,
 		}
-		//conn.resultObject.(*DtcLbdn).Ref = fakeRefReturn
-		//conn.getObjectObj = &DtcPool{}
+		conn.resultObject.(*DtcLbdn).Ref = fakeRefReturn
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcLbdn Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateDtcLbdn(name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
+			actualRecord, err := objMgr.CreateDtcLbdn(name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -69,34 +67,46 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		res := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl)
 
 		conn := &fakeConnector{
-			getObjectObj:         NewEmptyDtcLbdn(),
-			getObjectQueryParams: queryParams,
-			resultObject:         []DtcLbdn{*res},
-			fakeRefReturn:        fakeRefReturn,
+			getObjectObj:  NewEmptyDtcLbdn(),
+			resultObject:  []DtcLbdn{*res},
+			fakeRefReturn: fakeRefReturn,
 		}
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should get expected DtcLbdn Object from getObject", func() {
+			conn.getObjectQueryParams = queryParams
 			actualRecord, err := objMgr.GetDtcLbdn(queryParams)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 
-		qp1 := NewQueryParams(false, map[string]string{"name": "test-lbdn111"})
-		conn.getObjectQueryParams = qp1
-		conn.resultObject = []DtcLbdn{}
 		It("should fail to get expected DtcLbdn Object from getObject", func() {
+			qp1 := NewQueryParams(false, map[string]string{"name": "test-lbdn111"})
+			conn.getObjectQueryParams = qp1
+			conn.resultObject = []DtcLbdn{}
 			actualRecord, err := objMgr.GetDtcLbdn(qp1)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 
-		//qp2 := NewQueryParams(false, map[string]string{"lb_method": "ROUND_ROBIN"})
-		//conn.getObjectQueryParams = qp2
-		//It("should fail to get expected DtcLbdn Object from getObject with non searchable field", func() {
-		//	actualRecord, err := objMgr.GetDtcLbdn(qp2)
-		//	Expect(actualRecord).To(BeNil())
-		//	Expect(err).NotTo(BeNil())
-		//})
+	})
+
+	Describe("Get Dtc Lbdn: Negative scenario", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		qp2 := NewQueryParams(false, map[string]string{"lb_method": "ROUND_ROBIN"})
+		conn := &fakeConnector{
+			getObjectObj:         NewEmptyDtcLbdn(),
+			getObjectQueryParams: qp2,
+			resultObject:         []DtcLbdn{},
+		}
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+
+		// negative scenario
+		conn.getObjectError = fmt.Errorf("Field is not searchable: lb_method")
+		It("should fail to get expected DtcLbdn Object from getObject with non searchable field", func() {
+			_, err := objMgr.GetDtcLbdn(qp2)
+			Expect(err).ToNot(BeNil())
+		})
 
 	})
 
@@ -120,9 +130,13 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		poolRef := "dtc:pool/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-pool"
 		topologyRef := "dtc:topology/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-topo"
 		createObjPools := []*DtcPoolLink{{Pool: poolRef, Ratio: 3}}
+		zone := "test-zone"
+		zones := []string{zone}
+		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
+		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
 		conn := &fakeConnector{
-			createObjectObj: NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			createObjectObj: NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
 			getObjectObj: map[string]interface{}{
 				"DtcPool":     &DtcPool{},
 				"DtcTopology": &DtcTopology{},
@@ -142,18 +156,18 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 					Ref:  topologyRef,
 					Name: utils.StringPtr("test-topo"),
 				}},
-				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
-				//"ZoneAuth": []ZoneAuth{{
-				//	Ref:  "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone",
-				//	Fqdn: "test-zone",
-				//}},
+				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+				"ZoneAuth": []ZoneAuth{{
+					Ref:  zoneRef,
+					Fqdn: zone,
+				}},
 			},
 			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcLbdn Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateDtcLbdn(name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
+			actualRecord, err := objMgr.CreateDtcLbdn(name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcLbdn"]))
 			Expect(err).To(BeNil())
 		})
@@ -164,10 +178,9 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		tenantID := "01234567890abcdef01234567890abcdef"
 		recordName := "test-lbdn"
 		deleteRef := fmt.Sprintf("dtc:lbdn/ZG5zLmJpbmRfY25h:%s/%20%20", recordName)
-		fakeRefReturn := deleteRef
 		nwFakeConnector := &fakeConnector{
 			deleteObjectRef: deleteRef,
-			fakeRefReturn:   fakeRefReturn,
+			fakeRefReturn:   deleteRef,
 		}
 
 		objMgr := NewObjectManager(nwFakeConnector, cmpType, tenantID)
@@ -178,18 +191,93 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 			actualRef, err = objMgr.DeleteDtcLbdn(deleteRef)
 		})
 		It("should return expected DTC Lbdn Ref", func() {
-			Expect(actualRef).To(Equal(fakeRefReturn))
+			Expect(actualRef).To(Equal(deleteRef))
 			Expect(err).To(BeNil())
 		})
 
 		It("should pass expected DTC Lbdn Ref to DeleteObject", func() {
-			deleteRef2 := fmt.Sprintf("dtc:lbdn/ZG5zLmJpbmRfY25h3:%s/%20%20", "test-lbdn2")
+			deleteRef2 := "dtc:lbdn"
 			nwFakeConnector.deleteObjectRef = deleteRef2
 			nwFakeConnector.fakeRefReturn = ""
-			nwFakeConnector.deleteObjectError = nil
+			nwFakeConnector.deleteObjectError = fmt.Errorf("not found")
 			actualRef, err = objMgr.DeleteDtcLbdn(deleteRef2)
 		})
+
 		It("should return an error", func() {
+			Expect(err).ToNot(BeNil())
+		})
+
+	})
+
+	Describe("Update Dtc Lbdn", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		disable := false
+		autoConsolidatedMonitors := false
+		lbMethod := "RATIO"
+		patterns := []string{"*info.com"}
+		persistence := uint32(60)
+		priority := uint32(1)
+		types := []string{"A", "CNAME"}
+		ttl := uint32(60)
+		useTtl := true
+		name1 := "TestLbdn222"
+		comment1 := "test lbdn comment updated"
+		updateRef := fmt.Sprintf("dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:%s", name1)
+
+		conn := &fakeConnector{
+			getObjectObj:         NewEmptyDtcLbdn(),
+			getObjectRef:         updateRef,
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			fakeRefReturn:        updateRef,
+			updateObjectObj:      NewDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			updateObjectRef:      updateRef,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		It("should pass expected DtcLbdn Object to UpdateObject", func() {
+			actualRecord, err := objMgr.UpdateDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
+			Expect(actualRecord).To(Equal(conn.resultObject))
+			Expect(err).To(BeNil())
+		})
+
+	})
+
+	Describe("Update Dtc Lbdn with, negative scenario", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		disable := false
+		autoConsolidatedMonitors := false
+		lbMethod := "RATIO"
+		patterns := []string{"*info.com"}
+		persistence := uint32(60)
+		priority := uint32(1)
+		types := []string{"A", "CNAME"}
+		ttl := uint32(60)
+		useTtl := true
+
+		name2 := "test-LBDN122"
+		comment2 := "comment updated"
+		oldRef := "dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:test-lbdn121"
+
+		conn := &fakeConnector{
+			getObjectObj:         NewEmptyDtcLbdn(),
+			getObjectRef:         oldRef,
+			getObjectQueryParams: NewQueryParams(false, nil),
+			resultObject:         NewDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			getObjectError:       fmt.Errorf("not found"),
+			fakeRefReturn:        oldRef,
+			updateObjectObj:      NewDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			updateObjectRef:      oldRef,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		// negative scenario
+
+		It("should fail to update DtcLbdn Object", func() {
+			actualRecord, err := objMgr.UpdateDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
+			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})
 
