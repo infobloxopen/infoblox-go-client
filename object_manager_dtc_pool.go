@@ -123,7 +123,7 @@ func NewDtcPool(comment string,
 	LbAlternateTopology *string,
 	LbDynamicRatioAlternate *SettingDynamicratio,
 	eas EA,
-	AutoConsolidatedMonitors *bool,
+	AutoConsolidatedMonitors bool,
 	Availability string,
 	ConsolidatedMonitors []*DtcPoolConsolidatedMonitorHealth,
 	ttl uint32,
@@ -143,7 +143,7 @@ func NewDtcPool(comment string,
 	DtcPool.LbAlternateTopology = LbAlternateTopology
 	DtcPool.LbDynamicRatioAlternate = LbDynamicRatioAlternate
 	DtcPool.Ea = eas
-	DtcPool.AutoConsolidatedMonitors = AutoConsolidatedMonitors
+	DtcPool.AutoConsolidatedMonitors = &AutoConsolidatedMonitors
 	DtcPool.Availability = Availability
 	DtcPool.ConsolidatedMonitors = ConsolidatedMonitors
 	DtcPool.Ttl = &ttl
@@ -157,15 +157,15 @@ func (objMgr *ObjectManager) CreateDtcPool(
 	comment string,
 	name string,
 	LbPreferredMethod string,
-	LbDynamicRatioPreferred *SettingDynamicratio,
+	LbDynamicRatioPreferred map[string]interface{},
 	servers []*DtcServerLink,
 	monitors []Monitor,
 	LbPreferredTopology *string,
 	LbAlternateMethod string,
 	LbAlternateTopology *string,
-	LbDynamicRatioAlternate *SettingDynamicratio,
+	LbDynamicRatioAlternate map[string]interface{},
 	eas EA,
-	AutoConsolidatedMonitors *bool,
+	AutoConsolidatedMonitors bool,
 	Availability string,
 	ttl uint32,
 	useTTL bool,
@@ -187,12 +187,27 @@ func (objMgr *ObjectManager) CreateDtcPool(
 		return nil, err
 	}
 	// update the monitor in LbDynamicRatioPreferred with reference
+	var LbdynamicratiopreferredMethod *SettingDynamicratio
 	if LbDynamicRatioPreferred != nil {
-		monitorRef, err := getMonitorReference(LbDynamicRatioPreferred.Monitor, "snmp", objMgr)
+		monitor, _ := LbDynamicRatioPreferred["monitor"].(Monitor)
+		method, _ := LbDynamicRatioPreferred["method"].(string)
+		monitor_metric, _ := LbDynamicRatioPreferred["monitor_metric"].(string)
+		monitor_weighing, _ := LbDynamicRatioPreferred["monitor_weighing"].(string)
+		InvertMonitorMetric, _ := LbDynamicRatioPreferred["monitor_invert_monitor"].(bool)
+
+		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
 		if err != nil {
 			return nil, err
 		}
-		LbDynamicRatioPreferred.Monitor = monitorRef
+		LbdynamicratiopreferredMethod = &SettingDynamicratio{
+			Method:              method,
+			Monitor:             monitorRef,
+			MonitorMetric:       monitor_metric,
+			MonitorWeighing:     monitor_weighing,
+			InvertMonitorMetric: InvertMonitorMetric,
+		}
+	} else {
+		LbdynamicratiopreferredMethod = nil
 	}
 
 	// Convert monitor names to monitor references
@@ -215,15 +230,31 @@ func (objMgr *ObjectManager) CreateDtcPool(
 		return nil, err
 	}
 	//update the monitor in LbDynamicRatioPreferred with reference
+	var LbdynamicratioalternateMethod *SettingDynamicratio
 	if LbDynamicRatioAlternate != nil {
-		monitorRef, err := getMonitorReference(LbDynamicRatioAlternate.Monitor, "snmp", objMgr)
+		monitorAlternate, _ := LbDynamicRatioAlternate["monitor"].(Monitor)
+		methodAlternate, _ := LbDynamicRatioAlternate["method"].(string)
+		monitorMetricAlternate, _ := LbDynamicRatioAlternate["monitor_metric"].(string)
+		monitorWeighingAlternate, _ := LbDynamicRatioAlternate["monitor_weighing"].(string)
+		InterferometricAlternate, _ := LbDynamicRatioAlternate["monitor_invert_monitor"].(bool)
+
+		monitorrefAlternate, err := getMonitorReference(monitorAlternate.Name, monitorAlternate.Type, objMgr)
 		if err != nil {
 			return nil, err
 		}
-		LbDynamicRatioAlternate.Monitor = monitorRef
+		LbdynamicratioalternateMethod = &SettingDynamicratio{
+			Method:              methodAlternate,
+			Monitor:             monitorrefAlternate,
+			MonitorMetric:       monitorMetricAlternate,
+			MonitorWeighing:     monitorWeighingAlternate,
+			InvertMonitorMetric: InterferometricAlternate,
+		}
+	} else {
+		LbdynamicratioalternateMethod = nil
 	}
+
 	// Create the DtcPool
-	PoolDtc := NewDtcPool(comment, name, LbPreferredMethod, LbDynamicRatioPreferred, servers, monitorResults, LbPreferredTopology, LbAlternateMethod, LbAlternateTopology, LbDynamicRatioAlternate, eas, AutoConsolidatedMonitors, Availability, nil, ttl, useTTL, disable, Quorum)
+	PoolDtc := NewDtcPool(comment, name, LbPreferredMethod, LbdynamicratiopreferredMethod, servers, monitorResults, LbPreferredTopology, LbAlternateMethod, LbAlternateTopology, LbdynamicratioalternateMethod, eas, AutoConsolidatedMonitors, Availability, nil, ttl, useTTL, disable, Quorum)
 	ref, err := objMgr.connector.CreateObject(PoolDtc)
 	if err != nil {
 		return nil, err
@@ -232,11 +263,12 @@ func (objMgr *ObjectManager) CreateDtcPool(
 	return PoolDtc, nil
 }
 
-func (objMgr *ObjectManager) GetDtcPool(poolName string) (*DtcPool, error) {
+func (objMgr *ObjectManager) GetDtcPool(poolName string, comment string) (*DtcPool, error) {
 	var res []DtcPool
 	DtcPool := NewEmptyDtcPool()
 	sf := map[string]string{
-		"name": poolName,
+		"name":    poolName,
+		"comment": comment,
 	}
 	queryParams := NewQueryParams(false, sf)
 	err := objMgr.connector.GetObject(DtcPool, "", queryParams, &res)
@@ -255,15 +287,15 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 	comment string,
 	name string,
 	LbPreferredMethod string,
-	LbDynamicRatioPreferred *SettingDynamicratio,
+	LbDynamicRatioPreferred map[string]interface{},
 	servers []*DtcServerLink,
 	monitors []Monitor,
 	LbPreferredTopology *string,
 	LbAlternateMethod string,
 	LbAlternateTopology *string,
-	LbDynamicRatioAlternate *SettingDynamicratio,
+	LbDynamicRatioAlternate map[string]interface{},
 	eas EA,
-	AutoConsolidatedMonitors *bool,
+	AutoConsolidatedMonitors bool,
 	Availability string,
 	userMonitors []map[string]interface{},
 	ttl uint32,
@@ -283,12 +315,27 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		return nil, err
 	}
 	// Convert LbDynamicRatioPreferred to use monitor reference
+	var LbDynamicRatioPreferred_method *SettingDynamicratio
 	if LbDynamicRatioPreferred != nil {
-		monitorRef, err := getMonitorReference(LbDynamicRatioPreferred.Monitor, "snmp", objMgr)
+		monitor, _ := LbDynamicRatioPreferred["monitor"].(Monitor)
+		method, _ := LbDynamicRatioPreferred["method"].(string)
+		monitor_metric, _ := LbDynamicRatioPreferred["monitor_metric"].(string)
+		monitor_weighing, _ := LbDynamicRatioPreferred["monitor_weighing"].(string)
+		InvertMonitorMetric, _ := LbDynamicRatioPreferred["monitor_invert_monitor"].(bool)
+
+		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
 		if err != nil {
 			return nil, err
 		}
-		LbDynamicRatioPreferred.Monitor = monitorRef
+		LbDynamicRatioPreferred_method = &SettingDynamicratio{
+			Method:              method,
+			Monitor:             monitorRef,
+			MonitorMetric:       monitor_metric,
+			MonitorWeighing:     monitor_weighing,
+			InvertMonitorMetric: InvertMonitorMetric,
+		}
+	} else {
+		LbDynamicRatioPreferred_method = nil
 	}
 	// Convert monitor names to monitor references
 	var monitorResults []*DtcMonitorHttp
@@ -310,14 +357,28 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		return nil, err
 	}
 	//Convert LbDynamicRatioAlternate to use monitor reference
+	var LbdynamicratioalternateMethod *SettingDynamicratio
 	if LbDynamicRatioAlternate != nil {
-		monitorRef, err := getMonitorReference(LbDynamicRatioAlternate.Monitor, "snmp", objMgr)
+		monitorAlernate, _ := LbDynamicRatioAlternate["monitor"].(Monitor)
+		methodAlternate, _ := LbDynamicRatioAlternate["method"].(string)
+		monitorMetricAlternate, _ := LbDynamicRatioAlternate["monitor_metric"].(string)
+		monitorWeighingAlternate, _ := LbDynamicRatioAlternate["monitor_weighing"].(string)
+		InvertmonitormetricAlaternate, _ := LbDynamicRatioAlternate["monitor_invert_monitor"].(bool)
+
+		monitorrefAlternate, err := getMonitorReference(monitorAlernate.Name, monitorAlernate.Type, objMgr)
 		if err != nil {
 			return nil, err
 		}
-		LbDynamicRatioAlternate.Monitor = monitorRef
+		LbdynamicratioalternateMethod = &SettingDynamicratio{
+			Method:              methodAlternate,
+			Monitor:             monitorrefAlternate,
+			MonitorMetric:       monitorMetricAlternate,
+			MonitorWeighing:     monitorWeighingAlternate,
+			InvertMonitorMetric: InvertmonitormetricAlaternate,
+		}
+	} else {
+		LbdynamicratioalternateMethod = nil
 	}
-
 	//processing user input to retrieve monitor references and creating a slice of *DtcPoolConsolidatedMonitorHealth structs with updated monitor references.
 	var consolidatedMonitors []*DtcPoolConsolidatedMonitorHealth
 	for _, userMonitor := range userMonitors {
@@ -351,7 +412,7 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		consolidatedMonitors = append(consolidatedMonitors, consolidatedMonitor)
 	}
 
-	PoolDtc := NewDtcPool(comment, name, LbPreferredMethod, LbDynamicRatioPreferred, servers, monitorResults, LbPreferredTopology, LbAlternateMethod, LbAlternateTopology, LbDynamicRatioAlternate, eas, AutoConsolidatedMonitors, Availability, consolidatedMonitors, ttl, useTTL, disable, Quorum)
+	PoolDtc := NewDtcPool(comment, name, LbPreferredMethod, LbDynamicRatioPreferred_method, servers, monitorResults, LbPreferredTopology, LbAlternateMethod, LbAlternateTopology, LbdynamicratioalternateMethod, eas, AutoConsolidatedMonitors, Availability, consolidatedMonitors, ttl, useTTL, disable, Quorum)
 	PoolDtc.Ref = ref
 	reference, err := objMgr.connector.UpdateObject(PoolDtc, ref)
 	if err != nil {

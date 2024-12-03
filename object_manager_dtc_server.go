@@ -37,13 +37,33 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	AutoCreateHostRecord bool,
 	disable bool,
 	ea EA,
+	Monitors []map[string]interface{},
 	SniHostname string,
 	UseSniHostname bool,
 ) (*DtcServer, error) {
 	if (UseSniHostname && SniHostname == "") || (!UseSniHostname && SniHostname != "") {
-		return nil, fmt.Errorf("If 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled ")
+		return nil, fmt.Errorf("If 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled")
 	}
-	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, nil, SniHostname, UseSniHostname)
+	var Servermonitors []*DtcServerMonitor
+	for _, userMonitor := range Monitors {
+		monitor, okMonitor := userMonitor["monitor"].(Monitor)
+		MonitorHost, _ := userMonitor["host"].(string)
+		if !okMonitor {
+			return nil, fmt.Errorf("\"Required field missing: monitor")
+		}
+		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
+		if err != nil {
+			return nil, err
+		}
+
+		ServerMonitor := &DtcServerMonitor{
+			Monitor: monitorRef,
+			Host:    MonitorHost,
+		}
+
+		Servermonitors = append(Servermonitors, ServerMonitor)
+	}
+	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, Servermonitors, SniHostname, UseSniHostname)
 	ref, err := objMgr.connector.CreateObject(DtcServer)
 	if err != nil {
 		return nil, err
@@ -52,11 +72,14 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	return DtcServer, nil
 }
 
-func (objMgr *ObjectManager) GetDtcServer(serverName string) (*DtcServer, error) {
+func (objMgr *ObjectManager) GetDtcServer(serverName string, comment string, host string, sni_hostname string) (*DtcServer, error) {
 	var res []DtcServer
 	ServerDtc := NewEmptyDtcServer()
 	sf := map[string]string{
-		"name": serverName,
+		"name":         serverName,
+		"comment":      comment,
+		"host":         host,
+		"sni_hostname": sni_hostname,
 	}
 	queryParams := NewQueryParams(false, sf)
 	err := objMgr.connector.GetObject(ServerDtc, "", queryParams, &res)
