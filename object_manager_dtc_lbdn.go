@@ -52,7 +52,6 @@ func (d *DtcLbdn) MarshalJSON() ([]byte, error) {
 
 func (objMgr *ObjectManager) CreateDtcLbdn(name string, authzone []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
-	// todo: add health and status_member fields
 
 	if name == "" || lbMethod == "" {
 		return nil, fmt.Errorf("name and lbMethod fields are required to create a DtcLbdn object")
@@ -108,10 +107,11 @@ func getTopology(topology string, objMgr *ObjectManager) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error getting %s DtcTopology object: %s", topology, err)
 	}
-	if len(dtcTopology) == 0 {
-		return "", fmt.Errorf("no DtcTopology object found for %s", topology)
+
+	if len(dtcTopology) > 0 {
+		topologyRef = dtcTopology[0].Ref
 	}
-	topologyRef = dtcTopology[0].Ref
+
 	return topologyRef, nil
 }
 
@@ -127,11 +127,9 @@ func getPools(pools []*DtcPoolLink, objMgr *ObjectManager) ([]*DtcPoolLink, erro
 			return nil, fmt.Errorf("error getting %s DtcPool object: %s", pool.Pool, err)
 		}
 
-		if len(dtcPools) == 0 {
-			return nil, fmt.Errorf("no DtcPool object found for %s", pool.Pool)
+		if len(dtcPools) > 0 {
+			dtcPoolLink = append(dtcPoolLink, &DtcPoolLink{Pool: dtcPools[0].Ref, Ratio: pool.Ratio})
 		}
-
-		dtcPoolLink = append(dtcPoolLink, &DtcPoolLink{Pool: dtcPools[0].Ref, Ratio: pool.Ratio})
 	}
 	return dtcPoolLink, nil
 }
@@ -147,7 +145,10 @@ func getAuthZones(authzone []string, objMgr *ObjectManager) ([]*ZoneAuth, error)
 		if err != nil {
 			return nil, fmt.Errorf("error getting %s ZoneAuth object: %s", authzone[i], err)
 		}
-		zones = append(zones, &zoneAuth[0])
+
+		if len(zoneAuth) > 0 {
+			zones = append(zones, &zoneAuth[0])
+		}
 	}
 	return zones, nil
 }
@@ -159,7 +160,6 @@ func NewDtcLbdn(ref string, name string, authzone []*ZoneAuth, comment string, d
 	lbdn.Name = &name
 	lbdn.Ref = ref
 	lbdn.AuthZones = authzone
-	// todo: add health and status_member fields
 	lbdn.Comment = &comment
 	lbdn.Disable = &disable
 	lbdn.AutoConsolidatedMonitors = &autoConsolidatedMonitors

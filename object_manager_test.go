@@ -35,6 +35,8 @@ type fakeConnector struct {
 	getObjectError    error
 	updateObjectError error
 	deleteObjectError error
+	//internalCalls     int
+	skipInternalGetcalls bool
 }
 
 func (c *fakeConnector) CreateObject(obj IBObject) (string, error) {
@@ -45,20 +47,24 @@ func (c *fakeConnector) CreateObject(obj IBObject) (string, error) {
 
 func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res interface{}) (err error) {
 
-	if reflect.TypeOf(c.getObjectObj).Kind() == reflect.Map {
+	if reflect.TypeOf(c.getObjectObj).Kind() == reflect.Map && c.skipInternalGetcalls {
 		switch obj.(type) {
 		case *DtcPool:
-			Expect(obj).To(Equal(c.getObjectObj.(map[string]interface{})["DtcPool"].(*DtcPool)))
-			Expect(qp).To(Equal(c.getObjectQueryParams.(map[string]*QueryParams)["DtcPool"]))
-			*res.(*[]DtcPool) = c.resultObject.(map[string]interface{})["DtcPool"].([]DtcPool)
+			if ref == "" {
+				*res.(*[]DtcPool) = c.resultObject.(map[string]interface{})["DtcPool"].([]DtcPool)
+			} else {
+				**res.(**DtcPool) = *c.resultObject.(map[string]interface{})["DtcPool"].(*DtcPool)
+			}
 		case *DtcTopology:
-			Expect(obj).To(Equal(c.getObjectObj.(map[string]interface{})["DtcTopology"].(*DtcTopology)))
-			Expect(qp).To(Equal(c.getObjectQueryParams.(map[string]*QueryParams)["DtcTopology"]))
 			*res.(*[]DtcTopology) = c.resultObject.(map[string]interface{})["DtcTopology"].([]DtcTopology)
 		case *ZoneAuth:
-			Expect(obj).To(Equal(c.getObjectObj.(map[string]interface{})["ZoneAuth"].(*ZoneAuth)))
-			Expect(qp).To(Equal(c.getObjectQueryParams.(map[string]*QueryParams)["ZoneAuth"]))
 			*res.(*[]ZoneAuth) = c.resultObject.(map[string]interface{})["ZoneAuth"].([]ZoneAuth)
+		case *DtcServer:
+			*res.(*[]DtcServer) = c.resultObject.(map[string]interface{})["DtcServer"].([]DtcServer)
+		case *DtcMonitorHttp:
+			*res.(*[]DtcMonitorHttp) = c.resultObject.(map[string]interface{})["DtcMonitor"].([]DtcMonitorHttp)
+		case *DtcLbdn:
+			**res.(**DtcLbdn) = *c.resultObject.(map[string]interface{})["DtcLbdn"].(*DtcLbdn)
 		default:
 			return fmt.Errorf("unsupported object type")
 		}

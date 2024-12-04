@@ -136,7 +136,8 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
 		conn := &fakeConnector{
-			createObjectObj: NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			skipInternalGetcalls: true,
+			createObjectObj:      NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
 			getObjectObj: map[string]interface{}{
 				"DtcPool":     &DtcPool{},
 				"DtcTopology": &DtcTopology{},
@@ -242,6 +243,75 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 			Expect(err).To(BeNil())
 		})
 
+	})
+
+	Describe("Update Dtc Lbdn with maximum params", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		comment := "test lbdn"
+		disable := false
+		autoConsolidatedMonitors := false
+		name := "TestLbdn1"
+		fakeRefReturn := fmt.Sprintf("dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
+		initLbMethod := "RATIO"
+		lbMethod := "TOPOLOGY"
+		patterns := []string{"*info.com"}
+		persistence := uint32(60)
+		pools := []*DtcPoolLink{{Pool: "test-pool", Ratio: 3}}
+		priority := uint32(1)
+		topology := "test-topo"
+		types := []string{"A", "CNAME"}
+		ttl := uint32(60)
+		useTtl := true
+		poolRef := "dtc:pool/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-pool"
+		topologyRef := "dtc:topology/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-topo"
+		createObjPools := []*DtcPoolLink{{Pool: poolRef, Ratio: 3}}
+		zone := "test-zone"
+		zones := []string{zone}
+		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
+		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
+
+		initObject := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, initLbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
+		initObject.Ref = fakeRefReturn
+		conn := &fakeConnector{
+			skipInternalGetcalls: true,
+			getObjectObj: map[string]interface{}{
+				"DtcPool":     &DtcPool{},
+				"DtcTopology": &DtcTopology{},
+				"ZoneAuth":    &ZoneAuth{},
+			},
+			getObjectQueryParams: map[string]*QueryParams{
+				"DtcPool":     NewQueryParams(false, map[string]string{"name": "test-pool"}),
+				"DtcTopology": NewQueryParams(false, map[string]string{"name": "test-topo"}),
+				"ZoneAuth":    NewQueryParams(false, map[string]string{"fqdn": "test-zone"}),
+			},
+			updateObjectRef: fakeRefReturn,
+			updateObjectObj: NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			resultObject: map[string]interface{}{
+				"DtcPool": []DtcPool{{
+					Ref:  poolRef,
+					Name: utils.StringPtr("test-pool"),
+				}},
+				"DtcTopology": []DtcTopology{{
+					Ref:  topologyRef,
+					Name: utils.StringPtr("test-topo"),
+				}},
+				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+				"ZoneAuth": []ZoneAuth{{
+					Ref:  zoneRef,
+					Fqdn: zone,
+				}},
+			},
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		It("should pass expected DtcLbdn Object to CreateObject", func() {
+
+			actualRecord, err := objMgr.UpdateDtcLbdn(fakeRefReturn, name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
+			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcLbdn"]))
+			Expect(err).To(BeNil())
+		})
 	})
 
 	Describe("Update Dtc Lbdn with, negative scenario", func() {
