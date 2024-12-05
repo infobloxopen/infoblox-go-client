@@ -35,7 +35,7 @@ type fakeConnector struct {
 	getObjectError    error
 	updateObjectError error
 	deleteObjectError error
-	//internalCalls     int
+	// field to skip internal GET calls for the dependent objects.
 	skipInternalGetcalls bool
 }
 
@@ -44,6 +44,77 @@ func (c *fakeConnector) CreateObject(obj IBObject) (string, error) {
 
 	return c.fakeRefReturn, c.createObjectError
 }
+
+// when an object has internal GET calls to fetch references of dependent objects, the skipInternalGetcalls field is set to true and the mock data of testcases are set as map[string]interface{}
+// where key is the object type and value is the object data.
+// In the below example, Dtc:Lbdn object is dependent on Dtc:pool, Dtc:topology and Zone_auth objects where in CreateDtcLbdn() and UpdateDtcLdbn() functions only the name of zoneAuth, pools and topology is given,
+// the references for all these 3 objects are fetched inside these functions. So the mock data for getObjectObj, resultObject and getObjectQueryParams are given as maps
+// and the field 'skipInternalGetcalls' is set to true. Example:
+/*
+Describe("Create Dtc Lbdn with maximum parameters", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		comment := "test lbdn"
+		disable := false
+		autoConsolidatedMonitors := false
+		name := "TestLbdn1"
+		fakeRefReturn := fmt.Sprintf("dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
+		lbMethod := "TOPOLOGY"
+		patterns := []string{"*info.com"}
+		persistence := uint32(60)
+		pools := []*DtcPoolLink{{Pool: "test-pool", Ratio: 3}}
+		priority := uint32(1)
+		topology := "test-topo"
+		types := []string{"A", "CNAME"}
+		ttl := uint32(60)
+		useTtl := true
+		poolRef := "dtc:pool/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-pool"
+		topologyRef := "dtc:topology/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-topo"
+		createObjPools := []*DtcPoolLink{{Pool: poolRef, Ratio: 3}}
+		zone := "test-zone"
+		zones := []string{zone}
+		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
+		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
+
+		conn := &fakeConnector{
+			skipInternalGetcalls: true,
+			createObjectObj:      NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			getObjectObj: map[string]interface{}{
+				"DtcPool":     &DtcPool{},
+				"DtcTopology": &DtcTopology{},
+				"ZoneAuth":    &ZoneAuth{},
+			},
+			getObjectQueryParams: map[string]*QueryParams{
+				"DtcPool":     NewQueryParams(false, map[string]string{"name": "test-pool"}),
+				"DtcTopology": NewQueryParams(false, map[string]string{"name": "test-topo"}),
+				"ZoneAuth":    NewQueryParams(false, map[string]string{"fqdn": "test-zone"}),
+			},
+			resultObject: map[string]interface{}{
+				"DtcPool": []DtcPool{{
+					Ref:  poolRef,
+					Name: utils.StringPtr("test-pool"),
+				}},
+				"DtcTopology": []DtcTopology{{
+					Ref:  topologyRef,
+					Name: utils.StringPtr("test-topo"),
+				}},
+				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+				"ZoneAuth": []ZoneAuth{{
+					Ref:  zoneRef,
+					Fqdn: zone,
+				}},
+			},
+			fakeRefReturn: fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		It("should pass expected DtcLbdn Object to CreateObject", func() {
+			actualRecord, err := objMgr.CreateDtcLbdn(name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
+			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcLbdn"]))
+			Expect(err).To(BeNil())
+		})
+	})
+*/
 
 func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res interface{}) (err error) {
 
