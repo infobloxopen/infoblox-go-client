@@ -136,8 +136,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
 		conn := &fakeConnector{
-			skipInternalGetcalls: true,
-			createObjectObj:      NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			createObjectObj: NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
 			getObjectObj: map[string]interface{}{
 				"DtcPool":     &DtcPool{},
 				"DtcTopology": &DtcTopology{},
@@ -274,7 +273,6 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		initObject := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, initLbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
 		initObject.Ref = fakeRefReturn
 		conn := &fakeConnector{
-			skipInternalGetcalls: true,
 			getObjectObj: map[string]interface{}{
 				"DtcPool":     &DtcPool{},
 				"DtcTopology": &DtcTopology{},
