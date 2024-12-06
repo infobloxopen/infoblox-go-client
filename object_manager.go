@@ -27,7 +27,7 @@ type IBObjectManager interface {
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
-	CreateDtcLbdn(name string, authzone []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
+	CreateDtcLbdn(name string, authZones []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
@@ -106,7 +106,7 @@ type IBObjectManager interface {
 	UpdateDtcPool(ref string, comment string, name string, LbPreferredMethod string, LbDynamicRatioPreferred *SettingDynamicratio, servers []*DtcServerLink, monitors []Monitor, LbPreferredTopology *string, LbAlternateMethod string, LbAlternateTopology *string, LbDynamicRatioAlternate *SettingDynamicratio, eas EA, AutoConsolidatedMonitors *bool, Availability string, ConsolidatedMonitors []map[string]interface{}, ttl uint32, useTTL bool, disable bool, Quorum uint32) (*DtcPool, error)
 	UpdateDtcServer(ref string, comment string, name string, host string, AutoCreateHostRecord bool, disable bool, ea EA, Monitors []map[string]interface{}, SniHostname string, UseSniHostname bool) (*DtcServer, error)
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
-	UpdateDtcLbdn(ref string, name string, authzone []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
+	UpdateDtcLbdn(ref string, name string, authZones []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
