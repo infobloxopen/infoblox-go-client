@@ -2932,8 +2932,8 @@ var _ = Describe("Allocate next available using EA", func() {
 var _ = Describe("DTC Object pools", func() {
 	var connector *ConnectorFacadeE2E
 
-	var server_Ref string
-	var topology_ref string
+	var serverRef string
+	var topologyRef string
 	BeforeEach(func() {
 		hostConfig := ibclient.HostConfig{
 			Host:    os.Getenv("INFOBLOX_SERVER"),
@@ -2949,34 +2949,34 @@ var _ = Describe("DTC Object pools", func() {
 		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
 		requestBuilder := &ibclient.WapiRequestBuilder{}
 		requestor := &ibclient.WapiHttpRequestor{}
-		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 		Expect(err).To(BeNil())
-		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
 
 		var (
-			server_name = "server.com"
-			host        = "3.6.7.8"
-			err1        error
+			serverName = "server.com"
+			host       = "3.6.7.8"
+			err1       error
 
-			topology_name = "topology_test"
+			topologyName = "topology_test"
 		)
 		server := &ibclient.DtcServer{
-			Name: &server_name,
+			Name: &serverName,
 			Host: &host,
 		}
-		server_Ref, err1 = connector.CreateObject(server)
+		serverRef, err1 = connector.CreateObject(server)
 		Expect(err1).To(BeNil())
 
 		topology := &ibclient.DtcTopology{
-			Name: &topology_name,
+			Name: &topologyName,
 			Rules: []*ibclient.DtcTopologyRule{
 				{
 					DestType:        "SERVER",
-					DestinationLink: &server_Ref,
+					DestinationLink: &serverRef,
 				},
 			},
 		}
-		topology_ref, err1 = connector.CreateObject(topology)
+		topologyRef, err1 = connector.CreateObject(topology)
 		Expect(err1).To(BeNil())
 	})
 
@@ -2987,19 +2987,19 @@ var _ = Describe("DTC Object pools", func() {
 
 	It("Should create a dtc pool with ROUND_ROBIN method", func() {
 		eaMap := ibclient.EA{"Site": "Burma"}
-		dtcpool := ibclient.DtcPool{
+		dtcPool := ibclient.DtcPool{
 			Name:    utils.StringPtr("dtc_pool_1.com"),
 			Comment: utils.StringPtr("pool object creation"),
 			Ea:      eaMap,
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			LbPreferredMethod: "ROUND_ROBIN",
 		}
-		ref, err := connector.CreateObject(&dtcpool)
+		ref, err := connector.CreateObject(&dtcPool)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 	})
@@ -3010,29 +3010,29 @@ var _ = Describe("DTC Object pools", func() {
 		queryParams := ibclient.NewQueryParams(false, sf)
 		var monitor []ibclient.DtcMonitorHttp
 		_ = connector.GetObject(&ibclient.DtcMonitorHttp{}, "dtc:monitor:http", queryParams, &monitor)
-		monitor_ref := monitor[0].Ref
-		dtcpool := ibclient.DtcPool{
+		monitorRef := monitor[0].Ref
+		dtcPool := ibclient.DtcPool{
 			Name:    utils.StringPtr("dtc_pool_2.com"),
 			Comment: utils.StringPtr("pool object creation"),
 			Ea:      eaMap,
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			LbPreferredMethod: "DYNAMIC_RATIO",
 			Monitors: []*ibclient.DtcMonitorHttp{
 				{
-					Ref: monitor_ref,
+					Ref: monitorRef,
 				},
 			},
 			LbDynamicRatioPreferred: &ibclient.SettingDynamicratio{
 				Method:  "ROUND_TRIP_DELAY",
-				Monitor: monitor_ref,
+				Monitor: monitorRef,
 			},
 		}
-		ref, err := connector.CreateObject(&dtcpool)
+		ref, err := connector.CreateObject(&dtcPool)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 	})
@@ -3043,36 +3043,36 @@ var _ = Describe("DTC Object pools", func() {
 		queryParams := ibclient.NewQueryParams(false, sf)
 		var monitor []ibclient.DtcMonitorHttp
 		_ = connector.GetObject(&ibclient.DtcMonitorHttp{}, "dtc:monitor:http", queryParams, &monitor)
-		monitor_ref := monitor[0].Ref
-		dtcpool := ibclient.DtcPool{
+		monitorRef := monitor[0].Ref
+		dtcPool := ibclient.DtcPool{
 			Name:    utils.StringPtr("dtc_pool_3.com"),
 			Comment: utils.StringPtr("pool object creation"),
 			Ea:      eaMap,
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			Monitors: []*ibclient.DtcMonitorHttp{
 				{
-					Ref: monitor_ref,
+					Ref: monitorRef,
 				},
 			},
 			LbPreferredMethod:   "TOPOLOGY",
-			LbPreferredTopology: &topology_ref,
+			LbPreferredTopology: &topologyRef,
 			LbAlternateMethod:   "DYNAMIC_RATIO",
 			LbDynamicRatioAlternate: &ibclient.SettingDynamicratio{
 				Method:  "ROUND_TRIP_DELAY",
-				Monitor: monitor_ref,
+				Monitor: monitorRef,
 			},
 		}
-		ref, err := connector.CreateObject(&dtcpool)
+		ref, err := connector.CreateObject(&dtcPool)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 	})
 	It("should update the dtc pool ", func() {
-		authzone_create := ibclient.ZoneAuth{
+		authZoneCreate := ibclient.ZoneAuth{
 			Fqdn: "test.com",
 			GridPrimary: []*ibclient.Memberserver{
 				{
@@ -3080,24 +3080,24 @@ var _ = Describe("DTC Object pools", func() {
 				},
 			},
 		}
-		ref_authzone, err := connector.CreateObject(&authzone_create)
-		authzone_create.Ref = ref_authzone
+		refAuthZone, err := connector.CreateObject(&authZoneCreate)
+		authZoneCreate.Ref = refAuthZone
 		Expect(err).To(BeNil())
-		Expect(ref_authzone).To(MatchRegexp("zone_auth/*"))
-		dtcpool := ibclient.DtcPool{
+		Expect(refAuthZone).To(MatchRegexp("zone_auth/*"))
+		dtcPool := ibclient.DtcPool{
 			Name: utils.StringPtr("dtc_pool_1.com"),
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			LbPreferredMethod: "ROUND_ROBIN",
 		}
-		ref, err := connector.CreateObject(&dtcpool)
+		ref, err := connector.CreateObject(&dtcPool)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
-		dtclbdn := ibclient.DtcLbdn{
+		dtcLBDN := ibclient.DtcLbdn{
 			Name: utils.StringPtr("dtc_lbdn.com"),
 			Pools: []*ibclient.DtcPoolLink{
 				{
@@ -3106,40 +3106,40 @@ var _ = Describe("DTC Object pools", func() {
 				},
 			},
 			LbMethod:  "ROUND_ROBIN",
-			AuthZones: []*ibclient.ZoneAuth{&authzone_create},
+			AuthZones: []*ibclient.ZoneAuth{&authZoneCreate},
 		}
-		ref, err = connector.CreateObject(&dtclbdn)
+		ref, err = connector.CreateObject(&dtcLBDN)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:lbdn/*"))
 		//update dtc pool
-		Autoconsolidatemonitors := false
+		autoConsolidateMonitors := false
 		sf := map[string]string{"name": "http"}
 		queryParams := ibclient.NewQueryParams(false, sf)
 		var monitor []ibclient.DtcMonitorHttp
 		_ = connector.GetObject(&ibclient.DtcMonitorHttp{}, "dtc:monitor:http", queryParams, &monitor)
-		monitor_ref := monitor[0].Ref
-		dtcpool_update := &ibclient.DtcPool{
+		monitorRef := monitor[0].Ref
+		dtcPoolUpdate := &ibclient.DtcPool{
 			Name: utils.StringPtr("dtc_pool_2.com"),
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			Monitors: []*ibclient.DtcMonitorHttp{
 				{
-					Ref: monitor_ref,
+					Ref: monitorRef,
 				},
 			},
 			LbPreferredMethod:        "ROUND_ROBIN",
 			Comment:                  utils.StringPtr("pool object update"),
-			AutoConsolidatedMonitors: &Autoconsolidatemonitors,
+			AutoConsolidatedMonitors: &autoConsolidateMonitors,
 			ConsolidatedMonitors: []*ibclient.DtcPoolConsolidatedMonitorHealth{
 				{
 					Members: []string{
 						"infoblox.localdomain",
 					},
-					Monitor:                 monitor_ref,
+					Monitor:                 monitorRef,
 					Availability:            "ALL",
 					FullHealthCommunication: false,
 				},
@@ -3148,22 +3148,22 @@ var _ = Describe("DTC Object pools", func() {
 		var res []ibclient.DtcPool
 		search := &ibclient.DtcPool{}
 		err = connector.GetObject(search, "", nil, &res)
-		ref, err = connector.UpdateObject(dtcpool_update, res[0].Ref)
+		ref, err = connector.UpdateObject(dtcPoolUpdate, res[0].Ref)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 	})
 	It("should delete the dtc pool ", func() {
-		dtcpool := ibclient.DtcPool{
+		dtcPool := ibclient.DtcPool{
 			Name: utils.StringPtr("dtc_pool_1.com"),
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			LbPreferredMethod: "ROUND_ROBIN",
 		}
-		ref, err := connector.CreateObject(&dtcpool)
+		ref, err := connector.CreateObject(&dtcPool)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 
@@ -3175,18 +3175,18 @@ var _ = Describe("DTC Object pools", func() {
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 	})
 	It("Should get the DTC pool", func() {
-		dtcpool := ibclient.DtcPool{
+		dtcPool := ibclient.DtcPool{
 			Name: utils.StringPtr("dtc_pool_1.com"),
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			Comment:           utils.StringPtr("pool object creation"),
 			LbPreferredMethod: "ROUND_ROBIN",
 		}
-		ref, err := connector.CreateObject(&dtcpool)
+		ref, err := connector.CreateObject(&dtcPool)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 
@@ -3200,17 +3200,16 @@ var _ = Describe("DTC Object pools", func() {
 		Expect(errCode).To(BeNil())
 		Expect(res[0].Name).To(Equal(utils.StringPtr("dtc_pool_1.com")))
 		Expect(res[0].Comment).To(Equal(utils.StringPtr("pool object creation")))
-		Expect(res[0].Servers[0].Server).To(Equal(server_Ref))
+		Expect(res[0].Servers[0].Server).To(Equal(serverRef))
 		Expect(res[0].LbPreferredMethod).To(Equal("ROUND_ROBIN"))
 		Expect(res[0].Ref).To(MatchRegexp("dtc:pool/*"))
 	})
 	It("Should fail to create a DTC pool without mandatory parameters", func() {
-		dtcpool := &ibclient.DtcPool{
-			// Missing mandatory parameters like Fqdn and DelegatedTo oe NsGroup
+		dtcPool := &ibclient.DtcPool{
 			Comment: utils.StringPtr("wapi added"),
 			Name:    utils.StringPtr("dtc_pool_1.com"),
 		}
-		_, err := connector.CreateObject(dtcpool)
+		_, err := connector.CreateObject(dtcPool)
 		Expect(err).NotTo(BeNil())
 	})
 	It("Should fail to get a non-existent DTC pool", func() {
@@ -3222,18 +3221,18 @@ var _ = Describe("DTC Object pools", func() {
 	})
 	It("Should fail to update a non-existent DTC pool", func() {
 		Name := "dtc_pool_wapi"
-		dtcpool := &ibclient.DtcPool{
+		dtcPool := &ibclient.DtcPool{
 			Name: &Name,
 			Servers: []*ibclient.DtcServerLink{
 				{
-					Server: server_Ref,
+					Server: serverRef,
 					Ratio:  4,
 				},
 			},
 			Comment: utils.StringPtr("wapi added"),
 		}
 
-		_, err := connector.UpdateObject(dtcpool, "nonexistent_ref")
+		_, err := connector.UpdateObject(dtcPool, "nonexistent_ref")
 		Expect(err).NotTo(BeNil())
 	})
 	It("Should fail to delete a non-existent Dtc pool", func() {

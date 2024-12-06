@@ -24,18 +24,18 @@ var _ = Describe("Object Manager DTC Server", func() {
 				"host":    "2.3.4.5",
 			},
 		}
-		servermonitor := []*DtcServerMonitor{
+		serverMonitor := []*DtcServerMonitor{
 			{
 				Monitor: monitorRef,
 				Host:    "2.3.4.5",
 			},
 		}
-		Sni_host := "sni_name"
+		sniHost := "sni_name"
 		useSniHost := true
-		objectAsResult := NewDtcServer(comment, name, host, false, false, eas, servermonitor, Sni_host, useSniHost)
+		objectAsResult := NewDtcServer(comment, name, host, false, false, eas, serverMonitor, sniHost, useSniHost)
 		objectAsResult.Ref = fakeRefReturn
 		aniFakeConnector := &fakeConnector{
-			createObjectObj: NewDtcServer(comment, name, host, false, false, eas, servermonitor, Sni_host, useSniHost),
+			createObjectObj: NewDtcServer(comment, name, host, false, false, eas, serverMonitor, sniHost, useSniHost),
 			getObjectRef:    fakeRefReturn,
 			getObjectObj: map[string]interface{}{
 				"DtcMonitor": &DtcMonitorHttp{},
@@ -55,7 +55,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 		var ServerDtc *DtcServer
 		var err error
 		It("should pass expected DTC server Object to CreateObject", func() {
-			ServerDtc, err = objMgr.CreateDtcServer(comment, name, host, false, false, eas, monitors, Sni_host, useSniHost)
+			ServerDtc, err = objMgr.CreateDtcServer(comment, name, host, false, false, eas, monitors, sniHost, useSniHost)
 
 		})
 		It("should return expected DTC server Object", func() {
@@ -80,20 +80,20 @@ var _ = Describe("Object Manager DTC Server", func() {
 			ref = fmt.Sprintf("dtc:server/ZG5zLmlkbnNfc2VydmVyJGR0Y19zZXJ2ZXIuY29t:%s", name)
 			initialEas := EA{"Site": "Blr"}
 			initialComment := "test client"
-			initialhost := "2.4.5.6"
-			initObj := NewDtcServer(initialComment, name, initialhost, false, false, initialEas, nil, "", false)
+			initialHost := "2.4.5.6"
+			initObj := NewDtcServer(initialComment, name, initialHost, false, false, initialEas, nil, "", false)
 			initObj.Ref = ref
 
 			expectedEas := EA{"Site": "Blr"}
 
-			updatename := "dtc_server_21"
+			updateName := "dtc_server_21"
 			updateComment := "new comment"
 			updateHost := "admin.com"
 			updatedRef := fmt.Sprintf("dtc:server/ZG5zLmlkbnNfc2VydmVyJGR0Y19zZXJ2ZXIuY29t:%s", name)
-			updateObjIn := NewDtcServer(updateComment, updatename, updateHost, true, false, expectedEas, nil, "sni_name", true)
+			updateObjIn := NewDtcServer(updateComment, updateName, updateHost, true, false, expectedEas, nil, "sni_name", true)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewDtcServer(updateComment, updatename, updateHost, true, false, expectedEas, nil, "sni_name", true)
+			expectedObj := NewDtcServer(updateComment, updateName, updateHost, true, false, expectedEas, nil, "sni_name", true)
 			expectedObj.Ref = updatedRef
 
 			conn = &fakeConnector{
@@ -111,7 +111,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 			}
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
 
-			actualObj, err = objMgr.UpdateDtcServer(ref, updateComment, updatename, updateHost, true, false, expectedEas, nil, "sni_name", true)
+			actualObj, err = objMgr.UpdateDtcServer(ref, updateComment, updateName, updateHost, true, false, expectedEas, nil, "sni_name", true)
 			Expect(err).To(BeNil())
 			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})
@@ -126,7 +126,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 		eas := EA{"Site": "blr"}
 		conn := &fakeConnector{
 			createObjectObj:   NewDtcServer(comment, name, host, true, false, eas, nil, "", true),
-			createObjectError: fmt.Errorf("If 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled"),
+			createObjectError: fmt.Errorf("if 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled"),
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -145,7 +145,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 		name := "dtc_server"
 		comment := "get servers"
 		host := "2.3.4.5"
-		sni_host := "sni_hostname"
+		sniHost := "sni_hostname"
 		fakeRefReturn := fmt.Sprintf("dtc:server/ZG5zLmlkbnNfc2VydmVyJGR0Y19zZXJ2ZXIuY29t:%s", name)
 
 		queryParams := NewQueryParams(
@@ -154,14 +154,14 @@ var _ = Describe("Object Manager DTC Server", func() {
 				"name":         name,
 				"comment":      comment,
 				"host":         host,
-				"sni_hostname": sni_host,
+				"sni_hostname": sniHost,
 			})
 
 		conn := &fakeConnector{
-			createObjectObj:      NewDtcServer(comment, name, host, false, false, nil, nil, sni_host, true),
+			createObjectObj:      NewDtcServer(comment, name, host, false, false, nil, nil, sniHost, true),
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyDtcServer(),
-			resultObject:         []DtcServer{*NewDtcServer(comment, name, host, false, false, nil, nil, sni_host, true)},
+			resultObject:         []DtcServer{*NewDtcServer(comment, name, host, false, false, nil, nil, sniHost, true)},
 			fakeRefReturn:        fakeRefReturn,
 			getObjectQueryParams: queryParams,
 		}
@@ -172,7 +172,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 		var actualRecord *DtcServer
 		var err error
 		It("should pass expected Dtc Server Object to GetObject", func() {
-			actualRecord, err = objMgr.GetDtcServer(name, comment, host, sni_host)
+			actualRecord, err = objMgr.GetDtcServer(queryParams)
 			Expect(err).To(BeNil())
 			Expect(*actualRecord).To(Equal(conn.resultObject.([]DtcServer)[0]))
 		})

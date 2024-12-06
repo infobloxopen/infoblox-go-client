@@ -42,9 +42,9 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	UseSniHostname bool,
 ) (*DtcServer, error) {
 	if (UseSniHostname && SniHostname == "") || (!UseSniHostname && SniHostname != "") {
-		return nil, fmt.Errorf("If 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled")
+		return nil, fmt.Errorf("if 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled")
 	}
-	var Servermonitors []*DtcServerMonitor
+	var serverMonitors []*DtcServerMonitor
 	for _, userMonitor := range Monitors {
 		monitor, okMonitor := userMonitor["monitor"].(Monitor)
 		MonitorHost, _ := userMonitor["host"].(string)
@@ -61,9 +61,9 @@ func (objMgr *ObjectManager) CreateDtcServer(
 			Host:    MonitorHost,
 		}
 
-		Servermonitors = append(Servermonitors, ServerMonitor)
+		serverMonitors = append(serverMonitors, ServerMonitor)
 	}
-	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, Servermonitors, SniHostname, UseSniHostname)
+	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, serverMonitors, SniHostname, UseSniHostname)
 	ref, err := objMgr.connector.CreateObject(DtcServer)
 	if err != nil {
 		return nil, err
@@ -72,24 +72,12 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	return DtcServer, nil
 }
 
-func (objMgr *ObjectManager) GetDtcServer(serverName string, comment string, host string, sni_hostname string) (*DtcServer, error) {
+func (objMgr *ObjectManager) GetDtcServer(queryParams *QueryParams) (*DtcServer, error) {
 	var res []DtcServer
-	ServerDtc := NewEmptyDtcServer()
-	sf := map[string]string{
-		"name":         serverName,
-		"comment":      comment,
-		"host":         host,
-		"sni_hostname": sni_hostname,
-	}
-	queryParams := NewQueryParams(false, sf)
-	err := objMgr.connector.GetObject(ServerDtc, "", queryParams, &res)
-
+	server := NewEmptyDtcServer()
+	err := objMgr.connector.GetObject(server, "", queryParams, &res)
 	if err != nil {
-		return nil, err
-	} else if res == nil || len(res) == 0 {
-		return nil, NewNotFoundError(
-			fmt.Sprintf(
-				"A Dtc Server with name '%s' is not found", serverName))
+		return nil, fmt.Errorf("error getting DtcServer object, err: %s", err)
 	}
 	return &res[0], nil
 }
@@ -107,7 +95,7 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 	if (UseSniHostname && SniHostname == "") || (!UseSniHostname && SniHostname != "") {
 		return nil, fmt.Errorf("If 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled ")
 	}
-	var Servermonitors []*DtcServerMonitor
+	var serverMonitors []*DtcServerMonitor
 	for _, userMonitor := range Monitors {
 		monitor, okMonitor := userMonitor["monitor"].(Monitor)
 		MonitorHost, _ := userMonitor["host"].(string)
@@ -124,9 +112,9 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 			Host:    MonitorHost,
 		}
 
-		Servermonitors = append(Servermonitors, ServerMonitor)
+		serverMonitors = append(serverMonitors, ServerMonitor)
 	}
-	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, Servermonitors, SniHostname, UseSniHostname)
+	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, serverMonitors, SniHostname, UseSniHostname)
 	DtcServer.Ref = ref
 	ref, err := objMgr.connector.UpdateObject(DtcServer, ref)
 	if err != nil {
