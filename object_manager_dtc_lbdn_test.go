@@ -80,10 +80,10 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		})
 
 		It("should fail to get expected DtcLbdn Object from getObject", func() {
-			qp1 := NewQueryParams(false, map[string]string{"name": "test-lbdn111"})
-			conn.getObjectQueryParams = qp1
+			queryParams1 := NewQueryParams(false, map[string]string{"name": "test-lbdn111"})
+			conn.getObjectQueryParams = queryParams1
 			conn.resultObject = []DtcLbdn{}
-			actualRecord, err := objMgr.GetDtcLbdn(qp1)
+			actualRecord, err := objMgr.GetDtcLbdn(queryParams1)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -93,10 +93,10 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 	Describe("Get Dtc Lbdn: Negative scenario", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
-		qp2 := NewQueryParams(false, map[string]string{"lb_method": "ROUND_ROBIN"})
+		queryParams2 := NewQueryParams(false, map[string]string{"lb_method": "ROUND_ROBIN"})
 		conn := &fakeConnector{
 			getObjectObj:         NewEmptyDtcLbdn(),
-			getObjectQueryParams: qp2,
+			getObjectQueryParams: queryParams2,
 			resultObject:         []DtcLbdn{},
 		}
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -104,7 +104,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		// negative scenario
 		conn.getObjectError = fmt.Errorf("Field is not searchable: lb_method")
 		It("should fail to get expected DtcLbdn Object from getObject with non searchable field", func() {
-			_, err := objMgr.GetDtcLbdn(qp2)
+			_, err := objMgr.GetDtcLbdn(queryParams2)
 			Expect(err).ToNot(BeNil())
 		})
 
