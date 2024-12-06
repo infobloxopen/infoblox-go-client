@@ -10,23 +10,23 @@ func NewEmptyDtcServer() *DtcServer {
 func NewDtcServer(comment string,
 	name string,
 	host string,
-	AutoCreateHostRecord bool,
+	autoCreateHostRecord bool,
 	disable bool,
 	ea EA,
-	Monitors []*DtcServerMonitor,
-	SniHostname string,
-	UseSniHostname bool,
+	monitors []*DtcServerMonitor,
+	sniHostname string,
+	useSniHostname bool,
 ) *DtcServer {
 	DtcServer := NewEmptyDtcServer()
 	DtcServer.Comment = &comment
 	DtcServer.Name = &name
 	DtcServer.Host = &host
-	DtcServer.AutoCreateHostRecord = &AutoCreateHostRecord
+	DtcServer.AutoCreateHostRecord = &autoCreateHostRecord
 	DtcServer.Disable = &disable
 	DtcServer.Ea = ea
-	DtcServer.Monitors = Monitors
-	DtcServer.SniHostname = &SniHostname
-	DtcServer.UseSniHostname = &UseSniHostname
+	DtcServer.Monitors = monitors
+	DtcServer.SniHostname = &sniHostname
+	DtcServer.UseSniHostname = &useSniHostname
 	return DtcServer
 }
 
@@ -34,20 +34,20 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	comment string,
 	name string,
 	host string,
-	AutoCreateHostRecord bool,
+	autoCreateHostRecord bool,
 	disable bool,
 	ea EA,
-	Monitors []map[string]interface{},
-	SniHostname string,
-	UseSniHostname bool,
+	monitors []map[string]interface{},
+	sniHostname string,
+	useSniHostname bool,
 ) (*DtcServer, error) {
-	if (UseSniHostname && SniHostname == "") || (!UseSniHostname && SniHostname != "") {
+	if (useSniHostname && sniHostname == "") || (!useSniHostname && sniHostname != "") {
 		return nil, fmt.Errorf("if 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled")
 	}
 	var serverMonitors []*DtcServerMonitor
-	for _, userMonitor := range Monitors {
+	for _, userMonitor := range monitors {
 		monitor, okMonitor := userMonitor["monitor"].(Monitor)
-		MonitorHost, _ := userMonitor["host"].(string)
+		monitorHost, _ := userMonitor["host"].(string)
 		if !okMonitor {
 			return nil, fmt.Errorf("\"Required field missing: monitor")
 		}
@@ -56,20 +56,20 @@ func (objMgr *ObjectManager) CreateDtcServer(
 			return nil, err
 		}
 
-		ServerMonitor := &DtcServerMonitor{
+		serverMonitor := &DtcServerMonitor{
 			Monitor: monitorRef,
-			Host:    MonitorHost,
+			Host:    monitorHost,
 		}
 
-		serverMonitors = append(serverMonitors, ServerMonitor)
+		serverMonitors = append(serverMonitors, serverMonitor)
 	}
-	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, serverMonitors, SniHostname, UseSniHostname)
-	ref, err := objMgr.connector.CreateObject(DtcServer)
+	dtcServer := NewDtcServer(comment, name, host, autoCreateHostRecord, disable, ea, serverMonitors, sniHostname, useSniHostname)
+	ref, err := objMgr.connector.CreateObject(dtcServer)
 	if err != nil {
 		return nil, err
 	}
-	DtcServer.Ref = ref
-	return DtcServer, nil
+	dtcServer.Ref = ref
+	return dtcServer, nil
 }
 
 func (objMgr *ObjectManager) GetDtcServer(queryParams *QueryParams) (*DtcServer, error) {
@@ -86,19 +86,19 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 	comment string,
 	name string,
 	host string,
-	AutoCreateHostRecord bool,
+	autoCreateHostRecord bool,
 	disable bool,
 	ea EA,
-	Monitors []map[string]interface{},
-	SniHostname string,
-	UseSniHostname bool) (*DtcServer, error) {
-	if (UseSniHostname && SniHostname == "") || (!UseSniHostname && SniHostname != "") {
+	monitors []map[string]interface{},
+	sniHostname string,
+	useSniHostname bool) (*DtcServer, error) {
+	if (useSniHostname && sniHostname == "") || (!useSniHostname && sniHostname != "") {
 		return nil, fmt.Errorf("If 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled ")
 	}
 	var serverMonitors []*DtcServerMonitor
-	for _, userMonitor := range Monitors {
+	for _, userMonitor := range monitors {
 		monitor, okMonitor := userMonitor["monitor"].(Monitor)
-		MonitorHost, _ := userMonitor["host"].(string)
+		monitorHost, _ := userMonitor["host"].(string)
 		if !okMonitor {
 			return nil, fmt.Errorf("\"Required field missing: monitor")
 		}
@@ -107,14 +107,14 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 			return nil, err
 		}
 
-		ServerMonitor := &DtcServerMonitor{
+		serverMonitor := &DtcServerMonitor{
 			Monitor: monitorRef,
-			Host:    MonitorHost,
+			Host:    monitorHost,
 		}
 
-		serverMonitors = append(serverMonitors, ServerMonitor)
+		serverMonitors = append(serverMonitors, serverMonitor)
 	}
-	DtcServer := NewDtcServer(comment, name, host, AutoCreateHostRecord, disable, ea, serverMonitors, SniHostname, UseSniHostname)
+	DtcServer := NewDtcServer(comment, name, host, autoCreateHostRecord, disable, ea, serverMonitors, sniHostname, useSniHostname)
 	DtcServer.Ref = ref
 	ref, err := objMgr.connector.UpdateObject(DtcServer, ref)
 	if err != nil {
@@ -125,10 +125,10 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 
 }
 func (objMgr *ObjectManager) GetDtcServerByRef(ref string) (*DtcServer, error) {
-	ServerDtc := NewEmptyDtcServer()
+	serverDtc := NewEmptyDtcServer()
 	err := objMgr.connector.GetObject(
-		ServerDtc, ref, NewQueryParams(false, nil), &ServerDtc)
-	return ServerDtc, err
+		serverDtc, ref, NewQueryParams(false, nil), &serverDtc)
+	return serverDtc, err
 }
 
 func (objMgr *ObjectManager) DeleteDtcServer(ref string) (string, error) {
