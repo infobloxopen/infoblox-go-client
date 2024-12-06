@@ -52,15 +52,15 @@ var _ = Describe("Object Manager DTC Server", func() {
 			fakeRefReturn: fakeRefReturn,
 		}
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
-		var ServerDtc *DtcServer
+		var serverDtc *DtcServer
 		var err error
 		It("should pass expected DTC server Object to CreateObject", func() {
-			ServerDtc, err = objMgr.CreateDtcServer(comment, name, host, false, false, eas, monitors, sniHost, useSniHost)
+			serverDtc, err = objMgr.CreateDtcServer(comment, name, host, false, false, eas, monitors, sniHost, useSniHost)
 
 		})
 		It("should return expected DTC server Object", func() {
 			Expect(err).To(BeNil())
-			Expect(ServerDtc).To(Equal(aniFakeConnector.resultObject.(map[string]interface{})["DtcServer"]))
+			Expect(serverDtc).To(Equal(aniFakeConnector.resultObject.(map[string]interface{})["DtcServer"]))
 		})
 	})
 

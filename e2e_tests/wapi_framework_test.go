@@ -3214,15 +3214,15 @@ var _ = Describe("DTC Object pools", func() {
 	})
 	It("Should fail to get a non-existent DTC pool", func() {
 		var res []ibclient.DtcPool
-		Name := "dtc_pool_wapi"
-		search := &ibclient.DtcPool{Name: &Name}
+		name := "dtc_pool_wapi"
+		search := &ibclient.DtcPool{Name: &name}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).NotTo(BeNil())
 	})
 	It("Should fail to update a non-existent DTC pool", func() {
-		Name := "dtc_pool_wapi"
+		name := "dtc_pool_wapi"
 		dtcPool := &ibclient.DtcPool{
-			Name: &Name,
+			Name: &name,
 			Servers: []*ibclient.DtcServerLink{
 				{
 					Server: serverRef,
