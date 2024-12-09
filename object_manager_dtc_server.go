@@ -3,9 +3,9 @@ package ibclient
 import "fmt"
 
 func NewEmptyDtcServer() *DtcServer {
-	DtcServer := &DtcServer{}
-	DtcServer.SetReturnFields(append(DtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
-	return DtcServer
+	dtcServer := &DtcServer{}
+	dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
+	return dtcServer
 }
 func NewDtcServer(comment string,
 	name string,
@@ -114,14 +114,14 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 
 		serverMonitors = append(serverMonitors, serverMonitor)
 	}
-	DtcServer := NewDtcServer(comment, name, host, autoCreateHostRecord, disable, ea, serverMonitors, sniHostname, useSniHostname)
-	DtcServer.Ref = ref
-	ref, err := objMgr.connector.UpdateObject(DtcServer, ref)
+	dtcServer := NewDtcServer(comment, name, host, autoCreateHostRecord, disable, ea, serverMonitors, sniHostname, useSniHostname)
+	dtcServer.Ref = ref
+	ref, err := objMgr.connector.UpdateObject(dtcServer, ref)
 	if err != nil {
 		return nil, err
 	}
-	DtcServer.Ref = ref
-	return DtcServer, nil
+	dtcServer.Ref = ref
+	return dtcServer, nil
 
 }
 func (objMgr *ObjectManager) GetDtcServerByRef(ref string) (*DtcServer, error) {
