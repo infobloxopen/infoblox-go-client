@@ -345,12 +345,12 @@ var _ = Describe("Object Manager DTC Pool", func() {
 
 		conn.resultObject.([]DtcPool)[0].Ref = fakeRefReturn
 
-		var actualRecord *DtcPool
+		var actualRecord []DtcPool
 		var err error
 		It("should pass expected Dtc Pool Object to GetObject", func() {
-			actualRecord, err = objMgr.GetDtcPool(queryParams)
+			actualRecord, err = objMgr.GetAllDtcPool(queryParams)
 			Expect(err).To(BeNil())
-			Expect(*actualRecord).To(Equal(conn.resultObject.([]DtcPool)[0]))
+			Expect(actualRecord).To(Equal(conn.resultObject))
 		})
 	})
 

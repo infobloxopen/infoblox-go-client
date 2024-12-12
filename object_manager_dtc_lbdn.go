@@ -195,7 +195,7 @@ func (objMgr *ObjectManager) DeleteDtcLbdn(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) GetDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error) {
+func (objMgr *ObjectManager) GetAllDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error) {
 	var res []DtcLbdn
 	lbdn := NewEmptyDtcLbdn()
 	err := objMgr.connector.GetObject(lbdn, "", queryParams, &res)
@@ -203,6 +203,26 @@ func (objMgr *ObjectManager) GetDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, er
 		return nil, fmt.Errorf("error getting DtcLbdn object, err: %s", err)
 	}
 	return res, nil
+}
+
+func (objMgr *ObjectManager) GetDtcLbdn(name string) (*DtcLbdn, error) {
+	dtcLbdn := NewEmptyDtcLbdn()
+	var res []DtcLbdn
+	if name == "" {
+		return nil, fmt.Errorf("name of the record is required to retrieve a unique DtcLbdn record")
+	}
+	sf := map[string]string{
+		"name": name,
+	}
+	queryParams := NewQueryParams(false, sf)
+	err := objMgr.connector.GetObject(dtcLbdn, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	} else if res == nil || len(res) == 0 {
+		return nil, NewNotFoundError(
+			fmt.Sprintf("Dtc Lbdn record with name '%s' not found", name))
+	}
+	return &res[0], nil
 }
 
 func (objMgr *ObjectManager) GetDtcLbdnByRef(ref string) (*DtcLbdn, error) {

@@ -74,7 +74,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should get expected DtcLbdn Object from getObject", func() {
 			conn.getObjectQueryParams = queryParams
-			actualRecord, err := objMgr.GetDtcLbdn(queryParams)
+			actualRecord, err := objMgr.GetAllDtcLbdn(queryParams)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -83,7 +83,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 			queryParams1 := NewQueryParams(false, map[string]string{"name": "test-lbdn111"})
 			conn.getObjectQueryParams = queryParams1
 			conn.resultObject = []DtcLbdn{}
-			actualRecord, err := objMgr.GetDtcLbdn(queryParams1)
+			actualRecord, err := objMgr.GetAllDtcLbdn(queryParams1)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -104,8 +104,69 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		// negative scenario
 		conn.getObjectError = fmt.Errorf("Field is not searchable: lb_method")
 		It("should fail to get expected DtcLbdn Object from getObject with non searchable field", func() {
-			_, err := objMgr.GetDtcLbdn(queryParams2)
+			_, err := objMgr.GetAllDtcLbdn(queryParams2)
 			Expect(err).ToNot(BeNil())
+		})
+
+	})
+
+	Describe("Get Dtc Lbdn by name", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		comment := "test lbdn"
+		disable := false
+		autoConsolidatedMonitors := false
+		name := "TestLbdn11"
+		fakeRefReturn := fmt.Sprintf("dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
+		lbMethod := "ROUND_ROBIN"
+		patterns := []string{"*info.com"}
+		persistence := uint32(60)
+		priority := uint32(1)
+		topology := ""
+		types := []string{"A", "CNAME"}
+		ttl := uint32(60)
+		useTtl := true
+		queryParams := NewQueryParams(false, map[string]string{"name": name})
+		res := NewDtcLbdn(fakeRefReturn, name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl)
+
+		conn := &fakeConnector{
+			getObjectObj:         NewEmptyDtcLbdn(),
+			getObjectQueryParams: NewQueryParams(false, map[string]string{"name": name}),
+			resultObject:         []DtcLbdn{*res},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		It("should get expected DtcLbdn Object from getObject", func() {
+			conn.getObjectQueryParams = queryParams
+			actualRecord, err := objMgr.GetDtcLbdn(name)
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]DtcLbdn)[0]))
+			Expect(err).To(BeNil())
+		})
+
+	})
+
+	Describe("Get Dtc Lbdn by name, nagative scenario", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyDtcLbdn(),
+			getObjectQueryParams: NewQueryParams(false, map[string]string{"name": ""}),
+			getObjectError:       fmt.Errorf("name of the record is required to retrieve a unique DtcLbdn record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *DtcLbdn
+		var err error
+		expectedObj = nil
+		It("should pass expected Dtc Lbdn record Object to Getobject", func() {
+			actualRecord, err = objMgr.GetDtcLbdn("")
+		})
+		It("should return expected Dtc Lbdn record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.getObjectError))
 		})
 
 	})
