@@ -70,6 +70,8 @@ type IBObjectManager interface {
 	GetAllDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error)
 	GetDtcLbdn(name string) (*DtcLbdn, error)
 	GetDtcLbdnByRef(ref string) (*DtcLbdn, error)
+	GetDtcPoolByRef(ref string) (*DtcPool, error)
+	GetDtcServerByRef(ref string) (*DtcServer, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)

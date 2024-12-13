@@ -29,25 +29,6 @@ func updateServerReferences(servers []*DtcServerLink, objMgr *ObjectManager) err
 	return nil
 }
 
-// Updating the topology name with reference
-func updateTopologyReference(lbPreferredTopology *string, objMgr *ObjectManager) (*string, error) {
-	if lbPreferredTopology != nil {
-		topologyFields := map[string]string{"name": *lbPreferredTopology}
-		queryParams := NewQueryParams(false, topologyFields)
-		var topologies []DtcTopology
-		err := objMgr.connector.GetObject(&DtcTopology{}, "dtc:topology", queryParams, &topologies)
-		if err != nil {
-			return nil, err
-		}
-		if len(topologies) > 0 {
-			return &topologies[0].Ref, nil
-		} else {
-			return nil, fmt.Errorf("dtc:topology with name %s not found", *lbPreferredTopology)
-		}
-	}
-	return nil, nil
-}
-
 // get the monitor reference
 func getMonitorReference(monitorName string, monitorType string, objMgr *ObjectManager) (string, error) {
 	if monitorType == "" {
@@ -219,14 +200,21 @@ func (objMgr *ObjectManager) CreateDtcPool(
 		monitorResults = append(monitorResults, &DtcMonitorHttp{Ref: monitorRef})
 	}
 	//Update the topology name with the topology reference
-	lbPreferredTopology, err = updateTopologyReference(lbPreferredTopology, objMgr)
-	if err != nil {
-		return nil, err
+	if lbPreferredTopology != nil {
+		topology, err := getTopology(*lbPreferredTopology, objMgr)
+		if err != nil {
+			return nil, err
+		}
+		lbPreferredTopology = &topology
 	}
+
 	//Update the topology name with the topology reference
-	lbAlternateTopology, err = updateTopologyReference(lbAlternateTopology, objMgr)
-	if err != nil {
-		return nil, err
+	if lbAlternateTopology != nil {
+		topologyAlternate, err := getTopology(*lbAlternateTopology, objMgr)
+		if err != nil {
+			return nil, err
+		}
+		lbAlternateTopology = &topologyAlternate
 	}
 	//update the monitor in LbDynamicRatioPreferred with reference
 	var lbDynamicRatioAlternateMethod *SettingDynamicratio
@@ -336,14 +324,20 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		monitorResults = append(monitorResults, &DtcMonitorHttp{Ref: monitorRef})
 	}
 	//Update the topology name with the topology reference
-	lbPreferredTopology, err = updateTopologyReference(lbPreferredTopology, objMgr)
-	if err != nil {
-		return nil, err
+	if lbPreferredTopology != nil {
+		topology, err := getTopology(*lbPreferredTopology, objMgr)
+		if err != nil {
+			return nil, err
+		}
+		lbPreferredTopology = &topology
 	}
 	//Update the topology name with the topology reference
-	lbAlternateTopology, err = updateTopologyReference(lbAlternateTopology, objMgr)
-	if err != nil {
-		return nil, err
+	if lbAlternateTopology != nil {
+		topologyAlternate, err := getTopology(*lbAlternateTopology, objMgr)
+		if err != nil {
+			return nil, err
+		}
+		lbAlternateTopology = &topologyAlternate
 	}
 	//Convert LbDynamicRatioAlternate to use monitor reference
 	var lbDynamicRatioAlternateMethod *SettingDynamicratio
