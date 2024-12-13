@@ -133,7 +133,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 		var actualRecord, expectedObj *DtcServer
 		var err error
 		expectedObj = nil
-		It("should pass expected DTC server Object to CreateObject", func() {
+		It("should return expected dtc server object ", func() {
 			actualRecord, err = objMgr.CreateDtcServer(comment, name, host, true, false, eas, nil, "", true)
 			Expect(actualRecord).To(Equal(expectedObj))
 			Expect(err).To(Equal(conn.createObjectError))
@@ -173,6 +173,43 @@ var _ = Describe("Object Manager DTC Server", func() {
 			actualRecord, err = objMgr.GetDtcServer(name, host)
 			Expect(err).To(BeNil())
 			Expect(*actualRecord).To(Equal(conn.resultObject.([]DtcServer)[0]))
+		})
+	})
+	Describe("Negative case : Error when name and host is not provided in Get function", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		name := ""
+		comment := "servers"
+		host := ""
+		sniHost := "sni_hostname"
+		fakeRefReturn := fmt.Sprintf("dtc:server/ZG5zLmlkbnNfc2VydmVyJGR0Y19zZXJ2ZXIuY29t:%s", name)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"name": name,
+				"host": host,
+			})
+
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyDtcServer(),
+			resultObject:         []DtcServer{*NewDtcServer(comment, name, host, false, false, nil, nil, sniHost, true)},
+			fakeRefReturn:        fakeRefReturn,
+			getObjectQueryParams: queryParams,
+			getObjectError:       fmt.Errorf("name and host of the server are required to retreive a unique dtc server"),
+		}
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+
+		conn.resultObject.([]DtcServer)[0].Ref = fakeRefReturn
+
+		var actualRecord, expectedObj *DtcServer
+		var err error
+		expectedObj = nil
+		It("should return expected dtc server object", func() {
+			actualRecord, err = objMgr.GetDtcServer(name, host)
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.getObjectError))
 		})
 	})
 	Describe("Get All server", func() {
