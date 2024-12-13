@@ -86,6 +86,9 @@ func (objMgr *ObjectManager) GetAllDtcServer(queryParams *QueryParams) ([]DtcSer
 func (objMgr *ObjectManager) GetDtcServer(name string, host string) (*DtcServer, error) {
 	var res []DtcServer
 	server := NewEmptyDtcServer()
+	if name == "" || host == "" {
+		return nil, fmt.Errorf("name and host of the server are required to retreive a unique dtc server")
+	}
 	sf := map[string]string{
 		"name": name,
 		"host": host,
