@@ -7,6 +7,7 @@ func NewEmptyDtcServer() *DtcServer {
 	dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 	return dtcServer
 }
+
 func NewDtcServer(comment string,
 	name string,
 	host string,
@@ -72,15 +73,34 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	return dtcServer, nil
 }
 
-func (objMgr *ObjectManager) GetDtcServer(queryParams *QueryParams) (*DtcServer, error) {
+func (objMgr *ObjectManager) GetAllDtcServer(queryParams *QueryParams) ([]DtcServer, error) {
 	var res []DtcServer
 	server := NewEmptyDtcServer()
 	err := objMgr.connector.GetObject(server, "", queryParams, &res)
 	if err != nil {
 		return nil, fmt.Errorf("error getting DtcServer object, err: %s", err)
 	}
+	return res, nil
+}
+
+func (objMgr *ObjectManager) GetDtcServer(name string, host string) (*DtcServer, error) {
+	var res []DtcServer
+	server := NewEmptyDtcServer()
+	sf := map[string]string{
+		"name": name,
+		"host": host,
+	}
+	queryParams := NewQueryParams(false, sf)
+	err := objMgr.connector.GetObject(server, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	} else if res == nil || len(res) == 0 {
+		return nil, NewNotFoundError(
+			fmt.Sprintf("Dtc server with name '%s' and host '%s' not found", name, host))
+	}
 	return &res[0], nil
 }
+
 func (objMgr *ObjectManager) UpdateDtcServer(
 	ref string,
 	comment string,
@@ -122,8 +142,8 @@ func (objMgr *ObjectManager) UpdateDtcServer(
 	}
 	dtcServer.Ref = ref
 	return dtcServer, nil
-
 }
+
 func (objMgr *ObjectManager) GetDtcServerByRef(ref string) (*DtcServer, error) {
 	serverDtc := NewEmptyDtcServer()
 	err := objMgr.connector.GetObject(

@@ -151,10 +151,8 @@ var _ = Describe("Object Manager DTC Server", func() {
 		queryParams := NewQueryParams(
 			false,
 			map[string]string{
-				"name":         name,
-				"comment":      comment,
-				"host":         host,
-				"sni_hostname": sniHost,
+				"name": name,
+				"host": host,
 			})
 
 		conn := &fakeConnector{
@@ -172,9 +170,47 @@ var _ = Describe("Object Manager DTC Server", func() {
 		var actualRecord *DtcServer
 		var err error
 		It("should pass expected Dtc Server Object to GetObject", func() {
-			actualRecord, err = objMgr.GetDtcServer(queryParams)
+			actualRecord, err = objMgr.GetDtcServer(name, host)
 			Expect(err).To(BeNil())
 			Expect(*actualRecord).To(Equal(conn.resultObject.([]DtcServer)[0]))
+		})
+	})
+	Describe("Get All server", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		name := "dtc_server"
+		comment := "get servers"
+		host := "2.3.4.5"
+		sniHost := "sni_hostname"
+		fakeRefReturn := fmt.Sprintf("dtc:server/ZG5zLmlkbnNfc2VydmVyJGR0Y19zZXJ2ZXIuY29t:%s", name)
+
+		queryParams := NewQueryParams(
+			false,
+			map[string]string{
+				"name":         name,
+				"host":         host,
+				"comment":      comment,
+				"sni_hostname": sniHost,
+			})
+
+		conn := &fakeConnector{
+			createObjectObj:      NewDtcServer(comment, name, host, false, false, nil, nil, sniHost, true),
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyDtcServer(),
+			resultObject:         []DtcServer{*NewDtcServer(comment, name, host, false, false, nil, nil, sniHost, true)},
+			fakeRefReturn:        fakeRefReturn,
+			getObjectQueryParams: queryParams,
+		}
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+
+		conn.resultObject.([]DtcServer)[0].Ref = fakeRefReturn
+
+		var actualRecord []DtcServer
+		var err error
+		It("should pass expected Dtc Server Object to GetObject", func() {
+			actualRecord, err = objMgr.GetAllDtcServer(queryParams)
+			Expect(err).To(BeNil())
+			Expect(actualRecord).To(Equal(conn.resultObject.([]DtcServer)))
 		})
 	})
 	Describe("Delete DTC server", func() {
