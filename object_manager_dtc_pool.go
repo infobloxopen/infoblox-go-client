@@ -429,7 +429,7 @@ func (objMgr *ObjectManager) GetDtcPool(name string) (*DtcPool, error) {
 	dtcPool := NewEmptyDtcPool()
 	var res []DtcPool
 	if name == "" {
-		return nil, fmt.Errorf("name of the record is required to retrieve a unique DtcPool record")
+		return nil, fmt.Errorf("name of the record is required to retrieve a unique Dtc Pool record")
 	}
 	sf := map[string]string{
 		"name": name,

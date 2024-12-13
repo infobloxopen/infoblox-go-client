@@ -354,6 +354,57 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		})
 	})
 
+	Describe("Get Dtc Pool by name", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		name := "dtc_pool_21"
+		comment := "get pools"
+		autoConsolidatedMonitors := false
+		fakeRefReturn := fmt.Sprintf("dtc:pool/ZG5zLmlkbnNfcG9vbCRkdGNfcG9vbF8x:%s", name)
+		res := NewDtcPool(comment, name, "ROUND_ROBIN", nil, nil, nil, nil, "", nil, nil, nil, autoConsolidatedMonitors, "", nil, 20, true, false, 0)
+		queryParams := NewQueryParams(false, map[string]string{"name": name})
+		conn := &fakeConnector{
+			getObjectObj:         NewEmptyDtcPool(),
+			getObjectQueryParams: NewQueryParams(false, map[string]string{"name": name}),
+			resultObject:         []DtcPool{*res},
+			fakeRefReturn:        fakeRefReturn,
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		It("should get expected DtcPool Object from getObject", func() {
+			conn.getObjectQueryParams = queryParams
+			actualRecord, err := objMgr.GetDtcPool(name)
+			Expect(*actualRecord).To(Equal(conn.resultObject.([]DtcPool)[0]))
+			Expect(err).To(BeNil())
+		})
+
+	})
+
+	Describe("Get Dtc Pool by name, negative scenario", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+
+		conn := &fakeConnector{
+			getObjectRef:         "",
+			getObjectObj:         NewEmptyDtcPool(),
+			getObjectQueryParams: NewQueryParams(false, map[string]string{"name": ""}),
+			getObjectError:       fmt.Errorf("name of the record is required to retrieve a unique Dtc Pool record"),
+		}
+
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		var actualRecord, expectedObj *DtcPool
+		var err error
+		expectedObj = nil
+		It("should pass expected Dtc Pool record Object to Getobject", func() {
+			actualRecord, err = objMgr.GetDtcPool("")
+		})
+		It("should return expected Dtc Pool record Object", func() {
+			Expect(actualRecord).To(Equal(expectedObj))
+			Expect(err).To(Equal(conn.getObjectError))
+		})
+
+	})
+
 	Describe("Delete DTC pool", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"

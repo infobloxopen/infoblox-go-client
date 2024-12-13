@@ -66,7 +66,6 @@ type IBObjectManager interface {
 	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetAllDtcPool(queryParams *QueryParams) ([]DtcPool, error)
 	GetDtcPool(name string) (*DtcPool, error)
-	GetDtcPoolByRef(ref string) (*DtcPool, error)
 	GetDtcServer(queryParams *QueryParams) (*DtcServer, error)
 	GetAllDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error)
 	GetDtcLbdn(name string) (*DtcLbdn, error)
