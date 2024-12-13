@@ -93,6 +93,7 @@ func NewEmptyDtcPool() *DtcPool {
 
 	return poolDtc
 }
+
 func NewDtcPool(comment string,
 	name string,
 	lbPreferredMethod string,
@@ -110,8 +111,7 @@ func NewDtcPool(comment string,
 	ttl uint32,
 	useTTL bool,
 	disable bool,
-	quorum uint32,
-) *DtcPool {
+	quorum uint32) *DtcPool {
 	DtcPool := NewEmptyDtcPool()
 	DtcPool.Comment = &comment
 	DtcPool.Name = &name
@@ -151,8 +151,7 @@ func (objMgr *ObjectManager) CreateDtcPool(
 	ttl uint32,
 	useTTL bool,
 	disable bool,
-	quorum uint32,
-) (*DtcPool, error) {
+	quorum uint32) (*DtcPool, error) {
 	if name == "" || lbPreferredMethod == "" {
 		return nil, fmt.Errorf("name and lbPreferredMethod must be provided to create a pool")
 	}
@@ -174,7 +173,7 @@ func (objMgr *ObjectManager) CreateDtcPool(
 		method, _ := lbDynamicRatioPreferred["method"].(string)
 		monitorMetric, _ := lbDynamicRatioPreferred["monitor_metric"].(string)
 		monitorWeighing, _ := lbDynamicRatioPreferred["monitor_weighing"].(string)
-		invertMonitorMetric, _ := lbDynamicRatioPreferred["monitor_invert_monitor"].(bool)
+		invertMonitorMetric, _ := lbDynamicRatioPreferred["invert_monitor_metric"].(bool)
 
 		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
 		if err != nil {
@@ -224,7 +223,7 @@ func (objMgr *ObjectManager) CreateDtcPool(
 		methodAlternate, _ := lbDynamicRatioAlternate["method"].(string)
 		monitorMetricAlternate, _ := lbDynamicRatioAlternate["monitor_metric"].(string)
 		monitorWeighingAlternate, _ := lbDynamicRatioAlternate["monitor_weighing"].(string)
-		interferometricAlternate, _ := lbDynamicRatioAlternate["monitor_invert_monitor"].(bool)
+		interferometricAlternate, _ := lbDynamicRatioAlternate["invert_monitor_metric"].(bool)
 
 		monitorRefAlternate, err := getMonitorReference(monitorAlternate.Name, monitorAlternate.Type, objMgr)
 		if err != nil {
@@ -251,15 +250,16 @@ func (objMgr *ObjectManager) CreateDtcPool(
 	return poolDtc, nil
 }
 
-func (objMgr *ObjectManager) GetDtcPool(queryParams *QueryParams) (*DtcPool, error) {
+func (objMgr *ObjectManager) GetAllDtcPool(queryParams *QueryParams) ([]DtcPool, error) {
 	var res []DtcPool
 	pool := NewEmptyDtcPool()
 	err := objMgr.connector.GetObject(pool, "", queryParams, &res)
 	if err != nil {
 		return nil, fmt.Errorf("error getting DtcPool object, err: %s", err)
 	}
-	return &res[0], nil
+	return res, nil
 }
+
 func (objMgr *ObjectManager) UpdateDtcPool(
 	ref string,
 	comment string,
@@ -279,8 +279,7 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 	ttl uint32,
 	useTTL bool,
 	disable bool,
-	quorum uint32,
-) (*DtcPool, error) {
+	quorum uint32) (*DtcPool, error) {
 	if lbPreferredMethod == "DYNAMIC_RATIO" && lbDynamicRatioPreferred == nil {
 		return nil, fmt.Errorf("LbDynamicRatioPreferred cannot be nil when LbPreferredMethod is set to DYNAMIC_RATIO")
 	}
@@ -299,7 +298,7 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		method, _ := lbDynamicRatioPreferred["method"].(string)
 		monitorMetric, _ := lbDynamicRatioPreferred["monitor_metric"].(string)
 		monitorWeighing, _ := lbDynamicRatioPreferred["monitor_weighing"].(string)
-		invertMonitorMetric, _ := lbDynamicRatioPreferred["monitor_invert_monitor"].(bool)
+		invertMonitorMetric, _ := lbDynamicRatioPreferred["invert_monitor_metric"].(bool)
 
 		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
 		if err != nil {
@@ -347,7 +346,7 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		methodAlternate, _ := lbDynamicRatioAlternate["method"].(string)
 		monitorMetricAlternate, _ := lbDynamicRatioAlternate["monitor_metric"].(string)
 		monitorWeighingAlternate, _ := lbDynamicRatioAlternate["monitor_weighing"].(string)
-		invertMonitorMetricAlternate, _ := lbDynamicRatioAlternate["monitor_invert_monitor"].(bool)
+		invertMonitorMetricAlternate, _ := lbDynamicRatioAlternate["invert_monitor_metric"].(bool)
 
 		monitorRefAlternate, err := getMonitorReference(monitorAlternate.Name, monitorAlternate.Type, objMgr)
 		if err != nil {
@@ -412,12 +411,34 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 	return poolDtc, nil
 
 }
+
 func (objMgr *ObjectManager) GetDtcPoolByRef(ref string) (*DtcPool, error) {
 	poolDtc := NewEmptyDtcPool()
 	err := objMgr.connector.GetObject(
 		poolDtc, ref, NewQueryParams(false, nil), &poolDtc)
 	return poolDtc, err
 }
+
+func (objMgr *ObjectManager) GetDtcPool(name string) (*DtcPool, error) {
+	dtcPool := NewEmptyDtcPool()
+	var res []DtcPool
+	if name == "" {
+		return nil, fmt.Errorf("name of the record is required to retrieve a unique Dtc Pool record")
+	}
+	sf := map[string]string{
+		"name": name,
+	}
+	queryParams := NewQueryParams(false, sf)
+	err := objMgr.connector.GetObject(dtcPool, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	} else if res == nil || len(res) == 0 {
+		return nil, NewNotFoundError(
+			fmt.Sprintf("Dtc Pool record with name '%s' not found", name))
+	}
+	return &res[0], nil
+}
+
 func (objMgr *ObjectManager) DeleteDtcPool(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }

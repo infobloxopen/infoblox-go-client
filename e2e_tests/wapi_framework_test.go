@@ -6,7 +6,6 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
-	"strings"
 )
 
 var _ = Describe("Go Client", func() {
@@ -3072,12 +3071,17 @@ var _ = Describe("DTC Object pools", func() {
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
 	})
-	It("should update the dtc pool ", func() {
+	It("should update the dtc pool", func() {
+		var gridMembers []ibclient.Member
+		err := connector.GetObject(&ibclient.Member{}, "", nil, &gridMembers)
 		authZoneCreate := ibclient.ZoneAuth{
 			Fqdn: "test.com",
 			GridPrimary: []*ibclient.Memberserver{
 				{
-					Name: "infoblox.localdomain",
+					Name: *gridMembers[0].HostName,
+				},
+				{
+					Name: *gridMembers[1].HostName,
 				},
 			},
 		}
@@ -3107,11 +3111,12 @@ var _ = Describe("DTC Object pools", func() {
 				},
 			},
 			LbMethod:  "ROUND_ROBIN",
+			Patterns:  []string{"*test.com"},
 			AuthZones: []*ibclient.ZoneAuth{&authZoneCreate},
 		}
-		ref, err = connector.CreateObject(&dtcLBDN)
+		lbdnRef, err := connector.CreateObject(&dtcLBDN)
 		Expect(err).To(BeNil())
-		Expect(ref).To(MatchRegexp("dtc:lbdn/*"))
+		Expect(lbdnRef).To(MatchRegexp("dtc:lbdn/*"))
 		//update dtc pool
 		autoConsolidateMonitors := false
 		sf := map[string]string{"name": "http"}
@@ -3138,11 +3143,12 @@ var _ = Describe("DTC Object pools", func() {
 			ConsolidatedMonitors: []*ibclient.DtcPoolConsolidatedMonitorHealth{
 				{
 					Members: []string{
-						"infoblox.localdomain",
+						*gridMembers[0].HostName,
+						*gridMembers[1].HostName,
 					},
 					Monitor:                 monitorRef,
-					Availability:            "ALL",
-					FullHealthCommunication: false,
+					Availability:            "ANY",
+					FullHealthCommunication: true,
 				},
 			},
 		}
@@ -3152,6 +3158,10 @@ var _ = Describe("DTC Object pools", func() {
 		ref, err = connector.UpdateObject(dtcPoolUpdate, res[0].Ref)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+
+		delRef, err := connector.DeleteObject(lbdnRef)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("dtc:lbdn/*"))
 	})
 	It("should delete the dtc pool ", func() {
 		dtcPool := ibclient.DtcPool{
@@ -3287,12 +3297,13 @@ var _ = Describe("DTC LBDN and server object", func() {
 			topologyRef, poolRef string
 			err                  error
 		)
-		addr := os.Getenv("INFOBLOX_SERVER")
-		nameServer := "infoblox." + strings.ReplaceAll(addr, ".", "_")
 		// create zoneAuth
+		var gridMembers []ibclient.Member
+		err = connector.GetObject(&ibclient.Member{}, "", nil, &gridMembers)
+		Expect(err).To(BeNil())
 		zones := ibclient.ZoneAuth{
 			Fqdn:        "wapi.com",
-			GridPrimary: []*ibclient.Memberserver{{Name: nameServer}},
+			GridPrimary: []*ibclient.Memberserver{{Name: *gridMembers[0].HostName}},
 		}
 		zoneRef, err := connector.CreateObject(&zones)
 		Expect(err).To(BeNil())

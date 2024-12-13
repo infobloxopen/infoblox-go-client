@@ -55,7 +55,7 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authZones []string, comm
 	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 
 	if name == "" || lbMethod == "" {
-		return nil, fmt.Errorf("name and lbMethod fields are required to create a DtcLbdn object")
+		return nil, fmt.Errorf("name and lbMethod fields are required to create a Dtc Lbdn object")
 	}
 	// get ref id of authzones and replace
 	var zones []*ZoneAuth
@@ -89,7 +89,7 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authZones []string, comm
 		lbMethod, patterns, persistence, dtcPoolLink, priority, topologyRef, types, ttl, usettl)
 	ref, err := objMgr.connector.CreateObject(dtcLbdn)
 	if err != nil {
-		return nil, fmt.Errorf("error creating DtcLbdn object %s, err: %s", name, err)
+		return nil, fmt.Errorf("error creating Dtc Lbdn object %s, err: %s", name, err)
 	}
 	dtcLbdn.Ref = ref
 	return dtcLbdn, nil
@@ -195,14 +195,34 @@ func (objMgr *ObjectManager) DeleteDtcLbdn(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) GetDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error) {
+func (objMgr *ObjectManager) GetAllDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error) {
 	var res []DtcLbdn
 	lbdn := NewEmptyDtcLbdn()
 	err := objMgr.connector.GetObject(lbdn, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting DtcLbdn object, err: %s", err)
+		return nil, fmt.Errorf("error getting Dtc Lbdn object, err: %s", err)
 	}
 	return res, nil
+}
+
+func (objMgr *ObjectManager) GetDtcLbdn(name string) (*DtcLbdn, error) {
+	dtcLbdn := NewEmptyDtcLbdn()
+	var res []DtcLbdn
+	if name == "" {
+		return nil, fmt.Errorf("name of the record is required to retrieve a unique Dtc Lbdn record")
+	}
+	sf := map[string]string{
+		"name": name,
+	}
+	queryParams := NewQueryParams(false, sf)
+	err := objMgr.connector.GetObject(dtcLbdn, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	} else if res == nil || len(res) == 0 {
+		return nil, NewNotFoundError(
+			fmt.Sprintf("Dtc Lbdn record with name '%s' not found", name))
+	}
+	return &res[0], nil
 }
 
 func (objMgr *ObjectManager) GetDtcLbdnByRef(ref string) (*DtcLbdn, error) {
@@ -249,12 +269,12 @@ func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authZones []
 		lbMethod, patterns, persistence, dtcPoolLink, priority, topologyRef, types, ttl, usettl)
 	newRef, err := objMgr.connector.UpdateObject(dtcLbdn, ref)
 	if err != nil {
-		return nil, fmt.Errorf("error updating DtcLbdn object %s, err: %s", name, err)
+		return nil, fmt.Errorf("error updating Dtc Lbdn object %s, err: %s", name, err)
 	}
 	dtcLbdn.Ref = newRef
 	dtcLbdn, err = objMgr.GetDtcLbdnByRef(newRef)
 	if err != nil {
-		return nil, fmt.Errorf("error getting updated DtcLbdn object %s, err: %s", name, err)
+		return nil, fmt.Errorf("error getting updated Dtc Lbdn object %s, err: %s", name, err)
 	}
 	return dtcLbdn, nil
 }
