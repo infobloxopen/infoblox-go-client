@@ -18,12 +18,10 @@ func updateServerReferences(servers []*DtcServerLink, objMgr *ObjectManager) err
 		var serverResult []DtcServer
 		err := objMgr.connector.GetObject(&DtcServer{}, "dtc:server", queryParams, &serverResult)
 		if err != nil {
-			return err
+			return fmt.Errorf("dtc:server with name %s not found", link.Server)
 		}
 		if len(serverResult) > 0 {
 			link.Server = serverResult[0].Ref
-		} else {
-			return fmt.Errorf("dtc:server with name %s not found", link.Server)
 		}
 	}
 	return nil
@@ -41,7 +39,7 @@ func getMonitorReference(monitorName string, monitorType string, objMgr *ObjectM
 	monitorTypeKey := fmt.Sprintf("dtc:monitor:%s", monitorType)
 	err := objMgr.connector.GetObject(&DtcMonitorHttp{}, monitorTypeKey, queryParams, &monitorResult)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("dtc:monitor with name %s not found", monitorName)
 	}
 	if len(monitorResult) > 0 {
 		return monitorResult[0].Ref, nil
