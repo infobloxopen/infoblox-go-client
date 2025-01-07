@@ -51,6 +51,24 @@ func (d *DtcLbdn) MarshalJSON() ([]byte, error) {
 	return json.Marshal(aux)
 }
 
+func (d *DtcLbdn) UnmarshalJSON(data []byte) error {
+	type Alias DtcLbdn
+	aux := &struct {
+		*Alias
+		AuthZones []string `json:"auth_zones"`
+	}{
+		Alias: (*Alias)(d),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	d.AuthZones = make([]*ZoneAuth, len(aux.AuthZones))
+	for i, ref := range aux.AuthZones {
+		d.AuthZones[i] = &ZoneAuth{Ref: ref}
+	}
+	return nil
+}
+
 func (objMgr *ObjectManager) CreateDtcLbdn(name string, authZones []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 
@@ -187,7 +205,7 @@ func NewDtcLbdn(ref string, name string, authZones []*ZoneAuth, comment string, 
 
 func NewEmptyDtcLbdn() *DtcLbdn {
 	dtcLbdn := &DtcLbdn{}
-	dtcLbdn.SetReturnFields(append(dtcLbdn.ReturnFields(), "extattrs", "disable", "auto_consolidated_monitors", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "health", "ttl", "use_ttl"))
+	dtcLbdn.SetReturnFields(append(dtcLbdn.ReturnFields(), "extattrs", "disable", "auth_zones", "auto_consolidated_monitors", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "health", "ttl", "use_ttl"))
 	return dtcLbdn
 }
 
