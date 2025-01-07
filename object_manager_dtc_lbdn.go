@@ -54,8 +54,8 @@ func (d *DtcLbdn) MarshalJSON() ([]byte, error) {
 func (d *DtcLbdn) UnmarshalJSON(data []byte) error {
 	type Alias DtcLbdn
 	aux := &struct {
-		AuthZones []string `json:"auth_zones"`
 		*Alias
+		AuthZones []string `json:"auth_zones"`
 	}{
 		Alias: (*Alias)(d),
 	}
@@ -63,8 +63,8 @@ func (d *DtcLbdn) UnmarshalJSON(data []byte) error {
 		return err
 	}
 	d.AuthZones = make([]*ZoneAuth, len(aux.AuthZones))
-	for i, zone := range aux.AuthZones {
-		d.AuthZones[i] = &ZoneAuth{Ref: zone}
+	for i, ref := range aux.AuthZones {
+		d.AuthZones[i] = &ZoneAuth{Ref: ref}
 	}
 	return nil
 }

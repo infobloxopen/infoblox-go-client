@@ -242,7 +242,7 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 	DtcLbdnConst: func(ref string) IBObject {
 		lbdn := &DtcLbdn{}
 		lbdn.SetReturnFields(append(lbdn.ReturnFields(),
-			"extattrs", "disable", "auto_consolidated_monitors", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "ttl", "use_ttl"))
+			"extattrs", "disable", "auto_consolidated_monitors", "auth_zones", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "ttl", "use_ttl"))
 		return lbdn
 	},
 	DtcPoolConst: func(ref string) IBObject {
