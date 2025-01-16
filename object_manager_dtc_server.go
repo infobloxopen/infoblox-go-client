@@ -42,6 +42,10 @@ func (objMgr *ObjectManager) CreateDtcServer(
 	sniHostname string,
 	useSniHostname bool,
 ) (*DtcServer, error) {
+
+	if name == "" || host == "" {
+		return nil, fmt.Errorf("name and host fields are required to create a dtc server")
+	}
 	if (useSniHostname && sniHostname == "") || (!useSniHostname && sniHostname != "") {
 		return nil, fmt.Errorf("if 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled")
 	}
