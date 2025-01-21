@@ -73,7 +73,7 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authZones []string, comm
 	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 
 	if name == "" || lbMethod == "" {
-		return nil, fmt.Errorf("name and lbMethod fields are required to create a Dtc Lbdn object")
+		return nil, fmt.Errorf("name and load balancing method fields are required to create a Dtc Lbdn object")
 	}
 	// get ref id of authzones and replace
 	var zones []*ZoneAuth
@@ -117,7 +117,7 @@ func getTopology(topology string, objMgr *ObjectManager) (string, error) {
 	var dtcTopology []DtcTopology
 	var topologyRef string
 	if topology == "" {
-		return "", fmt.Errorf("topology field is required when lbMethod is TOPOLOGY")
+		return "", fmt.Errorf("topology field is required when load balancing method is TOPOLOGY")
 	}
 	isRef := regexp.MustCompile("^dtc:topology:*")
 	if !isRef.MatchString(topology) {
@@ -126,7 +126,7 @@ func getTopology(topology string, objMgr *ObjectManager) (string, error) {
 		}
 		err := objMgr.connector.GetObject(&DtcTopology{}, "", NewQueryParams(false, sf), &dtcTopology)
 		if err != nil {
-			return "", fmt.Errorf("error getting %s DtcTopology object: %s", topology, err)
+			return "", fmt.Errorf("error getting Dtc Topology object %s, err: %s", topology, err)
 		}
 
 		if len(dtcTopology) > 0 {
@@ -147,7 +147,7 @@ func getPools(pools []*DtcPoolLink, objMgr *ObjectManager) ([]*DtcPoolLink, erro
 		if !isRef.MatchString(pool.Pool) {
 			err := objMgr.connector.GetObject(&DtcPool{}, "", NewQueryParams(false, sf), &dtcPools)
 			if err != nil {
-				return nil, fmt.Errorf("error getting %s DtcPool object: %s", pool.Pool, err)
+				return nil, fmt.Errorf("error getting Dtc Pool object %s, err: %s", pool.Pool, err)
 			}
 			if len(dtcPools) > 0 {
 				dtcPoolLink = append(dtcPoolLink, &DtcPoolLink{Pool: dtcPools[0].Ref, Ratio: pool.Ratio})
@@ -167,7 +167,7 @@ func getAuthZones(authZones []string, objMgr *ObjectManager) ([]*ZoneAuth, error
 		}
 		err := objMgr.connector.GetObject(&ZoneAuth{}, "", NewQueryParams(false, sf), &zoneAuth)
 		if err != nil {
-			return nil, fmt.Errorf("error getting %s ZoneAuth object: %s", authZones[i], err)
+			return nil, fmt.Errorf("error getting ZoneAuth object %s, err: %s", authZones[i], err)
 		}
 
 		if len(zoneAuth) > 0 {

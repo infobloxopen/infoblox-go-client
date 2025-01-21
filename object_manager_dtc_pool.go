@@ -18,7 +18,7 @@ func updateServerReferences(servers []*DtcServerLink, objMgr *ObjectManager) err
 		var serverResult []DtcServer
 		err := objMgr.connector.GetObject(&DtcServer{}, "dtc:server", queryParams, &serverResult)
 		if err != nil {
-			return fmt.Errorf("dtc:server with name %s not found", link.Server)
+			return fmt.Errorf("error getting Dtc Server %s, err: %s", link.Server, err)
 		}
 		if len(serverResult) > 0 {
 			link.Server = serverResult[0].Ref
@@ -39,12 +39,12 @@ func getMonitorReference(monitorName string, monitorType string, objMgr *ObjectM
 	monitorTypeKey := fmt.Sprintf("dtc:monitor:%s", monitorType)
 	err := objMgr.connector.GetObject(&DtcMonitorHttp{}, monitorTypeKey, queryParams, &monitorResult)
 	if err != nil {
-		return "", fmt.Errorf("dtc:monitor with name %s not found", monitorName)
+		return "", fmt.Errorf("error getting Dtc Monitor object %s, err: %s", monitorName, err)
 	}
 	if len(monitorResult) > 0 {
 		return monitorResult[0].Ref, nil
 	}
-	return "", fmt.Errorf("dtc:monitor with name %s not found", monitorName)
+	return "", fmt.Errorf("Dtc Monitor with name %s not found", monitorName)
 }
 
 func (d *DtcPool) MarshalJSON() ([]byte, error) {
@@ -75,7 +75,7 @@ func (d *DtcPool) MarshalJSON() ([]byte, error) {
 		aux.Servers = d.Servers
 	}
 
-	if len(d.ConsolidatedMonitors) == 0 || *d.AutoConsolidatedMonitors == false {
+	if *d.AutoConsolidatedMonitors == false && len(d.ConsolidatedMonitors) == 0 {
 		aux.ConsolidatedMonitors = []*DtcPoolConsolidatedMonitorHealth{}
 	} else {
 		aux.ConsolidatedMonitors = d.ConsolidatedMonitors
@@ -171,13 +171,13 @@ func (objMgr *ObjectManager) CreateDtcPool(
 	disable bool,
 	quorum uint32) (*DtcPool, error) {
 	if name == "" || lbPreferredMethod == "" {
-		return nil, fmt.Errorf("name and lbPreferredMethod must be provided to create a pool")
+		return nil, fmt.Errorf("name and preferred load balancing method must be provided to create a pool")
 	}
 	if lbPreferredMethod == "DYNAMIC_RATIO" && lbDynamicRatioPreferred == nil {
-		return nil, fmt.Errorf("lbDynamicRatioPreferred cannot be nil when lbPreferredMethod is set to DYNAMIC_RATIO")
+		return nil, fmt.Errorf("pool settings for dynamic ratio cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO")
 	}
 	if lbPreferredMethod == "TOPOLOGY" && lbPreferredTopology == nil {
-		return nil, fmt.Errorf("lbPreferredTopology cannot be nil when lbPreferredMethod is set to TOPOLOGY")
+		return nil, fmt.Errorf("preferred topology cannot be nil when preferred load balancing method is set to TOPOLOGY")
 	}
 	//update servers with server references
 	err := updateServerReferences(servers, objMgr)
@@ -273,7 +273,7 @@ func (objMgr *ObjectManager) GetAllDtcPool(queryParams *QueryParams) ([]DtcPool,
 	pool := NewEmptyDtcPool()
 	err := objMgr.connector.GetObject(pool, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting DtcPool object, err: %s", err)
+		return nil, fmt.Errorf("error getting Dtc Pool object, err: %s", err)
 	}
 	return res, nil
 }
@@ -299,10 +299,10 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 	disable bool,
 	quorum uint32) (*DtcPool, error) {
 	if lbPreferredMethod == "DYNAMIC_RATIO" && lbDynamicRatioPreferred == nil {
-		return nil, fmt.Errorf("LbDynamicRatioPreferred cannot be nil when LbPreferredMethod is set to DYNAMIC_RATIO")
+		return nil, fmt.Errorf("pool settings for dynamic ratio cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO")
 	}
 	if lbPreferredMethod == "TOPOLOGY" && lbPreferredTopology == nil {
-		return nil, fmt.Errorf("LbPreferredTopology cannot be nil when LbPreferredMethod is set to TOPOLOGY")
+		return nil, fmt.Errorf("preferred topology cannot be nil when preferred load balancing method is set to TOPOLOGY")
 	}
 	//update servers with server references
 	err := updateServerReferences(servers, objMgr)
@@ -388,15 +388,15 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		fullHealthComm, _ := userMonitor["full_health_communication"].(bool)
 		members, okMember := userMonitor["members"].([]string)
 		if !okMonitor {
-			return nil, fmt.Errorf("\"Required field missing: monitor")
+			return nil, fmt.Errorf("required field missing: monitor")
 		}
 
 		if !okAvail {
-			return nil, fmt.Errorf("\"Required field missing: availability")
+			return nil, fmt.Errorf("required field missing: availability")
 		}
 
 		if !okMember {
-			return nil, fmt.Errorf("\"Required field missing: members\"")
+			return nil, fmt.Errorf("required field missing: members")
 		}
 		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
 		if err != nil {
