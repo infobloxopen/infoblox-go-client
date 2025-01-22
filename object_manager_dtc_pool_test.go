@@ -219,7 +219,7 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		autoConsolidatedMonitors := false
 		conn := &fakeConnector{
 			createObjectObj:   NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", nil, ttl, true, false, 0),
-			createObjectError: fmt.Errorf("lbDynamicRatioPreferred cannot be nil when lbPreferredMethod is set to DYNAMIC_RATIO"),
+			createObjectError: fmt.Errorf("pool settings for dynamic ratio cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO"),
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
