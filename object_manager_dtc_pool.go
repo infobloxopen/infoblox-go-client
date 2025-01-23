@@ -3,6 +3,7 @@ package ibclient
 import (
 	"encoding/json"
 	"fmt"
+	"reflect"
 )
 
 type Monitor struct {
@@ -47,12 +48,36 @@ func getMonitorReference(monitorName string, monitorType string, objMgr *ObjectM
 	return "", fmt.Errorf("Dtc Monitor with name %s not found", monitorName)
 }
 
+func (cm ConsolidatedMonitorsWrapper) MarshalJSON() ([]byte, error) {
+	if !cm.IsNull {
+		if reflect.DeepEqual(cm.ConsolidatedMonitors, []*DtcPoolConsolidatedMonitorHealth{}) {
+			return []byte("[]"), nil
+		}
+	}
+	return json.Marshal(cm.ConsolidatedMonitors)
+}
+
+func (cm *ConsolidatedMonitorsWrapper) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		cm.IsNull = true
+		cm.ConsolidatedMonitors = nil
+		return nil
+	}
+	cm.IsNull = false
+	return json.Unmarshal(data, &cm.ConsolidatedMonitors)
+}
+
+type ConsolidatedMonitorsWrapper struct {
+	ConsolidatedMonitors []*DtcPoolConsolidatedMonitorHealth
+	IsNull               bool
+}
+
 func (d *DtcPool) MarshalJSON() ([]byte, error) {
 	type Alias DtcPool
 	aux := &struct {
-		Monitors             []string                            `json:"monitors"`
-		Servers              []*DtcServerLink                    `json:"servers"`
-		ConsolidatedMonitors []*DtcPoolConsolidatedMonitorHealth `json:"consolidated_monitors"`
+		Monitors             []string                     `json:"monitors"`
+		Servers              []*DtcServerLink             `json:"servers"`
+		ConsolidatedMonitors *ConsolidatedMonitorsWrapper `json:"consolidated_monitors,omitempty"`
 		*Alias
 	}{
 		Alias: (*Alias)(d),
@@ -68,17 +93,29 @@ func (d *DtcPool) MarshalJSON() ([]byte, error) {
 		}
 	}
 
-	// Unsetting Servers and ConsolidatedMonitors if they are empty
+	// Unsetting Servers if they are empty
 	if len(d.Servers) == 0 {
 		aux.Servers = []*DtcServerLink{}
 	} else {
 		aux.Servers = d.Servers
 	}
 
-	if *d.AutoConsolidatedMonitors == false && len(d.ConsolidatedMonitors) == 0 {
-		aux.ConsolidatedMonitors = []*DtcPoolConsolidatedMonitorHealth{}
+	// Conditionally handle ConsolidatedMonitors
+	if *d.AutoConsolidatedMonitors {
+		// auto_consolidated_monitors = true
+		if d.ConsolidatedMonitors != nil {
+			// consolidated_monitors is empty, omit it
+			aux.ConsolidatedMonitors = nil
+		}
 	} else {
-		aux.ConsolidatedMonitors = d.ConsolidatedMonitors
+		// auto_consolidated_monitors = false
+		if len(d.ConsolidatedMonitors) == 0 {
+			// consolidated_monitors is empty, marshal as "[]"
+			aux.ConsolidatedMonitors = &ConsolidatedMonitorsWrapper{IsNull: false, ConsolidatedMonitors: []*DtcPoolConsolidatedMonitorHealth{}}
+		} else {
+			// consolidated_monitors is non-empty, marshal as is
+			aux.ConsolidatedMonitors = &ConsolidatedMonitorsWrapper{IsNull: false, ConsolidatedMonitors: d.ConsolidatedMonitors}
+		}
 	}
 
 	return json.Marshal(aux)
@@ -174,7 +211,7 @@ func (objMgr *ObjectManager) CreateDtcPool(
 		return nil, fmt.Errorf("name and preferred load balancing method must be provided to create a pool")
 	}
 	if lbPreferredMethod == "DYNAMIC_RATIO" && lbDynamicRatioPreferred == nil {
-		return nil, fmt.Errorf("pool settings for dynamic ratio cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO")
+		return nil, fmt.Errorf("LbDynamicRatioPreferred cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO")
 	}
 	if lbPreferredMethod == "TOPOLOGY" && lbPreferredTopology == nil {
 		return nil, fmt.Errorf("preferred topology cannot be nil when preferred load balancing method is set to TOPOLOGY")
@@ -299,10 +336,13 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 	disable bool,
 	quorum uint32) (*DtcPool, error) {
 	if lbPreferredMethod == "DYNAMIC_RATIO" && lbDynamicRatioPreferred == nil {
-		return nil, fmt.Errorf("pool settings for dynamic ratio cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO")
+		return nil, fmt.Errorf("LbDynamicRatioPreferred cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO")
 	}
 	if lbPreferredMethod == "TOPOLOGY" && lbPreferredTopology == nil {
 		return nil, fmt.Errorf("preferred topology cannot be nil when preferred load balancing method is set to TOPOLOGY")
+	}
+	if autoConsolidatedMonitors && len(userMonitors) > 0 {
+		return nil, fmt.Errorf("either autoConsolidatedMonitors or ConsolidatedMonitors should be set.")
 	}
 	//update servers with server references
 	err := updateServerReferences(servers, objMgr)
@@ -382,35 +422,40 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 	}
 	//processing user input to retrieve monitor references and creating a slice of *DtcPoolConsolidatedMonitorHealth structs with updated monitor references.
 	var consolidatedMonitors []*DtcPoolConsolidatedMonitorHealth
-	for _, userMonitor := range userMonitors {
-		monitor, okMonitor := userMonitor["monitor"].(Monitor)
-		monitorAvailability, okAvail := userMonitor["availability"].(string)
-		fullHealthComm, _ := userMonitor["full_health_communication"].(bool)
-		members, okMember := userMonitor["members"].([]string)
-		if !okMonitor {
-			return nil, fmt.Errorf("required field missing: monitor")
-		}
+	if userMonitors != nil {
+		if len(userMonitors) == 0 {
+			consolidatedMonitors = []*DtcPoolConsolidatedMonitorHealth{}
+		} else {
+			for _, userMonitor := range userMonitors {
+				monitor, okMonitor := userMonitor["monitor"].(Monitor)
+				monitorAvailability, okAvail := userMonitor["availability"].(string)
+				fullHealthComm, _ := userMonitor["full_health_communication"].(bool)
+				members, okMember := userMonitor["members"].([]string)
+				if !okMonitor {
+					return nil, fmt.Errorf("required field missing: monitor")
+				}
 
-		if !okAvail {
-			return nil, fmt.Errorf("required field missing: availability")
-		}
+				if !okAvail {
+					return nil, fmt.Errorf("required field missing: availability")
+				}
 
-		if !okMember {
-			return nil, fmt.Errorf("required field missing: members")
-		}
-		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
-		if err != nil {
-			return nil, err
-		}
+				if !okMember {
+					return nil, fmt.Errorf("required field missing: members")
+				}
+				monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
+				if err != nil {
+					return nil, err
+				}
 
-		consolidatedMonitor := &DtcPoolConsolidatedMonitorHealth{
-			Members:                 members,
-			Monitor:                 monitorRef,
-			Availability:            monitorAvailability,
-			FullHealthCommunication: fullHealthComm,
+				consolidatedMonitor := &DtcPoolConsolidatedMonitorHealth{
+					Members:                 members,
+					Monitor:                 monitorRef,
+					Availability:            monitorAvailability,
+					FullHealthCommunication: fullHealthComm,
+				}
+				consolidatedMonitors = append(consolidatedMonitors, consolidatedMonitor)
+			}
 		}
-
-		consolidatedMonitors = append(consolidatedMonitors, consolidatedMonitor)
 	}
 
 	poolDtc := NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferredMethod, servers, monitorResults, lbPreferredTopology, lbAlternateMethod, lbAlternateTopology, lbDynamicRatioAlternateMethod, eas, autoConsolidatedMonitors, availability, consolidatedMonitors, ttl, useTTL, disable, quorum)
