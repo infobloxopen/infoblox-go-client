@@ -342,7 +342,7 @@ func (objMgr *ObjectManager) UpdateDtcPool(
 		return nil, fmt.Errorf("preferred topology cannot be nil when preferred load balancing method is set to TOPOLOGY")
 	}
 	if autoConsolidatedMonitors && len(userMonitors) > 0 {
-		return nil, fmt.Errorf("either autoConsolidatedMonitors or ConsolidatedMonitors should be set.")
+		return nil, fmt.Errorf("either AutoConsolidatedMonitors or ConsolidatedMonitors should be set.")
 	}
 	//update servers with server references
 	err := updateServerReferences(servers, objMgr)
