@@ -159,12 +159,12 @@ func getPools(pools []*DtcPoolLink, objMgr *ObjectManager) ([]*DtcPoolLink, erro
 }
 
 func getAuthZones(authZones []string, objMgr *ObjectManager) ([]*ZoneAuth, error) {
-	var zoneAuth []ZoneAuth
 	var zones []*ZoneAuth
 	for i := 0; i < len(authZones); i++ {
 		sf := map[string]string{
 			"fqdn": authZones[i],
 		}
+		var zoneAuth []ZoneAuth
 		err := objMgr.connector.GetObject(&ZoneAuth{}, "", NewQueryParams(false, sf), &zoneAuth)
 		if err != nil {
 			return nil, fmt.Errorf("error getting ZoneAuth object %s, err: %s", authZones[i], err)
