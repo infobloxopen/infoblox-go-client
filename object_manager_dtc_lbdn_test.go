@@ -26,22 +26,22 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		useTtl := true
 
 		conn := &fakeConnector{
-			createObjectObj:      NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl),
+			createObjectObj:      NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, &topology, types, ttl, useTtl),
 			getObjectObj:         &DtcLbdn{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl),
+			resultObject:         NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, &topology, types, ttl, useTtl),
 			fakeRefReturn:        fakeRefReturn,
 		}
 		conn.resultObject.(*DtcLbdn).Ref = fakeRefReturn
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcLbdn Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateDtcLbdn(name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl)
+			actualRecord, err := objMgr.CreateDtcLbdn(name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 
 		It("should fail to create a DTC lbdn object", func() {
-			actualRecord, err := objMgr.CreateDtcLbdn("", nil, comment, disable, autoConsolidatedMonitors, nil, "", patterns, persistence, nil, priority, topology, types, ttl, useTtl)
+			actualRecord, err := objMgr.CreateDtcLbdn("", nil, comment, disable, autoConsolidatedMonitors, nil, "", patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})
@@ -59,12 +59,11 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		patterns := []string{"*info.com"}
 		persistence := uint32(60)
 		priority := uint32(1)
-		topology := ""
 		types := []string{"A", "CNAME"}
 		ttl := uint32(60)
 		useTtl := true
 		queryParams := NewQueryParams(false, map[string]string{"name": name})
-		res := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl)
+		res := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 
 		conn := &fakeConnector{
 			getObjectObj:  NewEmptyDtcLbdn(),
@@ -122,12 +121,11 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		patterns := []string{"*info.com"}
 		persistence := uint32(60)
 		priority := uint32(1)
-		topology := ""
 		types := []string{"A", "CNAME"}
 		ttl := uint32(60)
 		useTtl := true
 		queryParams := NewQueryParams(false, map[string]string{"name": name})
-		res := NewDtcLbdn(fakeRefReturn, name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, topology, types, ttl, useTtl)
+		res := NewDtcLbdn(fakeRefReturn, name, nil, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 
 		conn := &fakeConnector{
 			getObjectObj:         NewEmptyDtcLbdn(),
@@ -154,7 +152,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyDtcLbdn(),
 			getObjectQueryParams: NewQueryParams(false, map[string]string{"name": ""}),
-			getObjectError:       fmt.Errorf("name of the record is required to retrieve a unique DtcLbdn record"),
+			getObjectError:       fmt.Errorf("name of the record is required to retrieve a unique Dtc Lbdn record"),
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -197,7 +195,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
 		conn := &fakeConnector{
-			createObjectObj: NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			createObjectObj: NewDtcLbdn("", name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, &topologyRef, types, ttl, useTtl),
 			getObjectObj: map[string]interface{}{
 				"DtcPool":     &DtcPool{},
 				"DtcTopology": &DtcTopology{},
@@ -217,7 +215,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 					Ref:  topologyRef,
 					Name: utils.StringPtr("test-topo"),
 				}},
-				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, &topologyRef, types, ttl, useTtl),
 				"ZoneAuth": []ZoneAuth{{
 					Ref:  zoneRef,
 					Fqdn: zone,
@@ -228,7 +226,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcLbdn Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateDtcLbdn(name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
+			actualRecord, err := objMgr.CreateDtcLbdn(name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, &topology, types, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcLbdn"]))
 			Expect(err).To(BeNil())
 		})
@@ -283,6 +281,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		ttl := uint32(60)
 		useTtl := true
 		name1 := "TestLbdn222"
+		topology := ""
 		comment1 := "test lbdn comment updated"
 		updateRef := fmt.Sprintf("dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:%s", name1)
 
@@ -290,15 +289,15 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 			getObjectObj:         NewEmptyDtcLbdn(),
 			getObjectRef:         updateRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			resultObject:         NewDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl),
 			fakeRefReturn:        updateRef,
-			updateObjectObj:      NewDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			updateObjectObj:      NewDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, &topology, types, ttl, useTtl),
 			updateObjectRef:      updateRef,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcLbdn Object to UpdateObject", func() {
-			actualRecord, err := objMgr.UpdateDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
+			actualRecord, err := objMgr.UpdateDtcLbdn(updateRef, name1, nil, comment1, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -331,7 +330,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
 		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
-		initObject := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, initLbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
+		initObject := NewDtcLbdn("", name, nil, comment, disable, autoConsolidatedMonitors, nil, initLbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 		initObject.Ref = fakeRefReturn
 		conn := &fakeConnector{
 			getObjectObj: map[string]interface{}{
@@ -345,7 +344,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 				"ZoneAuth":    NewQueryParams(false, map[string]string{"fqdn": "test-zone"}),
 			},
 			updateObjectRef: fakeRefReturn,
-			updateObjectObj: NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			updateObjectObj: NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, &topologyRef, types, ttl, useTtl),
 			resultObject: map[string]interface{}{
 				"DtcPool": []DtcPool{{
 					Ref:  poolRef,
@@ -355,7 +354,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 					Ref:  topologyRef,
 					Name: utils.StringPtr("test-topo"),
 				}},
-				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+				"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, &topologyRef, types, ttl, useTtl),
 				"ZoneAuth": []ZoneAuth{{
 					Ref:  zoneRef,
 					Fqdn: zone,
@@ -367,7 +366,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcLbdn Object to CreateObject", func() {
 
-			actualRecord, err := objMgr.UpdateDtcLbdn(fakeRefReturn, name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, topology, types, ttl, useTtl)
+			actualRecord, err := objMgr.UpdateDtcLbdn(fakeRefReturn, name, zones, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, pools, priority, &topology, types, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcLbdn"]))
 			Expect(err).To(BeNil())
 		})
@@ -385,7 +384,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		types := []string{"A", "CNAME"}
 		ttl := uint32(60)
 		useTtl := true
-
+		topology := ""
 		name2 := "test-LBDN122"
 		comment2 := "comment updated"
 		oldRef := "dtc:lbdn/ZG5zLmhvc3QkLZhd3QuaDE:test-lbdn121"
@@ -394,10 +393,10 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 			getObjectObj:         NewEmptyDtcLbdn(),
 			getObjectRef:         oldRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			resultObject:         NewDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl),
 			getObjectError:       fmt.Errorf("not found"),
 			fakeRefReturn:        oldRef,
-			updateObjectObj:      NewDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl),
+			updateObjectObj:      NewDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, &topology, types, ttl, useTtl),
 			updateObjectRef:      oldRef,
 		}
 
@@ -405,7 +404,7 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		// negative scenario
 
 		It("should fail to update DtcLbdn Object", func() {
-			actualRecord, err := objMgr.UpdateDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, "", types, ttl, useTtl)
+			actualRecord, err := objMgr.UpdateDtcLbdn(oldRef, name2, nil, comment2, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, nil, priority, nil, types, ttl, useTtl)
 			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})

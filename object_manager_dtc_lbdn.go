@@ -12,6 +12,7 @@ func (d *DtcLbdn) MarshalJSON() ([]byte, error) {
 		AuthZones []string       `json:"auth_zones"`
 		Pools     []*DtcPoolLink `json:"pools"`
 		Patterns  []string       `json:"patterns"`
+		Topology  *string        `json:"topology"`
 		*Alias
 	}{
 		Alias: (*Alias)(d),
@@ -47,6 +48,11 @@ func (d *DtcLbdn) MarshalJSON() ([]byte, error) {
 	if aux.Patterns == nil {
 		aux.Patterns = make([]string, 0)
 	}
+	if d.Topology != nil && *d.Topology == "" {
+		aux.Topology = nil
+	} else {
+		aux.Topology = d.Topology
+	}
 
 	return json.Marshal(aux)
 }
@@ -70,7 +76,7 @@ func (d *DtcLbdn) UnmarshalJSON(data []byte) error {
 }
 
 func (objMgr *ObjectManager) CreateDtcLbdn(name string, authZones []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
-	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
+	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 
 	if name == "" || lbMethod == "" {
 		return nil, fmt.Errorf("name and load balancing method fields are required to create a Dtc Lbdn object")
@@ -94,17 +100,24 @@ func (objMgr *ObjectManager) CreateDtcLbdn(name string, authZones []string, comm
 		}
 	}
 
+	if lbMethod == "TOPOLOGY" && topology == nil {
+		return nil, fmt.Errorf("topology field is required when load balancing method is TOPOLOGY")
+	}
 	//get ref id of topology and replace
 	var topologyRef string
-	if lbMethod == "TOPOLOGY" {
-		topologyRef, err = getTopology(topology, objMgr)
-		if err != nil {
-			return nil, err
+	if topology != nil {
+		if *topology == "" && lbMethod != "TOPOLOGY" {
+			topologyRef = ""
+		} else {
+			topologyRef, err = getTopology(*topology, objMgr)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
 	dtcLbdn := NewDtcLbdn("", name, zones, comment, disable, autoConsolidatedMonitors, ea,
-		lbMethod, patterns, persistence, dtcPoolLink, priority, topologyRef, types, ttl, usettl)
+		lbMethod, patterns, persistence, dtcPoolLink, priority, &topologyRef, types, ttl, usettl)
 	ref, err := objMgr.connector.CreateObject(dtcLbdn)
 	if err != nil {
 		return nil, fmt.Errorf("error creating Dtc Lbdn object %s, err: %s", name, err)
@@ -117,7 +130,7 @@ func getTopology(topology string, objMgr *ObjectManager) (string, error) {
 	var dtcTopology []DtcTopology
 	var topologyRef string
 	if topology == "" {
-		return "", fmt.Errorf("topology field is required when load balancing method is TOPOLOGY")
+		return "", fmt.Errorf("topology field is required to retreive a unique Dtc Topology record")
 	}
 	isRef := regexp.MustCompile("^dtc:topology:*")
 	if !isRef.MatchString(topology) {
@@ -178,7 +191,7 @@ func getAuthZones(authZones []string, objMgr *ObjectManager) ([]*ZoneAuth, error
 }
 
 func NewDtcLbdn(ref string, name string, authZones []*ZoneAuth, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
-	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) *DtcLbdn {
+	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) *DtcLbdn {
 
 	lbdn := NewEmptyDtcLbdn()
 	lbdn.Name = &name
@@ -192,9 +205,7 @@ func NewDtcLbdn(ref string, name string, authZones []*ZoneAuth, comment string, 
 	lbdn.Patterns = patterns
 	lbdn.Persistence = &persistence
 	lbdn.Pools = pools
-	if topology != "" {
-		lbdn.Topology = &topology
-	}
+	lbdn.Topology = topology
 	lbdn.Priority = &priority
 
 	lbdn.Types = types
@@ -253,8 +264,11 @@ func (objMgr *ObjectManager) GetDtcLbdnByRef(ref string) (*DtcLbdn, error) {
 }
 
 func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authZones []string, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
-	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
+	lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error) {
 
+	if lbMethod == "TOPOLOGY" && topology == nil {
+		return nil, fmt.Errorf("topology field is required when load balancing method is TOPOLOGY")
+	}
 	// get ref id of authzones and replace
 	var zones []*ZoneAuth
 	var err error
@@ -276,15 +290,19 @@ func (objMgr *ObjectManager) UpdateDtcLbdn(ref string, name string, authZones []
 
 	//get ref id of topology and replace
 	var topologyRef string
-	if lbMethod == "TOPOLOGY" {
-		topologyRef, err = getTopology(topology, objMgr)
-		if err != nil {
-			return nil, err
+	if topology != nil {
+		if *topology == "" && lbMethod != "TOPOLOGY" {
+			topologyRef = ""
+		} else {
+			topologyRef, err = getTopology(*topology, objMgr)
+			if err != nil {
+				return nil, err
+			}
 		}
 	}
 
 	dtcLbdn := NewDtcLbdn(ref, name, zones, comment, disable, autoConsolidatedMonitors, ea,
-		lbMethod, patterns, persistence, dtcPoolLink, priority, topologyRef, types, ttl, usettl)
+		lbMethod, patterns, persistence, dtcPoolLink, priority, &topologyRef, types, ttl, usettl)
 	newRef, err := objMgr.connector.UpdateObject(dtcLbdn, ref)
 	if err != nil {
 		return nil, fmt.Errorf("error updating Dtc Lbdn object %s, err: %s", name, err)
