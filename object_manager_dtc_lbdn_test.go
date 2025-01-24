@@ -190,7 +190,12 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		topologyRef := "dtc:topology/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-topo"
 		createObjPools := []*DtcPoolLink{{Pool: poolRef, Ratio: 3}}
 		zone := "test-zone"
-		zones := []string{zone}
+		zones := []AuthZonesLink{
+			{
+				Fqdn:     "test-zone",
+				DnsViews: []string{"default"},
+			},
+		}
 		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
 		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
@@ -326,7 +331,12 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		topologyRef := "dtc:topology/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-topo"
 		createObjPools := []*DtcPoolLink{{Pool: poolRef, Ratio: 3}}
 		zone := "test-zone"
-		zones := []string{zone}
+		zones := []AuthZonesLink{
+			{
+				Fqdn:     "test-zone",
+				DnsViews: []string{"default"},
+			},
+		}
 		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
 		zoneAuth := []*ZoneAuth{{Ref: zoneRef, Fqdn: zone}}
 
