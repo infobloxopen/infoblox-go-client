@@ -192,8 +192,8 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		zone := "test-zone"
 		zones := []AuthZonesLink{
 			{
-				Fqdn:     "test-zone",
-				DnsViews: []string{"default"},
+				Fqdn:    "test-zone",
+				DnsView: "default",
 			},
 		}
 		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
@@ -333,8 +333,8 @@ var _ = Describe("Object Manager: Dtc Lbdn", func() {
 		zone := "test-zone"
 		zones := []AuthZonesLink{
 			{
-				Fqdn:     "test-zone",
-				DnsViews: []string{"default"},
+				Fqdn:    "test-zone",
+				DnsView: "default",
 			},
 		}
 		zoneRef := "zone_auth/ZG5zLmhvc3QkLmNvbS5hcGkudjI6dGVzdC1wb29s:test-zone"
