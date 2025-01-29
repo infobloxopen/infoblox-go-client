@@ -126,7 +126,7 @@ var _ = Describe("Object Manager DTC Server", func() {
 		eas := EA{"Site": "blr"}
 		conn := &fakeConnector{
 			createObjectObj:   NewDtcServer(comment, name, host, true, false, eas, nil, "", true),
-			createObjectError: fmt.Errorf("if 'use_sni_hostname' is enabled then 'sni_hostname' must be provided or if 'sni_hostname' is provided then 'use_sni_hostname' must be enabled"),
+			createObjectError: fmt.Errorf("'sni_hostname' must be provided when 'use_sni_hostname' is enabled, and 'use_sni_hostname' must be enabled if 'sni_hostname' is provided"),
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)

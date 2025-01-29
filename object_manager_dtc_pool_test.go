@@ -21,10 +21,10 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		useTtl := true
 		ttl := uint32(70)
 		autoConsolidatedMonitors := false
-		objectAsResult := NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", nil, ttl, true, false, 0)
+		objectAsResult := NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", []*DtcPoolConsolidatedMonitorHealth{}, ttl, true, false, 0)
 		objectAsResult.Ref = fakeRefReturn
 		aniFakeConnector := &fakeConnector{
-			createObjectObj:      NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", nil, ttl, true, false, 0),
+			createObjectObj:      NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", []*DtcPoolConsolidatedMonitorHealth{}, ttl, true, false, 0),
 			getObjectRef:         fakeRefReturn,
 			getObjectObj:         NewEmptyDtcPool(),
 			getObjectQueryParams: NewQueryParams(false, nil),
@@ -36,7 +36,7 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		var PoolDtc *DtcPool
 		var err error
 		It("should pass expected DTC pool Object to CreateObject", func() {
-			PoolDtc, err = objMgr.CreateDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", ttl, useTtl, false, 0)
+			PoolDtc, err = objMgr.CreateDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, []map[string]interface{}{}, "", ttl, useTtl, false, 0)
 
 		})
 		It("should return expected DTC pool Object", func() {
@@ -77,10 +77,10 @@ var _ = Describe("Object Manager DTC Pool", func() {
 			MonitorMetric:       ".1.1",
 			InvertMonitorMetric: false,
 		}
-		objAsResult := NewDtcPool(comment, name, lbPreferredMethod, nil, createObjServers, createMonitor, &topologyRef, "DYNAMIC_RATIO", nil, lbDynamicRatioPreferred, eas, false, "", nil, 20, true, false, 2)
+		objAsResult := NewDtcPool(comment, name, lbPreferredMethod, nil, createObjServers, createMonitor, &topologyRef, "DYNAMIC_RATIO", nil, lbDynamicRatioPreferred, eas, false, "", []*DtcPoolConsolidatedMonitorHealth{}, 20, true, false, 2)
 		objAsResult.Ref = fakeRefReturn
 		conn := &fakeConnector{
-			createObjectObj: NewDtcPool(comment, name, lbPreferredMethod, nil, createObjServers, createMonitor, &topologyRef, "DYNAMIC_RATIO", nil, lbDynamicRatioPreferred, eas, false, "", nil, 20, true, false, 2),
+			createObjectObj: NewDtcPool(comment, name, lbPreferredMethod, nil, createObjServers, createMonitor, &topologyRef, "DYNAMIC_RATIO", nil, lbDynamicRatioPreferred, eas, false, "", []*DtcPoolConsolidatedMonitorHealth{}, 20, true, false, 2),
 			getObjectObj: map[string]interface{}{
 				"DtcServer":   &DtcServer{},
 				"DtcTopology": &DtcTopology{},
@@ -109,13 +109,13 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		}
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcPool Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateDtcPool(comment, name, lbPreferredMethod, nil, servers, monitor, &topologyName, "DYNAMIC_RATIO", nil, dynamicRatioPreferred, eas, false, "", 20, true, false, 2)
+			actualRecord, err := objMgr.CreateDtcPool(comment, name, lbPreferredMethod, nil, servers, monitor, &topologyName, "DYNAMIC_RATIO", nil, dynamicRatioPreferred, eas, false, []map[string]interface{}{}, "", 20, true, false, 2)
 			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcPool"]))
 			Expect(err).To(BeNil())
 		})
 	})
 
-	Describe("Create DTC pool with with DYNAMIC_RATIO as preferred load balancing method ", func() {
+	Describe("Create DTC pool with DYNAMIC_RATIO as preferred load balancing method ", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "test client"
@@ -144,10 +144,10 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		}
 		createObjServers := []*DtcServerLink{{Server: serverRef, Ratio: 3}}
 		servers := []*DtcServerLink{{Server: "test-server", Ratio: 3}}
-		objAsResult := NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferred, createObjServers, createMonitor, nil, "", nil, nil, nil, false, "", nil, 20, true, false, 2)
+		objAsResult := NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferred, createObjServers, createMonitor, nil, "", nil, nil, nil, false, "", []*DtcPoolConsolidatedMonitorHealth{}, 20, true, false, 2)
 		objAsResult.Ref = fakeRefReturn
 		conn := &fakeConnector{
-			createObjectObj: NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferred, createObjServers, createMonitor, nil, "", nil, nil, nil, false, "", nil, 20, true, false, 2),
+			createObjectObj: NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferred, createObjServers, createMonitor, nil, "", nil, nil, nil, false, "", []*DtcPoolConsolidatedMonitorHealth{}, 20, true, false, 2),
 			getObjectObj: map[string]interface{}{
 				"DtcServer":  &DtcServer{},
 				"DtcMonitor": &DtcMonitorHttp{},
@@ -170,7 +170,84 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		}
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected DtcPool Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateDtcPool(comment, name, lbPreferredMethod, dynamicRatioPreferred, servers, monitor, nil, "", nil, nil, nil, false, "", 20, true, false, 2)
+			actualRecord, err := objMgr.CreateDtcPool(comment, name, lbPreferredMethod, dynamicRatioPreferred, servers, monitor, nil, "", nil, nil, nil, false, []map[string]interface{}{}, "", 20, true, false, 2)
+			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcPool"]))
+			Expect(err).To(BeNil())
+		})
+	})
+	Describe("Create DTC pool with consolidated monitors", func() {
+		cmpType := "Docker"
+		tenantID := "01234567890abcdef01234567890abcdef"
+		comment := "test client"
+		name := "dtc_pool_20"
+		var fakeRefReturn = fmt.Sprintf(
+			"dtc:pool/ZG5zLmlkbnNfcG9vbCRkdGNfcG9vbF8x:%s",
+			name)
+		lbPreferredMethod := "DYNAMIC_RATIO"
+		serverRef := "dtc:server/ZG5zLmlkbnNfc2VydmVyJGR0Y19zZXJ2ZXIuY29t:test-server"
+		monitor := []Monitor{{Name: "snmp", Type: "snmp"}}
+		monitorRef := "dtc:monitor:snmp/ZG5zLmlkbnNfbW9uaXRvcl9odHRwJGh0dHA:snmp"
+		createMonitor := []*DtcMonitorHttp{{
+			Ref: monitorRef,
+		}}
+		dynamicRatioPreferred := map[string]interface{}{
+			"monitor":                Monitor{Name: "snmp", Type: "snmp"},
+			"method":                 "MONITOR",
+			"monitor_metric":         ".1.1",
+			"monitor_invert_monitor": false,
+		}
+		lbDynamicRatioPreferred := &SettingDynamicratio{
+			Method:              "MONITOR",
+			Monitor:             monitorRef,
+			MonitorMetric:       ".1.1",
+			InvertMonitorMetric: false,
+		}
+		consolidatedMonitor := []map[string]interface{}{
+			{
+				"monitor":                   Monitor{Name: "snmp", Type: "snmp"},
+				"availability":              "ALL",
+				"full_health_communication": false,
+				"members":                   []string{"infoblox.localdomain"},
+			},
+		}
+		consolidatedMonitorStruct := []*DtcPoolConsolidatedMonitorHealth{
+			{
+				Monitor:                 monitorRef,
+				Members:                 []string{"infoblox.localdomain"},
+				Availability:            "ALL",
+				FullHealthCommunication: false,
+			},
+		}
+		disable := true
+		createObjServers := []*DtcServerLink{{Server: serverRef, Ratio: 3}}
+		servers := []*DtcServerLink{{Server: "test-server", Ratio: 3}}
+		objAsResult := NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferred, createObjServers, createMonitor, nil, "", nil, nil, nil, false, "", consolidatedMonitorStruct, 20, true, true, 2)
+		objAsResult.Ref = fakeRefReturn
+		conn := &fakeConnector{
+			createObjectObj: NewDtcPool(comment, name, lbPreferredMethod, lbDynamicRatioPreferred, createObjServers, createMonitor, nil, "", nil, nil, nil, false, "", consolidatedMonitorStruct, 20, true, true, 2),
+			getObjectObj: map[string]interface{}{
+				"DtcServer":  &DtcServer{},
+				"DtcMonitor": &DtcMonitorHttp{},
+			},
+			getObjectQueryParams: map[string]*QueryParams{
+				"DtcServer":  NewQueryParams(false, map[string]string{"name": "test-server"}),
+				"DtcMonitor": NewQueryParams(false, map[string]string{"name": "snmp"}),
+			},
+			resultObject: map[string]interface{}{
+				"DtcServer": []DtcServer{{
+					Ref:  serverRef,
+					Name: utils.StringPtr("test-server"),
+				}},
+				"DtcMonitor": []DtcMonitorHttp{{
+					Ref: monitorRef,
+				}},
+				"DtcPool": objAsResult,
+			},
+			fakeRefReturn: fakeRefReturn,
+		}
+		objMgr := NewObjectManager(conn, cmpType, tenantID)
+		It("should pass expected DtcPool Object to CreateObject", func() {
+			actualRecord, err := objMgr.CreateDtcPool(comment, name, lbPreferredMethod, dynamicRatioPreferred, servers, monitor, nil, "", nil, nil, nil, false, consolidatedMonitor, "", 20, true, disable, 2)
 			Expect(actualRecord).To(Equal(conn.resultObject.(map[string]interface{})["DtcPool"]))
 			Expect(err).To(BeNil())
 		})
@@ -200,7 +277,7 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		}
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 
-		_, err := objMgr.CreateDtcPool(comment, name, "", nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", ttl, useTtl, false, 0)
+		_, err := objMgr.CreateDtcPool(comment, name, "", nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, []map[string]interface{}{}, "", ttl, useTtl, false, 0)
 
 		It("Should throw expected error when all the fields are not provided", func() {
 			Expect(err).ToNot(BeNil())
@@ -218,8 +295,8 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		lbPreferredMethod := "DYNAMIC_RATIO"
 		autoConsolidatedMonitors := false
 		conn := &fakeConnector{
-			createObjectObj:   NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", nil, ttl, true, false, 0),
-			createObjectError: fmt.Errorf("pool settings for dynamic ratio cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO"),
+			createObjectObj:   NewDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", []*DtcPoolConsolidatedMonitorHealth{}, ttl, true, false, 0),
+			createObjectError: fmt.Errorf("LbDynamicRatioPreferred cannot be nil when the preferred load balancing method is set to DYNAMIC_RATIO"),
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
@@ -227,7 +304,7 @@ var _ = Describe("Object Manager DTC Pool", func() {
 		var err error
 		expectedObj = nil
 		It("should pass expected DTC pool Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, "", ttl, useTtl, false, 0)
+			actualRecord, err = objMgr.CreateDtcPool(comment, name, lbPreferredMethod, nil, nil, nil, nil, "", nil, nil, eas, autoConsolidatedMonitors, []map[string]interface{}{}, "", ttl, useTtl, false, 0)
 			Expect(actualRecord).To(Equal(expectedObj))
 			Expect(err).To(Equal(conn.createObjectError))
 		})
