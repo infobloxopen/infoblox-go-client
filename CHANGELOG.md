@@ -6,7 +6,7 @@
 
 - This release introduces several significant enhancements and new features aimed at management and DTC Pool, LBDN and Server objects.
 
-### Major Changes
+### Minor Changes
 
 - Added Create, Read, Update and Delete operations for DTC LBDN, Pool and Server records.
 
