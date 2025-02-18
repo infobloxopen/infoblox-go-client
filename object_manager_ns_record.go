@@ -1,0 +1,95 @@
+package ibclient
+
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func (d *RecordNS) MarshalJSON() ([]byte, error) {
+	type Alias RecordNS
+	aux := &struct {
+		Addresses []*ZoneNameServer `json:"addresses"`
+		*Alias
+	}{
+		Alias: (*Alias)(d),
+	}
+
+	// Convert Addresses for ZoneNameServer
+	for _, addresses := range d.Addresses {
+		if addresses != nil {
+			aux.Addresses = append(aux.Addresses, addresses)
+		}
+	}
+
+	if aux.Addresses == nil {
+		aux.Addresses = make([]*ZoneNameServer, 0)
+	}
+
+	return json.Marshal(aux)
+}
+func NewRecordNS(name string, nameServer string, view string, addresses []*ZoneNameServer) *RecordNS {
+	res := NewEmptyRecordNS()
+	res.Name = name
+	res.Nameserver = &nameServer
+	res.View = view
+	res.Addresses = addresses
+	return res
+}
+
+func NewEmptyRecordNS() *RecordNS {
+	res := &RecordNS{}
+	res.SetReturnFields(append(res.returnFields, "addresses", "cloud_info", "creator", "dns_name", "last_queried", "ms_delegation_name", "name", "nameserver", "policy", "view", "zone"))
+	return res
+}
+
+func (objMgr *ObjectManager) CreateNSRecord(name string, nameServer string, view string, addresses []*ZoneNameServer) (*RecordNS, error) {
+	if name == "" || nameServer == "" || len(addresses) == 0 {
+		fmt.Errorf("name, nameserver and addresses are required on creation")
+	}
+	if view == "" {
+		view = "default"
+	}
+	nsRecord := NewRecordNS(name, nameServer, view, addresses)
+	ref, err := objMgr.connector.CreateObject(nsRecord)
+	if err != nil {
+		return nil, err
+	}
+	nsRecord.Ref = ref
+	return nsRecord, nil
+}
+
+func (objMgr *ObjectManager) GetNSRecordByRef(ref string) (*RecordNS, error) {
+	recordNS := NewEmptyRecordNS()
+	err := objMgr.connector.GetObject(
+		recordNS, ref, NewQueryParams(false, nil), &recordNS)
+	return recordNS, err
+}
+
+func (objMgr *ObjectManager) DeleteNSRecord(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
+}
+
+func (objMgr *ObjectManager) UpdateNSRecord(ref string, name string, nameServer string, view string, addresses []*ZoneNameServer) (*RecordNS, error) {
+	nsRecord := NewRecordNS(name, nameServer, view, addresses)
+	nsRecord.Ref = ref
+
+	ref, err := objMgr.connector.UpdateObject(nsRecord, ref)
+	if err != nil {
+		return nil, err
+	}
+	newRec, err := objMgr.GetNSRecordByRef(ref)
+	if err != nil {
+		return nil, err
+	}
+	return newRec, nil
+}
+
+func (objMgr *ObjectManager) GetAllRecordNS(queryParams *QueryParams) ([]RecordNS, error) {
+	var res []RecordNS
+	recordNS := NewEmptyRecordNS()
+	err := objMgr.connector.GetObject(recordNS, "", queryParams, &res)
+	if err != nil {
+		return nil, fmt.Errorf("error getting Record NS object, err: %s", err)
+	}
+	return res, nil
+}
