@@ -1,32 +1,9 @@
 package ibclient
 
 import (
-	"encoding/json"
 	"fmt"
 )
 
-func (d *RecordNS) MarshalJSON() ([]byte, error) {
-	type Alias RecordNS
-	aux := &struct {
-		Addresses []*ZoneNameServer `json:"addresses"`
-		*Alias
-	}{
-		Alias: (*Alias)(d),
-	}
-
-	// Convert Addresses for ZoneNameServer
-	for _, addresses := range d.Addresses {
-		if addresses != nil {
-			aux.Addresses = append(aux.Addresses, addresses)
-		}
-	}
-
-	if aux.Addresses == nil {
-		aux.Addresses = make([]*ZoneNameServer, 0)
-	}
-
-	return json.Marshal(aux)
-}
 func NewRecordNS(name string, nameServer string, view string, addresses []*ZoneNameServer) *RecordNS {
 	res := NewEmptyRecordNS()
 	res.Name = name
