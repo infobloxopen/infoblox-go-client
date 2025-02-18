@@ -3765,3 +3765,192 @@ var _ = Describe("Record Alias", func() {
 	})
 
 })
+
+var _ = Describe("NS Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi_test.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+	})
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should update the NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+
+		// Update the DTC Lbdn object
+		nsRecordUpdate := ibclient.RecordNS{
+			Nameserver: utils.StringPtr("ns2.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&nsRecordUpdate, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should get the NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		search.SetReturnFields(append(search.ReturnFields(), "addresses"))
+		qp := ibclient.NewQueryParams(false, map[string]string{
+			"nameserver": "ns1.wapi_test.com",
+		})
+		errCode := connector.GetObject(search, "", qp, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Nameserver).To(Equal(utils.StringPtr("ns1.wapi_test.com")))
+		Expect(res[0].Name).To(Equal("wapi_test.com"))
+		Expect(res[0].Addresses[0].Address).To(Equal("2.3.4.5"))
+		Expect(res[0].Addresses[0].AutoCreatePtr).To(Equal(true))
+		Expect(res[0].Ref).To(MatchRegexp("record:ns/*"))
+	})
+	It("Should delete a NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should fail to create a NS Record object", func() {
+		nsRecord := ibclient.RecordNS{
+			Name: "wapi_test.com",
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		_, err := connector.CreateObject(&nsRecord)
+		Expect(err).NotTo(BeNil())
+	})
+
+	// update Dtc server, -ve scenario
+	It("Should fail to update a NS Record with wrong reference", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns3.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		_, err = connector.UpdateObject(&nsRecord, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to update a NS record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns3.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		nsRecordUpdate := ibclient.RecordNS{
+			Name: "wapi_test2.com",
+		}
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&nsRecordUpdate, res[0].Ref)
+		Expect(err).NotTo(BeNil())
+	})
+})
