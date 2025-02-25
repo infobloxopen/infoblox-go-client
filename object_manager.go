@@ -155,6 +155,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	AliasRecord           = "AliasRecord"
 )
 
 // Map of record type to its corresponding object
@@ -260,6 +261,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	AliasRecord: func(ref string) IBObject {
+		return NewEmptyAliasRecord()
 	},
 }
 
@@ -483,6 +487,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
 		if err == nil && len(dtcServerList) > 0 {
 			res = dtcServerList[0]
+		}
+		return res, err
+	},
+	AliasRecord: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordAlias).Ref != "" {
+			return res, nil
+		}
+		var aliasList []*RecordAlias
+		err := objMgr.connector.GetObject(NewEmptyAliasRecord(), "", NewQueryParams(false, sf), &aliasList)
+		if err == nil && len(aliasList) > 0 {
+			res = aliasList[0]
 		}
 		return res, err
 	},

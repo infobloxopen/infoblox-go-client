@@ -161,6 +161,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				*res.(*[]DtcTopology) = c.resultObject.([]DtcTopology)
 			case *DtcServer:
 				*res.(*[]DtcServer) = c.resultObject.([]DtcServer)
+			case *RecordAlias:
+				*res.(*[]RecordAlias) = c.resultObject.([]RecordAlias)
 			}
 		} else {
 			switch obj.(type) {
