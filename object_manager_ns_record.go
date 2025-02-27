@@ -1,9 +1,20 @@
 package ibclient
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
+func (z ZoneNameServer) MarshalJSON() ([]byte, error) {
+	type Alias ZoneNameServer
+	return json.Marshal(&struct {
+		*Alias
+		AutoCreatePtr bool `json:"auto_create_ptr"`
+	}{
+		Alias:         (*Alias)(&z),
+		AutoCreatePtr: z.AutoCreatePtr,
+	})
+}
 func NewRecordNS(name string, nameServer string, view string, addresses []*ZoneNameServer) *RecordNS {
 	res := NewEmptyRecordNS()
 	res.Name = name
