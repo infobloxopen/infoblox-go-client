@@ -39,7 +39,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		var recordNS *RecordNS
 		var err error
 		It("should pass expected NS Record Object to CreateObject", func() {
-			recordNS, err = objMgr.CreateNSRecord(name, nameserver, view, addresses)
+			recordNS, err = objMgr.CreateNSRecord(name, nameserver, view, addresses, "")
 
 		})
 		It("should return expected NS record Object", func() {
@@ -64,7 +64,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		var err error
 		expectedObj = nil
 		It("should throw error", func() {
-			actualRecord, err = objMgr.CreateNSRecord(name, nameserver, view, nil)
+			actualRecord, err = objMgr.CreateNSRecord(name, nameserver, view, nil, "")
 			Expect(actualRecord).To(Equal(expectedObj))
 			Expect(err).To(Equal(conn.createObjectError))
 		})
