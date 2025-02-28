@@ -15,12 +15,13 @@ func (z ZoneNameServer) MarshalJSON() ([]byte, error) {
 		AutoCreatePtr: z.AutoCreatePtr,
 	})
 }
-func NewRecordNS(name string, nameServer string, view string, addresses []*ZoneNameServer) *RecordNS {
+func NewRecordNS(name string, nameServer string, view string, addresses []*ZoneNameServer, msserver string) *RecordNS {
 	res := NewEmptyRecordNS()
 	res.Name = name
 	res.Nameserver = &nameServer
 	res.View = view
 	res.Addresses = addresses
+	res.MsDelegationName = &msserver
 	return res
 }
 
@@ -37,7 +38,7 @@ func (objMgr *ObjectManager) CreateNSRecord(name string, nameServer string, view
 	if view == "" {
 		view = "default"
 	}
-	nsRecord := NewRecordNS(name, nameServer, view, addresses)
+	nsRecord := NewRecordNS(name, nameServer, view, addresses, "")
 	ref, err := objMgr.connector.CreateObject(nsRecord)
 	if err != nil {
 		return nil, err
@@ -57,8 +58,8 @@ func (objMgr *ObjectManager) DeleteNSRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) UpdateNSRecord(ref string, name string, nameServer string, view string, addresses []*ZoneNameServer) (*RecordNS, error) {
-	nsRecord := NewRecordNS(name, nameServer, view, addresses)
+func (objMgr *ObjectManager) UpdateNSRecord(ref string, name string, nameServer string, view string, addresses []*ZoneNameServer, msserver string) (*RecordNS, error) {
+	nsRecord := NewRecordNS(name, nameServer, view, addresses, msserver)
 	nsRecord.Ref = ref
 
 	ref, err := objMgr.connector.UpdateObject(nsRecord, ref)

@@ -25,10 +25,10 @@ var _ = Describe("Object Manager: NS-record", func() {
 			name,
 			view)
 
-		objectAsResult := NewRecordNS(name, nameserver, view, addresses)
+		objectAsResult := NewRecordNS(name, nameserver, view, addresses, "")
 		objectAsResult.Ref = fakeRefReturn
 		aniFakeConnector := &fakeConnector{
-			createObjectObj:      NewRecordNS(name, nameserver, view, addresses),
+			createObjectObj:      NewRecordNS(name, nameserver, view, addresses, ""),
 			getObjectRef:         fakeRefReturn,
 			getObjectObj:         NewEmptyRecordNS(),
 			getObjectQueryParams: NewQueryParams(false, nil),
@@ -55,7 +55,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		view := "default"
 		name := "test.com"
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordNS(name, nameserver, view, nil),
+			createObjectObj:   NewRecordNS(name, nameserver, view, nil, ""),
 			createObjectError: fmt.Errorf("name, nameserver and addresses are required on creation"),
 		}
 
@@ -93,10 +93,10 @@ var _ = Describe("Object Manager: NS-record", func() {
 
 		fakeRefReturn := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, view)
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordNS(name, nameserver, view, addresses),
+			createObjectObj:      NewRecordNS(name, nameserver, view, addresses, ""),
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyRecordNS(),
-			resultObject:         []RecordNS{*NewRecordNS(name, nameserver, "default", addresses)},
+			resultObject:         []RecordNS{*NewRecordNS(name, nameserver, "default", addresses, "")},
 			fakeRefReturn:        fakeRefReturn,
 			getObjectQueryParams: queryParams,
 		}
@@ -169,9 +169,9 @@ var _ = Describe("Object Manager: NS-record", func() {
 		}
 		updateRef := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, view)
 
-		resultObj := NewRecordNS(name, nameserver, view, addresses)
+		resultObj := NewRecordNS(name, nameserver, view, addresses, "")
 		resultObj.Ref = updateRef
-		expectedObj := NewRecordNS(name, nameserver, view, addresses)
+		expectedObj := NewRecordNS(name, nameserver, view, addresses, "")
 		expectedObj.Ref = updateRef
 		conn := &fakeConnector{
 			getObjectObj:         NewEmptyRecordNS(),
@@ -185,7 +185,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected NS Record Object to UpdateObject", func() {
-			actualRecord, err := objMgr.UpdateNSRecord(updateRef, name, nameserver, view, addresses)
+			actualRecord, err := objMgr.UpdateNSRecord(updateRef, name, nameserver, view, addresses, "")
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
