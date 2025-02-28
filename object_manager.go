@@ -133,7 +133,7 @@ type IBObjectManager interface {
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
 	UpdateZoneDelegated(ref string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA) (*ZoneDelegated, error)
-	UpdateNSRecord(ref string, name string, nameServer string, view string, addresses []*ZoneNameServer) (*RecordNS, error)
+	UpdateNSRecord(ref string, name string, nameServer string, view string, addresses []*ZoneNameServer, msserver string) (*RecordNS, error)
 	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string, externalNsGroup string) (*ZoneForward, error)
 	GetDnsMember(ref string) ([]Dns, error)
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
