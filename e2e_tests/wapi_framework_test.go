@@ -3584,6 +3584,252 @@ var _ = Describe("DTC LBDN and server object", func() {
 
 })
 
+var _ = Describe("SharedNetwork Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create SharedNetwork record", func() {
+		// create a sharedNetwork with maximum parameters
+		ipv4Network1 := ibclient.NewNetwork("default", "22.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network1"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Options:     options,
+			Comment:     utils.StringPtr("sharedNetwork"),
+			Disable:     utils.BoolPtr(false),
+			UseOptions:  utils.BoolPtr(true),
+			Ea:          ibclient.EA{"Site": "Baku"},
+			NetworkView: "default",
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		var ipv4SharedNetwork *ibclient.SharedNetwork
+		err = connector.GetObject(&ibclient.SharedNetwork{}, ref, nil, &ipv4SharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ipv4SharedNetwork).NotTo(BeNil())
+	})
+
+	It("Should fail to create SharedNetwork record", func() {
+
+		// Create a sharedNetwork object without mandatory fields
+		sharedNetwork := ibclient.SharedNetwork{
+			Name: utils.StringPtr("shared-network1"),
+		}
+		_, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Get SharedNetwork record", func() {
+		// Create a sharedNetwork record and compare its fields
+		ipv4Cidr := "23.23.24.0/24"
+		ipv4Network1 := ibclient.NewNetwork("default", ipv4Cidr, false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:     utils.StringPtr("shared-network2"),
+			Networks: []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Ea:       ibclient.EA{"Site": "Baku"},
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		var res *ibclient.SharedNetwork
+		// Get by Ref
+		err = connector.GetObject(&ibclient.SharedNetwork{}, ref, nil, &res)
+		Expect(err).To(BeNil())
+		Expect(res).NotTo(BeNil())
+
+		Expect(*res.Name).To(Equal("shared-network2"))
+		Expect(res.Networks[0].Ref).To(Equal(ipv4NetworkRef1))
+
+		// Get by name
+		var result []ibclient.SharedNetwork
+		qp := ibclient.NewQueryParams(false, map[string]string{"name": "shared-network2"})
+		err = connector.GetObject(&ibclient.SharedNetwork{}, "", qp, &result)
+		Expect(err).To(BeNil())
+		Expect(result).NotTo(BeNil())
+
+		Expect(*result[0].Name).To(Equal("shared-network2"))
+		Expect(result[0].Networks[0].Ref).To(Equal(ipv4NetworkRef1))
+	})
+
+	It("Should fail to Get SharedNetwork record", func() {
+		// should fail to get a non-existent sharedNetwork record
+		var res []ibclient.SharedNetwork
+		sf := map[string]string{"name": "sharedNetwork10"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.SharedNetwork{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should update SharedNetwork record", func() {
+		// Create a sharedNetwork object and update it
+		ipv4Network1 := ibclient.NewNetwork("default", "24.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network3"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Options:     options,
+			Comment:     utils.StringPtr("sharedNetwork"),
+			Disable:     utils.BoolPtr(false),
+			UseOptions:  utils.BoolPtr(true),
+			Ea:          ibclient.EA{"Site": "Baku"},
+			NetworkView: "default",
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		ipv4Network2 := ibclient.NewNetwork("default", "24.24.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef2, err := connector.CreateObject(ipv4Network2)
+		Expect(err).To(BeNil())
+
+		sharedNetworkUpdated := ibclient.SharedNetwork{
+			Name:       utils.StringPtr("shared-network-updated"),
+			Networks:   []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef2}},
+			Comment:    utils.StringPtr("sharedNetwork updated"),
+			UseOptions: utils.BoolPtr(false),
+			Options:    nil,
+		}
+		updatedRef, err := connector.UpdateObject(&sharedNetworkUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(updatedRef).To(MatchRegexp("^sharednetwork.*"))
+
+		Expect(*sharedNetworkUpdated.Name).To(Equal("shared-network-updated"))
+		Expect(sharedNetworkUpdated.Networks[0].Ref).To(Equal(ipv4NetworkRef2))
+		Expect(*sharedNetworkUpdated.Comment).To(Equal("sharedNetwork updated"))
+		Expect(*sharedNetworkUpdated.UseOptions).To(BeFalse())
+		Expect(len(sharedNetworkUpdated.Options)).To(Equal(0))
+	})
+
+	It("Should fail to update SharedNetwork record", func() {
+		// Create a sharedNetwork record and try to update network_view field
+		ipv4Network1 := ibclient.NewNetwork("default", "26.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network4"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Options:     options,
+			Comment:     utils.StringPtr("sharedNetwork"),
+			Disable:     utils.BoolPtr(false),
+			UseOptions:  utils.BoolPtr(true),
+			Ea:          ibclient.EA{"Site": "Baku"},
+			NetworkView: "default",
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		ipv4Network2 := ibclient.NewNetwork("default", "24.24.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef2, err := connector.CreateObject(ipv4Network2)
+		Expect(err).To(BeNil())
+
+		sharedNetworkUpdated := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network-updated"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef2}},
+			Comment:     utils.StringPtr("sharedNetwork updated"),
+			UseOptions:  utils.BoolPtr(false),
+			Options:     nil,
+			NetworkView: "view2",
+		}
+		_, err = connector.UpdateObject(&sharedNetworkUpdated, ref)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Delete SharedNetwork record", func() {
+		// Create a sharedNetwork object and delete it
+		ipv4Network1 := ibclient.NewNetwork("default", "25.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:     utils.StringPtr("shared-network4"),
+			Networks: []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Ea:       ibclient.EA{"Site": "Baku"},
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		deleteRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(deleteRef).To(Equal(ref))
+	})
+
+	It("Should fail to Delete SharedNetwork record", func() {
+		// Delete a non-existent sharedNetwork object
+		_, err := connector.DeleteObject("non-existent-sharedNetwork")
+		Expect(err).ToNot(BeNil())
+	})
+
+})
+
 var _ = Describe("Record Alias", func() {
 	var connector *ConnectorFacadeE2E
 
