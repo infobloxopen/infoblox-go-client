@@ -378,19 +378,27 @@ func NewNetworkContainerNextAvailable(ncav *NetworkContainerNextAvailableInfo, i
 }
 
 type FixedAddress struct {
-	IBBase      `json:"-"`
-	objectType  string
-	Ref         string `json:"_ref,omitempty"`
-	NetviewName string `json:"network_view,omitempty"`
-	Cidr        string `json:"network,omitempty"`
-	Comment     string `json:"comment"`
-	IPv4Address string `json:"ipv4addr,omitempty"`
-	IPv6Address string `json:"ipv6addr,omitempty"`
-	Duid        string `json:"duid,omitempty"`
-	Mac         string `json:"mac,omitempty"`
-	Name        string `json:"name,omitempty"`
-	MatchClient string `json:"match_client,omitempty"`
-	Ea          EA     `json:"extattrs"`
+	IBBase                      `json:"-"`
+	objectType                  string
+	Ref                         string            `json:"_ref,omitempty"`
+	NetviewName                 string            `json:"network_view,omitempty"`
+	Cidr                        string            `json:"network,omitempty"`
+	Comment                     string            `json:"comment"`
+	IPv4Address                 string            `json:"ipv4addr,omitempty"`
+	IPv6Address                 string            `json:"ipv6addr,omitempty"`
+	Duid                        string            `json:"duid,omitempty"`
+	Mac                         string            `json:"mac,omitempty"`
+	Name                        string            `json:"name,omitempty"`
+	MatchClient                 string            `json:"match_client,omitempty"`
+	AgentCircuitId              string            `json:"agent_circuit_id,omitempty"`
+	AgentRemoteId               string            `json:"agent_remote_id,omitempty"`
+	ClientIdentifierPrependZero bool              `json:"client_identifier_prepend_zero,omitempty"`
+	Options                     []*Dhcpoption     `json:"options,omitempty"`
+	UseOptions                  bool              `json:"use_options,omitempty"`
+	CloudInfo                   *GridCloudapiInfo `json:"cloud_info,omitempty"`
+	Disable                     bool              `json:"disable,omitempty"`
+	DhcpClientIdentifier        string            `json:"dhcp_client_identifier,omitempty"`
+	Ea                          EA                `json:"extattrs"`
 }
 
 func (fa FixedAddress) ObjectType() string {
@@ -405,7 +413,7 @@ func NewEmptyFixedAddress(isIPv6 bool) *FixedAddress {
 		res.returnFields = []string{"extattrs", "ipv6addr", "duid", "name", "network", "network_view", "comment"}
 	} else {
 		res.objectType = "fixedaddress"
-		res.returnFields = []string{"extattrs", "ipv4addr", "mac", "name", "network", "network_view", "comment"}
+		res.returnFields = []string{"extattrs", "ipv4addr", "mac", "name", "network", "network_view", "comment", "match_client", "agent_circuit_id", "agent_remote_id", "client_identifier_prepend_zero", "options", "use_options", "cloud_info", "disable", "dhcp_client_identifier"}
 	}
 	return res
 }
@@ -420,7 +428,15 @@ func NewFixedAddress(
 	eas EA,
 	ref string,
 	isIPv6 bool,
-	comment string) *FixedAddress {
+	comment string,
+	agentCircuitId string,
+	agentRemoteId string,
+	clientIdentifierPrependZero bool,
+	dhcpClientIdentifier string,
+	disable bool,
+	Options []*Dhcpoption,
+	useOptions bool,
+) *FixedAddress {
 
 	res := NewEmptyFixedAddress(isIPv6)
 	res.NetviewName = netView
@@ -437,6 +453,13 @@ func NewFixedAddress(
 		res.IPv4Address = ipAddr
 		res.Mac = macOrDuid
 	}
+	res.AgentCircuitId = agentCircuitId
+	res.AgentRemoteId = agentRemoteId
+	res.ClientIdentifierPrependZero = clientIdentifierPrependZero
+	res.DhcpClientIdentifier = dhcpClientIdentifier
+	res.Disable = disable
+	res.Options = Options
+	res.UseOptions = useOptions
 	return res
 }
 
