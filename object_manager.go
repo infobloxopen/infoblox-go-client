@@ -155,6 +155,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	SharedNetworkConst    = "SharedNetwork"
 )
 
 // Map of record type to its corresponding object
@@ -260,6 +261,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	SharedNetworkConst: func(ref string) IBObject {
+		return NewEmptyIpv4SharedNetwork()
 	},
 }
 
