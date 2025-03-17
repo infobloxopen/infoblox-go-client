@@ -4,7 +4,7 @@ import "fmt"
 
 func NewEmptyAliasRecord() *RecordAlias {
 	aliasRecord := &RecordAlias{}
-	aliasRecord.SetReturnFields(append(aliasRecord.ReturnFields(), "extattrs", "comment", "disable", "dns_name", "dns_target_name", "creator", "ttl", "use_ttl", "view", "zone"))
+	aliasRecord.SetReturnFields(append(aliasRecord.ReturnFields(), "extattrs", "cloud_info", "comment", "disable", "dns_name", "dns_target_name", "creator", "ttl", "use_ttl", "view", "zone"))
 	return aliasRecord
 }
 
