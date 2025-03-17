@@ -11,7 +11,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		nameserver := "testing.test.com"
-		view := "default"
+		dnsView := "default"
 		name := "test.com"
 		addresses := []*ZoneNameServer{
 			{
@@ -23,12 +23,12 @@ var _ = Describe("Object Manager: NS-record", func() {
 			"record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s",
 			nameserver,
 			name,
-			view)
+			dnsView)
 
-		objectAsResult := NewRecordNS(name, nameserver, view, addresses, "")
+		objectAsResult := NewRecordNS(name, nameserver, dnsView, addresses, "")
 		objectAsResult.Ref = fakeRefReturn
 		aniFakeConnector := &fakeConnector{
-			createObjectObj:      NewRecordNS(name, nameserver, view, addresses, ""),
+			createObjectObj:      NewRecordNS(name, nameserver, dnsView, addresses, ""),
 			getObjectRef:         fakeRefReturn,
 			getObjectObj:         NewEmptyRecordNS(),
 			getObjectQueryParams: NewQueryParams(false, nil),
@@ -39,7 +39,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		var recordNS *RecordNS
 		var err error
 		It("should pass expected NS Record Object to CreateObject", func() {
-			recordNS, err = objMgr.CreateNSRecord(name, nameserver, view, addresses, "")
+			recordNS, err = objMgr.CreateNSRecord(name, nameserver, dnsView, addresses, "")
 
 		})
 		It("should return expected NS record Object", func() {
@@ -52,10 +52,10 @@ var _ = Describe("Object Manager: NS-record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		nameserver := "testing.test.com"
-		view := "default"
+		dnsView := "default"
 		name := "test.com"
 		conn := &fakeConnector{
-			createObjectObj:   NewRecordNS(name, nameserver, view, nil, ""),
+			createObjectObj:   NewRecordNS(name, nameserver, dnsView, nil, ""),
 			createObjectError: fmt.Errorf("name, nameserver and addresses are required on creation"),
 		}
 
@@ -64,7 +64,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		var err error
 		expectedObj = nil
 		It("should throw error", func() {
-			actualRecord, err = objMgr.CreateNSRecord(name, nameserver, view, nil, "")
+			actualRecord, err = objMgr.CreateNSRecord(name, nameserver, dnsView, nil, "")
 			Expect(actualRecord).To(Equal(expectedObj))
 			Expect(err).To(Equal(conn.createObjectError))
 		})
@@ -73,7 +73,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		nameserver := "testing.test.com"
-		view := "default"
+		dnsView := "default"
 		name := "test.com"
 		creator := "STATIC"
 		addresses := []*ZoneNameServer{
@@ -86,14 +86,14 @@ var _ = Describe("Object Manager: NS-record", func() {
 			false,
 			map[string]string{
 				"name":       name,
-				"view":       view,
+				"view":       dnsView,
 				"nameserver": nameserver,
 				"creator":    creator,
 			})
 
-		fakeRefReturn := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, view)
+		fakeRefReturn := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, dnsView)
 		conn := &fakeConnector{
-			createObjectObj:      NewRecordNS(name, nameserver, view, addresses, ""),
+			createObjectObj:      NewRecordNS(name, nameserver, dnsView, addresses, ""),
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyRecordNS(),
 			resultObject:         []RecordNS{*NewRecordNS(name, nameserver, "default", addresses, "")},
@@ -134,9 +134,9 @@ var _ = Describe("Object Manager: NS-record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		nameserver := "testing.test.com"
-		view := "default"
+		dnsView := "default"
 		name := "test.com"
-		deleteRef := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, view)
+		deleteRef := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, dnsView)
 		fakeRefReturn := deleteRef
 		nwFakeConnector := &fakeConnector{
 			deleteObjectRef: deleteRef,
@@ -159,7 +159,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		nameserver := "testing.test.com"
-		view := "default"
+		dnsView := "default"
 		name := "test.com"
 		addresses := []*ZoneNameServer{
 			{
@@ -167,11 +167,11 @@ var _ = Describe("Object Manager: NS-record", func() {
 				AutoCreatePtr: true,
 			},
 		}
-		updateRef := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, view)
+		updateRef := fmt.Sprintf("record:ns/ZG5zLmJpbmRfbnMkLjMuY29tLnRlc3QuLm5hbWUudGVzdC5jb20:%s/%s/%s", nameserver, name, dnsView)
 
-		resultObj := NewRecordNS(name, nameserver, view, addresses, "")
+		resultObj := NewRecordNS(name, nameserver, dnsView, addresses, "")
 		resultObj.Ref = updateRef
-		expectedObj := NewRecordNS(name, nameserver, view, addresses, "")
+		expectedObj := NewRecordNS(name, nameserver, dnsView, addresses, "")
 		expectedObj.Ref = updateRef
 		conn := &fakeConnector{
 			getObjectObj:         NewEmptyRecordNS(),
@@ -185,7 +185,7 @@ var _ = Describe("Object Manager: NS-record", func() {
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected NS Record Object to UpdateObject", func() {
-			actualRecord, err := objMgr.UpdateNSRecord(updateRef, name, nameserver, view, addresses, "")
+			actualRecord, err := objMgr.UpdateNSRecord(updateRef, name, nameserver, dnsView, addresses, "")
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})

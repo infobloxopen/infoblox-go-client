@@ -15,11 +15,11 @@ func (z ZoneNameServer) MarshalJSON() ([]byte, error) {
 		AutoCreatePtr: z.AutoCreatePtr,
 	})
 }
-func NewRecordNS(name string, nameServer string, view string, addresses []*ZoneNameServer, msDelegationName string) *RecordNS {
+func NewRecordNS(name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) *RecordNS {
 	res := NewEmptyRecordNS()
 	res.Name = name
 	res.Nameserver = &nameServer
-	res.View = view
+	res.View = dnsView
 	res.Addresses = addresses
 	res.MsDelegationName = &msDelegationName
 	return res
@@ -31,14 +31,14 @@ func NewEmptyRecordNS() *RecordNS {
 	return res
 }
 
-func (objMgr *ObjectManager) CreateNSRecord(name string, nameServer string, view string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error) {
+func (objMgr *ObjectManager) CreateNSRecord(name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error) {
 	if name == "" || nameServer == "" || len(addresses) == 0 {
 		fmt.Errorf("name, nameserver and addresses are required to create NS record")
 	}
-	if view == "" {
-		view = "default"
+	if dnsView == "" {
+		dnsView = "default"
 	}
-	nsRecord := NewRecordNS(name, nameServer, view, addresses, msDelegationName)
+	nsRecord := NewRecordNS(name, nameServer, dnsView, addresses, msDelegationName)
 	ref, err := objMgr.connector.CreateObject(nsRecord)
 	if err != nil {
 		return nil, err
@@ -58,8 +58,8 @@ func (objMgr *ObjectManager) DeleteNSRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) UpdateNSRecord(ref string, name string, nameServer string, view string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error) {
-	nsRecord := NewRecordNS(name, nameServer, view, addresses, msDelegationName)
+func (objMgr *ObjectManager) UpdateNSRecord(ref string, name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error) {
+	nsRecord := NewRecordNS(name, nameServer, dnsView, addresses, msDelegationName)
 	nsRecord.Ref = ref
 
 	ref, err := objMgr.connector.UpdateObject(nsRecord, ref)
