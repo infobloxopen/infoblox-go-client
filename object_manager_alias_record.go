@@ -39,7 +39,7 @@ func (objMgr *ObjectManager) GetAllAliasRecord(queryParams *QueryParams) ([]Reco
 	aliasRecord := NewEmptyAliasRecord()
 	err := objMgr.connector.GetObject(aliasRecord, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting Alias Record object, err: %s", err)
+		return nil, fmt.Errorf("failed getting Alias Record: %s", err)
 	}
 	return res, nil
 }
