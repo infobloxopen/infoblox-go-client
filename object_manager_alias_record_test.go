@@ -17,15 +17,15 @@ var _ = Describe("Object Manager Record Alias", func() {
 		ttl := uint32(120)
 		useTtl := false
 
-		view := "default"
+		dnsView := "default"
 		targetName := "aa.xx.com"
 		targetType := "PTR"
 		fakeRefReturn := "record:alias/ZG5zLmFsaWFzX3JlY29yZCQuX2RlZmF1bHQuY29tLnRlc3QuYWxpYXM3NzcuUFRS:alias777.test.com/default"
 
-		objectAsResult := NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+		objectAsResult := NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 		objectAsResult.Ref = fakeRefReturn
 		conn := &fakeConnector{
-			createObjectObj:      NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl),
+			createObjectObj:      NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl),
 			getObjectRef:         fakeRefReturn,
 			getObjectObj:         NewEmptyAliasRecord(),
 			getObjectQueryParams: NewQueryParams(false, nil),
@@ -36,7 +36,7 @@ var _ = Describe("Object Manager Record Alias", func() {
 		var aliasRecord *RecordAlias
 		var err error
 		It("should pass expected Alias record to CreateObject", func() {
-			aliasRecord, err = objMgr.CreateAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+			aliasRecord, err = objMgr.CreateAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 
 		})
 		It("should return expected Alias record", func() {
@@ -55,15 +55,15 @@ var _ = Describe("Object Manager Record Alias", func() {
 		ttl := uint32(120)
 		useTtl := false
 
-		view := "default"
+		dnsView := "default"
 		targetName := "aa.xx.com"
 		targetType := "PTR"
 		fakeRefReturn := "record:alias/ZG5zLmFsaWFzX3JlY29yZCQuX2RlZmF1bHQuY29tLnRlc3QuYWxpYXM3NzcuUFRS:alias777.test.com/default"
 
-		objectAsResult := NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+		objectAsResult := NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 		objectAsResult.Ref = fakeRefReturn
 		conn := &fakeConnector{
-			createObjectObj:      NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl),
+			createObjectObj:      NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl),
 			getObjectRef:         fakeRefReturn,
 			getObjectObj:         NewEmptyAliasRecord(),
 			getObjectQueryParams: NewQueryParams(false, nil),
@@ -75,7 +75,7 @@ var _ = Describe("Object Manager Record Alias", func() {
 		var aliasRecord *RecordAlias
 		var err error
 		It("should pass expected Alias record to CreateObject", func() {
-			aliasRecord, err = objMgr.CreateAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+			aliasRecord, err = objMgr.CreateAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 
 		})
 		It("should return expected Alias record", func() {
@@ -94,13 +94,13 @@ var _ = Describe("Object Manager Record Alias", func() {
 		ttl := uint32(120)
 		useTtl := false
 
-		view := "default"
+		dnsView := "default"
 		targetName := "aa.xx.com"
 		targetType := "PTR"
 		fakeRefReturn := "record:alias/ZG5zLmFsaWFzX3JlY29yZCQuX2RlZmF1bHQuY29tLnRlc3QuYWxpYXM3NzcuUFRS:alias777.test.com/default"
 		queryParams := NewQueryParams(false, map[string]string{"name": name})
 
-		res := NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+		res := NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 		res.Ref = fakeRefReturn
 		conn := &fakeConnector{
 			getObjectObj:  NewEmptyAliasRecord(),
@@ -190,7 +190,7 @@ var _ = Describe("Object Manager Record Alias", func() {
 		ttl := uint32(120)
 		useTtl := false
 
-		view := "default"
+		dnsView := "default"
 		targetName := "aa.xx.com"
 		targetType := "PTR"
 		updateRef := "record:alias/ZG5zLmFsaWFzX3JlY29yZCQuX2RlZmF1bHQuY29tLnRlc3QuYWxpYXM3NzcuUFRS:alias111.test.com/default"
@@ -199,16 +199,16 @@ var _ = Describe("Object Manager Record Alias", func() {
 			getObjectObj:         NewEmptyAliasRecord(),
 			getObjectRef:         updateRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl),
+			resultObject:         NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl),
 			fakeRefReturn:        updateRef,
-			updateObjectObj:      NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl),
+			updateObjectObj:      NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl),
 			updateObjectRef:      updateRef,
 		}
 		conn.resultObject.(*RecordAlias).Ref = updateRef
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected Alias Record to UpdateObject", func() {
-			actualRecord, err := objMgr.UpdateAliasRecord(updateRef, name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+			actualRecord, err := objMgr.UpdateAliasRecord(updateRef, name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -225,7 +225,7 @@ var _ = Describe("Object Manager Record Alias", func() {
 		ttl := uint32(120)
 		useTtl := false
 
-		view := "default"
+		dnsView := "default"
 		targetName := "aa.xx.com"
 		targetType := "PTR"
 
@@ -233,15 +233,15 @@ var _ = Describe("Object Manager Record Alias", func() {
 			getObjectObj:         NewEmptyAliasRecord(),
 			getObjectError:       fmt.Errorf("not found"),
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl),
-			updateObjectObj:      NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl),
+			resultObject:         NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl),
+			updateObjectObj:      NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl),
 			updateObjectError:    fmt.Errorf("not found"),
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		// negative scenario
 		It("should pass expected Alias Record to UpdateObject, negative scenario", func() {
-			actualRecord, err := objMgr.UpdateAliasRecord("", name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+			actualRecord, err := objMgr.UpdateAliasRecord("", name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 			Expect(err).NotTo(BeNil())
 			Expect(actualRecord).To(BeNil())
 		})

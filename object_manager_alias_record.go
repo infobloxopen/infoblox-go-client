@@ -8,14 +8,14 @@ func NewEmptyAliasRecord() *RecordAlias {
 	return aliasRecord
 }
 
-func (objMgr *ObjectManager) CreateAliasRecord(name string, view string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error) {
+func (objMgr *ObjectManager) CreateAliasRecord(name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error) {
 	if name == "" || targetName == "" || targetType == "" {
 		return nil, fmt.Errorf("name, targetName and targetType are required to create an Alias Record")
 	}
-	if view == "" {
-		view = "default"
+	if dnsView == "" {
+		dnsView = "default"
 	}
-	aliasRecord := NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+	aliasRecord := NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 	ref, err := objMgr.connector.CreateObject(aliasRecord)
 	if err != nil {
 		return nil, err
@@ -48,14 +48,14 @@ func (objMgr *ObjectManager) DeleteAliasRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
 
-func (objMgr *ObjectManager) UpdateAliasRecord(ref string, name string, view string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error) {
+func (objMgr *ObjectManager) UpdateAliasRecord(ref string, name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error) {
 	if name == "" || targetName == "" || targetType == "" {
 		return nil, fmt.Errorf("name, targetName and targetType are required to create an Alias Record")
 	}
-	if view == "" {
-		view = "default"
+	if dnsView == "" {
+		dnsView = "default"
 	}
-	aliasRecord := NewAliasRecord(name, view, targetName, targetType, comment, disable, ea, ttl, useTtl)
+	aliasRecord := NewAliasRecord(name, dnsView, targetName, targetType, comment, disable, ea, ttl, useTtl)
 	updatedRef, err := objMgr.connector.UpdateObject(aliasRecord, ref)
 	if err != nil {
 		return nil, err
@@ -64,10 +64,10 @@ func (objMgr *ObjectManager) UpdateAliasRecord(ref string, name string, view str
 	return aliasRecord, nil
 }
 
-func NewAliasRecord(name string, view string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) *RecordAlias {
+func NewAliasRecord(name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) *RecordAlias {
 	recordAlias := NewEmptyAliasRecord()
 	recordAlias.Name = &name
-	recordAlias.View = &view
+	recordAlias.View = &dnsView
 	recordAlias.TargetName = &targetName
 	recordAlias.TargetType = targetType
 	recordAlias.Comment = &comment
