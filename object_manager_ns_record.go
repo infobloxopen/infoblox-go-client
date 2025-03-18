@@ -78,7 +78,7 @@ func (objMgr *ObjectManager) GetAllRecordNS(queryParams *QueryParams) ([]RecordN
 	recordNS := NewEmptyRecordNS()
 	err := objMgr.connector.GetObject(recordNS, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting Record NS object, err: %s", err)
+		return nil, fmt.Errorf("failed getting NS Record: %s", err)
 	}
 	return res, nil
 }
