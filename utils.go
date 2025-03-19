@@ -40,11 +40,13 @@ type NullableNameServers struct {
 func (d Dhcpoption) MarshalJSON() ([]byte, error) {
 	type Alias Dhcpoption
 	aux := &struct {
-		Value string `json:"value"`
+		Value     string `json:"value"`
+		UseOption bool   `json:"use_option"`
 		*Alias
 	}{
-		Value: d.Value,
-		Alias: (*Alias)(&d),
+		Value:     d.Value,
+		UseOption: d.UseOption,
+		Alias:     (*Alias)(&d),
 	}
 	return json.Marshal(aux)
 }
@@ -52,7 +54,8 @@ func (d Dhcpoption) MarshalJSON() ([]byte, error) {
 func (d *Dhcpoption) UnmarshalJSON(data []byte) error {
 	type Alias Dhcpoption
 	aux := &struct {
-		Value string `json:"value"`
+		Value     string `json:"value"`
+		UseOption bool   `json:"use_option"`
 		*Alias
 	}{
 		Alias: (*Alias)(d),
@@ -63,6 +66,7 @@ func (d *Dhcpoption) UnmarshalJSON(data []byte) error {
 	}
 
 	d.Value = aux.Value
+	d.UseOption = aux.UseOption
 	return nil
 }
 
