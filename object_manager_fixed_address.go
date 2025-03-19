@@ -1,22 +1,11 @@
 package ibclient
 
 import (
-	"encoding/json"
 	"fmt"
 	"net"
 	"regexp"
 )
 
-func (z Dhcpoption) MarshalJSON() ([]byte, error) {
-	type Alias Dhcpoption
-	return json.Marshal(&struct {
-		*Alias
-		UseOption bool `json:"use_option"`
-	}{
-		Alias:     (*Alias)(&z),
-		UseOption: z.UseOption,
-	})
-}
 func (objMgr *ObjectManager) AllocateIP(
 	netview string,
 	cidr string,

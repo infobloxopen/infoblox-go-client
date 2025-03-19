@@ -394,9 +394,9 @@ type FixedAddress struct {
 	AgentRemoteId               string            `json:"agent_remote_id,omitempty"`
 	ClientIdentifierPrependZero bool              `json:"client_identifier_prepend_zero,omitempty"`
 	Options                     []*Dhcpoption     `json:"options,omitempty"`
-	UseOptions                  bool              `json:"use_options,omitempty"`
+	UseOptions                  *bool             `json:"use_options,omitempty"`
 	CloudInfo                   *GridCloudapiInfo `json:"cloud_info,omitempty"`
-	Disable                     bool              `json:"disable,omitempty"`
+	Disable                     *bool             `json:"disable,omitempty"`
 	DhcpClientIdentifier        string            `json:"dhcp_client_identifier,omitempty"`
 	Ea                          EA                `json:"extattrs"`
 }
@@ -457,9 +457,9 @@ func NewFixedAddress(
 	res.AgentRemoteId = agentRemoteId
 	res.ClientIdentifierPrependZero = clientIdentifierPrependZero
 	res.DhcpClientIdentifier = dhcpClientIdentifier
-	res.Disable = disable
+	res.Disable = &disable
 	res.Options = Options
-	res.UseOptions = useOptions
+	res.UseOptions = &useOptions
 	return res
 }
 
