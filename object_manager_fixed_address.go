@@ -14,14 +14,23 @@ func (objMgr *ObjectManager) AllocateIP(
 	macOrDuid string,
 	name string,
 	comment string,
-	eas EA) (*FixedAddress, error) {
+	eas EA,
+	clients string,
+	agentCircuitId string,
+	agentRemoteId string,
+	clientIdentifierPrependZero bool,
+	dhcpClientIdentifier string,
+	disable bool,
+	Options []*Dhcpoption,
+	useOptions bool,
+) (*FixedAddress, error) {
 
 	if isIPv6 {
 		if len(macOrDuid) == 0 {
 			return nil, fmt.Errorf("the DUID field cannot be left empty")
 		}
 	} else {
-		if len(macOrDuid) == 0 {
+		if len(macOrDuid) == 0 && (clients == "" || clients == "MAC_ADDRESS") {
 			macOrDuid = MACADDR_ZERO
 		}
 	}
@@ -31,8 +40,9 @@ func (objMgr *ObjectManager) AllocateIP(
 		}
 		ipAddr = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
 	}
+
 	fixedAddr := NewFixedAddress(
-		netview, name, ipAddr, cidr, macOrDuid, "", eas, "", isIPv6, comment)
+		netview, name, ipAddr, cidr, macOrDuid, clients, eas, "", isIPv6, comment, agentCircuitId, agentRemoteId, clientIdentifierPrependZero, dhcpClientIdentifier, disable, Options, useOptions)
 	ref, err := objMgr.connector.CreateObject(fixedAddr)
 	if err != nil {
 		return nil, err
@@ -93,7 +103,15 @@ func (objMgr *ObjectManager) UpdateFixedAddress(
 	matchClient string,
 	macOrDuid string,
 	comment string,
-	eas EA) (*FixedAddress, error) {
+	eas EA,
+	agentCircuitId string,
+	agentRemoteId string,
+	clientIdentifierPrependZero bool,
+	dhcpClientIdentifier string,
+	disable bool,
+	Options []*Dhcpoption,
+	useOptions bool,
+) (*FixedAddress, error) {
 
 	r := regexp.MustCompile("^ipv6fixedaddress/.+")
 	isIPv6 := r.MatchString(fixedAddrRef)
@@ -104,7 +122,7 @@ func (objMgr *ObjectManager) UpdateFixedAddress(
 	}
 	updateFixedAddr := NewFixedAddress(
 		"", name, "", "",
-		macOrDuid, matchClient, eas, fixedAddrRef, isIPv6, comment)
+		macOrDuid, matchClient, eas, fixedAddrRef, isIPv6, comment, agentCircuitId, agentRemoteId, clientIdentifierPrependZero, dhcpClientIdentifier, disable, Options, useOptions)
 
 	if ipAddr == "" {
 		if cidr != "" {
@@ -145,7 +163,10 @@ func (objMgr *ObjectManager) UpdateFixedAddress(
 		}
 	}
 	refResp, err := objMgr.connector.UpdateObject(updateFixedAddr, fixedAddrRef)
-
+	if err != nil {
+		return nil, err
+	}
+	updateFixedAddr.Ref = refResp
 	updateFixedAddr, err = objMgr.GetFixedAddressByRef(refResp)
 	if err != nil {
 		return nil, err
@@ -163,4 +184,14 @@ func (objMgr *ObjectManager) ReleaseIP(netview string, cidr string, ipAddr strin
 
 func (objMgr *ObjectManager) DeleteFixedAddress(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
+}
+
+func (objMgr *ObjectManager) GetAllFixedAddress(queryParams *QueryParams, isIpv6 bool) ([]FixedAddress, error) {
+	var res []FixedAddress
+	fixedAddress := NewEmptyFixedAddress(isIpv6)
+	err := objMgr.connector.GetObject(fixedAddress, "", queryParams, &res)
+	if err != nil {
+		return nil, fmt.Errorf("error getting fixed address, err: %s", err)
+	}
+	return res, nil
 }
