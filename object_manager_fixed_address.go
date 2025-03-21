@@ -163,7 +163,10 @@ func (objMgr *ObjectManager) UpdateFixedAddress(
 		}
 	}
 	refResp, err := objMgr.connector.UpdateObject(updateFixedAddr, fixedAddrRef)
-
+	if err != nil {
+		return nil, err
+	}
+	updateFixedAddr.Ref = refResp
 	updateFixedAddr, err = objMgr.GetFixedAddressByRef(refResp)
 	if err != nil {
 		return nil, err
