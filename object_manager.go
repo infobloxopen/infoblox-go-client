@@ -516,6 +516,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
+	SharedNetworkConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*SharedNetwork).Ref != "" {
+			return res, nil
+		}
+		var sharedNetworkList []*SharedNetwork
+		err := objMgr.connector.GetObject(NewEmptyIpv4SharedNetwork(), "", NewQueryParams(false, sf), &sharedNetworkList)
+		if err == nil && len(sharedNetworkList) > 0 {
+			res = sharedNetworkList[0]
+		}
+		return res, err
+	},
 }
 
 func NewEmptyZoneDelegated() *ZoneDelegated {
