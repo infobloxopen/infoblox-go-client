@@ -22,6 +22,7 @@ type IBObjectManager interface {
 	AllocateNetworkContainerByEA(netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen uint) (*NetworkContainer, error)
 	CreateARecord(netView string, dnsView string, name string, cidr string, ipAddr string, ttl uint32, useTTL bool, comment string, ea EA) (*RecordA, error)
 	CreateAAAARecord(netView string, dnsView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordAAAA, error)
+	CreateIpv4SharedNetwork(name string, networks []string, networkView string, eas EA, comment string, disable bool, useOptions bool, options []*Dhcpoption) (*SharedNetwork, error)
 	CreateDtcPool(comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, userMonitors []map[string]interface{}, availability string, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
 	CreateDtcServer(comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostname string, useSniHostname bool) (*DtcServer, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
@@ -43,6 +44,7 @@ type IBObjectManager interface {
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
 	DeleteDtcLbdn(ref string) (string, error)
+	DeleteIpv4SharedNetwork(ref string) (string, error)
 	DeleteDtcPool(ref string) (string, error)
 	DeleteDtcServer(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
@@ -77,6 +79,8 @@ type IBObjectManager interface {
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
 	GetHostRecord(netview string, dnsview string, recordName string, ipv4addr string, ipv6addr string) (*HostRecord, error)
+	GetIpv4SharedNetworkByRef(ref string) (*SharedNetwork, error)
+	GetAllIpv4SharedNetwork(queryParams *QueryParams) ([]SharedNetwork, error)
 	SearchHostRecordByAltId(internalId string, ref string, eaNameForInternalId string) (*HostRecord, error)
 	GetHostRecordByRef(ref string) (*HostRecord, error)
 	GetIpAddressFromHostRecord(host HostRecord) (string, error)
@@ -115,6 +119,7 @@ type IBObjectManager interface {
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
+	UpdateIpv4SharedNetwork(ref string, name string, networks []string, networkView string, comment string, eas EA, disable bool, useOptions bool, options []*Dhcpoption) (*SharedNetwork, error)
 	UpdateMXRecord(ref string, dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
 	UpdateNetwork(ref string, setEas EA, comment string) (*Network, error)
 	UpdateNetworkContainer(ref string, setEas EA, comment string) (*NetworkContainer, error)
@@ -150,6 +155,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	SharedNetworkConst    = "SharedNetwork"
 )
 
 // Map of record type to its corresponding object
@@ -255,6 +261,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	SharedNetworkConst: func(ref string) IBObject {
+		return NewEmptyIpv4SharedNetwork()
 	},
 }
 
@@ -478,6 +487,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
 		if err == nil && len(dtcServerList) > 0 {
 			res = dtcServerList[0]
+		}
+		return res, err
+	},
+	SharedNetworkConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*SharedNetwork).Ref != "" {
+			return res, nil
+		}
+		var sharedNetworkList []*SharedNetwork
+		err := objMgr.connector.GetObject(NewEmptyIpv4SharedNetwork(), "", NewQueryParams(false, sf), &sharedNetworkList)
+		if err == nil && len(sharedNetworkList) > 0 {
+			res = sharedNetworkList[0]
 		}
 		return res, err
 	},
