@@ -39,6 +39,7 @@ type IBObjectManager interface {
 	CreateNetwork(netview string, cidr string, isIPv6 bool, comment string, eas EA) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string, isIPv6 bool, comment string, eas EA) (*NetworkContainer, error)
 	CreateNetworkView(name string, comment string, setEas EA) (*NetworkView, error)
+	CreateNetworkRange(comment string, name string, network string, networkView string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociation string) (*Range, error)
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
@@ -64,6 +65,7 @@ type IBObjectManager interface {
 	DeleteSRVRecord(ref string) (string, error)
 	DeleteTXTRecord(ref string) (string, error)
 	DeleteZoneDelegated(ref string) (string, error)
+	DeleteNetworkRange(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetARecord(dnsview string, recordName string, ipAddr string) (*RecordA, error)
 	GetAAAARecord(dnsview string, recordName string, ipAddr string) (*RecordAAAA, error)
@@ -83,6 +85,8 @@ type IBObjectManager interface {
 	GetDtcLbdnByRef(ref string) (*DtcLbdn, error)
 	GetDtcPoolByRef(ref string) (*DtcPool, error)
 	GetDtcServerByRef(ref string) (*DtcServer, error)
+	GetNetworkRangeByRef(ref string) (*Range, error)
+	GetNetworkRange(queryParams *QueryParams) ([]Range, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
@@ -134,6 +138,7 @@ type IBObjectManager interface {
 	UpdateNetwork(ref string, setEas EA, comment string) (*Network, error)
 	UpdateNetworkContainer(ref string, setEas EA, comment string) (*NetworkContainer, error)
 	UpdateNetworkView(ref string, name string, comment string, setEas EA) (*NetworkView, error)
+	UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string) (*Range, error)
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
@@ -166,6 +171,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	NetworkRangeConst     = "Range"
 	FixedAddressConst     = "FixedAddress"
 	SharedNetworkConst    = "SharedNetwork"
 	AliasRecord           = "AliasRecord"
@@ -274,6 +280,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	NetworkRangeConst: func(ref string) IBObject {
+		return NewEmptyRange()
 	},
 	FixedAddressConst: func(ref string) IBObject {
 		return NewEmptyFixedAddress(false)
