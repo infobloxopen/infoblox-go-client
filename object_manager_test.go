@@ -161,6 +161,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				*res.(*[]DtcTopology) = c.resultObject.([]DtcTopology)
 			case *DtcServer:
 				*res.(*[]DtcServer) = c.resultObject.([]DtcServer)
+			case *Range:
+				*res.(*[]Range) = c.resultObject.([]Range)
 			}
 		} else {
 			switch obj.(type) {
@@ -204,6 +206,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				*res.(*DtcPool) = *c.resultObject.(*DtcPool)
 			case *DtcTopology:
 				*res.(*DtcTopology) = *c.resultObject.(*DtcTopology)
+			case *Range:
+				*res.(**Range) = c.resultObject.(*Range)
 			}
 		}
 	}
