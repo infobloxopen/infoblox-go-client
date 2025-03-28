@@ -1,0 +1,95 @@
+package ibclient
+
+import "fmt"
+
+func NewEmptyRange() *Range {
+	newRange := &Range{}
+	newRange.SetReturnFields(append(newRange.ReturnFields(), "extattrs", "name", "disable", "options", "use_options", "cloud_info", "failover_association", "member", "server_association_type"))
+	return newRange
+}
+func NewRange(comment string,
+	name string,
+	network string,
+	startAddr string,
+	eas EA,
+	disable bool,
+	options []*Dhcpoption,
+	useOptions bool,
+	endAddr string,
+	failOverAssociation string,
+	member *Dhcpmember,
+	ServerAssociationType string,
+) *Range {
+	newRange := NewEmptyRange()
+	newRange.Comment = &comment
+	newRange.Name = &name
+	newRange.Network = &network
+	newRange.StartAddr = &startAddr
+	newRange.Ea = eas
+	newRange.Disable = &disable
+	if options != nil {
+		newRange.Options = options
+	}
+	newRange.UseOptions = &useOptions
+	newRange.EndAddr = &endAddr
+	newRange.FailoverAssociation = &failOverAssociation
+	newRange.Member = member
+	newRange.ServerAssociationType = ServerAssociationType
+	return newRange
+}
+func (objMgr *ObjectManager) CreateNetworkRange(comment string, name string, network string, networkView string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociation string) (*Range, error) {
+
+	if startAddr == "" || endAddr == "" {
+		return nil, fmt.Errorf("start address and end address fields are required to create a range within a Network")
+	}
+	if networkView == "" {
+		networkView = "default"
+	}
+	newRangeCreate := NewRange(comment, name, network, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociation)
+	newRangeCreate.NetworkView = &networkView
+	ref, err := objMgr.connector.CreateObject(newRangeCreate)
+	if err != nil {
+		return nil, err
+	}
+	newRangeCreate.Ref = ref
+	return newRangeCreate, nil
+}
+func (objMgr *ObjectManager) GetNetworkRangeByRef(ref string) (*Range, error) {
+	networkRange := NewEmptyRange()
+	err := objMgr.connector.GetObject(
+		networkRange, ref, NewQueryParams(false, nil), &networkRange)
+
+	return networkRange, err
+}
+func (objMgr *ObjectManager) GetNetworkRange(queryParams *QueryParams) ([]Range, error) {
+	var res []Range
+	networkRange := NewEmptyRange()
+	err := objMgr.connector.GetObject(
+		networkRange, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+func (objMgr *ObjectManager) UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string) (*Range, error) {
+	if startAddr == "" || endAddr == "" {
+		return nil, fmt.Errorf("start address and end address fields cannot be empty for a range within a Network")
+	}
+	networkRange := NewRange(comment, name, network, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociationType)
+	networkRange.Ref = ref
+	reference, err := objMgr.connector.UpdateObject(networkRange, ref)
+	if err != nil {
+		return nil, err
+	}
+	networkRange.Ref = reference
+
+	networkRange, err = objMgr.GetNetworkRangeByRef(reference)
+	if err != nil {
+		return nil, err
+	}
+
+	return networkRange, nil
+}
+func (objMgr *ObjectManager) DeleteNetworkRange(ref string) (string, error) {
+	return objMgr.connector.DeleteObject(ref)
+}
