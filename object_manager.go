@@ -39,6 +39,8 @@ type IBObjectManager interface {
 	CreateNetworkContainer(netview string, cidr string, isIPv6 bool, comment string, eas EA) (*NetworkContainer, error)
 	CreateNetworkView(name string, comment string, setEas EA) (*NetworkView, error)
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
+	CreateRangeTemplate(name string, numberOfAdresses uint32, offset uint32, comment string, ea EA,
+		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) (*Rangetemplate, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
@@ -59,6 +61,7 @@ type IBObjectManager interface {
 	DeleteNetworkContainer(ref string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
+	DeleteRangeTemplate(ref string) (string, error)
 	DeleteSRVRecord(ref string) (string, error)
 	DeleteTXTRecord(ref string) (string, error)
 	DeleteZoneDelegated(ref string) (string, error)
@@ -98,6 +101,8 @@ type IBObjectManager interface {
 	GetNetworkViewByRef(ref string) (*NetworkView, error)
 	GetPTRRecord(dnsview string, ptrdname string, recordName string, ipAddr string) (*RecordPTR, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	GetAllRangeTemplate(queryParams *QueryParams) ([]Rangetemplate, error)
+	GetRangeTemplateByRef(ref string) (*Rangetemplate, error)
 	GetSRVRecord(dnsView string, name string, target string, port uint32) (*RecordSRV, error)
 	GetSRVRecordByRef(ref string) (*RecordSRV, error)
 	GetTXTRecord(dnsview string, name string) (*RecordTXT, error)
@@ -129,6 +134,8 @@ type IBObjectManager interface {
 	UpdateNetworkContainer(ref string, setEas EA, comment string) (*NetworkContainer, error)
 	UpdateNetworkView(ref string, name string, comment string, setEas EA) (*NetworkView, error)
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
+	UpdateRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
+		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) (*Rangetemplate, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
@@ -161,6 +168,7 @@ const (
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
 	AliasRecord           = "AliasRecord"
+	RangeTemplate         = "RangeTemplate"
 )
 
 // Map of record type to its corresponding object
@@ -269,6 +277,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 	},
 	AliasRecord: func(ref string) IBObject {
 		return NewEmptyAliasRecord()
+	},
+	RangeTemplate: func(ref string) IBObject {
+		return NewEmptyRangeTemplate()
 	},
 }
 
@@ -504,6 +515,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyAliasRecord(), "", NewQueryParams(false, sf), &aliasList)
 		if err == nil && len(aliasList) > 0 {
 			res = aliasList[0]
+		}
+		return res, err
+	},
+	RangeTemplate: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*Rangetemplate).Ref != "" {
+			return res, nil
+		}
+		var rangeTemplateList []*Rangetemplate
+		err := objMgr.connector.GetObject(NewEmptyRangeTemplate(), "", NewQueryParams(false, sf), &rangeTemplateList)
+		if err == nil && len(rangeTemplateList) > 0 {
+			res = rangeTemplateList[0]
 		}
 		return res, err
 	},
