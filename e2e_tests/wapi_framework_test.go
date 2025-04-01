@@ -2929,6 +2929,7 @@ var _ = Describe("Allocate next available using EA", func() {
 	})
 
 })
+
 var _ = Describe("DTC Object pools", func() {
 	var connector *ConnectorFacadeE2E
 
@@ -3251,6 +3252,7 @@ var _ = Describe("DTC Object pools", func() {
 		Expect(err).NotTo(BeNil())
 	})
 })
+
 var _ = Describe("DTC LBDN and server object", func() {
 	var connector *ConnectorFacadeE2E
 
@@ -3576,6 +3578,188 @@ var _ = Describe("DTC LBDN and server object", func() {
 
 	// delete Dtc server, -ve scenario
 	It("Should fail to delete a non existent Dtc server", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
+var _ = Describe("Record Alias", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create Alias record with minimum parameters", func() {
+		// Create an Alias Record with minimum parameters
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("test-alias1.wapi.com"),
+			TargetType: "A",
+			TargetName: utils.StringPtr("aa.test.com"),
+		}
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should create an Alias Record with maximum parameters", func() {
+
+		// Create an Alias Record object with maximum parameters
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("test-alias2.wapi.com"),
+			TargetType: "PTR",
+			TargetName: utils.StringPtr("aa.bb.com"),
+			Comment:    utils.StringPtr("sample comment"),
+			Ea:         ibclient.EA{"Site": "India"},
+			Disable:    utils.BoolPtr(true),
+			Ttl:        utils.Uint32Ptr(100),
+			UseTtl:     utils.BoolPtr(true),
+		}
+
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should get alias record testalias1.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias1.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("aab.bb.com"),
+		}
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var res ibclient.RecordAlias
+		search := &ibclient.RecordAlias{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Ref).To(MatchRegexp("^record:alias.*"))
+
+		Expect(*res.Name).To(Equal("testalias1.wapi.com"))
+		Expect(res.TargetType).To(Equal("NAPTR"))
+		Expect(*res.TargetName).To(Equal("aab.bb.com"))
+	})
+
+	It("Should update record Alias testalias2.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias2.wapi.com"),
+			TargetType: "TXT",
+			TargetName: utils.StringPtr("aaa.bbb.com"),
+			Comment:    utils.StringPtr("test comment"),
+			Ea:         ibclient.EA{"Site": "Sri Lanka"},
+			Disable:    utils.BoolPtr(true),
+			Ttl:        utils.Uint32Ptr(500),
+			UseTtl:     utils.BoolPtr(true),
+		}
+		ref, errCode := connector.CreateObject(&recordAlias)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		// Update the Record Alias
+		recordAliasUpdated := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias222.wapi.com"),
+			TargetType: "PTR",
+			TargetName: utils.StringPtr("xyz.bnm.com"),
+			Comment:    utils.StringPtr("test comment updated"),
+		}
+
+		var res []ibclient.RecordAlias
+		search := &ibclient.RecordAlias{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&recordAliasUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should delete record alias ", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("Alias1111.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("abs.test.com"),
+		}
+		ref, errCode := connector.CreateObject(&recordAlias)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create alias record alias222.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("alias222.wapi.com"),
+			TargetType: "NAPTR",
+		}
+		_, err := connector.CreateObject(&recordAlias)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent alias record test_alias1", func() {
+		var res []ibclient.RecordAlias
+		sf := map[string]string{"name": "test_alias1"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordAlias{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent alias record alias222", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("alias222.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("abs.test.com"),
+		}
+		_, err := connector.UpdateObject(&recordAlias, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent alias record", func() {
 		_, err := connector.DeleteObject("nonexistent_ref")
 		Expect(err).NotTo(BeNil())
 	})

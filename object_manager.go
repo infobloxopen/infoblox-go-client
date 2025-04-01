@@ -22,6 +22,7 @@ type IBObjectManager interface {
 	AllocateNetworkContainerByEA(netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen uint) (*NetworkContainer, error)
 	CreateARecord(netView string, dnsView string, name string, cidr string, ipAddr string, ttl uint32, useTTL bool, comment string, ea EA) (*RecordA, error)
 	CreateAAAARecord(netView string, dnsView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordAAAA, error)
+	CreateAliasRecord(name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
 	CreateDtcPool(comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, userMonitors []map[string]interface{}, availability string, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
 	CreateDtcServer(comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostname string, useSniHostname bool) (*DtcServer, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
@@ -42,6 +43,7 @@ type IBObjectManager interface {
 	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
+	DeleteAliasRecord(ref string) (string, error)
 	DeleteDtcLbdn(ref string) (string, error)
 	DeleteDtcPool(ref string) (string, error)
 	DeleteDtcServer(ref string) (string, error)
@@ -62,6 +64,8 @@ type IBObjectManager interface {
 	GetARecord(dnsview string, recordName string, ipAddr string) (*RecordA, error)
 	GetAAAARecord(dnsview string, recordName string, ipAddr string) (*RecordAAAA, error)
 	GetAAAARecordByRef(ref string) (*RecordAAAA, error)
+	GetAliasRecordByRef(ref string) (*RecordAlias, error)
+	GetAllAliasRecord(queryParams *QueryParams) ([]RecordAlias, error)
 	GetCNAMERecord(dnsview string, canonical string, recordName string) (*RecordCNAME, error)
 	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
 	GetAllDtcPool(queryParams *QueryParams) ([]DtcPool, error)
@@ -108,6 +112,7 @@ type IBObjectManager interface {
 	SearchObjectByAltId(objType string, internalId string, ref string, eaNameForInternalId string) (interface{}, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, isIPv6 bool, macAddr string) (string, error)
 	UpdateAAAARecord(ref string, netView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordAAAA, error)
+	UpdateAliasRecord(ref string, name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
 	UpdateDtcPool(ref string, comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, availability string, consolidatedMonitors []map[string]interface{}, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
 	UpdateDtcServer(ref string, comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostName string, useSniHostName bool) (*DtcServer, error)
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
@@ -150,6 +155,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	AliasRecord           = "AliasRecord"
 )
 
 // Map of record type to its corresponding object
@@ -255,6 +261,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	AliasRecord: func(ref string) IBObject {
+		return NewEmptyAliasRecord()
 	},
 }
 
@@ -478,6 +487,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
 		if err == nil && len(dtcServerList) > 0 {
 			res = dtcServerList[0]
+		}
+		return res, err
+	},
+	AliasRecord: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordAlias).Ref != "" {
+			return res, nil
+		}
+		var aliasList []*RecordAlias
+		err := objMgr.connector.GetObject(NewEmptyAliasRecord(), "", NewQueryParams(false, sf), &aliasList)
+		if err == nil && len(aliasList) > 0 {
+			res = aliasList[0]
 		}
 		return res, err
 	},
