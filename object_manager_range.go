@@ -9,7 +9,7 @@ func NewEmptyRange() *Range {
 }
 func NewRange(comment string,
 	name string,
-	network string,
+	network *string,
 	startAddr string,
 	eas EA,
 	disable bool,
@@ -23,7 +23,7 @@ func NewRange(comment string,
 	newRange := NewEmptyRange()
 	newRange.Comment = &comment
 	newRange.Name = &name
-	newRange.Network = &network
+	newRange.Network = network
 	newRange.StartAddr = &startAddr
 	newRange.Ea = eas
 	newRange.Disable = &disable
@@ -45,7 +45,11 @@ func (objMgr *ObjectManager) CreateNetworkRange(comment string, name string, net
 	if networkView == "" {
 		networkView = "default"
 	}
-	newRangeCreate := NewRange(comment, name, network, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociation)
+	var networkPointer *string
+	if network != "" {
+		networkPointer = &network
+	}
+	newRangeCreate := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociation)
 	newRangeCreate.NetworkView = &networkView
 	ref, err := objMgr.connector.CreateObject(newRangeCreate)
 	if err != nil {
@@ -75,7 +79,11 @@ func (objMgr *ObjectManager) UpdateNetworkRange(ref string, comment string, name
 	if startAddr == "" || endAddr == "" {
 		return nil, fmt.Errorf("start address and end address fields cannot be empty for a range within a Network")
 	}
-	networkRange := NewRange(comment, name, network, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociationType)
+	var networkPointer *string
+	if network != "" {
+		networkPointer = &network
+	}
+	networkRange := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociationType)
 	networkRange.Ref = ref
 	reference, err := objMgr.connector.UpdateObject(networkRange, ref)
 	if err != nil {
