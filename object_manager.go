@@ -533,6 +533,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
+	FixedAddressConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*FixedAddress).Ref != "" {
+			return res, nil
+		}
+		var fixedAddressList []*FixedAddress
+		err := objMgr.connector.GetObject(NewEmptyFixedAddress(false), "", NewQueryParams(false, sf), &fixedAddressList)
+		if err == nil && len(fixedAddressList) > 0 {
+			res = fixedAddressList[0]
+		}
+		return res, err
+	},
 }
 
 func NewEmptyZoneDelegated() *ZoneDelegated {
