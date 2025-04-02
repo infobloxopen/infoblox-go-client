@@ -30,7 +30,7 @@ func (objMgr *ObjectManager) AllocateIP(
 			return nil, fmt.Errorf("the DUID field cannot be left empty")
 		}
 	} else {
-		if len(macOrDuid) == 0 && (clients == "" || clients == "MAC_ADDRESS") {
+		if len(macOrDuid) == 0 {
 			macOrDuid = MACADDR_ZERO
 		}
 	}
