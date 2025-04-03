@@ -79,6 +79,6 @@ func NewRangeTemplate(ref string, name string, numberOfAddresses uint32, offset 
 func NewEmptyRangeTemplate() *Rangetemplate {
 	rangeTemplate := &Rangetemplate{}
 	rangeTemplate.SetReturnFields(append(rangeTemplate.ReturnFields(), "extattrs", "options", "use_options",
-		"server_association_type", "failover_association", "cloud_info", "member"))
+		"server_association_type", "failover_association", "member"))
 	return rangeTemplate
 }
