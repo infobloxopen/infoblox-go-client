@@ -387,17 +387,17 @@ type FixedAddress struct {
 	IPv4Address                 string            `json:"ipv4addr,omitempty"`
 	IPv6Address                 string            `json:"ipv6addr,omitempty"`
 	Duid                        string            `json:"duid,omitempty"`
-	Mac                         string            `json:"mac,omitempty"`
-	Name                        string            `json:"name,omitempty"`
-	MatchClient                 string            `json:"match_client,omitempty"`
-	AgentCircuitId              string            `json:"agent_circuit_id,omitempty"`
-	AgentRemoteId               string            `json:"agent_remote_id,omitempty"`
+	Mac                         *string           `json:"mac,omitempty"`
+	Name                        *string           `json:"name,omitempty"`
+	MatchClient                 *string           `json:"match_client,omitempty"`
+	AgentCircuitId              *string           `json:"agent_circuit_id,omitempty"`
+	AgentRemoteId               *string           `json:"agent_remote_id,omitempty"`
 	ClientIdentifierPrependZero *bool             `json:"client_identifier_prepend_zero,omitempty"`
 	Options                     []*Dhcpoption     `json:"options,omitempty"`
 	UseOptions                  *bool             `json:"use_options,omitempty"`
 	CloudInfo                   *GridCloudapiInfo `json:"cloud_info,omitempty"`
 	Disable                     *bool             `json:"disable,omitempty"`
-	DhcpClientIdentifier        string            `json:"dhcp_client_identifier,omitempty"`
+	DhcpClientIdentifier        *string           `json:"dhcp_client_identifier,omitempty"`
 	Ea                          EA                `json:"extattrs"`
 }
 
@@ -440,9 +440,9 @@ func NewFixedAddress(
 
 	res := NewEmptyFixedAddress(isIPv6)
 	res.NetviewName = netView
-	res.Name = name
+	res.Name = &name
 	res.Cidr = cidr
-	res.MatchClient = clients
+	res.MatchClient = &clients
 	res.Ea = eas
 	res.Ref = ref
 	res.Comment = comment
@@ -451,12 +451,12 @@ func NewFixedAddress(
 		res.Duid = macOrDuid
 	} else {
 		res.IPv4Address = ipAddr
-		res.Mac = macOrDuid
+		res.Mac = &macOrDuid
 	}
-	res.AgentCircuitId = agentCircuitId
-	res.AgentRemoteId = agentRemoteId
+	res.AgentCircuitId = &agentCircuitId
+	res.AgentRemoteId = &agentRemoteId
 	res.ClientIdentifierPrependZero = &clientIdentifierPrependZero
-	res.DhcpClientIdentifier = dhcpClientIdentifier
+	res.DhcpClientIdentifier = &dhcpClientIdentifier
 	res.Disable = &disable
 	res.Options = Options
 	res.UseOptions = &useOptions
