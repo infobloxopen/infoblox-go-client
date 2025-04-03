@@ -195,7 +195,7 @@ func (objMgr *ObjectManager) GetAllFixedAddress(queryParams *QueryParams, isIpv6
 	fixedAddress := NewEmptyFixedAddress(isIpv6)
 	err := objMgr.connector.GetObject(fixedAddress, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting fixed address, err: %s", err)
+		return nil, fmt.Errorf("failed getting fixed address: %s", err)
 	}
 	return res, nil
 }
