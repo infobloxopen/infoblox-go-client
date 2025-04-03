@@ -3954,3 +3954,202 @@ var _ = Describe("NS Record", func() {
 		Expect(err).NotTo(BeNil())
 	})
 })
+
+var _ = Describe("Record Range Template", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create Range Template record with minimum parameters", func() {
+		// Create a Range Template Record with minimum parameters
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1"),
+			NumberOfAddresses: utils.Uint32Ptr(10),
+			Offset:            utils.Uint32Ptr(20),
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangeTemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should create a Range Template Record with maximum parameters", func() {
+
+		// Create a Range Template Record object with maximum parameters
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1"),
+			NumberOfAddresses: utils.Uint32Ptr(10),
+			Offset:            utils.Uint32Ptr(20),
+			Comment:           utils.StringPtr("test comment"),
+			Ea:                ibclient.EA{"Site": "Sapporo"},
+			Options:           options,
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangeTemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should get Range Template record template111", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template111"),
+			NumberOfAddresses: utils.Uint32Ptr(30),
+			Offset:            utils.Uint32Ptr(40),
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var res ibclient.Rangetemplate
+		search := &ibclient.Rangetemplate{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Ref).To(MatchRegexp("rangetemplate.*"))
+
+		Expect(*res.Name).To(Equal("template111"))
+		Expect(res.NumberOfAddresses).To(Equal("30"))
+		Expect(*res.Offset).To(Equal("40"))
+	})
+
+	It("Should update record Range Template template1234", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1234"),
+			NumberOfAddresses: utils.Uint32Ptr(60),
+			Offset:            utils.Uint32Ptr(50),
+			Comment:           utils.StringPtr("test comment"),
+			Ea:                ibclient.EA{"Site": "Sapporo"},
+			Options:           options,
+		}
+		ref, errCode := connector.CreateObject(&rangeTemplate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		// Update the Record range template
+		rangeTemplateUpdated := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template4567"),
+			NumberOfAddresses: utils.Uint32Ptr(70),
+			Offset:            utils.Uint32Ptr(80),
+			Comment:           utils.StringPtr("test comment updated"),
+			Ea:                ibclient.EA{"Site": "Sendai"},
+			Options:           options,
+		}
+
+		var res []ibclient.Rangetemplate
+		search := &ibclient.Rangetemplate{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&rangeTemplateUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should delete record Range Template ", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template222"),
+			NumberOfAddresses: utils.Uint32Ptr(33),
+			Offset:            utils.Uint32Ptr(44),
+		}
+		ref, errCode := connector.CreateObject(&rangeTemplate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create Range Template record template333", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template333"),
+			NumberOfAddresses: utils.Uint32Ptr(33),
+		}
+		_, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent Range Template record range-template1", func() {
+		var res []ibclient.Rangetemplate
+		sf := map[string]string{"name": "range-template1"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.Rangetemplate{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent Range Template record template444", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template444"),
+			NumberOfAddresses: utils.Uint32Ptr(122),
+			Offset:            utils.Uint32Ptr(32),
+		}
+		_, err := connector.UpdateObject(&rangeTemplate, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent Range Template record", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
