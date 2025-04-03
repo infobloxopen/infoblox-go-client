@@ -3584,6 +3584,576 @@ var _ = Describe("DTC LBDN and server object", func() {
 
 })
 
+var _ = Describe("Record Alias", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create Alias record with minimum parameters", func() {
+		// Create an Alias Record with minimum parameters
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("test-alias1.wapi.com"),
+			TargetType: "A",
+			TargetName: utils.StringPtr("aa.test.com"),
+		}
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should create an Alias Record with maximum parameters", func() {
+
+		// Create an Alias Record object with maximum parameters
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("test-alias2.wapi.com"),
+			TargetType: "PTR",
+			TargetName: utils.StringPtr("aa.bb.com"),
+			Comment:    utils.StringPtr("sample comment"),
+			Ea:         ibclient.EA{"Site": "India"},
+			Disable:    utils.BoolPtr(true),
+			Ttl:        utils.Uint32Ptr(100),
+			UseTtl:     utils.BoolPtr(true),
+		}
+
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should get alias record testalias1.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias1.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("aab.bb.com"),
+		}
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var res ibclient.RecordAlias
+		search := &ibclient.RecordAlias{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Ref).To(MatchRegexp("^record:alias.*"))
+
+		Expect(*res.Name).To(Equal("testalias1.wapi.com"))
+		Expect(res.TargetType).To(Equal("NAPTR"))
+		Expect(*res.TargetName).To(Equal("aab.bb.com"))
+	})
+
+	It("Should update record Alias testalias2.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias2.wapi.com"),
+			TargetType: "TXT",
+			TargetName: utils.StringPtr("aaa.bbb.com"),
+			Comment:    utils.StringPtr("test comment"),
+			Ea:         ibclient.EA{"Site": "Sri Lanka"},
+			Disable:    utils.BoolPtr(true),
+			Ttl:        utils.Uint32Ptr(500),
+			UseTtl:     utils.BoolPtr(true),
+		}
+		ref, errCode := connector.CreateObject(&recordAlias)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		// Update the Record Alias
+		recordAliasUpdated := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias222.wapi.com"),
+			TargetType: "PTR",
+			TargetName: utils.StringPtr("xyz.bnm.com"),
+			Comment:    utils.StringPtr("test comment updated"),
+		}
+
+		var res []ibclient.RecordAlias
+		search := &ibclient.RecordAlias{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&recordAliasUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should delete record alias ", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("Alias1111.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("abs.test.com"),
+		}
+		ref, errCode := connector.CreateObject(&recordAlias)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create alias record alias222.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("alias222.wapi.com"),
+			TargetType: "NAPTR",
+		}
+		_, err := connector.CreateObject(&recordAlias)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent alias record test_alias1", func() {
+		var res []ibclient.RecordAlias
+		sf := map[string]string{"name": "test_alias1"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordAlias{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent alias record alias222", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("alias222.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("abs.test.com"),
+		}
+		_, err := connector.UpdateObject(&recordAlias, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent alias record", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
+var _ = Describe("NS Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi_test.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+	})
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should update the NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+
+		// Update the DTC Lbdn object
+		nsRecordUpdate := ibclient.RecordNS{
+			Nameserver: utils.StringPtr("ns2.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&nsRecordUpdate, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should get the NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		search.SetReturnFields(append(search.ReturnFields(), "addresses"))
+		qp := ibclient.NewQueryParams(false, map[string]string{
+			"nameserver": "ns1.wapi_test.com",
+		})
+		errCode := connector.GetObject(search, "", qp, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Nameserver).To(Equal(utils.StringPtr("ns1.wapi_test.com")))
+		Expect(res[0].Name).To(Equal("wapi_test.com"))
+		Expect(res[0].Addresses[0].Address).To(Equal("2.3.4.5"))
+		Expect(res[0].Addresses[0].AutoCreatePtr).To(Equal(true))
+		Expect(res[0].Ref).To(MatchRegexp("record:ns/*"))
+	})
+	It("Should delete a NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should fail to create a NS Record object", func() {
+		nsRecord := ibclient.RecordNS{
+			Name: "wapi_test.com",
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		_, err := connector.CreateObject(&nsRecord)
+		Expect(err).NotTo(BeNil())
+	})
+
+	// update Dtc server, -ve scenario
+	It("Should fail to update a NS Record with wrong reference", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns3.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		_, err = connector.UpdateObject(&nsRecord, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to update a NS record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns3.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		nsRecordUpdate := ibclient.RecordNS{
+			Name: "wapi_test2.com",
+		}
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&nsRecordUpdate, res[0].Ref)
+		Expect(err).NotTo(BeNil())
+	})
+})
+
+var _ = Describe("Record Range Template", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create Range Template record with minimum parameters", func() {
+		// Create a Range Template Record with minimum parameters
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1"),
+			NumberOfAddresses: utils.Uint32Ptr(10),
+			Offset:            utils.Uint32Ptr(20),
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangeTemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should create a Range Template Record with maximum parameters", func() {
+
+		// Create a Range Template Record object with maximum parameters
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1"),
+			NumberOfAddresses: utils.Uint32Ptr(10),
+			Offset:            utils.Uint32Ptr(20),
+			Comment:           utils.StringPtr("test comment"),
+			Ea:                ibclient.EA{"Site": "Sapporo"},
+			Options:           options,
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangeTemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should get Range Template record template111", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template111"),
+			NumberOfAddresses: utils.Uint32Ptr(30),
+			Offset:            utils.Uint32Ptr(40),
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var res ibclient.Rangetemplate
+		search := &ibclient.Rangetemplate{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Ref).To(MatchRegexp("rangetemplate.*"))
+
+		Expect(*res.Name).To(Equal("template111"))
+		Expect(res.NumberOfAddresses).To(Equal("30"))
+		Expect(*res.Offset).To(Equal("40"))
+	})
+
+	It("Should update record Range Template template1234", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1234"),
+			NumberOfAddresses: utils.Uint32Ptr(60),
+			Offset:            utils.Uint32Ptr(50),
+			Comment:           utils.StringPtr("test comment"),
+			Ea:                ibclient.EA{"Site": "Sapporo"},
+			Options:           options,
+		}
+		ref, errCode := connector.CreateObject(&rangeTemplate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		// Update the Record range template
+		rangeTemplateUpdated := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template4567"),
+			NumberOfAddresses: utils.Uint32Ptr(70),
+			Offset:            utils.Uint32Ptr(80),
+			Comment:           utils.StringPtr("test comment updated"),
+			Ea:                ibclient.EA{"Site": "Sendai"},
+			Options:           options,
+		}
+
+		var res []ibclient.Rangetemplate
+		search := &ibclient.Rangetemplate{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&rangeTemplateUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should delete record Range Template ", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template222"),
+			NumberOfAddresses: utils.Uint32Ptr(33),
+			Offset:            utils.Uint32Ptr(44),
+		}
+		ref, errCode := connector.CreateObject(&rangeTemplate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create Range Template record template333", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template333"),
+			NumberOfAddresses: utils.Uint32Ptr(33),
+		}
+		_, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent Range Template record range-template1", func() {
+		var res []ibclient.Rangetemplate
+		sf := map[string]string{"name": "range-template1"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.Rangetemplate{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent Range Template record template444", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template444"),
+			NumberOfAddresses: utils.Uint32Ptr(122),
+			Offset:            utils.Uint32Ptr(32),
+		}
+		_, err := connector.UpdateObject(&rangeTemplate, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent Range Template record", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
 var _ = Describe("IPV4 fixed address", func() {
 	var connector *ConnectorFacadeE2E
 
