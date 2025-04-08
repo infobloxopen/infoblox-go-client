@@ -60,9 +60,9 @@ var _ = Describe("Object Manager: Range Template", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		comment := "test range template"
-		name := "RangeTemplate1"
-		numberOfAddresses := uint32(10)
-		offset := uint32(40)
+		name := "RangeTemplate2"
+		numberOfAddresses := uint32(50)
+		offset := uint32(60)
 		ea := EA{"Site": "Hokkaido"}
 		options := []*Dhcpoption{
 			{
