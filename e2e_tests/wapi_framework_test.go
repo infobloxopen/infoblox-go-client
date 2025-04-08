@@ -3977,13 +3977,6 @@ var _ = Describe("Record Range Template", func() {
 		Expect(err).To(BeNil())
 		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
 
-		zones := ibclient.ZoneAuth{
-			Fqdn: "wapi.com",
-		}
-		zoneRef, err := connector.CreateObject(&zones)
-		Expect(err).To(BeNil())
-		zones.Ref = zoneRef
-
 	})
 
 	AfterEach(func() {
@@ -4000,7 +3993,7 @@ var _ = Describe("Record Range Template", func() {
 		}
 		ref, err := connector.CreateObject(&rangeTemplate)
 		Expect(err).To(BeNil())
-		Expect(ref).To(MatchRegexp("^rangeTemplate.*"))
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
 
 		var templateRange *ibclient.Rangetemplate
 		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
@@ -4022,7 +4015,7 @@ var _ = Describe("Record Range Template", func() {
 			},
 		}
 		rangeTemplate := ibclient.Rangetemplate{
-			Name:              utils.StringPtr("template1"),
+			Name:              utils.StringPtr("template2"),
 			NumberOfAddresses: utils.Uint32Ptr(10),
 			Offset:            utils.Uint32Ptr(20),
 			Comment:           utils.StringPtr("test comment"),
@@ -4031,7 +4024,7 @@ var _ = Describe("Record Range Template", func() {
 		}
 		ref, err := connector.CreateObject(&rangeTemplate)
 		Expect(err).To(BeNil())
-		Expect(ref).To(MatchRegexp("^rangeTemplate.*"))
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
 
 		var templateRange *ibclient.Rangetemplate
 		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
@@ -4056,8 +4049,8 @@ var _ = Describe("Record Range Template", func() {
 		Expect(res.Ref).To(MatchRegexp("rangetemplate.*"))
 
 		Expect(*res.Name).To(Equal("template111"))
-		Expect(res.NumberOfAddresses).To(Equal("30"))
-		Expect(*res.Offset).To(Equal("40"))
+		Expect(int(*res.NumberOfAddresses)).To(Equal(30))
+		Expect(int(*res.Offset)).To(Equal(40))
 	})
 
 	It("Should update record Range Template template1234", func() {
@@ -4128,9 +4121,9 @@ var _ = Describe("Record Range Template", func() {
 		Expect(err).NotTo(BeNil())
 	})
 
-	It("Should fail to get a non-existent Range Template record range-template1", func() {
+	It("Should fail to get a non-existent Range Template record range-template100", func() {
 		var res []ibclient.Rangetemplate
-		sf := map[string]string{"name": "range-template1"}
+		sf := map[string]string{"name": "range-template100"}
 		qp := ibclient.NewQueryParams(false, sf)
 		err := connector.GetObject(&ibclient.Rangetemplate{}, "", qp, &res)
 		Expect(res).To(BeEmpty())
