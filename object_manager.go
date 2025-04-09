@@ -554,6 +554,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
+	NetworkRangeConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*Range).Ref != "" {
+			return res, nil
+		}
+		var rangeList []*Range
+		err := objMgr.connector.GetObject(NewEmptyRange(), "", NewQueryParams(false, sf), &rangeList)
+		if err == nil && len(rangeList) > 0 {
+			res = rangeList[0]
+		}
+		return res, err
+	},
 }
 
 func NewEmptyZoneDelegated() *ZoneDelegated {
