@@ -4501,7 +4501,7 @@ var _ = Describe("Network Range Object", func() {
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("range/*"))
 	})
-	It("Should fail to update a fixed address with wrong reference", func() {
+	It("Should fail to update a range with wrong reference", func() {
 		networkRange := ibclient.Range{
 			StartAddr: utils.StringPtr("60.0.0.10"),
 			EndAddr:   utils.StringPtr("60.0.0.20"),
