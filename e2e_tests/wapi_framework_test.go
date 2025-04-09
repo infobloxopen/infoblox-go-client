@@ -4350,3 +4350,202 @@ var _ = Describe("NS Record", func() {
 		Expect(err).NotTo(BeNil())
 	})
 })
+var _ = Describe("Network Range Object", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+		var (
+			networkCidr = "60.0.0.0/24"
+			networkView = "default"
+		)
+		network := ibclient.NewNetwork(networkView, networkCidr, false, "comment string", nil)
+		network.Members = []ibclient.NetworkMember{
+			{
+				DhcpMember: &ibclient.Dhcpmember{Name: "infoblox.localdomain"},
+			},
+		}
+		_, err = connector.CreateObject(network)
+		Expect(err).To(BeNil())
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("should create a Network Range with minimal parameters", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+	})
+	It("should create a Network Range with maximal parameters", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "60.0.0.34",
+				UseOption:   true,
+			},
+		}
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.31"),
+			EndAddr:   utils.StringPtr("60.0.0.35"),
+			Comment:   utils.StringPtr("new comment"),
+			Member: &ibclient.Dhcpmember{
+				Name: "infoblox.localdomain",
+			},
+			ServerAssociationType: "MEMBER",
+			Network:               utils.StringPtr("60.0.0.0/24"),
+			NetworkView:           utils.StringPtr("default"),
+			Disable:               utils.BoolPtr(true),
+			Ea: ibclient.EA{
+				"Site": "India",
+			},
+			Options:    options,
+			UseOptions: utils.BoolPtr(true),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+	})
+	It("should get the Network Range object", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "60.0.0.34",
+				UseOption:   true,
+			},
+		}
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.31"),
+			EndAddr:   utils.StringPtr("60.0.0.35"),
+			Comment:   utils.StringPtr("new comment"),
+			Name:      utils.StringPtr("range 1"),
+			Member: &ibclient.Dhcpmember{
+				Name: "infoblox.localdomain",
+			},
+			ServerAssociationType: "MEMBER",
+			Network:               utils.StringPtr("60.0.0.0/24"),
+			NetworkView:           utils.StringPtr("default"),
+			Disable:               utils.BoolPtr(true),
+			Ea: ibclient.EA{
+				"Site": "India",
+			},
+			Options:    options,
+			UseOptions: utils.BoolPtr(true),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+		var res ibclient.Range
+		search := &ibclient.Range{}
+		search.SetReturnFields(append(search.ReturnFields(), "member", "options", "disable", "server_association_type", "name", "extattrs", "use_options"))
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Name).To(Equal(utils.StringPtr("range 1")))
+		Expect(res.Member.Name).To(Equal("infoblox.localdomain"))
+		Expect(res.Disable).To(Equal(utils.BoolPtr(true)))
+		Expect(res.ServerAssociationType).To(Equal("MEMBER"))
+		Expect(res.Ea["Site"]).To(Equal("India"))
+		Expect(res.Options[0].Name).To(Equal("dhcp-lease-time"))
+		Expect(res.Options[0].Num).To(Equal(uint32(51)))
+		Expect(res.Options[0].Value).To(Equal("43200"))
+		Expect(res.Options[0].UseOption).To(Equal(false))
+		Expect(res.Options[0].VendorClass).To(Equal("DHCP"))
+		Expect(res.Options[1].Name).To(Equal("routers"))
+		Expect(res.Options[1].Num).To(Equal(uint32(3)))
+		Expect(res.Options[1].Value).To(Equal("60.0.0.34"))
+		Expect(res.Options[1].UseOption).To(Equal(true))
+		Expect(res.Options[1].VendorClass).To(Equal("DHCP"))
+		Expect(res.UseOptions).To(Equal(utils.BoolPtr(true)))
+		Expect(res.Ref).To(MatchRegexp("range/*"))
+		Expect(res.Comment).To(Equal(utils.StringPtr("new comment")))
+	})
+	It("should delete the network range ", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+
+		var res []ibclient.Range
+		search := &ibclient.Range{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.DeleteObject(res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+	})
+	It("Should fail to update a fixed address with wrong reference", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+		_, err = connector.UpdateObject(&networkRange, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to update a range", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+		networkRangeUpdate := ibclient.Range{
+			NetworkView: utils.StringPtr("network_view"),
+		}
+		var res []ibclient.Range
+		search := &ibclient.Range{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&networkRangeUpdate, res[0].Ref)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to create a range object", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+		}
+		_, err := connector.CreateObject(&networkRange)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to get a non-existent range", func() {
+		var res []ibclient.Range
+		sf := map[string]string{"name": "range"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.Range{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to delete a non-existent range", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+})
