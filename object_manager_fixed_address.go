@@ -139,12 +139,14 @@ func (objMgr *ObjectManager) UpdateFixedAddress(
 				}
 				updateFixedAddr.IPv6Address = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
 				updateFixedAddr.Cidr = cidr
+				updateFixedAddr.NetviewName = netview
 			} else {
 				if ipAddress.To4() == nil {
 					return nil, fmt.Errorf("CIDR value must be an IPv4 CIDR, not an IPv6 one")
 				}
 				updateFixedAddr.IPv4Address = fmt.Sprintf("func:nextavailableip:%s,%s", cidr, netview)
 				updateFixedAddr.Cidr = cidr
+				updateFixedAddr.NetviewName = netview
 			}
 		}
 	} else {
@@ -158,12 +160,14 @@ func (objMgr *ObjectManager) UpdateFixedAddress(
 			}
 			updateFixedAddr.IPv6Address = ipAddr
 			updateFixedAddr.Cidr = cidr
+			updateFixedAddr.NetviewName = netview
 		} else {
 			if ipAddress.To4() == nil {
 				return nil, fmt.Errorf("IP address must be an IPv4 address, not an IPv6 one")
 			}
 			updateFixedAddr.IPv4Address = ipAddr
 			updateFixedAddr.Cidr = cidr
+			updateFixedAddr.NetviewName = netview
 		}
 	}
 	refResp, err := objMgr.connector.UpdateObject(updateFixedAddr, fixedAddrRef)
