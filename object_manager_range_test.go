@@ -26,10 +26,10 @@ var _ = Describe("Object Manager: Network Range", func() {
 		eas["VM ID"] = vmID
 		eas["VM Name"] = vmName
 		objectForCreation := NewRange(
-			"", "", networkPointer, startAddr, eas, false, nil, false, endAddr, "", nil, "NONE")
+			"", "", networkPointer, startAddr, eas, false, nil, false, endAddr, "", nil, "NONE", "")
 		objectForCreation.NetworkView = &netviewName
 		objectAsResult := NewRange(
-			"", "", networkPointer, startAddr, eas, false, nil, false, endAddr, "", nil, "NONE")
+			"", "", networkPointer, startAddr, eas, false, nil, false, endAddr, "", nil, "NONE", "")
 		objectAsResult.NetworkView = &netviewName
 		objectAsResult.Ref = fakeRefReturn
 		aniFakeConnector := &fakeConnector{
@@ -44,7 +44,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 		var actualRecord *Range
 		var err error
 		It("should pass expected Network Range Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateNetworkRange("", "", network, netviewName, startAddr, endAddr, false, eas, nil, "", nil, false, "NONE")
+			actualRecord, err = objMgr.CreateNetworkRange("", "", network, netviewName, startAddr, endAddr, false, eas, nil, "", nil, false, "NONE", "")
 		})
 		It("should return expected Network Range Object", func() {
 			Expect(err).To(BeNil())
@@ -86,10 +86,10 @@ var _ = Describe("Object Manager: Network Range", func() {
 		eas["VM ID"] = vmID
 		eas["VM Name"] = vmName
 		objectForCreation := NewRange(
-			comment, name, networkPointer, startAddr, eas, false, options, false, endAddr, "", member, serverAssociationType)
+			comment, name, networkPointer, startAddr, eas, false, options, false, endAddr, "", member, serverAssociationType, "")
 		objectForCreation.NetworkView = &netviewName
 		objectAsResult := NewRange(
-			comment, name, networkPointer, startAddr, eas, false, options, false, endAddr, "", member, serverAssociationType)
+			comment, name, networkPointer, startAddr, eas, false, options, false, endAddr, "", member, serverAssociationType, "")
 		objectAsResult.Ref = fakeRefReturn
 		objectAsResult.NetworkView = &netviewName
 		aniFakeConnector := &fakeConnector{
@@ -104,7 +104,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 		var actualRecord *Range
 		var err error
 		It("should pass expected Network Range Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateNetworkRange(comment, name, network, netviewName, startAddr, endAddr, false, eas, member, "", options, false, serverAssociationType)
+			actualRecord, err = objMgr.CreateNetworkRange(comment, name, network, netviewName, startAddr, endAddr, false, eas, member, "", options, false, serverAssociationType, "")
 		})
 		It("should return expected Network Range Object", func() {
 			Expect(err).To(BeNil())
@@ -149,7 +149,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyRange(),
 			getObjectQueryParams: queryParams,
-			resultObject:         []Range{*NewRange(comment, name, networkPointer, startAddr, eas, false, options, true, endAddr, failOverAssociation, nil, "FAILOVER")},
+			resultObject:         []Range{*NewRange(comment, name, networkPointer, startAddr, eas, false, options, true, endAddr, failOverAssociation, nil, "FAILOVER", "")},
 			fakeRefReturn:        fakeRefReturn,
 		}
 
@@ -238,7 +238,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 			}
 			initialServerAssociationType := "MEMBER"
 			initialComment := "old comment"
-			initObj := NewRange(initialComment, name, networkPointer, startAddr, initialEas, false, initalOptions, true, endAddr, "", initialMember, initialServerAssociationType)
+			initObj := NewRange(initialComment, name, networkPointer, startAddr, initialEas, false, initalOptions, true, endAddr, "", initialMember, initialServerAssociationType, "")
 			initObj.Ref = ref
 
 			expectedEas := EA{"Site": "Blr"}
@@ -248,10 +248,10 @@ var _ = Describe("Object Manager: Network Range", func() {
 			updateServerAssociationType := "FAILOVER"
 			updateFailOverAssociation := "failOver"
 			updatedRef := fmt.Sprintf("range/ZG5zLmRoY3BfcmFuZ2UkMTIuNC4wLjEyMC8xMi40LjAuMTMwLy8vMC8:%s/%s/%s", startAddr, endAddr, netviewName)
-			updateObjIn := NewRange(updateComment, updateName, networkPointer, startAddr, expectedEas, true, initalOptions, true, endAddr, updateFailOverAssociation, nil, updateServerAssociationType)
+			updateObjIn := NewRange(updateComment, updateName, networkPointer, startAddr, expectedEas, true, initalOptions, true, endAddr, updateFailOverAssociation, nil, updateServerAssociationType, "")
 			updateObjIn.Ref = ref
 
-			expectedObj := NewRange(updateComment, updateName, networkPointer, startAddr, expectedEas, true, initalOptions, true, endAddr, updateFailOverAssociation, nil, updateServerAssociationType)
+			expectedObj := NewRange(updateComment, updateName, networkPointer, startAddr, expectedEas, true, initalOptions, true, endAddr, updateFailOverAssociation, nil, updateServerAssociationType, "")
 			expectedObj.Ref = updatedRef
 
 			getObjIn := NewEmptyRange()
@@ -283,7 +283,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 		name2 := "range_create_2"
 		comment2 := "comment updated"
 		oldRef := "range/ZG5zLmRoY3BfcmFuZ2UkMTIuNC4wLjEyMC8xMi40LjAuMTMwLy8vMC8:12.4.0.120/12.4.0.130/default"
-		expectedObj := NewRange(comment2, name2, networkPointer, "", nil, false, nil, false, "", "", nil, "NONE")
+		expectedObj := NewRange(comment2, name2, networkPointer, "", nil, false, nil, false, "", "", nil, "NONE", "")
 		expectedObj.Ref = oldRef
 		conn := &fakeConnector{
 			getObjectObj:         NewEmptyRange(),
@@ -315,7 +315,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 		comment := "range for 12.4.0.0/24"
 		name := "range"
 		conn := &fakeConnector{
-			createObjectObj:   NewRange(comment, name, networkPointer, "", nil, false, nil, false, "", "", nil, "NONE"),
+			createObjectObj:   NewRange(comment, name, networkPointer, "", nil, false, nil, false, "", "", nil, "NONE", ""),
 			createObjectError: fmt.Errorf("start address and end address fields are required to create a range within a Network"),
 		}
 
@@ -324,7 +324,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 		var err error
 		expectedObj = nil
 		It("should pass expected Network Range Object to CreateObject", func() {
-			actualRange, err = objMgr.CreateNetworkRange(comment, name, network, netviewName, "", "", false, nil, nil, "", nil, false, "NONE")
+			actualRange, err = objMgr.CreateNetworkRange(comment, name, network, netviewName, "", "", false, nil, nil, "", nil, false, "NONE", "")
 			Expect(actualRange).To(Equal(expectedObj))
 			Expect(err).To(Equal(conn.createObjectError))
 		})

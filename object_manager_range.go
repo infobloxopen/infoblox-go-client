@@ -19,6 +19,7 @@ func NewRange(comment string,
 	failOverAssociation string,
 	member *Dhcpmember,
 	ServerAssociationType string,
+	template string,
 ) *Range {
 	newRange := NewEmptyRange()
 	newRange.Comment = &comment
@@ -35,9 +36,10 @@ func NewRange(comment string,
 	newRange.FailoverAssociation = &failOverAssociation
 	newRange.Member = member
 	newRange.ServerAssociationType = ServerAssociationType
+	newRange.Template = template
 	return newRange
 }
-func (objMgr *ObjectManager) CreateNetworkRange(comment string, name string, network string, networkView string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociation string) (*Range, error) {
+func (objMgr *ObjectManager) CreateNetworkRange(comment string, name string, network string, networkView string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociation string, template string) (*Range, error) {
 
 	if startAddr == "" || endAddr == "" {
 		return nil, fmt.Errorf("start address and end address fields are required to create a range within a Network")
@@ -49,7 +51,7 @@ func (objMgr *ObjectManager) CreateNetworkRange(comment string, name string, net
 	if network != "" {
 		networkPointer = &network
 	}
-	newRangeCreate := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociation)
+	newRangeCreate := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociation, template)
 	newRangeCreate.NetworkView = &networkView
 	ref, err := objMgr.connector.CreateObject(newRangeCreate)
 	if err != nil {
@@ -83,7 +85,7 @@ func (objMgr *ObjectManager) UpdateNetworkRange(ref string, comment string, name
 	if network != "" {
 		networkPointer = &network
 	}
-	networkRange := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociationType)
+	networkRange := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociationType, "")
 	networkRange.Ref = ref
 	reference, err := objMgr.connector.UpdateObject(networkRange, ref)
 	if err != nil {
