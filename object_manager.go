@@ -138,7 +138,7 @@ type IBObjectManager interface {
 	UpdateNetwork(ref string, setEas EA, comment string) (*Network, error)
 	UpdateNetworkContainer(ref string, setEas EA, comment string) (*NetworkContainer, error)
 	UpdateNetworkView(ref string, name string, comment string, setEas EA) (*NetworkView, error)
-	UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string) (*Range, error)
+	UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string, NetworkView string) (*Range, error)
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)

@@ -77,7 +77,7 @@ func (objMgr *ObjectManager) GetNetworkRange(queryParams *QueryParams) ([]Range,
 	}
 	return res, nil
 }
-func (objMgr *ObjectManager) UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string) (*Range, error) {
+func (objMgr *ObjectManager) UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string, NetworkView string) (*Range, error) {
 	if startAddr == "" || endAddr == "" {
 		return nil, fmt.Errorf("start address and end address fields cannot be empty for a range within a Network")
 	}
@@ -86,6 +86,7 @@ func (objMgr *ObjectManager) UpdateNetworkRange(ref string, comment string, name
 		networkPointer = &network
 	}
 	networkRange := NewRange(comment, name, networkPointer, startAddr, eas, disable, options, useOptions, endAddr, failOverAssociation, member, serverAssociationType, "")
+	networkRange.NetworkView = &NetworkView
 	networkRange.Ref = ref
 	reference, err := objMgr.connector.UpdateObject(networkRange, ref)
 	if err != nil {
