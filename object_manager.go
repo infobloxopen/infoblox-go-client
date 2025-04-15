@@ -42,7 +42,7 @@ type IBObjectManager interface {
 	CreateNetworkRange(comment string, name string, network string, networkView string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociation string, template string, msServer string) (*Range, error)
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
 	CreateRangeTemplate(name string, numberOfAdresses uint32, offset uint32, comment string, ea EA,
-		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) (*Rangetemplate, error)
+		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
@@ -146,7 +146,7 @@ type IBObjectManager interface {
 	UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string, NetworkView string, msServer string) (*Range, error)
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
 	UpdateRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
-		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) (*Rangetemplate, error)
+		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)

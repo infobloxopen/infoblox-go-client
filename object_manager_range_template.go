@@ -1,14 +1,26 @@
 package ibclient
 
-import "fmt"
+import (
+	"encoding/json"
+	"fmt"
+)
+
+func (ms Msdhcpserver) MarshalJSON() ([]byte, error) {
+	if ms.Ipv4Addr == "" {
+		return []byte("null"), nil
+	}
+	return json.Marshal(map[string]string{
+		"ipv4addr": ms.Ipv4Addr,
+	})
+}
 
 func (objMgr *ObjectManager) CreateRangeTemplate(name string, numberOfAdresses uint32, offset uint32, comment string, ea EA,
-	options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) (*Rangetemplate, error) {
+	options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name field is required to create a Range Template object")
 	}
 	rangeTemplate := NewRangeTemplate("", name, numberOfAdresses, offset, comment, ea, options,
-		useOption, serverAssociationType, failOverAssociation, member)
+		useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 	ref, err := objMgr.connector.CreateObject(rangeTemplate)
 	if err != nil {
 		return nil, fmt.Errorf("error creating Range Template object %s, err: %s", name, err)
@@ -41,12 +53,12 @@ func (objMgr *ObjectManager) GetRangeTemplateByRef(ref string) (*Rangetemplate, 
 }
 
 func (objMgr *ObjectManager) UpdateRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
-	options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) (*Rangetemplate, error) {
+	options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error) {
 	if name == "" {
 		return nil, fmt.Errorf("name field is required to update a Range Template object")
 	}
 	rangeTemplate := NewRangeTemplate(ref, name, numberOfAddresses, offset, comment, ea, options, useOption,
-		serverAssociationType, failOverAssociation, member)
+		serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 	newRef, err := objMgr.connector.UpdateObject(rangeTemplate, ref)
 	if err != nil {
 		return nil, fmt.Errorf("error updating Range Template object %s, err: %s", name, err)
@@ -60,7 +72,7 @@ func (objMgr *ObjectManager) UpdateRangeTemplate(ref string, name string, number
 }
 
 func NewRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
-	options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember) *Rangetemplate {
+	options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) *Rangetemplate {
 	rangeTemplate := NewEmptyRangeTemplate()
 	rangeTemplate.Ref = ref
 	rangeTemplate.Name = &name
@@ -73,12 +85,14 @@ func NewRangeTemplate(ref string, name string, numberOfAddresses uint32, offset 
 	rangeTemplate.ServerAssociationType = serverAssociationType
 	rangeTemplate.FailoverAssociation = &failOverAssociation
 	rangeTemplate.Member = member
+	rangeTemplate.CloudApiCompatible = &cloudApiCompatible
+	rangeTemplate.MsServer = &Msdhcpserver{Ipv4Addr: msServer}
 	return rangeTemplate
 }
 
 func NewEmptyRangeTemplate() *Rangetemplate {
 	rangeTemplate := &Rangetemplate{}
 	rangeTemplate.SetReturnFields(append(rangeTemplate.ReturnFields(), "extattrs", "options", "use_options",
-		"server_association_type", "failover_association", "member"))
+		"server_association_type", "failover_association", "member", "cloud_api_compatible", "ms_server"))
 	return rangeTemplate
 }

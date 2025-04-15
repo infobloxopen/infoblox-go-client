@@ -15,6 +15,8 @@ var _ = Describe("Object Manager: Range Template", func() {
 		numberOfAddresses := uint32(10)
 		offset := uint32(40)
 		ea := EA{"Site": "Hokkaido"}
+		cloudApiCompatible := false
+		msServer := ""
 		options := []*Dhcpoption{
 			{
 				Name:        "routers",
@@ -35,22 +37,22 @@ var _ = Describe("Object Manager: Range Template", func() {
 		fakeRefReturn := fmt.Sprintf("rangetemplate/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
 
 		conn := &fakeConnector{
-			createObjectObj:      NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member),
+			createObjectObj:      NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer),
 			getObjectObj:         &Rangetemplate{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member),
+			resultObject:         NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer),
 			fakeRefReturn:        fakeRefReturn,
 		}
 		conn.resultObject.(*Rangetemplate).Ref = fakeRefReturn
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected Range Template Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateRangeTemplate(name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member)
+			actualRecord, err := objMgr.CreateRangeTemplate(name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 
 		It("should fail to create a Range Template object", func() {
-			actualRecord, err := objMgr.CreateRangeTemplate("", numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member)
+			actualRecord, err := objMgr.CreateRangeTemplate("", numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})
@@ -76,14 +78,16 @@ var _ = Describe("Object Manager: Range Template", func() {
 		useOption := true
 		failOverAssociation := ""
 		serverAssociationType := "MEMBER"
+		cloudApiCompatible := true
 		member := &Dhcpmember{
 			Ipv4Addr: "10.17.21.10",
 			Ipv6Addr: "2403:8600:80cf:e10c:3a00::1192",
 			Name:     "infoblox.localdomain",
 		}
+		msServer := "MS_Server1"
 		fakeRefReturn := fmt.Sprintf("rangetemplate/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
 		queryParams := NewQueryParams(false, map[string]string{"name": name})
-		res := NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member)
+		res := NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 
 		conn := &fakeConnector{
 			getObjectObj:  NewEmptyRangeTemplate(),
@@ -185,6 +189,8 @@ var _ = Describe("Object Manager: Range Template", func() {
 		useOption := true
 		failOverAssociation := ""
 		serverAssociationType := "MEMBER"
+		cloudApiCompatible := true
+		msServer := "MS_Server2"
 		member := &Dhcpmember{
 			Ipv4Addr: "10.17.21.10",
 			Ipv6Addr: "2403:8600:80cf:e10c:3a00::1192",
@@ -196,15 +202,15 @@ var _ = Describe("Object Manager: Range Template", func() {
 			getObjectObj:         NewEmptyRangeTemplate(),
 			getObjectRef:         updateRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member),
+			resultObject:         NewRangeTemplate("", name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer),
 			fakeRefReturn:        updateRef,
-			updateObjectObj:      NewRangeTemplate(updateRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member),
+			updateObjectObj:      NewRangeTemplate(updateRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer),
 			updateObjectRef:      updateRef,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected Range Template Object to UpdateObject", func() {
-			actualRecord, err := objMgr.UpdateRangeTemplate(updateRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member)
+			actualRecord, err := objMgr.UpdateRangeTemplate(updateRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -231,6 +237,8 @@ var _ = Describe("Object Manager: Range Template", func() {
 		useOption := true
 		failOverAssociation := ""
 		serverAssociationType := "MEMBER"
+		cloudApiCompatible := false
+		msServer := "MS_Server3"
 		member := &Dhcpmember{
 			Ipv4Addr: "10.17.21.10",
 			Ipv6Addr: "2403:8600:80cf:e10c:3a00::1192",
@@ -242,10 +250,10 @@ var _ = Describe("Object Manager: Range Template", func() {
 			getObjectObj:         NewEmptyRangeTemplate(),
 			getObjectRef:         oldRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewRangeTemplate(oldRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member),
+			resultObject:         NewRangeTemplate(oldRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer),
 			getObjectError:       fmt.Errorf("not found"),
 			fakeRefReturn:        oldRef,
-			updateObjectObj:      NewRangeTemplate(oldRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member),
+			updateObjectObj:      NewRangeTemplate(oldRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer),
 			updateObjectRef:      oldRef,
 		}
 
@@ -253,7 +261,7 @@ var _ = Describe("Object Manager: Range Template", func() {
 		// negative scenario
 
 		It("should fail to update Range Template Object", func() {
-			actualRecord, err := objMgr.UpdateRangeTemplate(oldRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member)
+			actualRecord, err := objMgr.UpdateRangeTemplate(oldRef, name, numberOfAddresses, offset, comment, ea, options, useOption, serverAssociationType, failOverAssociation, member, cloudApiCompatible, msServer)
 			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})
