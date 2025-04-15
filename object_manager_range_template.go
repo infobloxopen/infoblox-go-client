@@ -5,6 +5,33 @@ import (
 	"fmt"
 )
 
+func (d Rangetemplate) MarshalJSON() ([]byte, error) {
+	type Alias Rangetemplate
+	aux := &struct {
+		Member *Dhcpmember `json:"member"`
+		*Alias
+	}{
+		Member: d.Member,
+		Alias:  (*Alias)(&d),
+	}
+	return json.Marshal(aux)
+}
+
+func (d *Rangetemplate) UnmarshalJSON(data []byte) error {
+	type Alias Rangetemplate
+	aux := &struct {
+		Member *Dhcpmember `json:"member"`
+		*Alias
+	}{
+		Alias: (*Alias)(d),
+	}
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+	d.Member = aux.Member
+	return nil
+}
+
 func (ms Msdhcpserver) MarshalJSON() ([]byte, error) {
 	if ms.Ipv4Addr == "" {
 		return []byte("null"), nil
