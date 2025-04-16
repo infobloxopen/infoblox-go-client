@@ -65,7 +65,7 @@ func (objMgr *ObjectManager) GetAllRangeTemplate(queryParams *QueryParams) ([]Ra
 	rangeTemplate := NewEmptyRangeTemplate()
 	err := objMgr.connector.GetObject(rangeTemplate, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting Range Template object, err: %s", err)
+		return nil, fmt.Errorf("failed getting Range Template Record: %s", err)
 	}
 	return res, nil
 }
