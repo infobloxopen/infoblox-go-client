@@ -77,7 +77,7 @@ func (objMgr *ObjectManager) GetNetworkRange(queryParams *QueryParams) ([]Range,
 	err := objMgr.connector.GetObject(
 		networkRange, "", queryParams, &res)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed getting DHCP IPv4 Range: %s", err)
 	}
 	return res, nil
 }
