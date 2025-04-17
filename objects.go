@@ -472,13 +472,87 @@ func NewEmptyDNSView() *View {
 type Network struct {
 	IBBase      `json:"-"`
 	objectType  string
-	Ref         string `json:"_ref,omitempty"`
-	NetviewName string `json:"network_view,omitempty"`
-	Cidr        string `json:"network,omitempty"`
-	Ea          EA     `json:"extattrs"`
-	Comment     string `json:"comment"`
+	Ref         string          `json:"_ref,omitempty"`
+	NetviewName string          `json:"network_view,omitempty"`
+	Cidr        string          `json:"network,omitempty"`
+	Ea          EA              `json:"extattrs"`
+	Comment     string          `json:"comment"`
+	Members     []NetworkMember `json:"members,omitempty"`
+}
+type NetworkMember struct {
+	DhcpMember   *Dhcpmember   `json:"dhcpmember,omitempty"`
+	MsDhcpServer *Msdhcpserver `json:"msdhcpserver,omitempty"`
 }
 
+// Custom JSON Marshaling
+func (nm NetworkMember) MarshalJSON() ([]byte, error) {
+	if nm.DhcpMember != nil {
+		return json.Marshal(struct {
+			Struct   string `json:"_struct"`
+			Name     string `json:"name,omitempty"`
+			Ipv4Addr string `json:"ipv4addr,omitempty"`
+			Ipv6Addr string `json:"ipv6addr,omitempty"`
+		}{
+			Struct:   "dhcpmember",
+			Name:     nm.DhcpMember.Name,
+			Ipv4Addr: nm.DhcpMember.Ipv4Addr,
+			Ipv6Addr: nm.DhcpMember.Ipv6Addr,
+		})
+	} else if nm.MsDhcpServer != nil {
+		return json.Marshal(struct {
+			Struct   string `json:"_struct"`
+			Ipv4Addr string `json:"ipv4addr,omitempty"`
+		}{
+			Struct:   "msdhcpserver",
+			Ipv4Addr: nm.MsDhcpServer.Ipv4Addr,
+		})
+	}
+	return json.Marshal(struct{}{})
+}
+func (nm *NetworkMember) UnmarshalJSON(data []byte) error {
+	var raw map[string]json.RawMessage
+	if err := json.Unmarshal(data, &raw); err != nil {
+		return err
+	}
+
+	var structType string
+	if err := json.Unmarshal(raw["_struct"], &structType); err != nil {
+		return err
+	}
+
+	switch structType {
+	case "dhcpmember":
+		var dhcpMember struct {
+			Name     string `json:"name,omitempty"`
+			Ipv4Addr string `json:"ipv4addr,omitempty"`
+			Ipv6Addr string `json:"ipv6addr,omitempty"`
+		}
+		if err := json.Unmarshal(data, &dhcpMember); err != nil {
+			return err
+		}
+		nm.DhcpMember = &Dhcpmember{
+			Name:     dhcpMember.Name,
+			Ipv4Addr: dhcpMember.Ipv4Addr,
+			Ipv6Addr: dhcpMember.Ipv6Addr,
+		}
+		nm.MsDhcpServer = nil
+	case "msdhcpserver":
+		var msDhcpServer struct {
+			Ipv4Addr string `json:"ipv4addr,omitempty"`
+		}
+		if err := json.Unmarshal(data, &msDhcpServer); err != nil {
+			return err
+		}
+		nm.MsDhcpServer = &Msdhcpserver{
+			Ipv4Addr: msDhcpServer.Ipv4Addr,
+		}
+		nm.DhcpMember = nil
+	default:
+		return fmt.Errorf("unknown struct type: %s", structType)
+	}
+
+	return nil
+}
 func (n Network) ObjectType() string {
 	return n.objectType
 }
