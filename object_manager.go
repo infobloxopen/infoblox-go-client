@@ -13,7 +13,7 @@ var _ IBObjectManager = new(ObjectManager)
 
 type IBObjectManager interface {
 	GetDNSView(name string) (*View, error)
-	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string, name string, comment string, eas EA) (*FixedAddress, error)
+	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string, name string, comment string, eas EA, clients string, agentCircuitId string, agentRemoteId string, clientIdentifierPrependZero bool, dhcpClientIdentifier string, disable bool, Options []*Dhcpoption, useOptions bool) (*FixedAddress, error)
 	AllocateNextAvailableIp(name string, objectType string, objectParams map[string]string, params map[string][]string, useEaInheritance bool, ea EA, comment string, disable bool, n *int, ipAddrType string,
 		enableDns bool, enableDhcp bool, macAddr string, duid string, networkView string, dnsView string, useTtl bool, ttl uint32, aliases []string) (interface{}, error)
 	AllocateNetwork(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (network *Network, err error)
@@ -86,6 +86,7 @@ type IBObjectManager interface {
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
+	GetAllFixedAddress(queryParams *QueryParams, isIpv6 bool) ([]FixedAddress, error)
 	GetHostRecord(netview string, dnsview string, recordName string, ipv4addr string, ipv6addr string) (*HostRecord, error)
 	GetIpv4SharedNetworkByRef(ref string) (*SharedNetwork, error)
 	GetAllIpv4SharedNetwork(queryParams *QueryParams) ([]SharedNetwork, error)
@@ -126,7 +127,7 @@ type IBObjectManager interface {
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
 	UpdateDtcLbdn(ref string, name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
-	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA) (*FixedAddress, error)
+	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA, agentCircuitId string, agentRemoteId string, clientIdentifierPrependZero bool, dhcpClientIdentifier string, disable bool, Options []*Dhcpoption, useOptions bool) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
 	UpdateIpv4SharedNetwork(ref string, name string, networks []string, networkView string, comment string, eas EA, disable bool, useOptions bool, options []*Dhcpoption) (*SharedNetwork, error)
 	UpdateMXRecord(ref string, dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
@@ -165,6 +166,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	FixedAddressConst     = "FixedAddress"
 	SharedNetworkConst    = "SharedNetwork"
 	AliasRecord           = "AliasRecord"
 )
@@ -272,6 +274,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	FixedAddressConst: func(ref string) IBObject {
+		return NewEmptyFixedAddress(false)
 	},
 	SharedNetworkConst: func(ref string) IBObject {
 		return NewEmptyIpv4SharedNetwork()
@@ -525,6 +530,18 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyIpv4SharedNetwork(), "", NewQueryParams(false, sf), &sharedNetworkList)
 		if err == nil && len(sharedNetworkList) > 0 {
 			res = sharedNetworkList[0]
+		}
+		return res, err
+	},
+	FixedAddressConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*FixedAddress).Ref != "" {
+			return res, nil
+		}
+		var fixedAddressList []*FixedAddress
+		err := objMgr.connector.GetObject(NewEmptyFixedAddress(false), "", NewQueryParams(false, sf), &fixedAddressList)
+		if err == nil && len(fixedAddressList) > 0 {
+			res = fixedAddressList[0]
 		}
 		return res, err
 	},

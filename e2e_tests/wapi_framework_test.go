@@ -3584,6 +3584,156 @@ var _ = Describe("DTC LBDN and server object", func() {
 
 })
 
+var _ = Describe("IPV4 fixed address", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		var (
+			cidr        = "12.0.0.0/24"
+			networkView = "default"
+			err1        error
+		)
+		ipv4Network := ibclient.NewNetwork(networkView, cidr, false, "", nil)
+		_, err1 = connector.CreateObject(ipv4Network)
+		Expect(err1).To(BeNil())
+	})
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+	It("should create an IPV4 fixed address object with minimal parameters", func() {
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.1", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+	})
+	It("should create an IPV4 fixed address with maximal parameters", func() {
+		ea := ibclient.EA{"Site": "India"}
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "12.0.0.34",
+				UseOption:   true,
+			},
+		}
+		fixedAddress := ibclient.NewFixedAddress("default", "fixedaddress1", "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", "CLIENT_ID", ea, "", false, "test comment", "", "", false, "34", true, options, true)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+	})
+	// get IPV4 fixed address
+	It("Should get IPV4 fixed address", func() {
+		ea := ibclient.EA{"Site": "India"}
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "12.0.0.34",
+				UseOption:   true,
+			},
+		}
+		fixedAddress := ibclient.NewFixedAddress("default", "fixedaddress1", "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", "CLIENT_ID", ea, "", false, "test comment", "", "", false, "34", true, options, true)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+		var res ibclient.FixedAddress
+		search := &ibclient.FixedAddress{}
+		search.SetReturnFields(append(search.ReturnFields(), "name", "network_view", "ipv4addr", "network", "options"))
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Name).To(Equal("fixedaddress1"))
+		Expect(res.NetviewName).To(Equal("default"))
+		Expect(res.IPv4Address).To(Equal("12.0.0.2"))
+		Expect(res.Cidr).To(Equal("12.0.0.0/24"))
+		Expect(res.Options[0].Name).To(Equal("dhcp-lease-time"))
+		Expect(res.Options[0].Num).To(Equal(uint32(51)))
+		Expect(res.Options[0].Value).To(Equal("43200"))
+		Expect(res.Options[0].UseOption).To(Equal(false))
+		Expect(res.Options[0].VendorClass).To(Equal("DHCP"))
+		Expect(res.Options[1].Name).To(Equal("routers"))
+		Expect(res.Options[1].Num).To(Equal(uint32(3)))
+		Expect(res.Options[1].Value).To(Equal("12.0.0.34"))
+		Expect(res.Options[1].UseOption).To(Equal(true))
+		Expect(res.Options[1].VendorClass).To(Equal("DHCP"))
+	})
+	//It should update IPV4 fixed address
+	It("Should update IPV4 fixed address", func() {
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+
+		updateOptions := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "12.0.0.34",
+				UseOption:   true,
+			},
+		}
+		updatedFixedAddress := ibclient.NewFixedAddress("", "fixedaddress", "12.0.0.4", "", "", "REMOTE_ID", nil, "", false, "comment 1", "", "23", false, "", false, updateOptions, true)
+		var res []ibclient.FixedAddress
+		search := &ibclient.FixedAddress{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(updatedFixedAddress, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+	})
+	It("Should delete a fixed address", func() {
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("fixedaddress/*"))
+	})
+	// get IPV4 fixed address, -ve scenario
+	It("Should fail to get a non existent fixed address", func() {
+		var res []ibclient.FixedAddress
+		err := connector.GetObject(&ibclient.FixedAddress{}, "nonexistent_ref", nil, &res)
+		Expect(res).To(BeNil())
+		Expect(err).NotTo(BeNil())
+	})
+	// update IPV4 fixed address, -ve scenario
+	It("Should fail to update a Fixed address", func() {
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+		_, err = connector.UpdateObject(fixedAddress, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	// delete IPV4 Fixed address, -ve scenario
+	It("Should fail to delete a non existent Fixed address", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
 var _ = Describe("SharedNetwork Record", func() {
 	var connector *ConnectorFacadeE2E
 
