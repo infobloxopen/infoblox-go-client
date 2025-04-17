@@ -161,6 +161,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				*res.(*[]DtcTopology) = c.resultObject.([]DtcTopology)
 			case *DtcServer:
 				*res.(*[]DtcServer) = c.resultObject.([]DtcServer)
+			case *SharedNetwork:
+				*res.(*[]SharedNetwork) = c.resultObject.([]SharedNetwork)
 			case *RecordNS:
 				*res.(*[]RecordNS) = c.resultObject.([]RecordNS)
 			case *RecordAlias:
