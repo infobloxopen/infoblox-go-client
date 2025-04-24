@@ -123,6 +123,7 @@ func (objMgr *ObjectManager) UpdateIpv4SharedNetwork(ref string, name string, ne
 		ipv4Networks = append(ipv4Networks, &Ipv4Network{Ref: nw, NetworkView: networkView})
 	}
 	sharedNetwork := NewIpv4SharedNetwork(ref, name, ipv4Networks, eas, comment, disable, useOptions, options)
+	sharedNetwork.NetworkView = networkView
 	updatedRef, err := objMgr.connector.UpdateObject(sharedNetwork, ref)
 	if err != nil {
 		return nil, err

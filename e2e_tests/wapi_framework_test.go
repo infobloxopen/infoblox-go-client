@@ -4183,7 +4183,8 @@ var _ = Describe("IPV4 fixed address", func() {
 		Expect(err).To(BeNil())
 	})
 	It("should create an IPV4 fixed address object with minimal parameters", func() {
-		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.1", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.1", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
 		ref, err := connector.CreateObject(fixedAddress)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
@@ -4199,7 +4200,10 @@ var _ = Describe("IPV4 fixed address", func() {
 				UseOption:   true,
 			},
 		}
-		fixedAddress := ibclient.NewFixedAddress("default", "fixedaddress1", "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", "CLIENT_ID", ea, "", false, "test comment", "", "", false, "34", true, options, true)
+		client := "CLIENT_ID"
+		clientIdentifierPrependZero := false
+		dhcpClientIdentifier := "34"
+		fixedAddress := ibclient.NewFixedAddress("default", "fixedaddress1", "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", &client, ea, "", false, "test comment", nil, nil, &clientIdentifierPrependZero, &dhcpClientIdentifier, true, options, true)
 		ref, err := connector.CreateObject(fixedAddress)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
@@ -4216,7 +4220,11 @@ var _ = Describe("IPV4 fixed address", func() {
 				UseOption:   true,
 			},
 		}
-		fixedAddress := ibclient.NewFixedAddress("default", "fixedaddress1", "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", "CLIENT_ID", ea, "", false, "test comment", "", "", false, "34", true, options, true)
+		client := "CLIENT_ID"
+		clientIdentifierPrependZero := false
+		dhcpClientIdentifier := "34"
+		Name := "fixedaddress1"
+		fixedAddress := ibclient.NewFixedAddress("default", Name, "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", &client, ea, "", false, "test comment", nil, nil, &clientIdentifierPrependZero, &dhcpClientIdentifier, true, options, true)
 		ref, err := connector.CreateObject(fixedAddress)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
@@ -4225,7 +4233,7 @@ var _ = Describe("IPV4 fixed address", func() {
 		search.SetReturnFields(append(search.ReturnFields(), "name", "network_view", "ipv4addr", "network", "options"))
 		errCode := connector.GetObject(search, ref, nil, &res)
 		Expect(errCode).To(BeNil())
-		Expect(res.Name).To(Equal("fixedaddress1"))
+		Expect(res.Name).To(Equal(&Name))
 		Expect(res.NetviewName).To(Equal("default"))
 		Expect(res.IPv4Address).To(Equal("12.0.0.2"))
 		Expect(res.Cidr).To(Equal("12.0.0.0/24"))
@@ -4242,7 +4250,8 @@ var _ = Describe("IPV4 fixed address", func() {
 	})
 	//It should update IPV4 fixed address
 	It("Should update IPV4 fixed address", func() {
-		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
 		ref, err := connector.CreateObject(fixedAddress)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
@@ -4256,7 +4265,9 @@ var _ = Describe("IPV4 fixed address", func() {
 				UseOption:   true,
 			},
 		}
-		updatedFixedAddress := ibclient.NewFixedAddress("", "fixedaddress", "12.0.0.4", "", "", "REMOTE_ID", nil, "", false, "comment 1", "", "23", false, "", false, updateOptions, true)
+		updateClient := "REMOTE_ID"
+		updateAgentRemoteId := "23"
+		updatedFixedAddress := ibclient.NewFixedAddress("", "fixedaddress", "12.0.0.4", "", "", &updateClient, nil, "", false, "comment 1", nil, &updateAgentRemoteId, nil, nil, false, updateOptions, true)
 		var res []ibclient.FixedAddress
 		search := &ibclient.FixedAddress{}
 		err = connector.GetObject(search, "", nil, &res)
@@ -4265,7 +4276,8 @@ var _ = Describe("IPV4 fixed address", func() {
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
 	})
 	It("Should delete a fixed address", func() {
-		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
 		ref, err := connector.CreateObject(fixedAddress)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
@@ -4282,7 +4294,8 @@ var _ = Describe("IPV4 fixed address", func() {
 	})
 	// update IPV4 fixed address, -ve scenario
 	It("Should fail to update a Fixed address", func() {
-		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", "", nil, "", false, "", "", "", false, "", false, nil, false)
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
 		ref, err := connector.CreateObject(fixedAddress)
 		Expect(err).To(BeNil())
 		Expect(ref).To(MatchRegexp("fixedaddress/*"))
