@@ -249,9 +249,11 @@ var _ = Describe("Object Manager: Network Range", func() {
 			updateFailOverAssociation := "failOver"
 			updatedRef := fmt.Sprintf("range/ZG5zLmRoY3BfcmFuZ2UkMTIuNC4wLjEyMC8xMi40LjAuMTMwLy8vMC8:%s/%s/%s", startAddr, endAddr, netviewName)
 			updateObjIn := NewRange(updateComment, updateName, networkPointer, startAddr, expectedEas, true, initalOptions, true, endAddr, updateFailOverAssociation, nil, updateServerAssociationType, "", "")
+			updateObjIn.NetworkView = &netviewName
 			updateObjIn.Ref = ref
 
 			expectedObj := NewRange(updateComment, updateName, networkPointer, startAddr, expectedEas, true, initalOptions, true, endAddr, updateFailOverAssociation, nil, updateServerAssociationType, "", "")
+			expectedObj.NetworkView = &netviewName
 			expectedObj.Ref = updatedRef
 
 			getObjIn := NewEmptyRange()
@@ -269,7 +271,7 @@ var _ = Describe("Object Manager: Network Range", func() {
 			}
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
 
-			actualObj, err = objMgr.UpdateNetworkRange(ref, updateComment, updateName, network, startAddr, endAddr, true, expectedEas, nil, updateFailOverAssociation, initalOptions, true, updateServerAssociationType, "", "")
+			actualObj, err = objMgr.UpdateNetworkRange(ref, updateComment, updateName, network, startAddr, endAddr, true, expectedEas, nil, updateFailOverAssociation, initalOptions, true, updateServerAssociationType, "default", "")
 			Expect(err).To(BeNil())
 			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})

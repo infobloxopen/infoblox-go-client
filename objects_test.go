@@ -297,14 +297,18 @@ var _ = Describe("Objects", func() {
 			fixedAddr := NewFixedAddress(
 				netviewName, "",
 				ipAddress, cidr, mac,
-				matchClient, ea, "", false, comment, "", "", false, "", false, nil, false)
+				&matchClient, ea, "", false, comment, nil, nil, nil, nil, false, nil, false)
 
 			It("should set fields correctly", func() {
 				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
 				Expect(fixedAddr.Cidr).To(Equal(cidr))
 				Expect(fixedAddr.IPv4Address).To(Equal(ipAddress))
-				Expect(fixedAddr.Mac).To(Equal(mac))
-				Expect(fixedAddr.MatchClient).To(Equal(matchClient))
+				if fixedAddr.Mac != nil {
+					Expect(*fixedAddr.Mac).To(Equal(mac))
+				}
+				if fixedAddr.MatchClient != nil {
+					Expect(*fixedAddr.MatchClient).To(Equal(matchClient))
+				}
 				Expect(fixedAddr.Ea).To(Equal(ea))
 			})
 
@@ -324,7 +328,7 @@ var _ = Describe("Objects", func() {
 			fixedAddr := NewFixedAddress(
 				netviewName, "",
 				ipAddress, cidr, duid,
-				"", ea, "", true, comment, "", "", false, "", false, nil, false)
+				nil, ea, "", true, comment, nil, nil, nil, nil, false, nil, false)
 
 			It("should set fields correctly", func() {
 				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
