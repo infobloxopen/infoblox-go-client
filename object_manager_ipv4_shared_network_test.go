@@ -118,7 +118,7 @@ var _ = Describe("Object Manager: SharedNetwork-record", func() {
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 
-		networkView := "default"
+		networkView := ""
 		recordName := "shared-network1"
 		comment := "Test creation"
 		networks := []*Ipv4Network{{Ref: "12.12.23.1/32"}}
@@ -165,7 +165,7 @@ var _ = Describe("Object Manager: SharedNetwork-record", func() {
 		vmID := "93f9249abc039284"
 		vmName := "dummyvm"
 
-		networkView := "default"
+		networkView := ""
 		recordName := "shared-network1"
 		comment := "Test creation"
 		networks := []*Ipv4Network{{Ref: "12.12.23.1/32"}}
