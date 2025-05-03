@@ -71,6 +71,7 @@ type IBObjectManager interface {
 	DeleteNetworkRange(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetARecord(dnsview string, recordName string, ipAddr string) (*RecordA, error)
+	GetARecordByZone(zone_name string, dnsview string) (*[]RecordA, error)
 	GetAAAARecord(dnsview string, recordName string, ipAddr string) (*RecordAAAA, error)
 	GetAAAARecordByRef(ref string) (*RecordAAAA, error)
 	GetAliasRecordByRef(ref string) (*RecordAlias, error)
