@@ -28,10 +28,11 @@ type AuthConfig struct {
 }
 
 type HostConfig struct {
-	Scheme  string
-	Host    string
-	Version string
-	Port    string
+	Scheme   string
+	Host     string
+	BasePath string
+	Version  string
+	Port     string
 }
 
 type TransportConfig struct {
@@ -245,6 +246,9 @@ func (wrb *WapiRequestBuilder) Init(hostCfg HostConfig, authCfg AuthConfig) {
 
 func (wrb *WapiRequestBuilder) BuildUrl(t RequestType, objType string, ref string, returnFields []string, queryParams *QueryParams) (urlStr string) {
 	path := []string{"wapi", "v" + wrb.hostCfg.Version}
+	if wrb.hostCfg.BasePath != "" {
+		path = append([]string{wrb.hostCfg.BasePath}, path...)
+	}
 	if len(ref) > 0 {
 		path = append(path, ref)
 	} else {
