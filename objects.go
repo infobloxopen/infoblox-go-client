@@ -479,6 +479,7 @@ type Network struct {
 	Comment     string          `json:"comment"`
 	Members     []NetworkMember `json:"members,omitempty"`
 }
+
 type NetworkMember struct {
 	DhcpMember   *Dhcpmember   `json:"dhcpmember,omitempty"`
 	MsDhcpServer *Msdhcpserver `json:"msdhcpserver,omitempty"`
@@ -509,6 +510,7 @@ func (nm NetworkMember) MarshalJSON() ([]byte, error) {
 	}
 	return json.Marshal(struct{}{})
 }
+
 func (nm *NetworkMember) UnmarshalJSON(data []byte) error {
 	var raw map[string]json.RawMessage
 	if err := json.Unmarshal(data, &raw); err != nil {
@@ -553,6 +555,7 @@ func (nm *NetworkMember) UnmarshalJSON(data []byte) error {
 
 	return nil
 }
+
 func (n Network) ObjectType() string {
 	return n.objectType
 }
@@ -748,4 +751,47 @@ func NewDhcp(dhcp Dhcp) *Dhcp {
 	returnFields := []string{"enable_dhcp", "host_name"}
 	result.returnFields = returnFields
 	return &result
+}
+
+type RecordSVCB struct {
+	IBBase             `json:"-"`
+	objectType         string
+	Ref                string              `json:"_ref,omitempty"`
+	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
+	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
+	Comment            string              `json:"comment,omitempty"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
+	Creator            string              `json:"creator,omitempty"`
+	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
+	DdnsProtected      bool                `json:"ddns_protected,omitempty"`
+	Disable            bool                `json:"disable,omitempty"`
+	Ea                 EA                  `json:"extattrs,omitempty"`
+	ForbidReclamation  bool                `json:"forbid_reclamation,omitempty"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
+	Name               string              `json:"name,omitempty"`
+	Priority           uint32              `json:"priority,omitempty"`
+	Reclaimable        bool                `json:"reclaimable,omitempty"`
+	SvcParameters      []SVCParams         `json:"svc_parameters"`
+	TargetName         string              `json:"target_name,omitempty"`
+	Ttl                uint32              `json:"ttl,omitempty"`
+	UseTtl             bool                `json:"use_ttl,omitempty"`
+	View               string              `json:"view,omitempty"`
+	Zone               string              `json:"zone,omitempty"`
+}
+
+type SVCParams struct {
+	Mandatory bool     `json:"mandatory"`
+	SvcKey    string   `json:"svc_key,omitempty"`
+	SvcValue  []string `json:"svc_value,omitempty"`
+}
+
+func (nc RecordSVCB) ObjectType() string {
+	return "record:svcb"
+}
+
+func (obj RecordSVCB) ReturnFields() []string {
+	if obj.returnFields == nil {
+		obj.returnFields = []string{"name", "priority", "target_name", "view"}
+	}
+	return obj.returnFields
 }

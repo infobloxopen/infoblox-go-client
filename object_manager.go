@@ -43,6 +43,9 @@ type IBObjectManager interface {
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
 	CreateRangeTemplate(name string, numberOfAdresses uint32, offset uint32, comment string, ea EA,
 		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
+	CreateSVCBRecord(name string, comment string, disable bool, ea EA,
+		priority uint32, svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, view string, creator string,
+		ddnsPrincipal string, ddnsProtectd bool) (*RecordSVCB, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
@@ -65,6 +68,7 @@ type IBObjectManager interface {
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
 	DeleteRangeTemplate(ref string) (string, error)
+	DeleteSVCBRecord(ref string) (string, error)
 	DeleteSRVRecord(ref string) (string, error)
 	DeleteTXTRecord(ref string) (string, error)
 	DeleteZoneDelegated(ref string) (string, error)
@@ -113,6 +117,8 @@ type IBObjectManager interface {
 	GetAllRangeTemplate(queryParams *QueryParams) ([]Rangetemplate, error)
 	GetRangeTemplateByRef(ref string) (*Rangetemplate, error)
 	GetSRVRecord(dnsView string, name string, target string, port uint32) (*RecordSRV, error)
+	GetSVCBRecordByRef(ref string) (*RecordSVCB, error)
+	GetAllSVCBRecords(queryParams *QueryParams) ([]RecordSVCB, error)
 	GetSRVRecordByRef(ref string) (*RecordSRV, error)
 	GetTXTRecord(dnsview string, name string) (*RecordTXT, error)
 	GetTXTRecordByRef(ref string) (*RecordTXT, error)
@@ -147,6 +153,8 @@ type IBObjectManager interface {
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
 	UpdateRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
 		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
+	UpdateSVCBRecord(ref string, name string, comment string, disable bool, ea EA, priority uint32,
+		svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, creator string, ddnsPrincipal string, ddnsProtectd bool) (*RecordSVCB, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
