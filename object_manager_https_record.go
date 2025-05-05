@@ -9,7 +9,7 @@ func NewEmptyHttpsRecord() *RecordHttps {
 func NewRecordHTTPS(
 	name string,
 	comment string,
-	svcParameters []*Svcparams,
+	svcParameters []Svcparams,
 	targetName string,
 	disable bool,
 	extAttrs EA,
@@ -37,7 +37,7 @@ func NewRecordHTTPS(
 	return res
 }
 
-func (obj *ObjectManager) CreateHTTPSRecord(name string, comment string, svcParameters []*Svcparams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, UseTtl bool, view string) (*RecordHttps, error) {
+func (obj *ObjectManager) CreateHTTPSRecord(name string, comment string, svcParameters []Svcparams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, UseTtl bool, view string) (*RecordHttps, error) {
 
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
@@ -75,7 +75,7 @@ func (objMgr *ObjectManager) GetAllHTTPSRecord(queryParams *QueryParams) ([]Reco
 	return res, nil
 }
 
-func (objMgr *ObjectManager) UpdateHttpsRecord(ref string, name string, comment string, svcParameters []*Svcparams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, UseTtl bool) (*RecordHttps, error) {
+func (objMgr *ObjectManager) UpdateHttpsRecord(ref string, name string, comment string, svcParameters []Svcparams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, UseTtl bool) (*RecordHttps, error) {
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
 	}
