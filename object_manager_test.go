@@ -171,6 +171,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				*res.(*[]RecordAlias) = c.resultObject.([]RecordAlias)
 			case *Rangetemplate:
 				*res.(*[]Rangetemplate) = c.resultObject.([]Rangetemplate)
+			case *RecordSVCB:
+				*res.(*[]RecordSVCB) = c.resultObject.([]RecordSVCB)
 			}
 		} else {
 			switch obj.(type) {
@@ -220,6 +222,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				**res.(**RecordNS) = *c.resultObject.(*RecordNS)
 			case *Rangetemplate:
 				**res.(**Rangetemplate) = *c.resultObject.(*Rangetemplate)
+			case *RecordSVCB:
+				**res.(**RecordSVCB) = *c.resultObject.(*RecordSVCB)
 			}
 		}
 	}

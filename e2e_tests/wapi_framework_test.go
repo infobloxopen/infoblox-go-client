@@ -4755,3 +4755,263 @@ var _ = Describe("Network Range Object", func() {
 		Expect(err).NotTo(BeNil())
 	})
 })
+
+var _ = Describe("SVCB Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create SVCB record", func() {
+		// create a SVCB Record with maximum parameters
+		recordSVCB := ibclient.RecordSVCB{
+			Name:        "svcb-record-1.test.com",
+			Comment:     "SVCB record",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Baku"},
+			Priority:    100,
+			Reclaimable: false,
+			TargetName:  "test123.com",
+			Ttl:         300,
+			UseTtl:      false,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"443"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		var svcbRecord *ibclient.RecordSVCB
+		err = connector.GetObject(&ibclient.RecordSVCB{}, ref, nil, &svcbRecord)
+		Expect(err).To(BeNil())
+		Expect(svcbRecord).NotTo(BeNil())
+	})
+
+	It("Should fail to create SVCB record", func() {
+
+		// Create a SVCB Record without mandatory fields
+		recordSvcb := ibclient.RecordSVCB{
+			Name: "svcb-record-2.test.com",
+		}
+		_, err := connector.CreateObject(&recordSvcb)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Get SVCB record", func() {
+		// Create a SVCB record and compare its fields
+		recordSVCB := ibclient.RecordSVCB{
+			Name:        "svcb-record-11.test.com",
+			Comment:     "SVCB record",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Baku"},
+			Priority:    300,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         400,
+			UseTtl:      false,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"443"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		var res *ibclient.RecordSVCB
+		// Get by Ref
+		err = connector.GetObject(&ibclient.RecordSVCB{}, ref, nil, &res)
+		Expect(err).To(BeNil())
+		Expect(res).NotTo(BeNil())
+
+		Expect(res.Name).To(Equal("svcb-record-11.test.com"))
+		Expect(res.TargetName).To(Equal("test1234.com"))
+		Expect(res.Priority).To(Equal(uint32(300)))
+
+		// Get by name
+		var result []ibclient.RecordSVCB
+		qp := ibclient.NewQueryParams(false, map[string]string{"name": "svcb-record-11.test.com"})
+		err = connector.GetObject(&ibclient.RecordSVCB{}, "", qp, &result)
+		Expect(err).To(BeNil())
+		Expect(result).NotTo(BeNil())
+
+		Expect(result[0].Name).To(Equal("svcb-record-11.test.com"))
+		Expect(res.TargetName).To(Equal("test1234.com"))
+		Expect(res.Priority).To(Equal(uint32(300)))
+	})
+
+	It("Should fail to Get Record SVCB record", func() {
+		// should fail to get a non-existent SVCB record
+		var res []ibclient.RecordSVCB
+		sf := map[string]string{"name": "record-svcb-1234"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordSVCB{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should update SVCB Reecord", func() {
+		// Create a SVCB Record and update it
+		recordSVCB := ibclient.RecordSVCB{
+			Name:        "svcb-record-1122.test.com",
+			Comment:     "SVCB record",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Baku"},
+			Priority:    300,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         400,
+			UseTtl:      false,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"443"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		recordSvcbUpdated := ibclient.RecordSVCB{
+			Name:        "svcb-record-1144.test.com",
+			Comment:     "SVCB record updated",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Osaka"},
+			Priority:    500,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         800,
+			UseTtl:      true,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"500"},
+					SvcKey:   "port",
+				},
+			},
+		}
+		updatedRef, err := connector.UpdateObject(&recordSvcbUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(updatedRef).To(MatchRegexp("^record:svcb.*"))
+
+		Expect(recordSvcbUpdated.Name).To(Equal("svcb-record-1144.test.com"))
+		Expect(recordSvcbUpdated.Comment).To(Equal("SVCB record updated"))
+		Expect(recordSvcbUpdated.Priority).To(Equal(uint32(500)))
+		Expect(recordSvcbUpdated.TargetName).To(Equal("test1234.com"))
+		Expect(recordSvcbUpdated.Ttl).To(Equal(uint32(800)))
+		Expect(recordSvcbUpdated.UseTtl).To(BeTrue())
+		Expect(recordSvcbUpdated.Ea["Site"]).To(Equal("Osaka"))
+		Expect(len(recordSvcbUpdated.SvcParameters)).To(Equal(1))
+		Expect(recordSvcbUpdated.SvcParameters[0].SvcKey).To(Equal("port"))
+		Expect(recordSvcbUpdated.SvcParameters[0].SvcValue[0]).To(Equal("500"))
+		Expect(recordSvcbUpdated.SvcParameters[0].Mandatory).To(BeFalse())
+		Expect(recordSvcbUpdated.Reclaimable).To(BeFalse())
+	})
+
+	It("Should fail to update SVCB Record", func() {
+		// Create a SVCB Record and try to update view field
+		recordSvcb := ibclient.RecordSVCB{
+			Name:        "svcb-record-1143.test.com",
+			Comment:     "SVCB record updated",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Osaka"},
+			Priority:    500,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         800,
+			UseTtl:      true,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"500"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSvcb)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		recordSvcbUpdated := ibclient.RecordSVCB{
+			Name:        "svcb-record-1144.test.com",
+			Comment:     "SVCB record updated",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Osaka"},
+			Priority:    500,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         800,
+			UseTtl:      true,
+			SvcParameters: []ibclient.SVCParams{
+				{
+					Mandatory: false,
+					SvcValue:  []string{"500"},
+					SvcKey:    "port",
+				},
+			},
+			View: "custom",
+		}
+		_, err = connector.UpdateObject(&recordSvcbUpdated, ref)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Delete SVCB Record", func() {
+		// Create a SVCB Record and delete it
+		recordSVCB := ibclient.RecordSVCB{
+			Name:       "svcb-record-1111.test.com",
+			Priority:   300,
+			TargetName: "test1234.com",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		deleteRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(deleteRef).To(Equal(ref))
+	})
+
+	It("Should fail to Delete SVCB Record", func() {
+		// Delete a non-existent SVCB Record
+		_, err := connector.DeleteObject("non-existent-record-svcb")
+		Expect(err).ToNot(BeNil())
+	})
+
+})
