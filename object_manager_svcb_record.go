@@ -4,12 +4,12 @@ import "fmt"
 
 func (objMgr *ObjectManager) CreateSVCBRecord(name string, comment string, disable bool, ea EA,
 	priority uint32, svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, view string,
-	creator string, ddnsPrincipal string, ddnsProtectd bool) (*RecordSVCB, error) {
+	creator string, ddnsPrincipal string, ddnsProtected bool) (*RecordSVCB, error) {
 	if name == "" || priority == 0 || targetName == "" {
 		return nil, fmt.Errorf("name, priority and targetName fields are required to create a SVCB Record")
 	}
 	recordSVCB := NewSVCBRecord("", name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator,
-		ddnsPrincipal, ddnsProtectd)
+		ddnsPrincipal, ddnsProtected)
 	recordSVCB.View = view
 	ref, err := objMgr.connector.CreateObject(recordSVCB)
 	if err != nil {
@@ -44,9 +44,9 @@ func (objMgr *ObjectManager) GetSVCBRecordByRef(ref string) (*RecordSVCB, error)
 
 func (objMgr *ObjectManager) UpdateSVCBRecord(ref string, name string, comment string, disable bool, ea EA,
 	priority uint32, svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, creator string,
-	ddnsPrincipal string, ddnsProtectd bool) (*RecordSVCB, error) {
+	ddnsPrincipal string, ddnsProtected bool) (*RecordSVCB, error) {
 	recordSVCB := NewSVCBRecord(ref, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator,
-		ddnsPrincipal, ddnsProtectd)
+		ddnsPrincipal, ddnsProtected)
 	newRef, err := objMgr.connector.UpdateObject(recordSVCB, ref)
 	if err != nil {
 		return nil, fmt.Errorf("error updating SVCB Record %s, err: %s", name, err)

@@ -45,7 +45,7 @@ type IBObjectManager interface {
 		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
 	CreateSVCBRecord(name string, comment string, disable bool, ea EA,
 		priority uint32, svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, view string, creator string,
-		ddnsPrincipal string, ddnsProtectd bool) (*RecordSVCB, error)
+		ddnsPrincipal string, ddnsProtected bool) (*RecordSVCB, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
@@ -154,7 +154,7 @@ type IBObjectManager interface {
 	UpdateRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
 		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
 	UpdateSVCBRecord(ref string, name string, comment string, disable bool, ea EA, priority uint32,
-		svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, creator string, ddnsPrincipal string, ddnsProtectd bool) (*RecordSVCB, error)
+		svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, creator string, ddnsPrincipal string, ddnsProtected bool) (*RecordSVCB, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
