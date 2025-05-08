@@ -1,5 +1,20 @@
 # Infoblox Go Client Release Notes
 
+## v2.11.0
+
+### Release Summary
+
+- This release introduces new features aimed at management of DNS RR types HTTPS and SVCB Records.
+
+### Minor Changes
+
+- Added Create, Read, Update and Delete operations for HTTPS and SVCB Records.
+- Added structs `RecordHttps` and `RecordSVCB` for HTTPS and SVCB Record.
+
+## Note
+
+**Note:** Environment variable `WAPI_VERSION` to be set to `2.13.7` to use `HTTPS` and `SVCB` Records.
+
 ## v2.10.0
 
 ### Release Summary
