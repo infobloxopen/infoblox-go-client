@@ -4777,6 +4777,14 @@ var _ = Describe("SVCB Record", func() {
 		Expect(err).To(BeNil())
 		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
 
+		zone := &ibclient.ZoneAuth{
+			View: utils.StringPtr("default"),
+			Fqdn: "test.com",
+		}
+		ref, err := connector.CreateObject(zone)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("zone_auth.*test.com/default"))
+
 	})
 
 	AfterEach(func() {
