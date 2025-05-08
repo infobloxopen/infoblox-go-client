@@ -6,7 +6,7 @@ func NewEmptyHttpsRecord() *RecordHttps {
 	newRecordHttps := &RecordHttps{}
 	return newRecordHttps
 }
-func NewRecordHTTPS(
+func NewHttpsRecord(
 	name string,
 	comment string,
 	svcParameters []Svcparams,
@@ -19,7 +19,7 @@ func NewRecordHTTPS(
 	useTtl bool,
 	view string,
 	creator string,
-	ddnsPrincipal string, 
+	ddnsPrincipal string,
 	ddnsProtected bool,
 	ref string) *RecordHttps {
 
@@ -54,7 +54,7 @@ func (obj *ObjectManager) CreateHTTPSRecord(name string, comment string, svcPara
 		return nil, fmt.Errorf("name and targetName are required to create HTTPS Record")
 	}
 
-	recordHttps := NewRecordHTTPS(name, comment, svcParameters, targetName, disable, extAttrs, priority, forbidReclamation, Ttl, UseTtl, view, creator, ddnsPrincipal, ddnsProtected, "")
+	recordHttps := NewHttpsRecord(name, comment, svcParameters, targetName, disable, extAttrs, priority, forbidReclamation, Ttl, UseTtl, view, creator, ddnsPrincipal, ddnsProtected, "")
 	ref, err := obj.connector.CreateObject(recordHttps)
 	if err != nil {
 		return nil, err
@@ -63,7 +63,7 @@ func (obj *ObjectManager) CreateHTTPSRecord(name string, comment string, svcPara
 	return recordHttps, nil
 }
 
-func (objMgr *ObjectManager) GetRecordHTTPSByRef(ref string) (*RecordHttps, error) {
+func (objMgr *ObjectManager) GetHTTPSRecordByRef(ref string) (*RecordHttps, error) {
 	recordHTTPS := NewEmptyHttpsRecord()
 	err := objMgr.connector.GetObject(recordHTTPS, ref, NewQueryParams(false, nil), &recordHTTPS)
 	if err != nil {
@@ -82,7 +82,7 @@ func (objMgr *ObjectManager) GetAllHTTPSRecord(queryParams *QueryParams) ([]Reco
 	return res, nil
 }
 
-func (objMgr *ObjectManager) UpdateHttpsRecord(ref string, name string, comment string, svcParameters []Svcparams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, UseTtl bool, creator string,
+func (objMgr *ObjectManager) UpdateHTTPSRecord(ref string, name string, comment string, svcParameters []Svcparams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, useTtl bool, creator string,
 	ddnsPrincipal string, ddnsProtected bool) (*RecordHttps, error) {
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
@@ -90,7 +90,7 @@ func (objMgr *ObjectManager) UpdateHttpsRecord(ref string, name string, comment 
 	if name == "" || targetName == "" {
 		return nil, fmt.Errorf("name and targetName cannot be empty")
 	}
-	httpsRecord := NewRecordHTTPS(name, comment, svcParameters, targetName, disable, extAttrs, priority, forbidReclamation, Ttl, UseTtl, "", creator, ddnsPrincipal, ddnsProtected, ref)
+	httpsRecord := NewHttpsRecord(name, comment, svcParameters, targetName, disable, extAttrs, priority, forbidReclamation, Ttl, useTtl, "", creator, ddnsPrincipal, ddnsProtected, ref)
 	updatedRef, err := objMgr.connector.UpdateObject(httpsRecord, ref)
 	if err != nil {
 		return nil, err
@@ -99,6 +99,6 @@ func (objMgr *ObjectManager) UpdateHttpsRecord(ref string, name string, comment 
 	return httpsRecord, nil
 }
 
-func (objMgr *ObjectManager) DeleteHttpsRecord(ref string) (string, error) {
+func (objMgr *ObjectManager) DeleteHTTPSRecord(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
