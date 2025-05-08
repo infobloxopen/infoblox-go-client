@@ -812,7 +812,7 @@ type RecordHttps struct {
 	Name               string              `json:"name,omitempty"`
 	Priority           uint32              `json:"priority,omitempty"`
 	Reclaimable        bool                `json:"reclaimable,omitempty"`
-	SvcParameters      []Svcparams        `json:"svc_parameters"`
+	SvcParameters      []Svcparams         `json:"svc_parameters"`
 	TargetName         string              `json:"target_name,omitempty"`
 	Ttl                uint32              `json:"ttl,omitempty"`
 	UseTtl             *bool               `json:"use_ttl,omitempty"`
@@ -829,10 +829,4 @@ func (obj RecordHttps) ReturnFields() []string {
 		obj.returnFields = []string{"name", "priority", "target_name", "view", "comment", "creation_time", "creator", "ddns_principal", "ddns_protected", "disable", "extattrs", "forbid_reclamation", "last_queried", "svc_parameters", "ttl", "use_ttl", "zone", "cloud_info", "aws_rte53_record_info"}
 	}
 	return obj.returnFields
-}
-
-type Svcparams struct {
-	SvcKey    string   `json:"svc_key,omitempty"`
-	SvcValue  []string `json:"svc_value,omitempty"`
-	Mandatory bool    `json:"mandatory"`
 }
