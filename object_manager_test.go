@@ -3,9 +3,10 @@ package ibclient
 import (
 	"errors"
 	"fmt"
+	"reflect"
+
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"reflect"
 )
 
 type fakeConnector struct {
@@ -171,6 +172,8 @@ func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res
 				*res.(*[]RecordAlias) = c.resultObject.([]RecordAlias)
 			case *Rangetemplate:
 				*res.(*[]Rangetemplate) = c.resultObject.([]Rangetemplate)
+			case *RecordHttps:
+				*res.(*[]RecordHttps) = c.resultObject.([]RecordHttps)
 			}
 		} else {
 			switch obj.(type) {

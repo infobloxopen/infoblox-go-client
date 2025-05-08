@@ -4755,3 +4755,223 @@ var _ = Describe("Network Range Object", func() {
 		Expect(err).NotTo(BeNil())
 	})
 })
+
+var _ = Describe("HTTPS Record Object", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+		zones := ibclient.ZoneAuth{
+			Fqdn: "testing-https.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+	It("should create a Https record  with minimal parameters", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+	})
+	It("should create a Https record with maximal parameters", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a2.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+			Comment:    "test comment",
+			Disable:    utils.BoolPtr(false),
+			View:       "default",
+			UseTtl:     utils.BoolPtr(true),
+			Ttl:        60,
+			SvcParameters: []ibclient.Svcparams{
+				{
+					SvcKey: "port",
+					SvcValue: []string{
+						"233"},
+					Mandatory: false,
+				},
+			},
+			Ea:                ibclient.EA{"Site": "Bangalore"},
+			ForbidReclamation: utils.BoolPtr(false),
+			Creator:           "SYSTEM",
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+	})
+	It("should GET https record ", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a2.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+			Comment:    "test comment",
+			Disable:    utils.BoolPtr(false),
+			View:       "default",
+			UseTtl:     utils.BoolPtr(true),
+			Ttl:        60,
+			SvcParameters: []ibclient.Svcparams{
+				{
+					SvcKey: "port",
+					SvcValue: []string{
+						"233"},
+					Mandatory: false,
+				},
+			},
+			Ea:                ibclient.EA{"Site": "Bangalore"},
+			ForbidReclamation: utils.BoolPtr(false),
+			Creator:           "SYSTEM",
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+		var res ibclient.RecordHttps
+		search := &ibclient.RecordHttps{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Name).To(Equal("a2.testing-https.com"))
+		Expect(res.TargetName).To(Equal("testing-https.com"))
+		Expect(res.Priority).To(Equal(uint32(30)))
+		Expect(res.Comment).To(Equal("test comment"))
+		Expect(res.Disable).To(Equal(utils.BoolPtr(false)))
+		Expect(res.View).To(Equal("default"))
+		Expect(res.UseTtl).To(Equal(utils.BoolPtr(true)))
+		Expect(res.Ttl).To(Equal(uint32(60)))
+		Expect(res.SvcParameters[0].SvcKey).To(Equal("port"))
+		Expect(res.SvcParameters[0].SvcValue[0]).To(Equal("233"))
+		Expect(res.SvcParameters[0].Mandatory).To(Equal(false))
+		Expect(res.Ea["Site"]).To(Equal("Bangalore"))
+		Expect(res.ForbidReclamation).To(Equal(utils.BoolPtr(false)))
+		Expect(res.Creator).To(Equal("SYSTEM"))
+		Expect(res.Ref).To(MatchRegexp("record:https/*"))
+	})
+	It("should delete the HTTPS Record ", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+
+		var res []ibclient.RecordHttps
+		search := &ibclient.RecordHttps{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.DeleteObject(res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+	})
+	It("Should fail to update a HTTPS Record with wrong reference", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+		_, err = connector.UpdateObject(&httpsRecord, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to create a https object", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+		}
+		_, err := connector.CreateObject(&httpsRecord)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to get a non-existent https record", func() {
+		var res []ibclient.RecordHttps
+		sf := map[string]string{"name": "range"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordHttps{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to delete a non-existent range", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should update Https record", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a2.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+			Comment:    "test comment",
+			Disable:    utils.BoolPtr(false),
+			View:       "default",
+			UseTtl:     utils.BoolPtr(true),
+			Ttl:        60,
+			SvcParameters: []ibclient.Svcparams{
+				{
+					SvcKey: "port",
+					SvcValue: []string{
+						"233"},
+					Mandatory: false,
+				},
+			},
+			Ea:                ibclient.EA{"Site": "Bangalore"},
+			ForbidReclamation: utils.BoolPtr(false),
+			Creator:           "SYSTEM",
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+
+		httpsRecord1 := ibclient.RecordHttps{
+			Name:              "a3.testing-https.com",
+			TargetName:        "testing-https.com",
+			Priority:          30,
+			Comment:           "test comment",
+			Disable:           utils.BoolPtr(false),
+			UseTtl:            utils.BoolPtr(true),
+			Ttl:               60,
+			SvcParameters:     []ibclient.Svcparams{},
+			Ea:                ibclient.EA{"Site": "India"},
+			ForbidReclamation: utils.BoolPtr(false),
+			Creator:           "SYSTEM",
+		}
+		updatedRef, err := connector.UpdateObject(&httpsRecord1, ref)
+		httpsRecord1.Ref = updatedRef
+		Expect(err).To(BeNil())
+		Expect(updatedRef).To(MatchRegexp("record:https/*"))
+		Expect(httpsRecord1.Name).To(Equal("a3.testing-https.com"))
+		Expect(httpsRecord1.TargetName).To(Equal("testing-https.com"))
+		Expect(httpsRecord1.Priority).To(Equal(uint32(30)))
+		Expect(httpsRecord1.Comment).To(Equal("test comment"))
+		Expect(httpsRecord1.Disable).To(Equal(utils.BoolPtr(false)))
+		Expect(httpsRecord1.UseTtl).To(Equal(utils.BoolPtr(true)))
+		Expect(httpsRecord1.Ttl).To(Equal(uint32(60)))
+		Expect(httpsRecord1.Ea["Site"]).To(Equal("India"))
+		Expect(httpsRecord1.ForbidReclamation).To(Equal(utils.BoolPtr(false)))
+		Expect(httpsRecord1.Creator).To(Equal("SYSTEM"))
+		Expect(httpsRecord1.Ref).To(MatchRegexp("record:https/*"))
+	})
+})
