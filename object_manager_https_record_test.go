@@ -56,7 +56,7 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		ttl := uint32(40)
 		useTtl := true
 		fakeRefReturn := fmt.Sprintf("record:https/ZG5zLmJpbmRfaHR0cHMkLl9kZWZhdWx0LmNvbS50ZXN0LmE3LjIwLnRlc3QuY29t:%v/%v", name, dnsView)
-		svcParams := []Svcparams{
+		svcParams := []SVCParams{
 			{
 				Mandatory: true,
 				SvcKey:    "port",
@@ -218,7 +218,7 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 
 			updateName := "a8.test.com"
 			updateComment := "new comment"
-			svcParams := []Svcparams{
+			svcParams := []SVCParams{
 				{
 					Mandatory: true,
 					SvcKey:    "port",
