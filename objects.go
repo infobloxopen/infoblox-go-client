@@ -831,8 +831,4 @@ func (obj RecordHttps) ReturnFields() []string {
 	return obj.returnFields
 }
 
-type SVCParams struct {
-	SvcKey    string   `json:"svc_key,omitempty"`
-	SvcValue  []string `json:"svc_value,omitempty"`
-	Mandatory bool    `json:"mandatory"`
-}
+
