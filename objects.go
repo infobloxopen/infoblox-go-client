@@ -755,22 +755,22 @@ type RecordHttps struct {
 	Ref                string              `json:"_ref,omitempty"`
 	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
 	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
-	Comment            string              `json:"comment,omitempty"`
+	Comment            string              `json:"comment"`
 	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
 	Creator            string              `json:"creator,omitempty"`
-	DdnsPrincipal      string              `json:"ddns_principal,omitempty"`
-	DdnsProtected      *bool               `json:"ddns_protected,omitempty"`
-	Disable            *bool               `json:"disable,omitempty"`
+	DdnsPrincipal      string              `json:"ddns_principal"`
+	DdnsProtected      bool               `json:"ddns_protected"`
+	Disable            bool               `json:"disable"`
 	Ea                 EA                  `json:"extattrs,omitempty"`
-	ForbidReclamation  *bool               `json:"forbid_reclamation,omitempty"`
+	ForbidReclamation  bool               `json:"forbid_reclamation"`
 	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
 	Priority           uint32              `json:"priority,omitempty"`
 	Reclaimable        bool                `json:"reclaimable,omitempty"`
 	SvcParameters      []SVCParams        `json:"svc_parameters"`
 	TargetName         string              `json:"target_name,omitempty"`
-	Ttl                uint32              `json:"ttl,omitempty"`
-	UseTtl             *bool               `json:"use_ttl,omitempty"`
+	Ttl                uint32              `json:"ttl"`
+	UseTtl             bool               `json:"use_ttl"`
 	View               string              `json:"view,omitempty"`
 	Zone               string              `json:"zone,omitempty"`
 }
@@ -781,9 +781,8 @@ func (RecordHttps) ObjectType() string {
 
 func (obj RecordHttps) ReturnFields() []string {
 	if obj.returnFields == nil {
-		obj.returnFields = []string{"name", "priority", "target_name", "view", "comment", "creation_time", "creator", "ddns_principal", "ddns_protected", "disable", "extattrs", "forbid_reclamation", "last_queried", "svc_parameters", "ttl", "use_ttl", "zone", "cloud_info", "aws_rte53_record_info"}
+		obj.returnFields = []string{"name", "priority", "target_name", "view"}
 	}
 	return obj.returnFields
 }
-
 

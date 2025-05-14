@@ -4,6 +4,7 @@ import "fmt"
 
 func NewEmptyHttpsRecord() *RecordHttps {
 	newRecordHttps := &RecordHttps{}
+	newRecordHttps.SetReturnFields(append(newRecordHttps.ReturnFields(),"zone", "comment", "svc_parameters", "disable", "extattrs", "forbid_reclamation", "ttl", "use_ttl", "creator", "ddns_principal", "ddns_protected","reclaimable","last_queried","creation_time"))
 	return newRecordHttps
 }
 func NewHttpsRecord(
@@ -30,16 +31,16 @@ func NewHttpsRecord(
 	res.Comment = comment
 	res.SvcParameters = svcParameters
 	res.TargetName = targetName
-	res.Disable = &disable
+	res.Disable = disable
 	res.Ea = extAttrs
 	res.Priority = priority
-	res.ForbidReclamation = &forbidReclamation
+	res.ForbidReclamation = forbidReclamation
 	res.Ttl = ttl
-	res.UseTtl = &useTtl
+	res.UseTtl = useTtl
 	res.View = view
 	res.Creator = creator
 	res.DdnsPrincipal = ddnsPrincipal
-	res.DdnsProtected = &ddnsProtected
+	res.DdnsProtected = ddnsProtected
 	return res
 }
 
@@ -96,6 +97,10 @@ func (objMgr *ObjectManager) UpdateHTTPSRecord(ref string, name string, comment 
 		return nil, err
 	}
 	httpsRecord.Ref = updatedRef
+	httpsRecord, err = objMgr.GetHTTPSRecordByRef(updatedRef)
+	if err != nil {
+		return nil, fmt.Errorf("error getting updated HTTPS Record %s, err: %s", name, err)
+	}
 	return httpsRecord, nil
 }
 

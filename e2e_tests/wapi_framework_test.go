@@ -4805,9 +4805,9 @@ var _ = Describe("HTTPS Record Object", func() {
 			TargetName: "testing-https.com",
 			Priority:   30,
 			Comment:    "test comment",
-			Disable:    utils.BoolPtr(false),
+			Disable:    false,
 			View:       "default",
-			UseTtl:     utils.BoolPtr(true),
+			UseTtl:     true,
 			Ttl:        60,
 			SvcParameters: []ibclient.SVCParams{
 				{
@@ -4818,7 +4818,7 @@ var _ = Describe("HTTPS Record Object", func() {
 				},
 			},
 			Ea:                ibclient.EA{"Site": "Bangalore"},
-			ForbidReclamation: utils.BoolPtr(false),
+			ForbidReclamation: false,
 			Creator:           "SYSTEM",
 		}
 		ref, err := connector.CreateObject(&httpsRecord)
@@ -4831,9 +4831,9 @@ var _ = Describe("HTTPS Record Object", func() {
 			TargetName: "testing-https.com",
 			Priority:   30,
 			Comment:    "test comment",
-			Disable:    utils.BoolPtr(false),
+			Disable:    false,
 			View:       "default",
-			UseTtl:     utils.BoolPtr(true),
+			UseTtl:     true,
 			Ttl:        60,
 			SvcParameters: []ibclient.SVCParams{
 				{
@@ -4844,7 +4844,7 @@ var _ = Describe("HTTPS Record Object", func() {
 				},
 			},
 			Ea:                ibclient.EA{"Site": "Bangalore"},
-			ForbidReclamation: utils.BoolPtr(false),
+			ForbidReclamation: false,
 			Creator:           "SYSTEM",
 		}
 		ref, err := connector.CreateObject(&httpsRecord)
@@ -4852,21 +4852,22 @@ var _ = Describe("HTTPS Record Object", func() {
 		Expect(ref).To(MatchRegexp("record:https/*"))
 		var res ibclient.RecordHttps
 		search := &ibclient.RecordHttps{}
+		search.SetReturnFields([]string{"name","comment","disable", "view", "use_ttl", "ttl", "svc_parameters", "extattrs", "forbid_reclamation", "creator","target_name","priority"})
 		errCode := connector.GetObject(search, ref, nil, &res)
 		Expect(errCode).To(BeNil())
 		Expect(res.Name).To(Equal("a2.testing-https.com"))
 		Expect(res.TargetName).To(Equal("testing-https.com"))
 		Expect(res.Priority).To(Equal(uint32(30)))
 		Expect(res.Comment).To(Equal("test comment"))
-		Expect(res.Disable).To(Equal(utils.BoolPtr(false)))
+		Expect(res.Disable).To(Equal(false))
 		Expect(res.View).To(Equal("default"))
-		Expect(res.UseTtl).To(Equal(utils.BoolPtr(true)))
+		Expect(res.UseTtl).To(Equal(true))
 		Expect(res.Ttl).To(Equal(uint32(60)))
 		Expect(res.SvcParameters[0].SvcKey).To(Equal("port"))
 		Expect(res.SvcParameters[0].SvcValue[0]).To(Equal("233"))
 		Expect(res.SvcParameters[0].Mandatory).To(Equal(false))
 		Expect(res.Ea["Site"]).To(Equal("Bangalore"))
-		Expect(res.ForbidReclamation).To(Equal(utils.BoolPtr(false)))
+		Expect(res.ForbidReclamation).To(Equal(false))
 		Expect(res.Creator).To(Equal("SYSTEM"))
 		Expect(res.Ref).To(MatchRegexp("record:https/*"))
 	})
@@ -4925,9 +4926,9 @@ var _ = Describe("HTTPS Record Object", func() {
 			TargetName: "testing-https.com",
 			Priority:   30,
 			Comment:    "test comment",
-			Disable:    utils.BoolPtr(false),
+			Disable:    false,
 			View:       "default",
-			UseTtl:     utils.BoolPtr(true),
+			UseTtl:     true,
 			Ttl:        60,
 			SvcParameters: []ibclient.SVCParams{
 				{
@@ -4938,7 +4939,7 @@ var _ = Describe("HTTPS Record Object", func() {
 				},
 			},
 			Ea:                ibclient.EA{"Site": "Bangalore"},
-			ForbidReclamation: utils.BoolPtr(false),
+			ForbidReclamation: false,
 			Creator:           "SYSTEM",
 		}
 		ref, err := connector.CreateObject(&httpsRecord)
@@ -4950,12 +4951,12 @@ var _ = Describe("HTTPS Record Object", func() {
 			TargetName:        "testing-https.com",
 			Priority:          30,
 			Comment:           "test comment",
-			Disable:           utils.BoolPtr(false),
-			UseTtl:            utils.BoolPtr(true),
+			Disable:          false,
+			UseTtl:            true,
 			Ttl:               60,
 			SvcParameters:     []ibclient.SVCParams{},
 			Ea:                ibclient.EA{"Site": "India"},
-			ForbidReclamation: utils.BoolPtr(false),
+			ForbidReclamation: false,
 			Creator:           "SYSTEM",
 		}
 		updatedRef, err := connector.UpdateObject(&httpsRecord1, ref)
@@ -4966,11 +4967,11 @@ var _ = Describe("HTTPS Record Object", func() {
 		Expect(httpsRecord1.TargetName).To(Equal("testing-https.com"))
 		Expect(httpsRecord1.Priority).To(Equal(uint32(30)))
 		Expect(httpsRecord1.Comment).To(Equal("test comment"))
-		Expect(httpsRecord1.Disable).To(Equal(utils.BoolPtr(false)))
-		Expect(httpsRecord1.UseTtl).To(Equal(utils.BoolPtr(true)))
+		Expect(httpsRecord1.Disable).To(Equal(false))
+		Expect(httpsRecord1.UseTtl).To(Equal(true))
 		Expect(httpsRecord1.Ttl).To(Equal(uint32(60)))
 		Expect(httpsRecord1.Ea["Site"]).To(Equal("India"))
-		Expect(httpsRecord1.ForbidReclamation).To(Equal(utils.BoolPtr(false)))
+		Expect(httpsRecord1.ForbidReclamation).To(Equal(false))
 		Expect(httpsRecord1.Creator).To(Equal("SYSTEM"))
 		Expect(httpsRecord1.Ref).To(MatchRegexp("record:https/*"))
 	})
