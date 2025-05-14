@@ -61,7 +61,7 @@ func (objMgr *ObjectManager) UpdateSVCBRecord(ref string, name string, comment s
 
 func NewEmptyRecordSVCB() *RecordSVCB {
 	recordSVCB := RecordSVCB{}
-	recordSVCB.SetReturnFields(append(recordSVCB.returnFields))
+	recordSVCB.SetReturnFields(append(recordSVCB.ReturnFields(), "comment", "creation_time", "creator", "ddns_principal", "ddns_protected", "disable", "extattrs", "forbid_reclamation", "last_queried", "reclaimable", "svc_parameters", "ttl", "use_ttl", "zone"))
 	return &recordSVCB
 }
 
