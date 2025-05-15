@@ -2,14 +2,17 @@ package ibclient
 
 import "fmt"
 
-func (objMgr *ObjectManager) CreateSVCBRecord(name string, comment string, disable bool, ea EA,
-	priority uint32, svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, view string,
-	creator string, ddnsPrincipal string, ddnsProtected bool) (*RecordSVCB, error) {
-	if name == "" || priority == 0 || targetName == "" {
+func (objMgr *ObjectManager) CreateSVCBRecord(name string, priority uint32, targetName string, comment string,
+	creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
+	svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordSVCB, error) {
+	if name == "" || targetName == "" {
 		return nil, fmt.Errorf("name, priority and targetName fields are required to create a SVCB Record")
 	}
-	recordSVCB := NewSVCBRecord("", name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator,
-		ddnsPrincipal, ddnsProtected)
+	if priority > 65535 {
+		return nil, fmt.Errorf("priority must be between 0 and 65535")
+	}
+	recordSVCB := NewSVCBRecord("", name, priority, targetName, comment, creator, ddnsPrincipal, ddnsProtected, disable, ea,
+		forbidReclamation, svcParams, ttl, useTtl)
 	recordSVCB.View = view
 	ref, err := objMgr.connector.CreateObject(recordSVCB)
 	if err != nil {
@@ -42,11 +45,17 @@ func (objMgr *ObjectManager) GetSVCBRecordByRef(ref string) (*RecordSVCB, error)
 	return recordSVCB, nil
 }
 
-func (objMgr *ObjectManager) UpdateSVCBRecord(ref string, name string, comment string, disable bool, ea EA,
-	priority uint32, svcParams []SVCParams, targetName string, useTtl bool, ttl uint32, creator string,
-	ddnsPrincipal string, ddnsProtected bool) (*RecordSVCB, error) {
-	recordSVCB := NewSVCBRecord(ref, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator,
-		ddnsPrincipal, ddnsProtected)
+func (objMgr *ObjectManager) UpdateSVCBRecord(ref string, name string, priority uint32, targetName string, comment string,
+	creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
+	svcParams []SVCParams, ttl uint32, useTtl bool) (*RecordSVCB, error) {
+	if name == "" || targetName == "" {
+		return nil, fmt.Errorf("name, priority and targetName fields are required to create a SVCB Record")
+	}
+	if priority > 65535 {
+		return nil, fmt.Errorf("priority must be between 0 and 65535")
+	}
+	recordSVCB := NewSVCBRecord(ref, name, priority, targetName, comment, creator, ddnsPrincipal, ddnsProtected, disable, ea,
+		forbidReclamation, svcParams, ttl, useTtl)
 	newRef, err := objMgr.connector.UpdateObject(recordSVCB, ref)
 	if err != nil {
 		return nil, fmt.Errorf("error updating SVCB Record %s, err: %s", name, err)
@@ -61,12 +70,13 @@ func (objMgr *ObjectManager) UpdateSVCBRecord(ref string, name string, comment s
 
 func NewEmptyRecordSVCB() *RecordSVCB {
 	recordSVCB := RecordSVCB{}
-	recordSVCB.SetReturnFields(append(recordSVCB.ReturnFields(), "comment", "creation_time", "creator", "ddns_principal", "ddns_protected", "disable", "extattrs", "forbid_reclamation", "last_queried", "reclaimable", "svc_parameters", "ttl", "use_ttl", "zone"))
+	recordSVCB.SetReturnFields(append(recordSVCB.ReturnFields(), "aws_rte53_record_info", "cloud_info", "comment", "creation_time", "creator", "ddns_principal", "ddns_protected", "disable", "extattrs", "forbid_reclamation", "last_queried", "reclaimable", "svc_parameters", "ttl", "use_ttl", "zone"))
 	return &recordSVCB
 }
 
-func NewSVCBRecord(ref string, name string, comment string, disable bool, ea EA, priority uint32, svcParams []SVCParams,
-	targetName string, useTtl bool, ttl uint32, creator string, ddnsPrincipal string, ddnsProtectd bool) *RecordSVCB {
+func NewSVCBRecord(ref string, name string, priority uint32, targetName string, comment string,
+	creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
+	svcParams []SVCParams, ttl uint32, useTtl bool) *RecordSVCB {
 	recordSVCB := NewEmptyRecordSVCB()
 	recordSVCB.Ref = ref
 	recordSVCB.Name = name
@@ -77,9 +87,10 @@ func NewSVCBRecord(ref string, name string, comment string, disable bool, ea EA,
 	recordSVCB.SvcParameters = svcParams
 	recordSVCB.TargetName = targetName
 	recordSVCB.Creator = creator
-	recordSVCB.DdnsProtected = ddnsProtectd
+	recordSVCB.DdnsProtected = ddnsProtected
 	recordSVCB.DdnsPrincipal = ddnsPrincipal
 	recordSVCB.UseTtl = useTtl
 	recordSVCB.Ttl = ttl
+	recordSVCB.ForbidReclamation = forbidReclamation
 	return recordSVCB
 }

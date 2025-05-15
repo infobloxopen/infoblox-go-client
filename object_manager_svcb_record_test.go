@@ -23,6 +23,7 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		useTtl := true
 		ttl := uint32(120)
 		ref := ""
+		forbidReclamation := true
 		svcParams := []SVCParams{
 			{
 				SvcKey:    "ipv4hint",
@@ -43,10 +44,10 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		fakeRefReturn := fmt.Sprintf("record:svcb/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
 
 		conn := &fakeConnector{
-			createObjectObj:      NewSVCBRecord(ref, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected),
+			createObjectObj:      NewSVCBRecord(ref, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl),
 			getObjectObj:         &RecordSVCB{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewSVCBRecord(ref, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected),
+			resultObject:         NewSVCBRecord(ref, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl),
 			fakeRefReturn:        fakeRefReturn,
 		}
 		conn.resultObject.(*RecordSVCB).Ref = fakeRefReturn
@@ -54,14 +55,14 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		conn.resultObject.(*RecordSVCB).View = view
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected SVCB Record Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateSVCBRecord(name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, view, creator, ddnsPrincipal, ddndProtected)
+			actualRecord, err := objMgr.CreateSVCBRecord(name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl, view)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
 
 		// Negative scenario
 		It("should fail to create a SVCB Record object", func() {
-			actualRecord, err := objMgr.CreateSVCBRecord("", comment, disable, ea, priority, svcParams, "", useTtl, ttl, view, creator, ddnsPrincipal, ddndProtected)
+			actualRecord, err := objMgr.CreateSVCBRecord("", priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl, view)
 			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})
@@ -78,16 +79,16 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		fakeRefReturn := fmt.Sprintf("record:svcb/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
 
 		conn := &fakeConnector{
-			createObjectObj:      NewSVCBRecord(ref, name, "", false, nil, priority, nil, targetName, false, 0, "", "", false),
+			createObjectObj:      NewSVCBRecord(ref, name, priority, targetName, "", "", "", false, true, nil, false, nil, 0, false),
 			getObjectObj:         &RecordSVCB{},
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewSVCBRecord(ref, name, "", false, nil, priority, nil, targetName, false, 0, "", "", false),
+			resultObject:         NewSVCBRecord(ref, name, priority, targetName, "", "", "", false, true, nil, false, nil, 0, false),
 			fakeRefReturn:        fakeRefReturn,
 		}
 		conn.resultObject.(*RecordSVCB).Ref = fakeRefReturn
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected SVCB Record Object to CreateObject", func() {
-			actualRecord, err := objMgr.CreateSVCBRecord(name, "", false, nil, priority, nil, targetName, false, 0, view, "", "", false)
+			actualRecord, err := objMgr.CreateSVCBRecord(name, priority, targetName, "", "", "", false, true, nil, false, nil, 0, false, view)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -100,8 +101,16 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		targetName := "target.info.com"
 		priority := uint32(120)
 		ref := ""
+		comment := ""
+		creator := ""
+		ddnsPrincipal := ""
+		ddndProtected := false
+		disable := false
+		ttl := uint32(0)
+		useTtl := false
+		forbidReclamation := true
 		fakeRefReturn := fmt.Sprintf("record:svcb/ZG5zLmhvc3QkLZhd3QuaDE:%s", name)
-		res := NewSVCBRecord(ref, name, "", false, nil, priority, nil, targetName, false, 0, "", "", false)
+		res := NewSVCBRecord(ref, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, nil, forbidReclamation, nil, ttl, useTtl)
 
 		conn := &fakeConnector{
 			getObjectObj:  NewEmptyRecordSVCB(),
@@ -177,6 +186,7 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		ea := EA{"Site": "SPAIN"}
 		useTtl := true
 		ttl := uint32(200)
+		forbidReclamation := false
 		svcParams := []SVCParams{
 			{
 				SvcKey:    "ipv4hint",
@@ -200,15 +210,15 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 			getObjectObj:         NewEmptyRecordSVCB(),
 			getObjectRef:         updateRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewSVCBRecord("", name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected),
+			resultObject:         NewSVCBRecord("", name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl),
 			fakeRefReturn:        updateRef,
-			updateObjectObj:      NewSVCBRecord(updateRef, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected),
+			updateObjectObj:      NewSVCBRecord(updateRef, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl),
 			updateObjectRef:      updateRef,
 		}
 
 		objMgr := NewObjectManager(conn, cmpType, tenantID)
 		It("should pass expected SVCB Record Object to UpdateObject", func() {
-			actualRecord, err := objMgr.UpdateSVCBRecord(updateRef, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected)
+			actualRecord, err := objMgr.UpdateSVCBRecord(updateRef, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl)
 			Expect(actualRecord).To(Equal(conn.resultObject))
 			Expect(err).To(BeNil())
 		})
@@ -229,6 +239,7 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		ea := EA{"Site": "SPAIN"}
 		useTtl := true
 		ttl := uint32(800)
+		forbidReclamation := false
 		svcParams := []SVCParams{
 			{
 				SvcKey:    "ipv4hint",
@@ -252,10 +263,10 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 			getObjectObj:         NewEmptyRecordSVCB(),
 			getObjectRef:         oldRef,
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewSVCBRecord(oldRef, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected),
+			resultObject:         NewSVCBRecord(oldRef, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl),
 			getObjectError:       fmt.Errorf("not found"),
 			fakeRefReturn:        oldRef,
-			updateObjectObj:      NewSVCBRecord(oldRef, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected),
+			updateObjectObj:      NewSVCBRecord(oldRef, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl),
 			updateObjectRef:      oldRef,
 		}
 
@@ -263,7 +274,7 @@ var _ = Describe("Object Manager: SVCB Record", func() {
 		// negative scenario
 
 		It("should fail to update SVCB Record Object", func() {
-			actualRecord, err := objMgr.UpdateSVCBRecord(oldRef, name, comment, disable, ea, priority, svcParams, targetName, useTtl, ttl, creator, ddnsPrincipal, ddndProtected)
+			actualRecord, err := objMgr.UpdateSVCBRecord(oldRef, name, priority, targetName, comment, creator, ddnsPrincipal, ddndProtected, disable, ea, forbidReclamation, svcParams, ttl, useTtl)
 			Expect(actualRecord).To(BeNil())
 			Expect(err).ToNot(BeNil())
 		})
