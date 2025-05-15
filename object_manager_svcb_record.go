@@ -6,7 +6,7 @@ func (objMgr *ObjectManager) CreateSVCBRecord(name string, priority uint32, targ
 	creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
 	svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordSVCB, error) {
 	if name == "" || targetName == "" {
-		return nil, fmt.Errorf("name, priority and targetName fields are required to create a SVCB Record")
+		return nil, fmt.Errorf("name and target name fields are required to create a SVCB Record")
 	}
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
@@ -49,7 +49,7 @@ func (objMgr *ObjectManager) UpdateSVCBRecord(ref string, name string, priority 
 	creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
 	svcParams []SVCParams, ttl uint32, useTtl bool) (*RecordSVCB, error) {
 	if name == "" || targetName == "" {
-		return nil, fmt.Errorf("name, priority and targetName fields are required to create a SVCB Record")
+		return nil, fmt.Errorf("name and target name fields are required for SVCB Record")
 	}
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
