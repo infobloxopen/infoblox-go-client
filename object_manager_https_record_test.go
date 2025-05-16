@@ -17,8 +17,8 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		dnsView := "default"
 		creator := "STATIC"
 		fakeRefReturn := fmt.Sprintf("record:https/ZG5zLmJpbmRfaHR0cHMkLl9kZWZhdWx0LmNvbS50ZXN0LmE3LjIwLnRlc3QuY29t:%v/%v", name, dnsView)
-		objectForCreation := NewHttpsRecord(name, "", nil, targetName, false, nil, priority, false, 0, false, dnsView, creator, "", false, "")
-		objectForResult := NewHttpsRecord(name, "", nil, targetName, false, nil, priority, false, 0, false, dnsView, creator, "", false, fakeRefReturn)
+		objectForCreation := NewHttpsRecord(name, priority, targetName, "", creator, "", false, nil, false, nil, false, 0, false, dnsView, "")
+		objectForResult := NewHttpsRecord(name, priority, targetName, "", creator, "", false, nil, false, nil, false, 0, false, dnsView, fakeRefReturn)
 		objectForResult.Ref = fakeRefReturn
 		aniFakeConnector := &fakeConnector{
 			createObjectObj:      objectForCreation,
@@ -32,7 +32,7 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		var actualRecord *RecordHttps
 		var err error
 		It("should pass expected HTTPS record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHTTPSRecord(name, "", nil, targetName, false, nil, priority, false, 0, false, dnsView, creator, "", false)
+			actualRecord, err = objMgr.CreateHTTPSRecord(name, priority, targetName, "", creator, "", false, false, nil, false, nil, 0, false, dnsView)
 		})
 		It("should return expected HTTPS record Object", func() {
 			Expect(err).To(BeNil())
@@ -66,8 +66,8 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		disable := true
 		forbidReclamation := true
 		creator := "STATIC"
-		objectForCreation := NewHttpsRecord(name, comment, svcParams, targetName, disable, eas, priority, forbidReclamation, ttl, useTtl, dnsView, creator, "", false, "")
-		objectForResult := NewHttpsRecord(name, comment, svcParams, targetName, disable, eas, priority, forbidReclamation, ttl, useTtl, dnsView, creator, "", false, fakeRefReturn)
+		objectForCreation := NewHttpsRecord(name, priority, targetName, comment, creator, "", false, svcParams, disable, eas, forbidReclamation, ttl, useTtl, dnsView, "")
+		objectForResult := NewHttpsRecord(name, priority, targetName, comment, creator, "", false, svcParams, disable, eas, forbidReclamation, ttl, useTtl, dnsView, fakeRefReturn)
 		objectForResult.Ref = fakeRefReturn
 
 		aniFakeConnector := &fakeConnector{
@@ -82,7 +82,7 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		var actualRecord *RecordHttps
 		var err error
 		It("should pass expected HTTPS record Object to CreateObject", func() {
-			actualRecord, err = objMgr.CreateHTTPSRecord(name, comment, svcParams, targetName, disable, eas, priority, forbidReclamation, ttl, useTtl, dnsView, creator, "", false)
+			actualRecord, err = objMgr.CreateHTTPSRecord(name, priority, targetName, comment, creator, "", false, disable, eas, forbidReclamation, svcParams, ttl, useTtl, dnsView)
 		})
 		It("should return expected HTTPS record Object", func() {
 			Expect(err).To(BeNil())
@@ -107,10 +107,10 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 			})
 		creator := "STATIC"
 		conn := &fakeConnector{
-			createObjectObj:      NewHttpsRecord(comment, name, nil, targetName, false, nil, 20, false, 20, true, dnsView, creator, "", false, ""),
+			createObjectObj: NewHttpsRecord(name, 20, targetName, comment, creator, "", false, nil, false, nil, false, 20, true, dnsView, ""),
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyHttpsRecord(),
-			resultObject:         []RecordHttps{*NewHttpsRecord(comment, name, nil, targetName, false, nil, 20, false, 20, true, dnsView, creator, "", false, "")},
+			resultObject:         []RecordHttps{*NewHttpsRecord(name, 20, targetName, comment, creator, "", false, nil, false, nil, false, 20, true, dnsView, "")},
 			fakeRefReturn:        fakeRefReturn,
 			getObjectQueryParams: queryParams,
 		}
@@ -171,18 +171,18 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		creator := "STATIC"
 		fakeRefReturn := fmt.Sprintf("record:https/ZG5zLmJpbmRfaHR0cHMkLl9kZWZhdWx0LmNvbS50ZXN0LmE3LjIwLnRlc3QuY29t:%s/%s", name, dnsView)
 		aniFakeConnector := &fakeConnector{
-			createObjectObj:      NewHttpsRecord(name, "", nil, "", false, nil, 0, false, 0, false, dnsView, creator, "", false, ""),
+			createObjectObj: NewHttpsRecord(name, 0, "", "", creator, "", false, nil, false, nil, false, 0, false, dnsView, ""),
 			getObjectRef:         "",
 			getObjectObj:         NewEmptyHttpsRecord(),
 			getObjectQueryParams: NewQueryParams(false, nil),
-			resultObject:         NewHttpsRecord(name, "", nil, "", false, nil, 0, false, 0, false, dnsView, creator, "", false, fakeRefReturn),
+			resultObject:         NewHttpsRecord(name, 0, "", "", creator, "", false, nil, false, nil, false, 0, false, dnsView, fakeRefReturn),
 			createObjectError:    fmt.Errorf("name and targetName are required to create HTTPS Record"),
 		}
 
 		objMgr := NewObjectManager(aniFakeConnector, cmpType, tenantID)
 		var err error
 		It("should return an error when creating HTTPS record", func() {
-			_, err = objMgr.CreateHTTPSRecord(name, "", nil, "", false, nil, 0, false, 0, false, dnsView, creator, "", false)
+			_, err = objMgr.CreateHTTPSRecord(name, 0, "", "", creator, "", false, false, nil, false, nil, 0, false, dnsView)
 			Expect(err).ToNot(BeNil())
 			Expect(err).To(Equal(aniFakeConnector.createObjectError))
 		})
@@ -205,13 +205,14 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 		dnsView := "default"
 		ttl := uint32(20)
 		useTtl := true
+		disable := false
 		creator := "STATIC"
 		ref = fmt.Sprintf("record:https/ZG5zLmJpbmRfaHR0cHMkLl9kZWZhdWx0LmNvbS50ZXN0LmE3LjIwLnRlc3QuY29t:%s/%s", name, dnsView)
 		It("Adding SVC Params to the created HTTPS record during Update ", func() {
 			ref = fmt.Sprintf("record:https/ZG5zLmJpbmRfaHR0cHMkLl9kZWZhdWx0LmNvbS50ZXN0LmE3LjIwLnRlc3QuY29t:%s/%s", name, dnsView)
 			initialEas := EA{"Site": "Blr"}
 			initialComment := "old comment"
-			initObj := NewHttpsRecord(name, initialComment, nil, targetName, false, initialEas, priority, false, ttl, useTtl, dnsView, creator, "", false, "")
+			initObj := NewHttpsRecord(name, priority, targetName, initialComment, creator, "", false, nil, false, initialEas, false, ttl, useTtl, dnsView, "")
 			initObj.Ref = ref
 
 			expectedEas := EA{"Site": "Blr"}
@@ -226,10 +227,10 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 				},
 			}
 			updatedRef := fmt.Sprintf("record:https/ZG5zLmJpbmRfaHR0cHMkLl9kZWZhdWx0LmNvbS50ZXN0LmE3LjIwLnRlc3QuY29t:%s/%s", updateName, dnsView)
-			updateObjIn := NewHttpsRecord(updateName, updateComment, svcParams, targetName, false, expectedEas, priority, false, ttl, useTtl, "", creator, "", false, ref)
+			updateObjIn := NewHttpsRecord(updateName, priority, targetName, updateComment, creator, "", false, svcParams, false, expectedEas, false, ttl, useTtl, "", ref)
 			updateObjIn.Ref = ref
 
-			expectedObj := NewHttpsRecord(updateName, updateComment, svcParams, targetName, false, expectedEas, priority, false, ttl, useTtl, "", creator, "", false, ref)
+			expectedObj := NewHttpsRecord(updateName, priority, targetName, updateComment, creator, "", false, svcParams, false, expectedEas, false, ttl, useTtl, "", ref)
 
 			expectedObj.Ref = updatedRef
 
@@ -248,7 +249,7 @@ var _ = Describe("Object Manager: HTTPS-record", func() {
 			}
 			objMgr = NewObjectManager(conn, cmpType, tenantID)
 
-			actualObj, err = objMgr.UpdateHTTPSRecord(ref, updateName, updateComment, svcParams, targetName, false, expectedEas, priority, false, ttl, useTtl, creator, "", false)
+			actualObj, err = objMgr.UpdateHTTPSRecord(ref, updateName, priority, targetName, updateComment, creator, "", false, disable, expectedEas, false, svcParams, ttl, useTtl)
 			Expect(err).To(BeNil())
 			Expect(*actualObj).To(BeEquivalentTo(*expectedObj))
 		})

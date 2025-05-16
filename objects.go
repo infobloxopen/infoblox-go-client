@@ -761,11 +761,11 @@ type RecordHttps struct {
 	DdnsPrincipal      string              `json:"ddns_principal"`
 	DdnsProtected      bool               `json:"ddns_protected"`
 	Disable            bool               `json:"disable"`
-	Ea                 EA                  `json:"extattrs,omitempty"`
+	Ea                 EA                  `json:"extattrs"`
 	ForbidReclamation  bool               `json:"forbid_reclamation"`
 	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
-	Priority           uint32              `json:"priority,omitempty"`
+	Priority           uint32              `json:"priority"`
 	Reclaimable        bool                `json:"reclaimable,omitempty"`
 	SvcParameters      []SVCParams        `json:"svc_parameters"`
 	TargetName         string              `json:"target_name,omitempty"`
