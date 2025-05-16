@@ -4,48 +4,47 @@ import "fmt"
 
 func NewEmptyHttpsRecord() *RecordHttps {
 	newRecordHttps := &RecordHttps{}
-	newRecordHttps.SetReturnFields(append(newRecordHttps.ReturnFields(),"zone", "comment", "svc_parameters", "disable", "extattrs", "forbid_reclamation", "ttl", "use_ttl", "creator", "ddns_principal", "ddns_protected","reclaimable","last_queried","creation_time"))
+	newRecordHttps.SetReturnFields(append(newRecordHttps.ReturnFields(),"zone", "comment", "svc_parameters", "disable", "extattrs", "forbid_reclamation", "ttl", "use_ttl", "creator", "ddns_principal", "ddns_protected","reclaimable","last_queried","creation_time","aws_rte53_record_info","cloud_info"))
 	return newRecordHttps
 }
 func NewHttpsRecord(
 	name string,
-	comment string,
-	svcParameters []SVCParams,
+	priority uint32,
 	targetName string,
+	comment string,
+	creator string,
+	ddnsPrincipal string,
+	ddnsProtected bool,
+	svcParameters []SVCParams,
 	disable bool,
 	extAttrs EA,
-	priority uint32,
 	forbidReclamation bool,
 	ttl uint32,
 	useTtl bool,
 	view string,
-	creator string,
-	ddnsPrincipal string,
-	ddnsProtected bool,
 	ref string) *RecordHttps {
 
 	res := NewEmptyHttpsRecord()
 
 	res.Name = name
-	res.Ref = ref
-	res.Comment = comment
-	res.SvcParameters = svcParameters
+	res.Priority = priority
 	res.TargetName = targetName
+	res.Comment = comment
+	res.Creator = creator
+	res.DdnsPrincipal = ddnsPrincipal
+	res.DdnsProtected = ddnsProtected
+	res.SvcParameters = svcParameters
 	res.Disable = disable
 	res.Ea = extAttrs
-	res.Priority = priority
 	res.ForbidReclamation = forbidReclamation
 	res.Ttl = ttl
 	res.UseTtl = useTtl
 	res.View = view
-	res.Creator = creator
-	res.DdnsPrincipal = ddnsPrincipal
-	res.DdnsProtected = ddnsProtected
+	res.Ref = ref
 	return res
 }
 
-func (obj *ObjectManager) CreateHTTPSRecord(name string, comment string, svcParameters []SVCParams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, UseTtl bool, view string, creator string,
-	ddnsPrincipal string, ddnsProtected bool) (*RecordHttps, error) {
+func (obj *ObjectManager) CreateHTTPSRecord(name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool , disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordHttps, error) {
 
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
@@ -55,7 +54,7 @@ func (obj *ObjectManager) CreateHTTPSRecord(name string, comment string, svcPara
 		return nil, fmt.Errorf("name and targetName are required to create HTTPS Record")
 	}
 
-	recordHttps := NewHttpsRecord(name, comment, svcParameters, targetName, disable, extAttrs, priority, forbidReclamation, Ttl, UseTtl, view, creator, ddnsPrincipal, ddnsProtected, "")
+	recordHttps := NewHttpsRecord(name, priority, targetName, comment, creator, ddnsPrincipal, ddnsProtected,svcParams, disable, ea , forbidReclamation, ttl, useTtl, view, "")
 	ref, err := obj.connector.CreateObject(recordHttps)
 	if err != nil {
 		return nil, err
@@ -83,15 +82,14 @@ func (objMgr *ObjectManager) GetAllHTTPSRecord(queryParams *QueryParams) ([]Reco
 	return res, nil
 }
 
-func (objMgr *ObjectManager) UpdateHTTPSRecord(ref string, name string, comment string, svcParameters []SVCParams, targetName string, disable bool, extAttrs EA, priority uint32, forbidReclamation bool, Ttl uint32, useTtl bool, creator string,
-	ddnsPrincipal string, ddnsProtected bool) (*RecordHttps, error) {
+func (objMgr *ObjectManager) UpdateHTTPSRecord(ref string, name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool) (*RecordHttps, error) {
 	if priority > 65535 {
 		return nil, fmt.Errorf("priority must be between 0 and 65535")
 	}
 	if name == "" || targetName == "" {
 		return nil, fmt.Errorf("name and targetName cannot be empty")
 	}
-	httpsRecord := NewHttpsRecord(name, comment, svcParameters, targetName, disable, extAttrs, priority, forbidReclamation, Ttl, useTtl, "", creator, ddnsPrincipal, ddnsProtected, ref)
+	httpsRecord := NewHttpsRecord(name, priority, targetName, comment, creator, ddnsPrincipal, ddnsProtected, svcParams, disable, ea, forbidReclamation, ttl, useTtl, "", ref)
 	updatedRef, err := objMgr.connector.UpdateObject(httpsRecord, ref)
 	if err != nil {
 		return nil, err
