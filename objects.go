@@ -764,7 +764,7 @@ type RecordSVCB struct {
 	DdnsPrincipal      string              `json:"ddns_principal"`
 	DdnsProtected      bool                `json:"ddns_protected"`
 	Disable            bool                `json:"disable"`
-	Ea                 EA                  `json:"extattrs,omitempty"`
+	Ea                 EA                  `json:"extattrs"`
 	ForbidReclamation  bool                `json:"forbid_reclamation"`
 	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
 	Name               string              `json:"name,omitempty"`
