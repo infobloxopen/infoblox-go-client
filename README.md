@@ -9,6 +9,10 @@ This library is compatible with Go 1.2+
 - [Installation](#Installation)
 - [Usage](#Usage)
 
+## Note
+
+Environment variable `WAPI_VERSION` to be set to `2.13.7` to use `HTTPS` and `SVCB` Records.
+
 ## Build Status
 [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) 
 

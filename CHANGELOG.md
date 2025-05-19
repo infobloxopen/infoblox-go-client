@@ -11,10 +11,6 @@
 - Added Create, Read, Update and Delete operations for HTTPS and SVCB Records.
 - Added structs `RecordHttps` and `RecordSVCB` for HTTPS and SVCB Record.
 
-## Note
-
-**Note:** Environment variable `WAPI_VERSION` to be set to `2.13.7` to use `HTTPS` and `SVCB` Records.
-
 ## v2.10.0
 
 ### Release Summary
