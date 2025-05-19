@@ -794,3 +794,40 @@ func (obj RecordSVCB) ReturnFields() []string {
 	}
 	return obj.returnFields
 }
+
+type RecordHttps struct {
+	IBBase             `json:"-"`
+	Ref                string              `json:"_ref,omitempty"`
+	AwsRte53RecordInfo *Awsrte53recordinfo `json:"aws_rte53_record_info,omitempty"`
+	CloudInfo          *GridCloudapiInfo   `json:"cloud_info,omitempty"`
+	Comment            string              `json:"comment"`
+	CreationTime       *UnixTime           `json:"creation_time,omitempty"`
+	Creator            string              `json:"creator,omitempty"`
+	DdnsPrincipal      string              `json:"ddns_principal"`
+	DdnsProtected      bool               `json:"ddns_protected"`
+	Disable            bool               `json:"disable"`
+	Ea                 EA                  `json:"extattrs"`
+	ForbidReclamation  bool               `json:"forbid_reclamation"`
+	LastQueried        *UnixTime           `json:"last_queried,omitempty"`
+	Name               string              `json:"name,omitempty"`
+	Priority           uint32              `json:"priority"`
+	Reclaimable        bool                `json:"reclaimable,omitempty"`
+	SvcParameters      []SVCParams        `json:"svc_parameters"`
+	TargetName         string              `json:"target_name,omitempty"`
+	Ttl                uint32              `json:"ttl"`
+	UseTtl             bool               `json:"use_ttl"`
+	View               string              `json:"view,omitempty"`
+	Zone               string              `json:"zone,omitempty"`
+}
+
+func (RecordHttps) ObjectType() string {
+	return "record:https"
+}
+
+func (obj RecordHttps) ReturnFields() []string {
+	if obj.returnFields == nil {
+		obj.returnFields = []string{"name", "priority", "target_name", "view"}
+	}
+	return obj.returnFields
+}
+
