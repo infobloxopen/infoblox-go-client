@@ -9,6 +9,10 @@ This library is compatible with Go 1.2+
 - [Installation](#Installation)
 - [Usage](#Usage)
 
+## Note
+
+Environment variable `WAPI_VERSION` to be set to `2.13.7` to use `HTTPS` and `SVCB` Records.
+
 ## Build Status
 [![Build Status](https://travis-ci.org/infobloxopen/infoblox-go-client.svg?branch=master)](https://travis-ci.org/infobloxopen/infoblox-go-client) 
 
@@ -18,7 +22,7 @@ This library is compatible with Go 1.2+
    * Go 1.21 or above
 
 ## Installation
-   To get the latest released version [v2.10.0](https://github.com/infobloxopen/infoblox-go-client/releases/tag/v2.10.0) of Go Client use below command.
+   To get the latest released version [v2.11.0](https://github.com/infobloxopen/infoblox-go-client/releases/tag/v2.11.0) of Go Client use below command.
    
    `go get github.com/infobloxopen/infoblox-go-client/v2`
 
@@ -80,10 +84,12 @@ This library is compatible with Go 1.2+
    * CreateZoneForward
    * CreateEADefinition
    * CreateHostRecord
+   * CreateHTTPSRecord
    * CreateNetwork
    * CreateNetworkContainer
    * CreateNetworkView
    * CreatePTRRecord
+   * CreateSVCBRecord
    * CreateTXTRecord
    * CreateZoneDelegated
    * DeleteARecord
@@ -93,12 +99,16 @@ This library is compatible with Go 1.2+
    * DeleteCNAMERecord
    * DeleteFixedAddress
    * DeleteHostRecord
+   * DeleteHTTPSRecord
    * DeleteNetwork
    * DeleteNetworkView
    * DeletePTRRecord
+   * DeleteSVCBRecord
    * DeleteTXTRecord
    * DeleteZoneDelegated
+   * GetAllHTTPSRecord
    * GetAllMembers
+   * GetAllSVCBRecords
    * GetARecordByRef
    * GetARecord
    * GetAAAARecordByRef
@@ -113,6 +123,7 @@ This library is compatible with Go 1.2+
    * GetFixedAddressByRef
    * GetHostRecord
    * GetHostRecordByRef
+   * GetHTTPSRecordByRef
    * SearchHostRecordByAltId
    * SearchObjectByAltId
    * GetIpAddressFromHostRecord
@@ -124,6 +135,7 @@ This library is compatible with Go 1.2+
    * GetNetworkViewByRef
    * GetPTRRecordByRef
    * GetPTRRecord
+   * GetSVCBRecordByRef
    * GetTXTRecord
    * GetTXTRecordByRef
    * GetZoneAuthByRef
@@ -189,7 +201,9 @@ This library is compatible with Go 1.2+
    * GetNetworkRangeByRef
    * GetRangeTemplateByRef
    * UpdateAliasRecord
+   * UpdateHTTPSRecord
    * UpdateNSRecord
    * UpdateIpv4SharedNetwork
    * UpdateNetworkRange
    * UpdateRangeTemplate
+   * UpdateSVCBRecord
