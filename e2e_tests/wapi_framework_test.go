@@ -401,6 +401,156 @@ var _ = Describe("Go Client", func() {
 			var err error
 			refZoneAuth, err = connector.CreateObject(nv)
 			Expect(err).To(BeNil())
+
+			ipv4Cidr := "16.12.1.0/24"
+			netView := "default"
+			ipv4Comment := "ipv4 network"
+			ipv4Ea := ibclient.EA{"Site": "Namibia"}
+			ipv4Network := ibclient.NewNetwork(netView, ipv4Cidr, false, ipv4Comment, ipv4Ea)
+			_, err1 := connector.CreateObject(ipv4Network)
+			Expect(err1).To(BeNil())
+
+		})
+
+		It("Should create a Zone delegation", func() {
+			// Create a DNS Forward Zone
+			zone := &ibclient.ZoneDelegated{
+				Fqdn: "example1.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "2.3.4.5"},
+					},
+					IsNull: false,
+				},
+				DelegatedTtl:    utils.Uint32Ptr(3600),
+				UseDelegatedTtl: utils.BoolPtr(true),
+			}
+			ref, err := connector.CreateObject(zone)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+		It("Should get the Zone delegated", func() {
+			zone := &ibclient.ZoneDelegated{
+				Fqdn: "example2.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "2.3.4.5"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+			ref, err := connector.CreateObject(zone)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{}
+			errCode := connector.GetObject(search, "", nil, &res)
+			Expect(errCode).To(BeNil())
+			Expect(res[0].Ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+		It("Should update the Zone delegated", func() {
+			// Create a Zone delegated
+			zoneCreate := &ibclient.ZoneDelegated{
+				Fqdn: "example3.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.5"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+			ref, errCode := connector.CreateObject(zoneCreate)
+			Expect(errCode).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+
+			// Update a Zone-delegated
+			zone := &ibclient.ZoneDelegated{
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.6"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{}
+			err := connector.GetObject(search, "", nil, &res)
+			ref, err = connector.UpdateObject(zone, res[0].Ref)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+
+		It("Should delete the Zone-delegated", func() {
+			// Create a DNS Zone-delegated
+			zoneCreate := &ibclient.ZoneDelegated{
+				Fqdn: "example4.wapi.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.5"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+			refCreate, errCode := connector.CreateObject(zoneCreate)
+			Expect(errCode).To(BeNil())
+			Expect(refCreate).To(MatchRegexp("^zone_delegated.*"))
+
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{}
+			err := connector.GetObject(search, "", nil, &res)
+			ref, err := connector.DeleteObject(res[0].Ref)
+			Expect(err).To(BeNil())
+			Expect(ref).To(MatchRegexp("^zone_delegated.*"))
+		})
+
+		It("Should fail to create a DNS Zone-delegated without mandatory parameters", func() {
+			zone := &ibclient.ZoneDelegated{
+				// Missing mandatory parameters like Fqdn and DelegatedTo oe NsGroup
+				Comment:      utils.StringPtr("wapi added"),
+				DelegatedTtl: utils.Uint32Ptr(3600),
+			}
+			_, err := connector.CreateObject(zone)
+			Expect(err).NotTo(BeNil())
+		})
+
+		It("Should fail to get a non-existent DNS Zone-delegated", func() {
+			var res []ibclient.ZoneDelegated
+			search := &ibclient.ZoneDelegated{Fqdn: "nonexistent.test_fwzone.com"}
+			err := connector.GetObject(search, "", nil, &res)
+			Expect(err).NotTo(BeNil())
+		})
+
+		It("Should fail to update a non-existent DNS Zone-delegated", func() {
+			zone := &ibclient.ZoneDelegated{
+				Fqdn: "nonexistent.com",
+				DelegateTo: ibclient.NullableNameServers{
+					NameServers: []ibclient.NameServer{
+						{Name: "test", Address: "1.2.3.4"},
+						{Name: "test2", Address: "1.2.3.6"},
+					},
+					IsNull: false,
+				},
+				Comment: utils.StringPtr("wapi added"),
+			}
+
+			_, err := connector.UpdateObject(zone, "nonexistent_ref")
+			Expect(err).NotTo(BeNil())
+		})
+
+		It("Should fail to delete a non-existent DNS Zone-delegated", func() {
+			_, err := connector.DeleteObject("nonexistent_ref")
+			Expect(err).NotTo(BeNil())
 		})
 
 		It("Should add CNAME Record [cname.wapi.com]", Label("ID: 40", "RW"), func() {
@@ -662,6 +812,48 @@ var _ = Describe("Go Client", func() {
 			},
 		)
 
+		It("Should add Host record [h1.wapi.com] with both ipv4addrs and aliases fields when dns is enabled",
+			Label("ID:44", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name:      utils.StringPtr("h1.wapi.com"),
+					View:      utils.StringPtr("default"),
+					EnableDns: utils.BoolPtr(true),
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.20")},
+						{Ipv4Addr: utils.StringPtr("20.20.20.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("20.20.20.40")},
+					},
+					Aliases: []string{
+						"alias1.wapi.com",
+						"alias2.wapi.com",
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com/default$"))
+			},
+		)
+		It("Should add Host record [h1.wapi.com] with ipv4addrs  and aliases fields when dns is disabled",
+			Label("ID:45", "RW"), func() {
+				r := &ibclient.HostRecord{
+					Name:      utils.StringPtr("h1.wapi.com"),
+					View:      utils.StringPtr("default"),
+					EnableDns: utils.BoolPtr(false),
+					Ipv4Addrs: []ibclient.HostRecordIpv4Addr{
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("16.12.1.20")},
+						{Ipv4Addr: utils.StringPtr("16.12.1.30")},
+						{EnableDhcp: utils.BoolPtr(false), Ipv4Addr: utils.StringPtr("16.12.1.40")},
+					},
+					Aliases: []string{
+						"alias1",
+						"alias2.wapi.com",
+					},
+				}
+				ref, err := connector.CreateObject(r)
+				Expect(err).To(BeNil())
+				Expect(ref).To(MatchRegexp("^record:host.*h1\\.wapi\\.com(/.*)?$"))
+			},
+		)
 		When("Host record [h1.wapi.com] with both ipv4addrs and ipv6addrs fields exits",
 			Label("RW"), func() {
 				BeforeEach(func() {
@@ -2119,8 +2311,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2136,8 +2328,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2150,8 +2342,8 @@ var _ = Describe("DNS Forward Zone", func() {
 					{
 						Name:           "infoblox.localdomain",
 						ForwardersOnly: true,
-						ForwardTo: ibclient.NullForwardTo{
-							ForwardTo: []ibclient.NameServer{
+						ForwardTo: ibclient.NullableNameServers{
+							NameServers: []ibclient.NameServer{
 								{Name: "test", Address: "1.2.3.4"},
 								{Name: "test2", Address: "2.3.4.5"},
 							},
@@ -2170,8 +2362,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should get the DNS Forward Zone", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "2.3.4.5"},
 				},
@@ -2194,8 +2386,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zoneCreate := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2209,8 +2401,8 @@ var _ = Describe("DNS Forward Zone", func() {
 
 		// Update a DNS Forward Zone
 		zone := &ibclient.ZoneForward{
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.6"},
 				},
@@ -2231,8 +2423,8 @@ var _ = Describe("DNS Forward Zone", func() {
 		// Create a DNS Forward Zone
 		zoneCreate := &ibclient.ZoneForward{
 			Fqdn: "example.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2255,8 +2447,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to create a DNS Forward Zone with invalid data", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "invalid..com", // Invalid FQDN
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2279,8 +2471,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to update a non-existent DNS Forward Zone", func() {
 		zone := &ibclient.ZoneForward{
 			Fqdn: "nonexistent.com",
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.6"},
 				},
@@ -2311,8 +2503,8 @@ var _ = Describe("DNS Forward Zone", func() {
 	It("Should fail to create a DNS Forward Zone without fqdn parameter", func() {
 		zone := &ibclient.ZoneForward{
 			// Missing mandatory parameter Fqdn
-			ForwardTo: ibclient.NullForwardTo{
-				ForwardTo: []ibclient.NameServer{
+			ForwardTo: ibclient.NullableNameServers{
+				NameServers: []ibclient.NameServer{
 					{Name: "test", Address: "1.2.3.4"},
 					{Name: "test2", Address: "1.2.3.5"},
 				},
@@ -2334,5 +2526,2723 @@ var _ = Describe("DNS Forward Zone", func() {
 		}
 		_, err := connector.CreateObject(zone)
 		Expect(err).NotTo(BeNil())
+	})
+})
+
+var _ = Describe("Allocate next available using EA", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		var (
+			netView = "default"
+			comment = "ipv4 network container"
+			ea      = ibclient.EA{"Site": "Burma"}
+			cidr    = "18.12.1.0/24"
+			err1    error
+
+			ipv4Comment = "ipv4 network"
+			ipv4Ea      = ibclient.EA{"Site": "Namibia"}
+			ipv4Cidr    = "15.12.1.0/24"
+
+			ipv6Comment = "ipv6 network"
+			ipv6Ea      = ibclient.EA{"Site": "Norway"}
+			ipv6Cidr    = "2002:db8:85a4::/64"
+
+			ipv6NCComment = "ipv6 network container"
+			ipv6NCEa      = ibclient.EA{"Site": "Sri Lanka"}
+			ipv6NCCidr    = "3002:db8:85a4::/64"
+
+			ipv4Comment1 = "ipv4 network2"
+			ipv4Ea1      = ibclient.EA{"Site": "Japan"}
+			ipv4Cidr1    = "22.12.1.0/24"
+
+			ipv6Comment1 = "ipv6 network2"
+			ipv6Ea1      = ibclient.EA{"Site": "Japan"}
+			ipv6Cidr1    = "4002:db8:85a4::/64"
+		)
+
+		nv := &ibclient.ZoneAuth{
+			View: utils.StringPtr("default"),
+			Fqdn: "wapi.com",
+		}
+		_, err1 = connector.CreateObject(nv)
+		Expect(err1).To(BeNil())
+
+		nc := ibclient.NewNetworkContainer(netView, cidr, false, comment, ea)
+		_, err1 = connector.CreateObject(nc)
+		Expect(err1).To(BeNil())
+
+		ipv6Network := ibclient.NewNetwork(netView, ipv6Cidr, true, ipv6Comment, ipv6Ea)
+		_, err1 = connector.CreateObject(ipv6Network)
+		Expect(err1).To(BeNil())
+
+		ipv4Network := ibclient.NewNetwork(netView, ipv4Cidr, false, ipv4Comment, ipv4Ea)
+		_, err1 = connector.CreateObject(ipv4Network)
+		Expect(err1).To(BeNil())
+
+		ipv6NWC := ibclient.NewNetworkContainer(netView, ipv6NCCidr, true, ipv6NCComment, ipv6NCEa)
+		_, err1 = connector.CreateObject(ipv6NWC)
+		Expect(err1).To(BeNil())
+
+		ipv6Network1 := ibclient.NewNetwork(netView, ipv6Cidr1, true, ipv6Comment1, ipv6Ea1)
+		_, err1 = connector.CreateObject(ipv6Network1)
+		Expect(err1).To(BeNil())
+
+		ipv4Network1 := ibclient.NewNetwork(netView, ipv4Cidr1, false, ipv4Comment1, ipv4Ea1)
+		_, err1 = connector.CreateObject(ipv4Network1)
+		Expect(err1).To(BeNil())
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a ipv4 network within a networkcontainer with EA", func() {
+		// Create an ipv4 network within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Burma"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^network.*"))
+	})
+
+	It("Should create a ipv4 networkconatiner within a networkcontainer with EA", func() {
+		// Create an ipv4 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Burma"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^network.*"))
+	})
+
+	It("Should create a ipv6 network within a networkconatiner with EA", func() {
+		// Create an ipv6 network within a network with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Sri Lanka"}
+		prefixLen := uint(66)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("ipv6network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^ipv6network.*"))
+	})
+
+	It("Should create a ipv6 networkcontainer within a networkcontainer with EA", func() {
+		// Create an ipv6 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network Container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Sri Lanka"}
+		prefixLen := uint(67)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			//objectType: "ipv6network",
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		networkinfo.SetObjectType("ipv6networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^ipv6networkcontainer.*"))
+	})
+
+	It("Should create a record:a within a network with EA", func() {
+		// Create Record:A within a network with EA
+		ea := ibclient.EA{"Site": "Basavangudi"}
+		comment := "Test next_available_ip for record:a"
+		eaMap := map[string]string{"*Site": "Namibia"}
+		name := "testa.wapi.com"
+		recordA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv4Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV4"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordA.SetObjectType("record:a")
+		ref, err := connector.CreateObject(&recordA)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:a.*"))
+	})
+
+	It("Should create a record:aaaa within a network with EA", func() {
+		// Create Record:AAAA within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:aaaa"
+		eaMap := map[string]string{"*Site": "Norway"}
+		name := "testaaaa.wapi.com"
+		recordAAAA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv6Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV6"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordAAAA.SetObjectType("record:aaaa")
+		ref, err := connector.CreateObject(&recordAAAA)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:aaaa.*"))
+	})
+
+	It("Should create a record:host within a ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:host with ipv6"
+		eaMap := map[string]string{"*Site": "Norway"}
+		name := "testhost1.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV6",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should create a record:host within a ipv4 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4"
+		eaMap := map[string]string{"*Site": "Namibia"}
+		name := "testhost2.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "IPV4",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should create a record:host within a ipv4 and ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
+		eaMap := map[string]string{"*Site": "Japan"}
+		name := "testhost3.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:host.*"))
+	})
+
+	It("Should fail to create a ipv4 network within a networkcontainer with EA", func() {
+		// Create an ipv4 network within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv4 network creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Madagascar"}
+		prefixLen := uint(26)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+		networkinfo.SetObjectType("network")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a ipv6 networkcontainer within a networkcontainer with EA", func() {
+		// Create an ipv6 networkcontainer within a networkcontainer with EA
+		ea := ibclient.EA{"Region": "East"}
+		comment := "Test ipv6 network Container creation with next_available_network"
+		eaMap := map[string]string{"*Site": "Lakshwadeep"}
+		prefixLen := uint(67)
+		netviewName := "default"
+		networkinfo := &ibclient.NetworkContainerNextAvailable{
+			//objectType: "ipv6network",
+			Network: &ibclient.NetworkContainerNextAvailableInfo{
+				Function:     "next_available_network",
+				ResultField:  "networks",
+				Object:       "ipv6networkcontainer",
+				ObjectParams: eaMap,
+				Params: map[string]uint{
+					"cidr": prefixLen,
+				},
+				NetviewName: "",
+			},
+			NetviewName: netviewName,
+			Comment:     comment,
+			Ea:          ea,
+		}
+
+		networkinfo.SetObjectType("ipv6networkcontainer")
+		ref, err := connector.CreateObject(networkinfo)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:a within a network with EA", func() {
+		// Create Record:A within a network with EA
+		ea := ibclient.EA{"Site": "Basavangudi"}
+		comment := "Test next_available_ip for record:a"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testa.wapi.com"
+		recordA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv4Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV4"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordA.SetObjectType("record:a")
+		ref, err := connector.CreateObject(&recordA)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:aaaa within a network with EA", func() {
+		// Create Record:AAAA within a network with EA
+		ea := ibclient.EA{"Site": "Bangalore"}
+		comment := "Test next_available_ip for record:aaaa"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testaaaa.wapi.com"
+		recordAAAA := ibclient.IpNextAvailable{
+			Name:                  name,
+			NextAvailableIPv6Addr: ibclient.NewIpNextAvailableInfo(eaMap, nil, false, "IPV6"),
+			Comment:               comment,
+			Ea:                    ea,
+			Disable:               false,
+		}
+
+		recordAAAA.SetObjectType("record:aaaa")
+		ref, err := connector.CreateObject(&recordAAAA)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+	It("Should fail to create a record:host within a ipv4 and ipv6 network with EA", func() {
+		// Create Record:Host within a network with EA
+		ea := ibclient.EA{"Site": "Mangalore"}
+		comment := "Test next_available_ip for record:host with ipv4 and ipv6"
+		eaMap := map[string]string{"*Site": "Mongolia"}
+		name := "testhost3.wapi.com"
+		recordHost := ibclient.NewIpNextAvailable(name, "record:host", eaMap, nil, false, ea, comment, false, nil, "Both",
+			false, false, "", "", "", "", false, 0, nil)
+
+		recordHost.SetObjectType("record:host")
+		ref, err := connector.CreateObject(recordHost)
+		Expect(err).NotTo(BeNil())
+		Expect(ref).To(BeEmpty())
+	})
+
+})
+
+var _ = Describe("DTC Object pools", func() {
+	var connector *ConnectorFacadeE2E
+
+	var serverRef string
+	var topologyRef string
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		var (
+			serverName = "server.com"
+			host       = "3.6.7.8"
+			err1       error
+
+			topologyName = "topology_test"
+		)
+		server := &ibclient.DtcServer{
+			Name: &serverName,
+			Host: &host,
+		}
+		serverRef, err1 = connector.CreateObject(server)
+		Expect(err1).To(BeNil())
+
+		topology := &ibclient.DtcTopology{
+			Name: &topologyName,
+			Rules: []*ibclient.DtcTopologyRule{
+				{
+					DestType:        "SERVER",
+					DestinationLink: &serverRef,
+				},
+			},
+		}
+		topologyRef, err1 = connector.CreateObject(topology)
+		Expect(err1).To(BeNil())
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a dtc pool with ROUND_ROBIN method", func() {
+		eaMap := ibclient.EA{"Site": "Burma"}
+		dtcPool := ibclient.DtcPool{
+			Name:    utils.StringPtr("dtc_pool_1.com"),
+			Comment: utils.StringPtr("pool object creation"),
+			Ea:      eaMap,
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			LbPreferredMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&dtcPool)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+	})
+
+	It("Should create a dtc pool with DYNAMIC_RATIO method", func() {
+		eaMap := ibclient.EA{"Site": "Burma"}
+		sf := map[string]string{"name": "http"}
+		queryParams := ibclient.NewQueryParams(false, sf)
+		var monitor []ibclient.DtcMonitorHttp
+		_ = connector.GetObject(&ibclient.DtcMonitorHttp{}, "dtc:monitor:http", queryParams, &monitor)
+		monitorRef := monitor[0].Ref
+		dtcPool := ibclient.DtcPool{
+			Name:    utils.StringPtr("dtc_pool_2.com"),
+			Comment: utils.StringPtr("pool object creation"),
+			Ea:      eaMap,
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			LbPreferredMethod: "DYNAMIC_RATIO",
+			Monitors: []*ibclient.DtcMonitorHttp{
+				{
+					Ref: monitorRef,
+				},
+			},
+			LbDynamicRatioPreferred: &ibclient.SettingDynamicratio{
+				Method:  "ROUND_TRIP_DELAY",
+				Monitor: monitorRef,
+			},
+		}
+		ref, err := connector.CreateObject(&dtcPool)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+	})
+
+	It("Should create a dtc pool with TOPOLOGY method", func() {
+		eaMap := ibclient.EA{"Site": "Burma"}
+		sf := map[string]string{"name": "http"}
+		queryParams := ibclient.NewQueryParams(false, sf)
+		var monitor []ibclient.DtcMonitorHttp
+		_ = connector.GetObject(&ibclient.DtcMonitorHttp{}, "dtc:monitor:http", queryParams, &monitor)
+		monitorRef := monitor[0].Ref
+		dtcPool := ibclient.DtcPool{
+			Name:    utils.StringPtr("dtc_pool_3.com"),
+			Comment: utils.StringPtr("pool object creation"),
+			Ea:      eaMap,
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			Monitors: []*ibclient.DtcMonitorHttp{
+				{
+					Ref: monitorRef,
+				},
+			},
+			LbPreferredMethod:   "TOPOLOGY",
+			LbPreferredTopology: &topologyRef,
+			LbAlternateMethod:   "DYNAMIC_RATIO",
+			LbDynamicRatioAlternate: &ibclient.SettingDynamicratio{
+				Method:  "ROUND_TRIP_DELAY",
+				Monitor: monitorRef,
+			},
+		}
+		ref, err := connector.CreateObject(&dtcPool)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+	})
+	It("should update the dtc pool", func() {
+		var gridMembers []ibclient.Member
+		err := connector.GetObject(&ibclient.Member{}, "", nil, &gridMembers)
+		authZoneCreate := ibclient.ZoneAuth{
+			Fqdn: "test.com",
+			GridPrimary: []*ibclient.Memberserver{
+				{
+					Name: *gridMembers[0].HostName,
+				},
+				{
+					Name: *gridMembers[1].HostName,
+				},
+			},
+		}
+		refAuthZone, err := connector.CreateObject(&authZoneCreate)
+		authZoneCreate.Ref = refAuthZone
+		Expect(err).To(BeNil())
+		Expect(refAuthZone).To(MatchRegexp("zone_auth/*"))
+		dtcPool := ibclient.DtcPool{
+			Name: utils.StringPtr("dtc_pool_1.com"),
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			LbPreferredMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&dtcPool)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+		dtcLBDN := ibclient.DtcLbdn{
+			Name: utils.StringPtr("dtc_lbdn.com"),
+			Pools: []*ibclient.DtcPoolLink{
+				{
+					Pool:  ref,
+					Ratio: 4,
+				},
+			},
+			LbMethod:  "ROUND_ROBIN",
+			Patterns:  []string{"*test.com"},
+			AuthZones: []*ibclient.ZoneAuth{&authZoneCreate},
+		}
+		lbdnRef, err := connector.CreateObject(&dtcLBDN)
+		Expect(err).To(BeNil())
+		Expect(lbdnRef).To(MatchRegexp("dtc:lbdn/*"))
+		//update dtc pool
+		autoConsolidateMonitors := false
+		sf := map[string]string{"name": "http"}
+		queryParams := ibclient.NewQueryParams(false, sf)
+		var monitor []ibclient.DtcMonitorHttp
+		_ = connector.GetObject(&ibclient.DtcMonitorHttp{}, "dtc:monitor:http", queryParams, &monitor)
+		monitorRef := monitor[0].Ref
+		dtcPoolUpdate := &ibclient.DtcPool{
+			Name: utils.StringPtr("dtc_pool_2.com"),
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			Monitors: []*ibclient.DtcMonitorHttp{
+				{
+					Ref: monitorRef,
+				},
+			},
+			LbPreferredMethod:        "ROUND_ROBIN",
+			Comment:                  utils.StringPtr("pool object update"),
+			AutoConsolidatedMonitors: &autoConsolidateMonitors,
+			ConsolidatedMonitors: []*ibclient.DtcPoolConsolidatedMonitorHealth{
+				{
+					Members: []string{
+						*gridMembers[0].HostName,
+						*gridMembers[1].HostName,
+					},
+					Monitor:                 monitorRef,
+					Availability:            "ANY",
+					FullHealthCommunication: true,
+				},
+			},
+		}
+		var res []ibclient.DtcPool
+		search := &ibclient.DtcPool{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(dtcPoolUpdate, res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+
+		delRef, err := connector.DeleteObject(lbdnRef)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("dtc:lbdn/*"))
+	})
+	It("should delete the dtc pool ", func() {
+		dtcPool := ibclient.DtcPool{
+			Name: utils.StringPtr("dtc_pool_1.com"),
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			LbPreferredMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&dtcPool)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+
+		var res []ibclient.DtcPool
+		search := &ibclient.DtcPool{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.DeleteObject(res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+	})
+	It("Should get the DTC pool", func() {
+		dtcPool := ibclient.DtcPool{
+			Name: utils.StringPtr("dtc_pool_1.com"),
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			Comment:           utils.StringPtr("pool object creation"),
+			LbPreferredMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&dtcPool)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("dtc:pool/*"))
+
+		var res []ibclient.DtcPool
+		search := &ibclient.DtcPool{}
+		search.SetReturnFields(append(search.ReturnFields(), "servers", "lb_preferred_method"))
+		qp := ibclient.NewQueryParams(false, map[string]string{
+			"name": "dtc_pool_1.com",
+		})
+		errCode := connector.GetObject(search, "", qp, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Name).To(Equal(utils.StringPtr("dtc_pool_1.com")))
+		Expect(res[0].Comment).To(Equal(utils.StringPtr("pool object creation")))
+		Expect(res[0].Servers[0].Server).To(Equal(serverRef))
+		Expect(res[0].LbPreferredMethod).To(Equal("ROUND_ROBIN"))
+		Expect(res[0].Ref).To(MatchRegexp("dtc:pool/*"))
+	})
+	It("Should fail to create a DTC pool without mandatory parameters", func() {
+		dtcPool := &ibclient.DtcPool{
+			Comment: utils.StringPtr("wapi added"),
+			Name:    utils.StringPtr("dtc_pool_1.com"),
+		}
+		_, err := connector.CreateObject(dtcPool)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to get a non-existent DTC pool", func() {
+		var res []ibclient.DtcPool
+		name := "dtc_pool_wapi"
+		search := &ibclient.DtcPool{Name: &name}
+		err := connector.GetObject(search, "", nil, &res)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to update a non-existent DTC pool", func() {
+		name := "dtc_pool_wapi"
+		dtcPool := &ibclient.DtcPool{
+			Name: &name,
+			Servers: []*ibclient.DtcServerLink{
+				{
+					Server: serverRef,
+					Ratio:  4,
+				},
+			},
+			Comment: utils.StringPtr("wapi added"),
+		}
+
+		_, err := connector.UpdateObject(dtcPool, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to delete a non-existent Dtc pool", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+})
+
+var _ = Describe("DTC LBDN and server object", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a DTC LBDN object with minimum parameters", func() {
+		// Create a DTC LBDN object
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("test-LBDN1"),
+			LbMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&lbdn)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+	})
+
+	It("Should create a DTC LBDN object with maximum parameters", func() {
+
+		var (
+			topologyRef, poolRef string
+			err                  error
+		)
+		// create zoneAuth
+		var gridMembers []ibclient.Member
+		err = connector.GetObject(&ibclient.Member{}, "", nil, &gridMembers)
+		Expect(err).To(BeNil())
+		zones := ibclient.ZoneAuth{
+			Fqdn:        "wapi.com",
+			GridPrimary: []*ibclient.Memberserver{{Name: *gridMembers[0].HostName}},
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+		// create server
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("TestServer123"),
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		serverRef, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(serverRef).To(MatchRegexp("^dtc:server.*"))
+
+		// create pools
+		pool := ibclient.DtcPool{
+			Name:              utils.StringPtr("test-pool1"),
+			LbPreferredMethod: "ROUND_ROBIN",
+			Servers: []*ibclient.DtcServerLink{{
+				Server: serverRef,
+				Ratio:  uint32(2),
+			}},
+		}
+
+		poolRef, err = connector.CreateObject(&pool)
+		Expect(err).To(BeNil())
+		Expect(poolRef).To(MatchRegexp("^dtc:pool.*"))
+
+		// create topology
+		topology := ibclient.DtcTopology{
+			Name: utils.StringPtr("test-topology"),
+			Rules: []*ibclient.DtcTopologyRule{
+				{
+					DestType:        "POOL",
+					DestinationLink: utils.StringPtr(poolRef),
+				},
+			},
+		}
+		topologyRef, err = connector.CreateObject(&topology)
+		Expect(err).To(BeNil())
+
+		// Create a DTC LBDN object with maximum parameters
+		lbdn := ibclient.DtcLbdn{
+			Name:      utils.StringPtr("test-LBDN12"),
+			LbMethod:  "TOPOLOGY",
+			Topology:  utils.StringPtr(topologyRef),
+			AuthZones: []*ibclient.ZoneAuth{&zones},
+			Pools:     []*ibclient.DtcPoolLink{{Pool: poolRef, Ratio: uint32(3)}},
+			Types:     []string{"A", "CNAME", "AAAA"},
+			Patterns:  []string{"*wapi.com"},
+		}
+
+		ref, err := connector.CreateObject(&lbdn)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+	})
+
+	It("Should get the DTC LBDN object TestLBDN222", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN222"),
+			LbMethod: "ROUND_ROBIN",
+		}
+		ref, err := connector.CreateObject(&lbdn)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+
+		var res []ibclient.DtcLbdn
+		search := &ibclient.DtcLbdn{}
+		errCode := connector.GetObject(search, "", nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Ref).To(MatchRegexp("^dtc:lbdn.*"))
+	})
+
+	It("Should update the DTC LBDN object TestLBDN11", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN11"),
+			LbMethod: "ROUND_ROBIN",
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A"},
+		}
+		ref, errCode := connector.CreateObject(&lbdn)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+
+		// Update the DTC Lbdn object
+		lbdnUpdated := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN1111"),
+			Comment:  utils.StringPtr("sample comment updated"),
+			LbMethod: "RATIO",
+		}
+
+		var res []ibclient.DtcLbdn
+		search := &ibclient.DtcLbdn{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&lbdnUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(HaveSuffix("TestLBDN1111"))
+	})
+
+	It("Should delete the DTC LBDN object TestLBDN22", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN22"),
+			LbMethod: "ROUND_ROBIN",
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A", "CNAME"},
+		}
+		ref, errCode := connector.CreateObject(&lbdn)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:lbdn.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create a DTC LBDN object TestLBDN33", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN33"),
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A", "CNAME"},
+		}
+		_, err := connector.CreateObject(&lbdn)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent DTC LBDN object Testlbdn1010", func() {
+		var res []ibclient.DtcLbdn
+		sf := map[string]string{"name": "Testlbdn1010"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.DtcLbdn{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent DTC LBDN object TestLBDN44", func() {
+		lbdn := ibclient.DtcLbdn{
+			Name:     utils.StringPtr("TestLBDN44"),
+			Comment:  utils.StringPtr("sample comment"),
+			Priority: utils.Uint32Ptr(3),
+			Types:    []string{"A", "CNAME"},
+		}
+
+		_, err := connector.UpdateObject(&lbdn, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent DTC LBDN object", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	// create DTC server object
+	It("Should create DTC server object with minimum params", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server1"),
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+	})
+
+	// create DTC server object with maximum params
+	It("Should create DTC server object with maximum params", func() {
+
+		monitor := ibclient.DtcMonitorHttp{
+			Name: utils.StringPtr("test-monitor"),
+		}
+		monitorRef, err := connector.CreateObject(&monitor)
+		Expect(err).To(BeNil())
+		Expect(monitorRef).To(MatchRegexp("^dtc:monitor:http.*"))
+		server := ibclient.DtcServer{
+			Name:                 utils.StringPtr("test-server111"),
+			Host:                 utils.StringPtr("12.12.1.11"),
+			Comment:              utils.StringPtr("test comment"),
+			UseSniHostname:       utils.BoolPtr(true),
+			SniHostname:          utils.StringPtr("test-sni"),
+			AutoCreateHostRecord: utils.BoolPtr(true),
+			Disable:              utils.BoolPtr(true),
+			Ea:                   ibclient.EA{"Site": "India"},
+			Monitors: []*ibclient.DtcServerMonitor{{
+				Monitor: monitorRef,
+				Host:    "1.2.3.4",
+			}},
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+	})
+
+	// get Dtc server
+	It("Should get Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server2"),
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		var res ibclient.DtcServer
+		err = connector.GetObject(&ibclient.DtcServer{}, ref, nil, &res)
+		Expect(err).To(BeNil())
+		Expect(*res.Name).To(MatchRegexp("test-server2"))
+	})
+
+	// update Dtc server
+	It("Should get Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name:    utils.StringPtr("test-server3"),
+			Host:    utils.StringPtr("12.12.1.2"),
+			Comment: utils.StringPtr("test comment"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		updatedServer := ibclient.DtcServer{
+			Name:    utils.StringPtr("test-server22"),
+			Host:    utils.StringPtr("11.11.1.1"),
+			Comment: utils.StringPtr("test comment updated"),
+		}
+		ref, err = connector.UpdateObject(&updatedServer, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(HaveSuffix("test-server22"))
+	})
+
+	// delete Dtc server
+	It("Should delete a Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server3"),
+			Host: utils.StringPtr("12.12.1.3"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("^dtc:server.*"))
+	})
+
+	// create DTC server object, -ve scenario
+	It("Should fail to create DTC server object with minimum params", func() {
+		server := ibclient.DtcServer{
+			Host: utils.StringPtr("12.12.1.1"),
+		}
+		_, err := connector.CreateObject(&server)
+		Expect(err).NotTo(BeNil())
+	})
+
+	// get Dtc server, -ve scenario
+	It("Should fail to get a non existent Dtc server", func() {
+		var res []ibclient.DtcServer
+		err := connector.GetObject(&ibclient.DtcServer{}, "nonexistent_ref", nil, &res)
+		Expect(res).To(BeNil())
+		Expect(err).NotTo(BeNil())
+	})
+
+	// update Dtc server, -ve scenario
+	It("Should fail to update a Dtc server", func() {
+		server := ibclient.DtcServer{
+			Name: utils.StringPtr("test-server4"),
+			Host: utils.StringPtr("12.12.1.4"),
+		}
+		ref, err := connector.CreateObject(&server)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^dtc:server.*"))
+		_, err = connector.UpdateObject(&server, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	// delete Dtc server, -ve scenario
+	It("Should fail to delete a non existent Dtc server", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
+var _ = Describe("Record Alias", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create Alias record with minimum parameters", func() {
+		// Create an Alias Record with minimum parameters
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("test-alias1.wapi.com"),
+			TargetType: "A",
+			TargetName: utils.StringPtr("aa.test.com"),
+		}
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should create an Alias Record with maximum parameters", func() {
+
+		// Create an Alias Record object with maximum parameters
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("test-alias2.wapi.com"),
+			TargetType: "PTR",
+			TargetName: utils.StringPtr("aa.bb.com"),
+			Comment:    utils.StringPtr("sample comment"),
+			Ea:         ibclient.EA{"Site": "India"},
+			Disable:    utils.BoolPtr(true),
+			Ttl:        utils.Uint32Ptr(100),
+			UseTtl:     utils.BoolPtr(true),
+		}
+
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should get alias record testalias1.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias1.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("aab.bb.com"),
+		}
+		ref, err := connector.CreateObject(&recordAlias)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var res ibclient.RecordAlias
+		search := &ibclient.RecordAlias{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Ref).To(MatchRegexp("^record:alias.*"))
+
+		Expect(*res.Name).To(Equal("testalias1.wapi.com"))
+		Expect(res.TargetType).To(Equal("NAPTR"))
+		Expect(*res.TargetName).To(Equal("aab.bb.com"))
+	})
+
+	It("Should update record Alias testalias2.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias2.wapi.com"),
+			TargetType: "TXT",
+			TargetName: utils.StringPtr("aaa.bbb.com"),
+			Comment:    utils.StringPtr("test comment"),
+			Ea:         ibclient.EA{"Site": "Sri Lanka"},
+			Disable:    utils.BoolPtr(true),
+			Ttl:        utils.Uint32Ptr(500),
+			UseTtl:     utils.BoolPtr(true),
+		}
+		ref, errCode := connector.CreateObject(&recordAlias)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		// Update the Record Alias
+		recordAliasUpdated := ibclient.RecordAlias{
+			Name:       utils.StringPtr("testalias222.wapi.com"),
+			TargetType: "PTR",
+			TargetName: utils.StringPtr("xyz.bnm.com"),
+			Comment:    utils.StringPtr("test comment updated"),
+		}
+
+		var res []ibclient.RecordAlias
+		search := &ibclient.RecordAlias{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&recordAliasUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+
+		var aliasRecord *ibclient.RecordAlias
+		err = connector.GetObject(&ibclient.RecordAlias{}, ref, nil, &aliasRecord)
+		Expect(err).To(BeNil())
+		Expect(aliasRecord).NotTo(BeNil())
+	})
+
+	It("Should delete record alias ", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("Alias1111.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("abs.test.com"),
+		}
+		ref, errCode := connector.CreateObject(&recordAlias)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:alias.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create alias record alias222.wapi.com", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("alias222.wapi.com"),
+			TargetType: "NAPTR",
+		}
+		_, err := connector.CreateObject(&recordAlias)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent alias record test_alias1", func() {
+		var res []ibclient.RecordAlias
+		sf := map[string]string{"name": "test_alias1"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordAlias{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent alias record alias222", func() {
+		recordAlias := ibclient.RecordAlias{
+			Name:       utils.StringPtr("alias222.wapi.com"),
+			TargetType: "NAPTR",
+			TargetName: utils.StringPtr("abs.test.com"),
+		}
+		_, err := connector.UpdateObject(&recordAlias, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent alias record", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
+var _ = Describe("NS Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		zones := ibclient.ZoneAuth{
+			Fqdn: "wapi_test.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+	})
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create a NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should update the NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+
+		// Update the DTC Lbdn object
+		nsRecordUpdate := ibclient.RecordNS{
+			Nameserver: utils.StringPtr("ns2.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&nsRecordUpdate, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should get the NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		search.SetReturnFields(append(search.ReturnFields(), "addresses"))
+		qp := ibclient.NewQueryParams(false, map[string]string{
+			"nameserver": "ns1.wapi_test.com",
+		})
+		errCode := connector.GetObject(search, "", qp, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res[0].Nameserver).To(Equal(utils.StringPtr("ns1.wapi_test.com")))
+		Expect(res[0].Name).To(Equal("wapi_test.com"))
+		Expect(res[0].Addresses[0].Address).To(Equal("2.3.4.5"))
+		Expect(res[0].Addresses[0].AutoCreatePtr).To(Equal(true))
+		Expect(res[0].Ref).To(MatchRegexp("record:ns/*"))
+	})
+	It("Should delete a NS Record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns1.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("record:ns/*"))
+	})
+
+	It("Should fail to create a NS Record object", func() {
+		nsRecord := ibclient.RecordNS{
+			Name: "wapi_test.com",
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		_, err := connector.CreateObject(&nsRecord)
+		Expect(err).NotTo(BeNil())
+	})
+
+	// update Dtc server, -ve scenario
+	It("Should fail to update a NS Record with wrong reference", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns3.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		_, err = connector.UpdateObject(&nsRecord, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to update a NS record", func() {
+		nsRecord := ibclient.RecordNS{
+			Name:       "wapi_test.com",
+			Nameserver: utils.StringPtr("ns3.wapi_test.com"),
+			Addresses: []*ibclient.ZoneNameServer{
+				{
+					Address:       "2.3.4.5",
+					AutoCreatePtr: true,
+				},
+			},
+		}
+		ref, err := connector.CreateObject(&nsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:ns/*"))
+		nsRecordUpdate := ibclient.RecordNS{
+			Name: "wapi_test2.com",
+		}
+		var res []ibclient.RecordNS
+		search := &ibclient.RecordNS{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&nsRecordUpdate, res[0].Ref)
+		Expect(err).NotTo(BeNil())
+	})
+})
+
+var _ = Describe("Record Range Template", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create Range Template record with minimum parameters", func() {
+		// Create a Range Template Record with minimum parameters
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1"),
+			NumberOfAddresses: utils.Uint32Ptr(10),
+			Offset:            utils.Uint32Ptr(20),
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should create a Range Template Record with maximum parameters", func() {
+
+		// Create a Range Template Record object with maximum parameters
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template2"),
+			NumberOfAddresses: utils.Uint32Ptr(10),
+			Offset:            utils.Uint32Ptr(20),
+			Comment:           utils.StringPtr("test comment"),
+			Ea:                ibclient.EA{"Site": "Sapporo"},
+			Options:           options,
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should get Range Template record template111", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template111"),
+			NumberOfAddresses: utils.Uint32Ptr(30),
+			Offset:            utils.Uint32Ptr(40),
+		}
+		ref, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var res ibclient.Rangetemplate
+		search := &ibclient.Rangetemplate{}
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Ref).To(MatchRegexp("rangetemplate.*"))
+
+		Expect(*res.Name).To(Equal("template111"))
+		Expect(int(*res.NumberOfAddresses)).To(Equal(30))
+		Expect(int(*res.Offset)).To(Equal(40))
+	})
+
+	It("Should update record Range Template template1234", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template1234"),
+			NumberOfAddresses: utils.Uint32Ptr(60),
+			Offset:            utils.Uint32Ptr(50),
+			Comment:           utils.StringPtr("test comment"),
+			Ea:                ibclient.EA{"Site": "Sapporo"},
+			Options:           options,
+		}
+		ref, errCode := connector.CreateObject(&rangeTemplate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		// Update the Record range template
+		rangeTemplateUpdated := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template4567"),
+			NumberOfAddresses: utils.Uint32Ptr(70),
+			Offset:            utils.Uint32Ptr(80),
+			Comment:           utils.StringPtr("test comment updated"),
+			Ea:                ibclient.EA{"Site": "Sendai"},
+			Options:           options,
+		}
+
+		var res []ibclient.Rangetemplate
+		search := &ibclient.Rangetemplate{}
+		err := connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&rangeTemplateUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+
+		var templateRange *ibclient.Rangetemplate
+		err = connector.GetObject(&ibclient.Rangetemplate{}, ref, nil, &templateRange)
+		Expect(err).To(BeNil())
+		Expect(templateRange).NotTo(BeNil())
+	})
+
+	It("Should delete record Range Template ", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template222"),
+			NumberOfAddresses: utils.Uint32Ptr(33),
+			Offset:            utils.Uint32Ptr(44),
+		}
+		ref, errCode := connector.CreateObject(&rangeTemplate)
+		Expect(errCode).To(BeNil())
+		Expect(ref).To(MatchRegexp("^rangetemplate.*"))
+		ref, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+	})
+
+	It("Should fail to create Range Template record template333", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template333"),
+			NumberOfAddresses: utils.Uint32Ptr(33),
+		}
+		_, err := connector.CreateObject(&rangeTemplate)
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to get a non-existent Range Template record range-template100", func() {
+		var res []ibclient.Rangetemplate
+		sf := map[string]string{"name": "range-template100"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.Rangetemplate{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to update a non-existent Range Template record template444", func() {
+		rangeTemplate := ibclient.Rangetemplate{
+			Name:              utils.StringPtr("template444"),
+			NumberOfAddresses: utils.Uint32Ptr(122),
+			Offset:            utils.Uint32Ptr(32),
+		}
+		_, err := connector.UpdateObject(&rangeTemplate, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should fail to delete a non-existent Range Template record", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
+var _ = Describe("IPV4 fixed address", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		var (
+			cidr        = "12.0.0.0/24"
+			networkView = "default"
+			err1        error
+		)
+		ipv4Network := ibclient.NewNetwork(networkView, cidr, false, "", nil)
+		_, err1 = connector.CreateObject(ipv4Network)
+		Expect(err1).To(BeNil())
+	})
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+	It("should create an IPV4 fixed address object with minimal parameters", func() {
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.1", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+	})
+	It("should create an IPV4 fixed address with maximal parameters", func() {
+		ea := ibclient.EA{"Site": "India"}
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "12.0.0.34",
+				UseOption:   true,
+			},
+		}
+		client := "CLIENT_ID"
+		clientIdentifierPrependZero := false
+		dhcpClientIdentifier := "34"
+		fixedAddress := ibclient.NewFixedAddress("default", "fixedaddress1", "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", &client, ea, "", false, "test comment", nil, nil, &clientIdentifierPrependZero, &dhcpClientIdentifier, true, options, true)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+	})
+	// get IPV4 fixed address
+	It("Should get IPV4 fixed address", func() {
+		ea := ibclient.EA{"Site": "India"}
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "12.0.0.34",
+				UseOption:   true,
+			},
+		}
+		client := "CLIENT_ID"
+		clientIdentifierPrependZero := false
+		dhcpClientIdentifier := "34"
+		Name := "fixedaddress1"
+		fixedAddress := ibclient.NewFixedAddress("default", Name, "12.0.0.2", "12.0.0.0/24", "43:56:98:98:32:21", &client, ea, "", false, "test comment", nil, nil, &clientIdentifierPrependZero, &dhcpClientIdentifier, true, options, true)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+		var res ibclient.FixedAddress
+		search := &ibclient.FixedAddress{}
+		search.SetReturnFields(append(search.ReturnFields(), "name", "network_view", "ipv4addr", "network", "options"))
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Name).To(Equal(&Name))
+		Expect(res.NetviewName).To(Equal("default"))
+		Expect(res.IPv4Address).To(Equal("12.0.0.2"))
+		Expect(res.Cidr).To(Equal("12.0.0.0/24"))
+		Expect(res.Options[0].Name).To(Equal("dhcp-lease-time"))
+		Expect(res.Options[0].Num).To(Equal(uint32(51)))
+		Expect(res.Options[0].Value).To(Equal("43200"))
+		Expect(res.Options[0].UseOption).To(Equal(false))
+		Expect(res.Options[0].VendorClass).To(Equal("DHCP"))
+		Expect(res.Options[1].Name).To(Equal("routers"))
+		Expect(res.Options[1].Num).To(Equal(uint32(3)))
+		Expect(res.Options[1].Value).To(Equal("12.0.0.34"))
+		Expect(res.Options[1].UseOption).To(Equal(true))
+		Expect(res.Options[1].VendorClass).To(Equal("DHCP"))
+	})
+	//It should update IPV4 fixed address
+	It("Should update IPV4 fixed address", func() {
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+
+		updateOptions := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "12.0.0.34",
+				UseOption:   true,
+			},
+		}
+		updateClient := "REMOTE_ID"
+		updateAgentRemoteId := "23"
+		updatedFixedAddress := ibclient.NewFixedAddress("", "fixedaddress", "12.0.0.4", "", "", &updateClient, nil, "", false, "comment 1", nil, &updateAgentRemoteId, nil, nil, false, updateOptions, true)
+		var res []ibclient.FixedAddress
+		search := &ibclient.FixedAddress{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(updatedFixedAddress, ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+	})
+	It("Should delete a fixed address", func() {
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+		delRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(delRef).To(MatchRegexp("fixedaddress/*"))
+	})
+	// get IPV4 fixed address, -ve scenario
+	It("Should fail to get a non existent fixed address", func() {
+		var res []ibclient.FixedAddress
+		err := connector.GetObject(&ibclient.FixedAddress{}, "nonexistent_ref", nil, &res)
+		Expect(res).To(BeNil())
+		Expect(err).NotTo(BeNil())
+	})
+	// update IPV4 fixed address, -ve scenario
+	It("Should fail to update a Fixed address", func() {
+		client := "MAC_ADDRESS"
+		fixedAddress := ibclient.NewFixedAddress("", "", "12.0.0.3", "", "43:56:98:98:32:21", &client, nil, "", false, "", nil, nil, nil, nil, false, nil, false)
+		ref, err := connector.CreateObject(fixedAddress)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("fixedaddress/*"))
+		_, err = connector.UpdateObject(fixedAddress, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	// delete IPV4 Fixed address, -ve scenario
+	It("Should fail to delete a non existent Fixed address", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+
+})
+
+var _ = Describe("SharedNetwork Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create SharedNetwork record", func() {
+		// create a sharedNetwork with maximum parameters
+		ipv4Network1 := ibclient.NewNetwork("default", "22.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network1"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Options:     options,
+			Comment:     utils.StringPtr("sharedNetwork"),
+			Disable:     utils.BoolPtr(false),
+			UseOptions:  utils.BoolPtr(true),
+			Ea:          ibclient.EA{"Site": "Baku"},
+			NetworkView: "default",
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		var ipv4SharedNetwork *ibclient.SharedNetwork
+		err = connector.GetObject(&ibclient.SharedNetwork{}, ref, nil, &ipv4SharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ipv4SharedNetwork).NotTo(BeNil())
+	})
+
+	It("Should fail to create SharedNetwork record", func() {
+
+		// Create a sharedNetwork object without mandatory fields
+		sharedNetwork := ibclient.SharedNetwork{
+			Name: utils.StringPtr("shared-network1"),
+		}
+		_, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Get SharedNetwork record", func() {
+		// Create a sharedNetwork record and compare its fields
+		ipv4Cidr := "23.23.24.0/24"
+		ipv4Network1 := ibclient.NewNetwork("default", ipv4Cidr, false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:     utils.StringPtr("shared-network2"),
+			Networks: []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Ea:       ibclient.EA{"Site": "Baku"},
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		var res *ibclient.SharedNetwork
+		// Get by Ref
+		err = connector.GetObject(&ibclient.SharedNetwork{}, ref, nil, &res)
+		Expect(err).To(BeNil())
+		Expect(res).NotTo(BeNil())
+
+		Expect(*res.Name).To(Equal("shared-network2"))
+		Expect(res.Networks[0].Ref).To(Equal(ipv4NetworkRef1))
+
+		// Get by name
+		var result []ibclient.SharedNetwork
+		qp := ibclient.NewQueryParams(false, map[string]string{"name": "shared-network2"})
+		err = connector.GetObject(&ibclient.SharedNetwork{}, "", qp, &result)
+		Expect(err).To(BeNil())
+		Expect(result).NotTo(BeNil())
+
+		Expect(*result[0].Name).To(Equal("shared-network2"))
+		Expect(result[0].Networks[0].Ref).To(Equal(ipv4NetworkRef1))
+	})
+
+	It("Should fail to Get SharedNetwork record", func() {
+		// should fail to get a non-existent sharedNetwork record
+		var res []ibclient.SharedNetwork
+		sf := map[string]string{"name": "sharedNetwork10"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.SharedNetwork{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should update SharedNetwork record", func() {
+		// Create a sharedNetwork object and update it
+		ipv4Network1 := ibclient.NewNetwork("default", "24.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network3"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Options:     options,
+			Comment:     utils.StringPtr("sharedNetwork"),
+			Disable:     utils.BoolPtr(false),
+			UseOptions:  utils.BoolPtr(true),
+			Ea:          ibclient.EA{"Site": "Baku"},
+			NetworkView: "default",
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		ipv4Network2 := ibclient.NewNetwork("default", "24.24.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef2, err := connector.CreateObject(ipv4Network2)
+		Expect(err).To(BeNil())
+
+		sharedNetworkUpdated := ibclient.SharedNetwork{
+			Name:       utils.StringPtr("shared-network-updated"),
+			Networks:   []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef2}},
+			Comment:    utils.StringPtr("sharedNetwork updated"),
+			UseOptions: utils.BoolPtr(false),
+			Options:    nil,
+		}
+		updatedRef, err := connector.UpdateObject(&sharedNetworkUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(updatedRef).To(MatchRegexp("^sharednetwork.*"))
+
+		Expect(*sharedNetworkUpdated.Name).To(Equal("shared-network-updated"))
+		Expect(sharedNetworkUpdated.Networks[0].Ref).To(Equal(ipv4NetworkRef2))
+		Expect(*sharedNetworkUpdated.Comment).To(Equal("sharedNetwork updated"))
+		Expect(*sharedNetworkUpdated.UseOptions).To(BeFalse())
+		Expect(len(sharedNetworkUpdated.Options)).To(Equal(0))
+	})
+
+	It("Should fail to update SharedNetwork record", func() {
+		// Create a sharedNetwork record and try to update network_view field
+		ipv4Network1 := ibclient.NewNetwork("default", "26.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:  "domain-name-servers",
+				Value: "11.22.3.1",
+			},
+			{
+				Name:  "domain-name",
+				Value: "aa.mm.ee",
+			},
+		}
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network4"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Options:     options,
+			Comment:     utils.StringPtr("sharedNetwork"),
+			Disable:     utils.BoolPtr(false),
+			UseOptions:  utils.BoolPtr(true),
+			Ea:          ibclient.EA{"Site": "Baku"},
+			NetworkView: "default",
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		ipv4Network2 := ibclient.NewNetwork("default", "24.24.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef2, err := connector.CreateObject(ipv4Network2)
+		Expect(err).To(BeNil())
+
+		sharedNetworkUpdated := ibclient.SharedNetwork{
+			Name:        utils.StringPtr("shared-network-updated"),
+			Networks:    []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef2}},
+			Comment:     utils.StringPtr("sharedNetwork updated"),
+			UseOptions:  utils.BoolPtr(false),
+			Options:     nil,
+			NetworkView: "view2",
+		}
+		_, err = connector.UpdateObject(&sharedNetworkUpdated, ref)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Delete SharedNetwork record", func() {
+		// Create a sharedNetwork object and delete it
+		ipv4Network1 := ibclient.NewNetwork("default", "25.23.24.0/24", false, "ipv4 network", nil)
+		ipv4NetworkRef1, err := connector.CreateObject(ipv4Network1)
+		Expect(err).To(BeNil())
+
+		sharedNetwork := ibclient.SharedNetwork{
+			Name:     utils.StringPtr("shared-network4"),
+			Networks: []*ibclient.Ipv4Network{{Ref: ipv4NetworkRef1}},
+			Ea:       ibclient.EA{"Site": "Baku"},
+		}
+		ref, err := connector.CreateObject(&sharedNetwork)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^sharednetwork.*"))
+
+		deleteRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(deleteRef).To(Equal(ref))
+	})
+
+	It("Should fail to Delete SharedNetwork record", func() {
+		// Delete a non-existent sharedNetwork object
+		_, err := connector.DeleteObject("non-existent-sharedNetwork")
+		Expect(err).ToNot(BeNil())
+	})
+
+})
+
+var _ = Describe("Network Range Object", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+		var (
+			networkCidr = "60.0.0.0/24"
+			networkView = "default"
+		)
+		network := ibclient.NewNetwork(networkView, networkCidr, false, "comment string", nil)
+		network.Members = []ibclient.NetworkMember{
+			{
+				DhcpMember: &ibclient.Dhcpmember{Name: "infoblox.localdomain"},
+			},
+		}
+		_, err = connector.CreateObject(network)
+		Expect(err).To(BeNil())
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("should create a Network Range with minimal parameters", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+	})
+	It("should create a Network Range with maximal parameters", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "60.0.0.34",
+				UseOption:   true,
+			},
+		}
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.31"),
+			EndAddr:   utils.StringPtr("60.0.0.35"),
+			Comment:   utils.StringPtr("new comment"),
+			Member: &ibclient.Dhcpmember{
+				Name: "infoblox.localdomain",
+			},
+			ServerAssociationType: "MEMBER",
+			Network:               utils.StringPtr("60.0.0.0/24"),
+			NetworkView:           utils.StringPtr("default"),
+			Disable:               utils.BoolPtr(true),
+			Ea: ibclient.EA{
+				"Site": "India",
+			},
+			Options:    options,
+			UseOptions: utils.BoolPtr(true),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+	})
+	It("should get the Network Range object", func() {
+		options := []*ibclient.Dhcpoption{
+			{
+				Name:        "routers",
+				Num:         3,
+				VendorClass: "DHCP",
+				Value:       "60.0.0.34",
+				UseOption:   true,
+			},
+		}
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.31"),
+			EndAddr:   utils.StringPtr("60.0.0.35"),
+			Comment:   utils.StringPtr("new comment"),
+			Name:      utils.StringPtr("range 1"),
+			Member: &ibclient.Dhcpmember{
+				Name: "infoblox.localdomain",
+			},
+			ServerAssociationType: "MEMBER",
+			Network:               utils.StringPtr("60.0.0.0/24"),
+			NetworkView:           utils.StringPtr("default"),
+			Disable:               utils.BoolPtr(true),
+			Ea: ibclient.EA{
+				"Site": "India",
+			},
+			Options:    options,
+			UseOptions: utils.BoolPtr(true),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+		var res ibclient.Range
+		search := &ibclient.Range{}
+		search.SetReturnFields(append(search.ReturnFields(), "member", "options", "disable", "server_association_type", "name", "extattrs", "use_options"))
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Name).To(Equal(utils.StringPtr("range 1")))
+		Expect(res.Member.Name).To(Equal("infoblox.localdomain"))
+		Expect(res.Disable).To(Equal(utils.BoolPtr(true)))
+		Expect(res.ServerAssociationType).To(Equal("MEMBER"))
+		Expect(res.Ea["Site"]).To(Equal("India"))
+		Expect(res.Options[0].Name).To(Equal("dhcp-lease-time"))
+		Expect(res.Options[0].Num).To(Equal(uint32(51)))
+		Expect(res.Options[0].Value).To(Equal("43200"))
+		Expect(res.Options[0].UseOption).To(Equal(false))
+		Expect(res.Options[0].VendorClass).To(Equal("DHCP"))
+		Expect(res.Options[1].Name).To(Equal("routers"))
+		Expect(res.Options[1].Num).To(Equal(uint32(3)))
+		Expect(res.Options[1].Value).To(Equal("60.0.0.34"))
+		Expect(res.Options[1].UseOption).To(Equal(true))
+		Expect(res.Options[1].VendorClass).To(Equal("DHCP"))
+		Expect(res.UseOptions).To(Equal(utils.BoolPtr(true)))
+		Expect(res.Ref).To(MatchRegexp("range/*"))
+		Expect(res.Comment).To(Equal(utils.StringPtr("new comment")))
+	})
+	It("should delete the network range ", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+
+		var res []ibclient.Range
+		search := &ibclient.Range{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.DeleteObject(res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+	})
+	It("Should fail to update a range with wrong reference", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+		_, err = connector.UpdateObject(&networkRange, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to update a range", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+			EndAddr:   utils.StringPtr("60.0.0.20"),
+		}
+		ref, err := connector.CreateObject(&networkRange)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("range/*"))
+		networkRangeUpdate := ibclient.Range{
+			NetworkView: utils.StringPtr("network_view"),
+		}
+		var res []ibclient.Range
+		search := &ibclient.Range{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.UpdateObject(&networkRangeUpdate, res[0].Ref)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to create a range object", func() {
+		networkRange := ibclient.Range{
+			StartAddr: utils.StringPtr("60.0.0.10"),
+		}
+		_, err := connector.CreateObject(&networkRange)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to get a non-existent range", func() {
+		var res []ibclient.Range
+		sf := map[string]string{"name": "range"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.Range{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to delete a non-existent range", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+})
+
+var _ = Describe("SVCB Record", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		zone := &ibclient.ZoneAuth{
+			View: utils.StringPtr("default"),
+			Fqdn: "test.com",
+		}
+		ref, err := connector.CreateObject(zone)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("zone_auth.*test.com/default"))
+
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+
+	It("Should create SVCB record", func() {
+		// create a SVCB Record with maximum parameters
+		recordSVCB := ibclient.RecordSVCB{
+			Name:              "svcb-record-1.test.com",
+			Comment:           "SVCB record",
+			Creator:           "STATIC",
+			Disable:           false,
+			Ea:                map[string]interface{}{"Site": "Baku"},
+			Priority:          100,
+			Reclaimable:       false,
+			TargetName:        "test123.com",
+			Ttl:               300,
+			UseTtl:            false,
+			ForbidReclamation: true,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"443"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		var svcbRecord *ibclient.RecordSVCB
+		err = connector.GetObject(&ibclient.RecordSVCB{}, ref, nil, &svcbRecord)
+		Expect(err).To(BeNil())
+		Expect(svcbRecord).NotTo(BeNil())
+	})
+
+	It("Should fail to create SVCB record", func() {
+
+		// Create a SVCB Record without mandatory fields
+		recordSvcb := ibclient.RecordSVCB{
+			Name: "svcb-record-2.test.com",
+		}
+		_, err := connector.CreateObject(&recordSvcb)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Get SVCB record", func() {
+		// Create a SVCB record and compare its fields
+		recordSVCB := ibclient.RecordSVCB{
+			Name:              "svcb-record-11.test.com",
+			Comment:           "SVCB record",
+			Creator:           "STATIC",
+			Disable:           false,
+			Ea:                map[string]interface{}{"Site": "Baku"},
+			Priority:          300,
+			Reclaimable:       false,
+			TargetName:        "test1234.com",
+			Ttl:               400,
+			UseTtl:            false,
+			ForbidReclamation: false,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"443"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		var res *ibclient.RecordSVCB
+		// Get by Ref
+		err = connector.GetObject(&ibclient.RecordSVCB{}, ref, nil, &res)
+		Expect(err).To(BeNil())
+		Expect(res).NotTo(BeNil())
+
+		Expect(res.Name).To(Equal("svcb-record-11.test.com"))
+		Expect(res.TargetName).To(Equal("test1234.com"))
+		Expect(res.Priority).To(Equal(uint32(300)))
+
+		// Get by name
+		var result []ibclient.RecordSVCB
+		qp := ibclient.NewQueryParams(false, map[string]string{"name": "svcb-record-11.test.com"})
+		err = connector.GetObject(&ibclient.RecordSVCB{}, "", qp, &result)
+		Expect(err).To(BeNil())
+		Expect(result).NotTo(BeNil())
+
+		Expect(result[0].Name).To(Equal("svcb-record-11.test.com"))
+		Expect(res.TargetName).To(Equal("test1234.com"))
+		Expect(res.Priority).To(Equal(uint32(300)))
+	})
+
+	It("Should fail to Get Record SVCB record", func() {
+		// should fail to get a non-existent SVCB record
+		var res []ibclient.RecordSVCB
+		sf := map[string]string{"name": "record-svcb-1234"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordSVCB{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+
+	It("Should update SVCB Reecord", func() {
+		// Create a SVCB Record and update it
+		recordSVCB := ibclient.RecordSVCB{
+			Name:        "svcb-record-1122.test.com",
+			Comment:     "SVCB record",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Baku"},
+			Priority:    300,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         400,
+			UseTtl:      false,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"443"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		recordSvcbUpdated := ibclient.RecordSVCB{
+			Name:        "svcb-record-1144.test.com",
+			Comment:     "SVCB record updated",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Osaka"},
+			Priority:    500,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         800,
+			UseTtl:      true,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"500"},
+					SvcKey:   "port",
+				},
+			},
+		}
+		updatedRef, err := connector.UpdateObject(&recordSvcbUpdated, ref)
+		Expect(err).To(BeNil())
+		Expect(updatedRef).To(MatchRegexp("^record:svcb.*"))
+
+		Expect(recordSvcbUpdated.Name).To(Equal("svcb-record-1144.test.com"))
+		Expect(recordSvcbUpdated.Comment).To(Equal("SVCB record updated"))
+		Expect(recordSvcbUpdated.Priority).To(Equal(uint32(500)))
+		Expect(recordSvcbUpdated.TargetName).To(Equal("test1234.com"))
+		Expect(recordSvcbUpdated.Ttl).To(Equal(uint32(800)))
+		Expect(recordSvcbUpdated.UseTtl).To(BeTrue())
+		Expect(recordSvcbUpdated.Ea["Site"]).To(Equal("Osaka"))
+		Expect(len(recordSvcbUpdated.SvcParameters)).To(Equal(1))
+		Expect(recordSvcbUpdated.SvcParameters[0].SvcKey).To(Equal("port"))
+		Expect(recordSvcbUpdated.SvcParameters[0].SvcValue[0]).To(Equal("500"))
+		Expect(recordSvcbUpdated.SvcParameters[0].Mandatory).To(BeFalse())
+		Expect(recordSvcbUpdated.Reclaimable).To(BeFalse())
+	})
+
+	It("Should fail to update SVCB Record", func() {
+		// Create a SVCB Record and try to update view field
+		recordSvcb := ibclient.RecordSVCB{
+			Name:        "svcb-record-1143.test.com",
+			Comment:     "SVCB record updated",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Osaka"},
+			Priority:    500,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         800,
+			UseTtl:      true,
+			SvcParameters: []ibclient.SVCParams{
+				{Mandatory: false,
+					SvcValue: []string{"500"},
+					SvcKey:   "port",
+				},
+			},
+			View: "default",
+		}
+		ref, err := connector.CreateObject(&recordSvcb)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		recordSvcbUpdated := ibclient.RecordSVCB{
+			Name:        "svcb-record-1144.test.com",
+			Comment:     "SVCB record updated",
+			Creator:     "STATIC",
+			Disable:     false,
+			Ea:          map[string]interface{}{"Site": "Osaka"},
+			Priority:    500,
+			Reclaimable: false,
+			TargetName:  "test1234.com",
+			Ttl:         800,
+			UseTtl:      true,
+			SvcParameters: []ibclient.SVCParams{
+				{
+					Mandatory: false,
+					SvcValue:  []string{"500"},
+					SvcKey:    "port",
+				},
+			},
+			View: "custom",
+		}
+		_, err = connector.UpdateObject(&recordSvcbUpdated, ref)
+		Expect(err).ToNot(BeNil())
+	})
+
+	It("Should Delete SVCB Record", func() {
+		// Create a SVCB Record and delete it
+		recordSVCB := ibclient.RecordSVCB{
+			Name:       "svcb-record-1111.test.com",
+			Priority:   300,
+			TargetName: "test1234.com",
+		}
+		ref, err := connector.CreateObject(&recordSVCB)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("^record:svcb.*"))
+
+		deleteRef, err := connector.DeleteObject(ref)
+		Expect(err).To(BeNil())
+		Expect(deleteRef).To(Equal(ref))
+	})
+
+	It("Should fail to Delete SVCB Record", func() {
+		// Delete a non-existent SVCB Record
+		_, err := connector.DeleteObject("non-existent-record-svcb")
+		Expect(err).ToNot(BeNil())
+	})
+
+})
+
+var _ = Describe("HTTPS Record Object", func() {
+	var connector *ConnectorFacadeE2E
+
+	BeforeEach(func() {
+		hostConfig := ibclient.HostConfig{
+			Host:    os.Getenv("INFOBLOX_SERVER"),
+			Version: os.Getenv("WAPI_VERSION"),
+			Port:    os.Getenv("PORT"),
+		}
+
+		authConfig := ibclient.AuthConfig{
+			Username: os.Getenv("INFOBLOX_USERNAME"),
+			Password: os.Getenv("INFOBLOX_PASSWORD"),
+		}
+
+		transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+		requestBuilder := &ibclient.WapiRequestBuilder{}
+		requestor := &ibclient.WapiHttpRequestor{}
+		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
+		Expect(err).To(BeNil())
+		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+		zones := ibclient.ZoneAuth{
+			Fqdn: "testing-https.com",
+		}
+		zoneRef, err := connector.CreateObject(&zones)
+		Expect(err).To(BeNil())
+		zones.Ref = zoneRef
+	})
+
+	AfterEach(func() {
+		err := connector.SweepObjects()
+		Expect(err).To(BeNil())
+	})
+	It("should create a Https record  with minimal parameters", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+	})
+	It("should create a Https record with maximal parameters", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a2.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+			Comment:    "test comment",
+			Disable:    false,
+			View:       "default",
+			UseTtl:     true,
+			Ttl:        60,
+			SvcParameters: []ibclient.SVCParams{
+				{
+					SvcKey: "port",
+					SvcValue: []string{
+						"233"},
+					Mandatory: false,
+				},
+			},
+			Ea:                ibclient.EA{"Site": "Bangalore"},
+			ForbidReclamation: false,
+			Creator:           "SYSTEM",
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+	})
+	It("should GET https record ", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a2.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+			Comment:    "test comment",
+			Disable:    false,
+			View:       "default",
+			UseTtl:     true,
+			Ttl:        60,
+			SvcParameters: []ibclient.SVCParams{
+				{
+					SvcKey: "port",
+					SvcValue: []string{
+						"233"},
+					Mandatory: false,
+				},
+			},
+			Ea:                ibclient.EA{"Site": "Bangalore"},
+			ForbidReclamation: false,
+			Creator:           "SYSTEM",
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+		var res ibclient.RecordHttps
+		search := &ibclient.RecordHttps{}
+		search.SetReturnFields([]string{"name","comment","disable", "view", "use_ttl", "ttl", "svc_parameters", "extattrs", "forbid_reclamation", "creator","target_name","priority"})
+		errCode := connector.GetObject(search, ref, nil, &res)
+		Expect(errCode).To(BeNil())
+		Expect(res.Name).To(Equal("a2.testing-https.com"))
+		Expect(res.TargetName).To(Equal("testing-https.com"))
+		Expect(res.Priority).To(Equal(uint32(30)))
+		Expect(res.Comment).To(Equal("test comment"))
+		Expect(res.Disable).To(Equal(false))
+		Expect(res.View).To(Equal("default"))
+		Expect(res.UseTtl).To(Equal(true))
+		Expect(res.Ttl).To(Equal(uint32(60)))
+		Expect(res.SvcParameters[0].SvcKey).To(Equal("port"))
+		Expect(res.SvcParameters[0].SvcValue[0]).To(Equal("233"))
+		Expect(res.SvcParameters[0].Mandatory).To(Equal(false))
+		Expect(res.Ea["Site"]).To(Equal("Bangalore"))
+		Expect(res.ForbidReclamation).To(Equal(false))
+		Expect(res.Creator).To(Equal("SYSTEM"))
+		Expect(res.Ref).To(MatchRegexp("record:https/*"))
+	})
+	It("should delete the HTTPS Record ", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+
+		var res []ibclient.RecordHttps
+		search := &ibclient.RecordHttps{}
+		err = connector.GetObject(search, "", nil, &res)
+		ref, err = connector.DeleteObject(res[0].Ref)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+	})
+	It("Should fail to update a HTTPS Record with wrong reference", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+		_, err = connector.UpdateObject(&httpsRecord, "nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to create a https object", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a1.testing-https.com",
+			TargetName: "testing-https.com",
+		}
+		_, err := connector.CreateObject(&httpsRecord)
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to get a non-existent https record", func() {
+		var res []ibclient.RecordHttps
+		sf := map[string]string{"name": "range"}
+		qp := ibclient.NewQueryParams(false, sf)
+		err := connector.GetObject(&ibclient.RecordHttps{}, "", qp, &res)
+		Expect(res).To(BeEmpty())
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should fail to delete a non-existent range", func() {
+		_, err := connector.DeleteObject("nonexistent_ref")
+		Expect(err).NotTo(BeNil())
+	})
+	It("Should update Https record", func() {
+		httpsRecord := ibclient.RecordHttps{
+			Name:       "a2.testing-https.com",
+			TargetName: "testing-https.com",
+			Priority:   30,
+			Comment:    "test comment",
+			Disable:    false,
+			View:       "default",
+			UseTtl:     true,
+			Ttl:        60,
+			SvcParameters: []ibclient.SVCParams{
+				{
+					SvcKey: "port",
+					SvcValue: []string{
+						"233"},
+					Mandatory: false,
+				},
+			},
+			Ea:                ibclient.EA{"Site": "Bangalore"},
+			ForbidReclamation: false,
+			Creator:           "SYSTEM",
+		}
+		ref, err := connector.CreateObject(&httpsRecord)
+		Expect(err).To(BeNil())
+		Expect(ref).To(MatchRegexp("record:https/*"))
+
+		httpsRecord1 := ibclient.RecordHttps{
+			Name:              "a3.testing-https.com",
+			TargetName:        "testing-https.com",
+			Priority:          30,
+			Comment:           "test comment",
+			Disable:          false,
+			UseTtl:            true,
+			Ttl:               60,
+			SvcParameters:     []ibclient.SVCParams{},
+			Ea:                ibclient.EA{"Site": "India"},
+			ForbidReclamation: false,
+			Creator:           "SYSTEM",
+		}
+		updatedRef, err := connector.UpdateObject(&httpsRecord1, ref)
+		httpsRecord1.Ref = updatedRef
+		Expect(err).To(BeNil())
+		Expect(updatedRef).To(MatchRegexp("record:https/*"))
+		Expect(httpsRecord1.Name).To(Equal("a3.testing-https.com"))
+		Expect(httpsRecord1.TargetName).To(Equal("testing-https.com"))
+		Expect(httpsRecord1.Priority).To(Equal(uint32(30)))
+		Expect(httpsRecord1.Comment).To(Equal("test comment"))
+		Expect(httpsRecord1.Disable).To(Equal(false))
+		Expect(httpsRecord1.UseTtl).To(Equal(true))
+		Expect(httpsRecord1.Ttl).To(Equal(uint32(60)))
+		Expect(httpsRecord1.Ea["Site"]).To(Equal("India"))
+		Expect(httpsRecord1.ForbidReclamation).To(Equal(false))
+		Expect(httpsRecord1.Creator).To(Equal("SYSTEM"))
+		Expect(httpsRecord1.Ref).To(MatchRegexp("record:https/*"))
 	})
 })

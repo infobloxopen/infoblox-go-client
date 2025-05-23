@@ -3,9 +3,9 @@ package ibclient
 import (
 	"errors"
 	"fmt"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"reflect"
 )
 
 type fakeConnector struct {
@@ -43,88 +43,192 @@ func (c *fakeConnector) CreateObject(obj IBObject) (string, error) {
 	return c.fakeRefReturn, c.createObjectError
 }
 
-func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res interface{}) (err error) {
-	Expect(obj).To(Equal(c.getObjectObj))
-	Expect(qp).To(Equal(c.getObjectQueryParams))
-	Expect(ref).To(Equal(c.getObjectRef))
+// when an object has internal GET calls to fetch references of dependent objects, mock data of testcases are set as map[string]interface{}
+// where key is the object type and value is the object data.
+// In the below example, Dtc:Lbdn object is dependent on Dtc:pool, Dtc:topology and Zone_auth objects where in CreateDtcLbdn() and UpdateDtcLdbn() functions only the name of zoneAuth, pools and topology is given,
+// the references for all these 3 objects are fetched inside these functions. So the mock data for getObjectObj, resultObject and getObjectQueryParams are given as maps in fakeConnector. Example:
+/*
+Describe("Create Dtc Lbdn with maximum parameters", func() {
+	conn := &fakeConnector{
+		// 3 GET calls are made to fetch the references for DtcPool, DtcTopology and ZoneAuth objects, hence the below mock data is set as map of 3 keys, with object type as key and empty object as value
+		getObjectObj: map[string]interface{}{
+			"DtcPool":     &DtcPool{},
+			"DtcTopology": &DtcTopology{},
+			"ZoneAuth":    &ZoneAuth{},
+		},
+		// the query params for the GET calls are set as map with object type as key and object name as value
+		getObjectQueryParams: map[string]*QueryParams{
+			"DtcPool":     NewQueryParams(false, map[string]string{"name": "test-pool"}),
+			"DtcTopology": NewQueryParams(false, map[string]string{"name": "test-topo"}),
+			"ZoneAuth":    NewQueryParams(false, map[string]string{"fqdn": "test-zone"}),
+		},
+		// the result object is set as map with object type as key and object data as value, DtcPool, DctTopology and ZoneAuth objects are returned for the internal GET calls
+		// and DtcLbdn object is returned for the CreateObject call
+		resultObject: map[string]interface{}{
+			"DtcPool": []DtcPool{{
+				Ref:  poolRef,
+				Name: utils.StringPtr("test-pool"),
+			}},
+			"DtcTopology": []DtcTopology{{
+				Ref:  topologyRef,
+				Name: utils.StringPtr("test-topo"),
+			}},
+			"DtcLbdn": NewDtcLbdn(fakeRefReturn, name, zoneAuth, comment, disable, autoConsolidatedMonitors, nil, lbMethod, patterns, persistence, createObjPools, priority, topologyRef, types, ttl, useTtl),
+			"ZoneAuth": []ZoneAuth{{
+				Ref:  zoneRef,
+				Fqdn: zone,
+			}},
+		},
+	}
+})
+*/
 
-	if ref == "" {
+func (c *fakeConnector) GetObject(obj IBObject, ref string, qp *QueryParams, res interface{}) (err error) {
+
+	if reflect.TypeOf(c.getObjectObj).Kind() == reflect.Map { //&& c.skipInternalGetcalls {
 		switch obj.(type) {
-		case *NetworkView:
-			*res.(*[]NetworkView) = c.resultObject.([]NetworkView)
-		case *NetworkContainer:
-			*res.(*[]NetworkContainer) = c.resultObject.([]NetworkContainer)
-		case *Network:
-			*res.(*[]Network) = c.resultObject.([]Network)
-		case *FixedAddress:
-			*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
-		case *EADefinition:
-			*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
-		case *CapacityReport:
-			*res.(*[]CapacityReport) = c.resultObject.([]CapacityReport)
-		case *UpgradeStatus:
-			*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
-		case *Member:
-			*res.(*[]Member) = c.resultObject.([]Member)
-		case *Grid:
-			*res.(*[]Grid) = c.resultObject.([]Grid)
-		case *License:
-			*res.(*[]License) = c.resultObject.([]License)
-		case *HostRecord:
-			*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
-		case *RecordAAAA:
-			*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
-		case *RecordPTR:
-			*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
-		case *RecordSRV:
-			*res.(*[]RecordSRV) = c.resultObject.([]RecordSRV)
-		case *RecordTXT:
-			*res.(*[]RecordTXT) = c.resultObject.([]RecordTXT)
-		case *ZoneDelegated:
-			*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
-		case *RecordCNAME:
-			*res.(*[]RecordCNAME) = c.resultObject.([]RecordCNAME)
-		case *RecordA:
-			*res.(*[]RecordA) = c.resultObject.([]RecordA)
-		case *RecordMX:
-			*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
-		case *ZoneForward:
-			*res.(*[]ZoneForward) = c.resultObject.([]ZoneForward)
+		case *DtcPool:
+			if ref == "" {
+				*res.(*[]DtcPool) = c.resultObject.(map[string]interface{})["DtcPool"].([]DtcPool)
+			} else {
+				**res.(**DtcPool) = *c.resultObject.(map[string]interface{})["DtcPool"].(*DtcPool)
+			}
+		case *DtcTopology:
+			*res.(*[]DtcTopology) = c.resultObject.(map[string]interface{})["DtcTopology"].([]DtcTopology)
+		case *ZoneAuth:
+			*res.(*[]ZoneAuth) = c.resultObject.(map[string]interface{})["ZoneAuth"].([]ZoneAuth)
+		case *DtcServer:
+			*res.(*[]DtcServer) = c.resultObject.(map[string]interface{})["DtcServer"].([]DtcServer)
+		case *DtcMonitorHttp:
+			*res.(*[]DtcMonitorHttp) = c.resultObject.(map[string]interface{})["DtcMonitor"].([]DtcMonitorHttp)
+		case *DtcLbdn:
+			**res.(**DtcLbdn) = *c.resultObject.(map[string]interface{})["DtcLbdn"].(*DtcLbdn)
+		default:
+			return fmt.Errorf("unsupported object type")
 		}
 	} else {
-		switch obj.(type) {
-		case *ZoneAuth:
-			*res.(*ZoneAuth) = *c.resultObject.(*ZoneAuth)
-		case *NetworkView:
-			*res.(*NetworkView) = *c.resultObject.(*NetworkView)
-		case *NetworkContainer:
-			*res.(*NetworkContainer) = *c.resultObject.(*NetworkContainer)
-		case *Network:
-			*res.(*Network) = *c.resultObject.(*Network)
-		case *FixedAddress:
-			**res.(**FixedAddress) = *c.resultObject.(*FixedAddress)
-		case *HostRecord:
-			**res.(**HostRecord) = *c.resultObject.(*HostRecord)
-		case *RecordPTR:
-			**res.(**RecordPTR) = *c.resultObject.(*RecordPTR)
-		case *RecordSRV:
-			**res.(**RecordSRV) = *c.resultObject.(*RecordSRV)
-		case *RecordTXT:
-			**res.(**RecordTXT) = *c.resultObject.(*RecordTXT)
-		case *RecordCNAME:
-			**res.(**RecordCNAME) = *c.resultObject.(*RecordCNAME)
-		case *RecordA:
-			**res.(**RecordA) = *c.resultObject.(*RecordA)
-		case *RecordAAAA:
-			**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
-		case *RecordMX:
-			**res.(**RecordMX) = *c.resultObject.(*RecordMX)
-		case *Dns:
-			*res.(*[]Dns) = c.resultObject.([]Dns)
-		case *Dhcp:
-			*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
-		case *ZoneForward:
-			*res.(**ZoneForward) = c.resultObject.(*ZoneForward)
+		Expect(obj).To(Equal(c.getObjectObj))
+		Expect(qp).To(Equal(c.getObjectQueryParams))
+		Expect(ref).To(Equal(c.getObjectRef))
+
+		if ref == "" {
+			switch obj.(type) {
+			case *NetworkView:
+				*res.(*[]NetworkView) = c.resultObject.([]NetworkView)
+			case *NetworkContainer:
+				*res.(*[]NetworkContainer) = c.resultObject.([]NetworkContainer)
+			case *Network:
+				*res.(*[]Network) = c.resultObject.([]Network)
+			case *FixedAddress:
+				*res.(*[]FixedAddress) = c.resultObject.([]FixedAddress)
+			case *EADefinition:
+				*res.(*[]EADefinition) = c.resultObject.([]EADefinition)
+			case *CapacityReport:
+				*res.(*[]CapacityReport) = c.resultObject.([]CapacityReport)
+			case *UpgradeStatus:
+				*res.(*[]UpgradeStatus) = c.resultObject.([]UpgradeStatus)
+			case *Member:
+				*res.(*[]Member) = c.resultObject.([]Member)
+			case *Grid:
+				*res.(*[]Grid) = c.resultObject.([]Grid)
+			case *License:
+				*res.(*[]License) = c.resultObject.([]License)
+			case *HostRecord:
+				*res.(*[]HostRecord) = c.resultObject.([]HostRecord)
+			case *RecordAAAA:
+				*res.(*[]RecordAAAA) = c.resultObject.([]RecordAAAA)
+			case *RecordPTR:
+				*res.(*[]RecordPTR) = c.resultObject.([]RecordPTR)
+			case *RecordSRV:
+				*res.(*[]RecordSRV) = c.resultObject.([]RecordSRV)
+			case *RecordTXT:
+				*res.(*[]RecordTXT) = c.resultObject.([]RecordTXT)
+			case *ZoneDelegated:
+				*res.(*[]ZoneDelegated) = c.resultObject.([]ZoneDelegated)
+			case *RecordCNAME:
+				*res.(*[]RecordCNAME) = c.resultObject.([]RecordCNAME)
+			case *RecordA:
+				*res.(*[]RecordA) = c.resultObject.([]RecordA)
+			case *RecordMX:
+				*res.(*[]RecordMX) = c.resultObject.([]RecordMX)
+			case *ZoneForward:
+				*res.(*[]ZoneForward) = c.resultObject.([]ZoneForward)
+			case *DtcLbdn:
+				*res.(*[]DtcLbdn) = c.resultObject.([]DtcLbdn)
+			case *DtcPool:
+				*res.(*[]DtcPool) = c.resultObject.([]DtcPool)
+			case *DtcTopology:
+				*res.(*[]DtcTopology) = c.resultObject.([]DtcTopology)
+			case *DtcServer:
+				*res.(*[]DtcServer) = c.resultObject.([]DtcServer)
+			case *Range:
+				*res.(*[]Range) = c.resultObject.([]Range)
+			case *SharedNetwork:
+				*res.(*[]SharedNetwork) = c.resultObject.([]SharedNetwork)
+			case *RecordNS:
+				*res.(*[]RecordNS) = c.resultObject.([]RecordNS)
+			case *RecordAlias:
+				*res.(*[]RecordAlias) = c.resultObject.([]RecordAlias)
+			case *Rangetemplate:
+				*res.(*[]Rangetemplate) = c.resultObject.([]Rangetemplate)
+			case *RecordSVCB:
+				*res.(*[]RecordSVCB) = c.resultObject.([]RecordSVCB)
+			case *RecordHttps:
+				*res.(*[]RecordHttps) = c.resultObject.([]RecordHttps)
+			}
+		} else {
+			switch obj.(type) {
+			case *ZoneAuth:
+				*res.(*ZoneAuth) = *c.resultObject.(*ZoneAuth)
+			case *NetworkView:
+				*res.(*NetworkView) = *c.resultObject.(*NetworkView)
+			case *NetworkContainer:
+				*res.(*NetworkContainer) = *c.resultObject.(*NetworkContainer)
+			case *Network:
+				*res.(*Network) = *c.resultObject.(*Network)
+			case *FixedAddress:
+				**res.(**FixedAddress) = *c.resultObject.(*FixedAddress)
+			case *HostRecord:
+				**res.(**HostRecord) = *c.resultObject.(*HostRecord)
+			case *RecordPTR:
+				**res.(**RecordPTR) = *c.resultObject.(*RecordPTR)
+			case *RecordSRV:
+				**res.(**RecordSRV) = *c.resultObject.(*RecordSRV)
+			case *RecordTXT:
+				**res.(**RecordTXT) = *c.resultObject.(*RecordTXT)
+			case *RecordCNAME:
+				**res.(**RecordCNAME) = *c.resultObject.(*RecordCNAME)
+			case *RecordA:
+				**res.(**RecordA) = *c.resultObject.(*RecordA)
+			case *RecordAAAA:
+				**res.(**RecordAAAA) = *c.resultObject.(*RecordAAAA)
+			case *RecordMX:
+				**res.(**RecordMX) = *c.resultObject.(*RecordMX)
+			case *Dns:
+				*res.(*[]Dns) = c.resultObject.([]Dns)
+			case *Dhcp:
+				*res.(*[]Dhcp) = c.resultObject.([]Dhcp)
+			case *ZoneForward:
+				*res.(**ZoneForward) = c.resultObject.(*ZoneForward)
+			case *ZoneDelegated:
+				*res.(**ZoneDelegated) = c.resultObject.(*ZoneDelegated)
+			case *DtcLbdn:
+				**res.(**DtcLbdn) = *c.resultObject.(*DtcLbdn)
+			case *DtcPool:
+				*res.(*DtcPool) = *c.resultObject.(*DtcPool)
+			case *DtcTopology:
+				*res.(*DtcTopology) = *c.resultObject.(*DtcTopology)
+			case *Range:
+				*res.(**Range) = c.resultObject.(*Range)
+			case *RecordNS:
+				**res.(**RecordNS) = *c.resultObject.(*RecordNS)
+			case *Rangetemplate:
+				**res.(**Rangetemplate) = *c.resultObject.(*Rangetemplate)
+			case *RecordSVCB:
+				**res.(**RecordSVCB) = *c.resultObject.(*RecordSVCB)
+			case *RecordHttps:
+				**res.(**RecordHttps) = *c.resultObject.(*RecordHttps)
+			}
 		}
 	}
 
@@ -454,14 +558,25 @@ var _ = Describe("Object Manager", func() {
 		cmpType := "Docker"
 		tenantID := "01234567890abcdef01234567890abcdef"
 		fqdn := "dzone.example.com"
-		delegateTo := []NameServer{
+		delegateTo := NullableNameServers{IsNull: false, NameServers: []NameServer{
 			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
-			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
-		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
+			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}}
+		comment := "test comment"
+		disable := false
+		var ea EA
+		locked := false
+		var delegatedTtl uint32
+		useDelegatedTtl := false
+		zoneFormat := "FORWARD"
+		view := "default"
+		fakeRefReturn := "zone_delegated/LmdzbGJpYmNsaWVudA:dzone.example.com/default"
 		zdFakeConnector := &fakeConnector{
-			createObjectObj: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo}),
-			resultObject:    NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn}),
-			fakeRefReturn:   fakeRefReturn,
+			createObjectObj: NewZoneDelegated(
+				ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Comment: &comment, Disable: &disable, Ea: ea, Locked: &locked,
+					DelegatedTtl: &delegatedTtl, UseDelegatedTtl: &useDelegatedTtl, ZoneFormat: zoneFormat, View: &view}),
+			resultObject: NewZoneDelegated(ZoneDelegated{Fqdn: fqdn, DelegateTo: delegateTo, Ref: fakeRefReturn, Comment: &comment,
+				Disable: &disable, Ea: ea, Locked: &locked, DelegatedTtl: &delegatedTtl, UseDelegatedTtl: &useDelegatedTtl, ZoneFormat: zoneFormat, View: &view}),
+			fakeRefReturn: fakeRefReturn,
 		}
 
 		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
@@ -469,7 +584,7 @@ var _ = Describe("Object Manager", func() {
 		var actualZoneDelegated *ZoneDelegated
 		var err error
 		It("should pass expected ZoneDelegated Object to CreateObject", func() {
-			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegateTo)
+			actualZoneDelegated, err = objMgr.CreateZoneDelegated(fqdn, delegateTo, "test comment", false, false, "", 0, false, nil, "", "")
 		})
 		It("should return expected ZoneDelegated Object", func() {
 			Expect(actualZoneDelegated).To(Equal(zdFakeConnector.resultObject))
@@ -478,32 +593,104 @@ var _ = Describe("Object Manager", func() {
 	})
 
 	Describe("Update Zone Delegated", func() {
-		cmpType := "Docker"
-		tenantID := "01234567890abcdef01234567890abcdef"
-		fakeRefReturn := "zone_delegated/ZG5zLnpvbmUkLl9kZWZhdWx0LnphLmNvLmFic2EuY2Fhcy5vaG15Z2xiLmdzbGJpYmNsaWVudA:dzone.example.com/default"
-		delegateTo := []NameServer{
-			{Address: "10.0.0.1", Name: "test1.dzone.example.com"},
-			{Address: "10.0.0.2", Name: "test2.dzone.example.com"}}
+		var (
+			err          error
+			objMgr       IBObjectManager
+			conn         *fakeConnector
+			ref          string
+			actualRecord *ZoneDelegated
+		)
 
-		receiveUpdateObject := NewZoneDelegated(ZoneDelegated{Ref: fakeRefReturn, DelegateTo: delegateTo})
-		returnUpdateObject := NewZoneDelegated(ZoneDelegated{DelegateTo: delegateTo, Ref: fakeRefReturn})
-		zdFakeConnector := &fakeConnector{
-			fakeRefReturn:   fakeRefReturn,
-			resultObject:    returnUpdateObject,
-			updateObjectObj: receiveUpdateObject,
-			updateObjectRef: fakeRefReturn,
-		}
+		BeforeEach(func() {
+			cmpType := "Docker"
+			tenantID := "01234567890abcdef01234567890abcdef"
 
-		objMgr := NewObjectManager(zdFakeConnector, cmpType, tenantID)
+			ref = "zone_delegated/LmdzbGJpYmNsaWVudA:dzone.example.com/default"
+			fqdn := "dzone.example.com"
+			delegateTo := NullableNameServers{IsNull: false, NameServers: []NameServer{{Address: "20.20.0.1", Name: "aa.bb.com"}}}
+			comment := "test comment"
+			nsGroup := "testgroup"
+			disable := false
+			locked := false
+			delegatedTtl := uint32(1800)
+			useDelegatedTtl := true
+			eas := EA{"Country": "test"}
+			view := "default"
+			zoneFormat := "FORWARD"
 
-		var updatedObject *ZoneDelegated
-		var err error
-		It("should pass expected updated object to UpdateObject", func() {
-			updatedObject, err = objMgr.UpdateZoneDelegated(fakeRefReturn, delegateTo)
-		})
-		It("should update zone with new delegation server list with no error", func() {
-			Expect(updatedObject).To(Equal(returnUpdateObject))
-			Expect(err).To(BeNil())
+			newEas := EA{"Country": "new value"}
+			updatedRef := "zone_delegated/ZG5zLmhvc3RjkugC4xLg:dzone.example.com/default"
+			newTtl := uint32(300)
+
+			It("updating Ttl, Extra attributes", func() {
+
+				initObject := NewZoneDelegated(ZoneDelegated{
+					Fqdn:            fqdn,
+					DelegateTo:      delegateTo,
+					Comment:         &comment,
+					Disable:         &disable,
+					Locked:          &locked,
+					NsGroup:         &nsGroup,
+					DelegatedTtl:    &delegatedTtl,
+					UseDelegatedTtl: &useDelegatedTtl,
+					Ea:              eas,
+					View:            &view,
+					ZoneFormat:      zoneFormat,
+				})
+				//initObject, _ := objMgr.CreateZoneDelegated(fqdn, delegateTo, comment, disable, locked, nsGroup, delegatedTtl, useDelegatedTtl, eas, view, zoneFormat)
+				initObject.Ref = ref
+
+				updatedObjIn := NewZoneDelegated(ZoneDelegated{
+					Fqdn:            fqdn,
+					DelegateTo:      delegateTo,
+					Comment:         &comment,
+					Disable:         &disable,
+					Locked:          &locked,
+					NsGroup:         &nsGroup,
+					DelegatedTtl:    &newTtl,
+					UseDelegatedTtl: &useDelegatedTtl,
+					Ea:              newEas,
+					View:            &view,
+					ZoneFormat:      zoneFormat,
+				})
+				updatedObjIn.Ref = ref
+
+				conn = &fakeConnector{
+					getObjectObj:         NewEmptyZoneDelegated(),
+					getObjectQueryParams: NewQueryParams(false, nil),
+					getObjectRef:         updatedRef,
+					getObjectError:       nil,
+
+					updateObjectObj:   updatedObjIn,
+					updateObjectRef:   ref,
+					updateObjectError: nil,
+
+					fakeRefReturn: updatedRef,
+				}
+				objMgr = NewObjectManager(conn, cmpType, tenantID)
+
+				actualRecord, _ = objMgr.UpdateZoneDelegated(ref, delegateTo, comment, disable, locked, nsGroup, newTtl, useDelegatedTtl, newEas)
+			})
+			It("should return expected Zone-delegated obj", func() {
+				expectedObj := NewZoneDelegated(ZoneDelegated{
+					Fqdn:            fqdn,
+					DelegateTo:      delegateTo,
+					Comment:         &comment,
+					Disable:         &disable,
+					Locked:          &locked,
+					NsGroup:         &nsGroup,
+					DelegatedTtl:    &newTtl,
+					UseDelegatedTtl: &useDelegatedTtl,
+					Ea:              newEas,
+					View:            &view,
+					ZoneFormat:      zoneFormat,
+				})
+				expectedObj.Ref = updatedRef
+
+				Expect(err).To(BeNil())
+				Expect(actualRecord).NotTo(BeNil())
+				Expect(*actualRecord).To(BeEquivalentTo(*expectedObj))
+			})
 		})
 	})
 

@@ -297,20 +297,24 @@ var _ = Describe("Objects", func() {
 			fixedAddr := NewFixedAddress(
 				netviewName, "",
 				ipAddress, cidr, mac,
-				matchClient, ea, "", false, comment)
+				&matchClient, ea, "", false, comment, nil, nil, nil, nil, false, nil, false)
 
 			It("should set fields correctly", func() {
 				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
 				Expect(fixedAddr.Cidr).To(Equal(cidr))
 				Expect(fixedAddr.IPv4Address).To(Equal(ipAddress))
-				Expect(fixedAddr.Mac).To(Equal(mac))
-				Expect(fixedAddr.MatchClient).To(Equal(matchClient))
+				if fixedAddr.Mac != nil {
+					Expect(*fixedAddr.Mac).To(Equal(mac))
+				}
+				if fixedAddr.MatchClient != nil {
+					Expect(*fixedAddr.MatchClient).To(Equal(matchClient))
+				}
 				Expect(fixedAddr.Ea).To(Equal(ea))
 			})
 
 			It("should set base fields correctly", func() {
 				Expect(fixedAddr.ObjectType()).To(Equal("fixedaddress"))
-				Expect(fixedAddr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "mac", "name", "network", "network_view", "comment"))
+				Expect(fixedAddr.ReturnFields()).To(ConsistOf("extattrs", "ipv4addr", "mac", "name", "network", "network_view", "comment", "match_client", "agent_circuit_id", "agent_remote_id", "client_identifier_prepend_zero", "options", "use_options", "cloud_info", "disable", "dhcp_client_identifier"))
 			})
 		})
 
@@ -324,7 +328,7 @@ var _ = Describe("Objects", func() {
 			fixedAddr := NewFixedAddress(
 				netviewName, "",
 				ipAddress, cidr, duid,
-				"", ea, "", true, comment)
+				nil, ea, "", true, comment, nil, nil, nil, nil, false, nil, false)
 
 			It("should set fields correctly", func() {
 				Expect(fixedAddr.NetviewName).To(Equal(netviewName))
@@ -586,7 +590,7 @@ var _ = Describe("Objects", func() {
 
 			rh := NewHostRecord(
 				"", name, "", "", ipv4addrs, ipv6addrs,
-				nil, true, view, zone, "", useTtl, ttl, comment, aliases)
+				nil, true, view, zone, "", useTtl, ttl, comment, aliases, false)
 
 			It("should set fields correctly", func() {
 				Expect(rh.Ipv4Addrs).To(Equal(ipv4addrs))
@@ -744,7 +748,7 @@ var _ = Describe("Objects", func() {
 
 			It("should set base fields correctly", func() {
 				Expect(za.ObjectType()).To(Equal("zone_delegated"))
-				Expect(za.ReturnFields()).To(ConsistOf("extattrs", "fqdn", "view", "delegate_to"))
+				Expect(za.ReturnFields()).To(ConsistOf("delegate_to", "fqdn", "view", "comment", "disable", "locked", "ns_group", "delegated_ttl", "use_delegated_ttl", "zone_format", "extattrs"))
 			})
 		})
 

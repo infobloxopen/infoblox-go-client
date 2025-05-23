@@ -13,27 +13,51 @@ var _ IBObjectManager = new(ObjectManager)
 
 type IBObjectManager interface {
 	GetDNSView(name string) (*View, error)
-	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string, name string, comment string, eas EA) (*FixedAddress, error)
+	AllocateIP(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string, name string, comment string, eas EA, clients string, agentCircuitId string, agentRemoteId string, clientIdentifierPrependZero *bool, dhcpClientIdentifier string, disable bool, Options []*Dhcpoption, useOptions bool) (*FixedAddress, error)
+	AllocateNextAvailableIp(name string, objectType string, objectParams map[string]string, params map[string][]string, useEaInheritance bool, ea EA, comment string, disable bool, n *int, ipAddrType string,
+		enableDns bool, enableDhcp bool, macAddr string, duid string, networkView string, dnsView string, useTtl bool, ttl uint32, aliases []string) (interface{}, error)
 	AllocateNetwork(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (network *Network, err error)
+	AllocateNetworkByEA(netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen uint, object string) (network *Network, err error)
 	AllocateNetworkContainer(netview string, cidr string, isIPv6 bool, prefixLen uint, comment string, eas EA) (netContainer *NetworkContainer, err error)
+	AllocateNetworkContainerByEA(netview string, isIPv6 bool, comment string, eas EA, eaMap map[string]string, prefixLen uint) (*NetworkContainer, error)
 	CreateARecord(netView string, dnsView string, name string, cidr string, ipAddr string, ttl uint32, useTTL bool, comment string, ea EA) (*RecordA, error)
 	CreateAAAARecord(netView string, dnsView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordAAAA, error)
+	CreateIpv4SharedNetwork(name string, networks []string, networkView string, eas EA, comment string, disable bool, useOptions bool, options []*Dhcpoption) (*SharedNetwork, error)
+	CreateAliasRecord(name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
+	CreateDtcPool(comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, userMonitors []map[string]interface{}, availability string, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
+	CreateDtcServer(comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostname string, useSniHostname bool) (*DtcServer, error)
+	CreateNSRecord(name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
 	CreateDefaultNetviews(globalNetview string, localNetview string) (globalNetviewRef string, localNetviewRef string, err error)
-	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullForwardTo, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
+	CreateDtcLbdn(name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
+		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
+	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
+	CreateHTTPSRecord(name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool , disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordHttps, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
-	CreateHostRecord(enabledns bool, enabledhcp bool, recordName string, netview string, dnsview string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddr string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string) (*HostRecord, error)
+	CreateHostRecord(enabledns bool, enabledhcp bool, recordName string, netview string, dnsview string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddr string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
 	CreateMXRecord(dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
 	CreateNetwork(netview string, cidr string, isIPv6 bool, comment string, eas EA) (*Network, error)
 	CreateNetworkContainer(netview string, cidr string, isIPv6 bool, comment string, eas EA) (*NetworkContainer, error)
 	CreateNetworkView(name string, comment string, setEas EA) (*NetworkView, error)
+	CreateNetworkRange(comment string, name string, network string, networkView string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociation string, template string, msServer string) (*Range, error)
 	CreatePTRRecord(networkView string, dnsView string, ptrdname string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordPTR, error)
+	CreateRangeTemplate(name string, numberOfAdresses uint32, offset uint32, comment string, ea EA,
+		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
+	CreateSVCBRecord(name string, priority uint32, targetName string, comment string,
+		creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
+		svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordSVCB, error)
 	CreateSRVRecord(dnsView string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
 	CreateTXTRecord(dnsView string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
-	CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error)
+	CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error)
 	DeleteARecord(ref string) (string, error)
+	DeleteNSRecord(ref string) (string, error)
 	DeleteAAAARecord(ref string) (string, error)
+	DeleteAliasRecord(ref string) (string, error)
+	DeleteDtcLbdn(ref string) (string, error)
+	DeleteIpv4SharedNetwork(ref string) (string, error)
+	DeleteDtcPool(ref string) (string, error)
+	DeleteDtcServer(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
 	DeleteZoneForward(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
@@ -44,19 +68,42 @@ type IBObjectManager interface {
 	DeleteNetworkContainer(ref string) (string, error)
 	DeleteNetworkView(ref string) (string, error)
 	DeletePTRRecord(ref string) (string, error)
+	DeleteRangeTemplate(ref string) (string, error)
+	DeleteSVCBRecord(ref string) (string, error)
 	DeleteSRVRecord(ref string) (string, error)
 	DeleteTXTRecord(ref string) (string, error)
 	DeleteZoneDelegated(ref string) (string, error)
+	DeleteNetworkRange(ref string) (string, error)
+	DeleteHTTPSRecord(ref string) (string, error)
 	GetARecordByRef(ref string) (*RecordA, error)
 	GetARecord(dnsview string, recordName string, ipAddr string) (*RecordA, error)
 	GetAAAARecord(dnsview string, recordName string, ipAddr string) (*RecordAAAA, error)
 	GetAAAARecordByRef(ref string) (*RecordAAAA, error)
+	GetAliasRecordByRef(ref string) (*RecordAlias, error)
+	GetAllAliasRecord(queryParams *QueryParams) ([]RecordAlias, error)
 	GetCNAMERecord(dnsview string, canonical string, recordName string) (*RecordCNAME, error)
 	GetCNAMERecordByRef(ref string) (*RecordCNAME, error)
+	GetNSRecordByRef(ref string) (*RecordNS, error)
+	GetAllRecordNS(queryParams *QueryParams) ([]RecordNS, error)
+	GetAllDtcPool(queryParams *QueryParams) ([]DtcPool, error)
+	GetDtcPool(name string) (*DtcPool, error)
+	GetAllDtcServer(queryParams *QueryParams) ([]DtcServer, error)
+	GetAllHTTPSRecord(queryParams *QueryParams) ([]RecordHttps, error)
+	GetDtcServer(name string, host string) (*DtcServer, error)
+	GetAllDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error)
+	GetDtcLbdn(name string) (*DtcLbdn, error)
+	GetDtcLbdnByRef(ref string) (*DtcLbdn, error)
+	GetDtcPoolByRef(ref string) (*DtcPool, error)
+	GetDtcServerByRef(ref string) (*DtcServer, error)
+	GetNetworkRangeByRef(ref string) (*Range, error)
+	GetNetworkRange(queryParams *QueryParams) ([]Range, error)
 	GetEADefinition(name string) (*EADefinition, error)
 	GetFixedAddress(netview string, cidr string, ipAddr string, isIPv6 bool, macOrDuid string) (*FixedAddress, error)
 	GetFixedAddressByRef(ref string) (*FixedAddress, error)
+	GetAllFixedAddress(queryParams *QueryParams, isIpv6 bool) ([]FixedAddress, error)
 	GetHostRecord(netview string, dnsview string, recordName string, ipv4addr string, ipv6addr string) (*HostRecord, error)
+	GetIpv4SharedNetworkByRef(ref string) (*SharedNetwork, error)
+	GetAllIpv4SharedNetwork(queryParams *QueryParams) ([]SharedNetwork, error)
 	SearchHostRecordByAltId(internalId string, ref string, eaNameForInternalId string) (*HostRecord, error)
 	GetHostRecordByRef(ref string) (*HostRecord, error)
 	GetIpAddressFromHostRecord(host HostRecord) (string, error)
@@ -70,12 +117,18 @@ type IBObjectManager interface {
 	GetNetworkViewByRef(ref string) (*NetworkView, error)
 	GetPTRRecord(dnsview string, ptrdname string, recordName string, ipAddr string) (*RecordPTR, error)
 	GetPTRRecordByRef(ref string) (*RecordPTR, error)
+	GetAllRangeTemplate(queryParams *QueryParams) ([]Rangetemplate, error)
+	GetRangeTemplateByRef(ref string) (*Rangetemplate, error)
 	GetSRVRecord(dnsView string, name string, target string, port uint32) (*RecordSRV, error)
+	GetSVCBRecordByRef(ref string) (*RecordSVCB, error)
+	GetAllSVCBRecords(queryParams *QueryParams) ([]RecordSVCB, error)
 	GetSRVRecordByRef(ref string) (*RecordSRV, error)
 	GetTXTRecord(dnsview string, name string) (*RecordTXT, error)
 	GetTXTRecordByRef(ref string) (*RecordTXT, error)
 	GetZoneAuthByRef(ref string) (*ZoneAuth, error)
+	GetHTTPSRecordByRef(ref string) (*RecordHttps, error)
 	GetZoneDelegated(fqdn string) (*ZoneDelegated, error)
+	GetZoneDelegatedByFilters(queryParams *QueryParams) ([]ZoneDelegated, error)
 	GetZoneDelegatedByRef(ref string) (*ZoneDelegated, error)
 	GetZoneForwardByRef(ref string) (*ZoneForward, error)
 	GetZoneForwardFilters(queryParams *QueryParams) ([]ZoneForward, error)
@@ -87,19 +140,33 @@ type IBObjectManager interface {
 	SearchObjectByAltId(objType string, internalId string, ref string, eaNameForInternalId string) (interface{}, error)
 	ReleaseIP(netview string, cidr string, ipAddr string, isIPv6 bool, macAddr string) (string, error)
 	UpdateAAAARecord(ref string, netView string, recordName string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordAAAA, error)
+	UpdateAliasRecord(ref string, name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
+	UpdateDtcPool(ref string, comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, availability string, consolidatedMonitors []map[string]interface{}, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
+	UpdateDtcServer(ref string, comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostName string, useSniHostName bool) (*DtcServer, error)
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
-	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA) (*FixedAddress, error)
-	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string) (*HostRecord, error)
+	UpdateDtcLbdn(ref string, name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
+		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
+	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA, agentCircuitId string, agentRemoteId string, clientIdentifierPrependZero *bool, dhcpClientIdentifier string, disable bool, Options []*Dhcpoption, useOptions bool) (*FixedAddress, error)
+	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
+	UpdateIpv4SharedNetwork(ref string, name string, networks []string, networkView string, comment string, eas EA, disable bool, useOptions bool, options []*Dhcpoption) (*SharedNetwork, error)
 	UpdateMXRecord(ref string, dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
 	UpdateNetwork(ref string, setEas EA, comment string) (*Network, error)
 	UpdateNetworkContainer(ref string, setEas EA, comment string) (*NetworkContainer, error)
 	UpdateNetworkView(ref string, name string, comment string, setEas EA) (*NetworkView, error)
+	UpdateNetworkRange(ref string, comment string, name string, network string, startAddr string, endAddr string, disable bool, eas EA, member *Dhcpmember, failOverAssociation string, options []*Dhcpoption, useOptions bool, serverAssociationType string, NetworkView string, msServer string) (*Range, error)
 	UpdatePTRRecord(ref string, netview string, ptrdname string, name string, cidr string, ipAddr string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordPTR, error)
+	UpdateRangeTemplate(ref string, name string, numberOfAddresses uint32, offset uint32, comment string, ea EA,
+		options []*Dhcpoption, useOption bool, serverAssociationType string, failOverAssociation string, member *Dhcpmember, cloudApiCompatible bool, msServer string) (*Rangetemplate, error)
+	UpdateSVCBRecord(ref string, name string, priority uint32, targetName string, comment string,
+		creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool,
+		svcParams []SVCParams, ttl uint32, useTtl bool) (*RecordSVCB, error)
 	UpdateSRVRecord(ref string, name string, priority uint32, weight uint32, port uint32, target string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordSRV, error)
+	UpdateHTTPSRecord(ref string, name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool) (*RecordHttps, error)
 	UpdateTXTRecord(ref string, recordName string, text string, ttl uint32, useTtl bool, comment string, eas EA) (*RecordTXT, error)
 	UpdateARecord(ref string, name string, ipAddr string, cidr string, netview string, ttl uint32, useTTL bool, comment string, eas EA) (*RecordA, error)
-	UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error)
-	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo NullForwardTo, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string, externalNsGroup string) (*ZoneForward, error)
+	UpdateZoneDelegated(ref string, delegateTo NullableNameServers, comment string, disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA) (*ZoneDelegated, error)
+	UpdateNSRecord(ref string, name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error)
+	UpdateZoneForward(ref string, comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, nsGroup string, externalNsGroup string) (*ZoneForward, error)
 	GetDnsMember(ref string) ([]Dns, error)
 	UpdateDnsStatus(ref string, status bool) (Dns, error)
 	GetDhcpMember(ref string) ([]Dhcp, error)
@@ -121,6 +188,15 @@ const (
 	NetworkConst          = "Network"
 	NetworkContainerConst = "NetworkContainer"
 	ZoneForwardConst      = "ZoneForward"
+	ZoneDelegatedConst    = "ZoneDelegated"
+	DtcLbdnConst          = "DtcLbdn"
+	DtcPoolConst          = "DtcPool"
+	DtcServerConst        = "DtcServer"
+	NetworkRangeConst     = "Range"
+	FixedAddressConst     = "FixedAddress"
+	SharedNetworkConst    = "SharedNetwork"
+	AliasRecord           = "AliasRecord"
+	RangeTemplate         = "RangeTemplate"
 )
 
 // Map of record type to its corresponding object
@@ -194,6 +270,53 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 			"forwarding_servers",
 		))
 		return zoneForward
+	},
+	ZoneDelegatedConst: func(ref string) IBObject {
+		zoneDelegated := &ZoneDelegated{}
+		zoneDelegated.SetReturnFields(append(
+			zoneDelegated.ReturnFields(),
+			"comment",
+			"disable",
+			"locked",
+			"ns_group",
+			"delegated_ttl",
+			"use_delegated_ttl",
+			"zone_format",
+			"extattrs",
+		))
+		return zoneDelegated
+	},
+	DtcLbdnConst: func(ref string) IBObject {
+		lbdn := &DtcLbdn{}
+		lbdn.SetReturnFields(append(lbdn.ReturnFields(),
+			"extattrs", "disable", "auto_consolidated_monitors", "auth_zones", "lb_method", "patterns", "persistence", "pools", "priority", "topology", "types", "ttl", "use_ttl"))
+		return lbdn
+	},
+	DtcPoolConst: func(ref string) IBObject {
+		pool := &DtcPool{}
+		pool.SetReturnFields(append(pool.ReturnFields(), "lb_preferred_method", "servers", "lb_dynamic_ratio_preferred", "monitors", "auto_consolidated_monitors",
+			"consolidated_monitors", "disable", "extattrs", "health", "lb_alternate_method", "lb_alternate_topology", "lb_dynamic_ratio_alternate", "lb_preferred_topology", "quorum", "ttl", "use_ttl", "availability"))
+		return pool
+	},
+	DtcServerConst: func(ref string) IBObject {
+		dtcServer := &DtcServer{}
+		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
+		return dtcServer
+	},
+	NetworkRangeConst: func(ref string) IBObject {
+		return NewEmptyRange()
+	},
+	FixedAddressConst: func(ref string) IBObject {
+		return NewEmptyFixedAddress(false)
+	},
+	SharedNetworkConst: func(ref string) IBObject {
+		return NewEmptyIpv4SharedNetwork()
+	},
+	AliasRecord: func(ref string) IBObject {
+		return NewEmptyAliasRecord()
+	},
+	RangeTemplate: func(ref string) IBObject {
+		return NewEmptyRangeTemplate()
 	},
 }
 
@@ -372,6 +495,120 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		}
 		return res, err
 	},
+	ZoneDelegatedConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*ZoneDelegated).Ref != "" {
+			return res, nil
+		}
+		var zoneDelegatedList []*ZoneDelegated
+		err := objMgr.connector.GetObject(NewEmptyZoneDelegated(), "", NewQueryParams(false, sf), &zoneDelegatedList)
+		if err == nil && len(zoneDelegatedList) > 0 {
+			res = zoneDelegatedList[0]
+		}
+		return res, err
+	},
+	DtcLbdnConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcLbdn).Ref != "" {
+			return res, nil
+		}
+		var dtcLbdnList []*DtcLbdn
+		err := objMgr.connector.GetObject(NewEmptyDtcLbdn(), "", NewQueryParams(false, sf), &dtcLbdnList)
+		if err == nil && len(dtcLbdnList) > 0 {
+			res = dtcLbdnList[0]
+		}
+		return res, err
+	},
+	DtcPoolConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcPool).Ref != "" {
+			return res, nil
+		}
+		var dtcPoolList []*DtcPool
+		err := objMgr.connector.GetObject(NewEmptyDtcPool(), "", NewQueryParams(false, sf), &dtcPoolList)
+		if err == nil && len(dtcPoolList) > 0 {
+			res = dtcPoolList[0]
+		}
+		return res, err
+	},
+	DtcServerConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcServer).Ref != "" {
+			return res, nil
+		}
+		var dtcServerList []*DtcServer
+		err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
+		if err == nil && len(dtcServerList) > 0 {
+			res = dtcServerList[0]
+		}
+		return res, err
+	},
+	AliasRecord: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*RecordAlias).Ref != "" {
+			return res, nil
+		}
+		var aliasList []*RecordAlias
+		err := objMgr.connector.GetObject(NewEmptyAliasRecord(), "", NewQueryParams(false, sf), &aliasList)
+		if err == nil && len(aliasList) > 0 {
+			res = aliasList[0]
+		}
+		return res, err
+	},
+	SharedNetworkConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*SharedNetwork).Ref != "" {
+			return res, nil
+		}
+		var sharedNetworkList []*SharedNetwork
+		err := objMgr.connector.GetObject(NewEmptyIpv4SharedNetwork(), "", NewQueryParams(false, sf), &sharedNetworkList)
+		if err == nil && len(sharedNetworkList) > 0 {
+			res = sharedNetworkList[0]
+		}
+		return res, err
+	},
+	FixedAddressConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*FixedAddress).Ref != "" {
+			return res, nil
+		}
+		var fixedAddressList []*FixedAddress
+		err := objMgr.connector.GetObject(NewEmptyFixedAddress(false), "", NewQueryParams(false, sf), &fixedAddressList)
+		if err == nil && len(fixedAddressList) > 0 {
+			res = fixedAddressList[0]
+		}
+		return res, err
+	},
+	NetworkRangeConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*Range).Ref != "" {
+			return res, nil
+		}
+		var rangeList []*Range
+		err := objMgr.connector.GetObject(NewEmptyRange(), "", NewQueryParams(false, sf), &rangeList)
+		if err == nil && len(rangeList) > 0 {
+			res = rangeList[0]
+		}
+		return res, err
+	},
+	RangeTemplate: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*Rangetemplate).Ref != "" {
+			return res, nil
+		}
+		var rangeTemplateList []*Rangetemplate
+		err := objMgr.connector.GetObject(NewEmptyRangeTemplate(), "", NewQueryParams(false, sf), &rangeTemplateList)
+		if err == nil && len(rangeTemplateList) > 0 {
+			res = rangeTemplateList[0]
+		}
+		return res, err
+	},
+}
+
+func NewEmptyZoneDelegated() *ZoneDelegated {
+	zoneDelegated := &ZoneDelegated{}
+	zoneDelegated.SetReturnFields(append(zoneDelegated.ReturnFields(), "comment", "disable", "locked", "ns_group", "delegated_ttl", "extattrs", "zone_format"))
+	return zoneDelegated
 }
 
 type ObjectManager struct {
@@ -570,14 +807,50 @@ func (objMgr *ObjectManager) GetZoneDelegated(fqdn string) (*ZoneDelegated, erro
 	return &res[0], nil
 }
 
+// GetZoneDelegateByFiletrs returns the delegated zone by filters
+func (objMgr *ObjectManager) GetZoneDelegatedByFilters(queryParams *QueryParams) ([]ZoneDelegated, error) {
+	var res []ZoneDelegated
+
+	zoneDelegated := NewEmptyZoneDelegated()
+	err := objMgr.connector.GetObject(zoneDelegated, "", queryParams, &res)
+	if err != nil {
+		return nil, err
+	}
+	return res, err
+}
+
 // CreateZoneDelegated creates delegated zone
-func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []NameServer) (*ZoneDelegated, error) {
+func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegateTo NullableNameServers, comment string,
+	disable bool, locked bool, nsGroup string, delegatedTtl uint32, useDelegatedTtl bool, ea EA, view string, zoneFormat string) (*ZoneDelegated, error) {
+
+	if fqdn == "" {
+		return nil, fmt.Errorf("FQDN is required to create zone-delegated")
+	}
+	if view == "" {
+		view = "default"
+	}
+	if zoneFormat == "" {
+		zoneFormat = "FORWARD"
+	}
 	zoneDelegated := NewZoneDelegated(
 		ZoneDelegated{
-			Fqdn:       fqdn,
-			DelegateTo: delegate_to},
+			Fqdn:            fqdn,
+			DelegateTo:      delegateTo,
+			Comment:         &comment,
+			Disable:         &disable,
+			Locked:          &locked,
+			DelegatedTtl:    &delegatedTtl,
+			UseDelegatedTtl: &useDelegatedTtl,
+			Ea:              ea,
+			View:            &view,
+			ZoneFormat:      zoneFormat,
+		},
 	)
-
+	if nsGroup != "" {
+		zoneDelegated.NsGroup = &nsGroup
+	} else {
+		zoneDelegated.NsGroup = nil
+	}
 	ref, err := objMgr.connector.CreateObject(zoneDelegated)
 	zoneDelegated.Ref = ref
 
@@ -585,15 +858,37 @@ func (objMgr *ObjectManager) CreateZoneDelegated(fqdn string, delegate_to []Name
 }
 
 // UpdateZoneDelegated updates delegated zone
-func (objMgr *ObjectManager) UpdateZoneDelegated(ref string, delegate_to []NameServer) (*ZoneDelegated, error) {
+func (objMgr *ObjectManager) UpdateZoneDelegated(
+	ref string,
+	delegateTo NullableNameServers,
+	comment string,
+	disable bool,
+	locked bool,
+	nsGroup string,
+	delegatedTtl uint32,
+	useDelegatedTtl bool,
+	ea EA) (*ZoneDelegated, error) {
+
 	zoneDelegated := NewZoneDelegated(
 		ZoneDelegated{
-			Ref:        ref,
-			DelegateTo: delegate_to},
+			DelegateTo:      delegateTo,
+			Comment:         &comment,
+			Disable:         &disable,
+			Locked:          &locked,
+			DelegatedTtl:    &delegatedTtl,
+			UseDelegatedTtl: &useDelegatedTtl,
+			Ea:              ea,
+			Ref:             ref,
+		},
 	)
 
-	refResp, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
-	zoneDelegated.Ref = refResp
+	if nsGroup != "" {
+		zoneDelegated.NsGroup = &nsGroup
+	} else {
+		zoneDelegated.NsGroup = nil
+	}
+	newRef, err := objMgr.connector.UpdateObject(zoneDelegated, ref)
+	zoneDelegated.Ref = newRef
 	return zoneDelegated, err
 }
 

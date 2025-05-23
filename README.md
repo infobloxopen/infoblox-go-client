@@ -18,7 +18,7 @@ This library is compatible with Go 1.2+
    * Go 1.21 or above
 
 ## Installation
-   To get the latest released version [v2.7.0](https://github.com/infobloxopen/infoblox-go-client/releases/tag/v2.7.0) of Go Client use below command.
+   To get the latest released version [v2.10.0](https://github.com/infobloxopen/infoblox-go-client/releases/tag/v2.10.0) of Go Client use below command.
    
    `go get github.com/infobloxopen/infoblox-go-client/v2`
 
@@ -67,7 +67,10 @@ This library is compatible with Go 1.2+
 ## Supported NIOS operations
 
    * AllocateIP
+   * AllocateNextAvailableIp
    * AllocateNetwork
+   * AllocateNetworkByEA
+   * AllocateNetworkContainerByEA
    * AllocateNetworkContainer
    * CreateARecord
    * CreateAAAARecord
@@ -146,5 +149,47 @@ This library is compatible with Go 1.2+
    * UpdateARecord
    * UpdateZoneDelegated
    * UpdateZoneForward
-
-
+   * CreateDtcLbdn
+   * CreateDtcPool
+   * CreateDtcServer
+   * DeleteDtcLbdn
+   * DeleteDtcPool
+   * DeleteDtcServer
+   * GetAllDtcPool
+   * GetDtcPool
+   * GetDtcPoolByRef
+   * GetAllDtcServer
+   * GetDtcServer
+   * GetDtcServerByRef
+   * GetAllDtcLbdn
+   * GetDtcLbdn
+   * GetDtcLbdnByRef
+   * UpdateDtcPool
+   * UpdateDtcServer
+   * UpdateDtcLbdn
+   * CreateAliasRecord
+   * CreateNSRecord
+   * CreateIpv4SharedNetwork
+   * CreateNetworkRange
+   * CreateRangeTemplate
+   * DeleteAliasRecord
+   * DeleteNSRecord
+   * DeleteIpv4SharedNetwork
+   * DeleteNetworkRange
+   * DeleteRangeTemplate
+   * GetAllAliasRecord
+   * GetAllRecordNS
+   * GetAllIpv4SharedNetwork
+   * GetAllFixedAddress
+   * GetNetworkRange
+   * GetAllRangeTemplate
+   * GetAliasRecordByRef
+   * GetNSRecordByRef
+   * GetIpv4SharedNetworkByRef
+   * GetNetworkRangeByRef
+   * GetRangeTemplateByRef
+   * UpdateAliasRecord
+   * UpdateNSRecord
+   * UpdateIpv4SharedNetwork
+   * UpdateNetworkRange
+   * UpdateRangeTemplate

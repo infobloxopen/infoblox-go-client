@@ -1,9 +1,11 @@
 package ibclient
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"net/url"
+	"reflect"
 	"regexp"
 	"strings"
 
@@ -29,6 +31,76 @@ type GenericObj interface {
 	SetReturnFields([]string)
 }
 
+// Handle []NameServer to be [] list
+type NullableNameServers struct {
+	NameServers []NameServer
+	IsNull      bool
+}
+
+func (d Dhcpoption) MarshalJSON() ([]byte, error) {
+	type Alias Dhcpoption
+	// List of allowed names
+	allowedNames := map[string]bool{
+		"routers":                  true,
+		"router-templates":         true,
+		"domain-name-servers":      true,
+		"domain-name":              true,
+		"broadcast-address":        true,
+		"broadcast-address-offset": true,
+		"dhcp-lease-time":          true,
+		"dhcp6.name-servers":       true,
+	}
+	aux := &struct {
+		Value     string `json:"value"`
+		UseOption *bool  `json:"use_option,omitempty"`
+		*Alias
+	}{
+		Value: d.Value,
+		Alias: (*Alias)(&d),
+	}
+	if allowedNames[d.Name] {
+		aux.UseOption = &d.UseOption
+	}
+	return json.Marshal(aux)
+}
+
+func (d *Dhcpoption) UnmarshalJSON(data []byte) error {
+	type Alias Dhcpoption
+	aux := &struct {
+		Value     string `json:"value"`
+		UseOption bool   `json:"use_option"`
+		*Alias
+	}{
+		Alias: (*Alias)(d),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	d.Value = aux.Value
+	d.UseOption = aux.UseOption
+	return nil
+}
+
+func (ns NullableNameServers) MarshalJSON() ([]byte, error) {
+	if reflect.DeepEqual(ns.NameServers, []NameServer{}) {
+		return []byte("[]"), nil
+	}
+
+	return json.Marshal(ns.NameServers)
+}
+
+func (ns *NullableNameServers) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		ns.IsNull = true
+		ns.NameServers = nil
+		return nil
+	}
+	ns.IsNull = false
+	return json.Unmarshal(data, &ns.NameServers)
+}
+
 func BuildNetworkViewFromRef(ref string) *NetworkView {
 	// networkview/ZG5zLm5ldHdvcmtfdmlldyQyMw:global_view/false
 	r := regexp.MustCompile(`networkview/\w+:([^/]+)/\w+`)
@@ -42,6 +114,13 @@ func BuildNetworkViewFromRef(ref string) *NetworkView {
 		Ref:  ref,
 		Name: &m[1],
 	}
+}
+
+func getNetworkObjectType(isIPv6 bool, ipv4Object string, ipv6Object string) string {
+	if isIPv6 {
+		return ipv6Object
+	}
+	return ipv4Object
 }
 
 func BuildNetworkFromRef(ref string) (*Network, error) {
