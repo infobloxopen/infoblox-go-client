@@ -828,7 +828,7 @@ var _ = Describe("Objects", func() {
 			eadef := &ibclient.EADefinition{
 				Name:       utils.StringPtr("E2E Test EA"),
 				Comment:    utils.StringPtr("EA Def created by e2e test"),
-				ListValues: []*ibclient.EADefListValue{{"value1"}, {"value2"}},
+				ListValues: []*ibclient.EADefListValue{{Value: "value1"}, {Value: "value2"}},
 				Type:       "STRING",
 			}
 

@@ -6,7 +6,18 @@ import (
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"os"
+	"strings"
 )
+
+func isUnsupportedObjectType(err error, objectType string) bool {
+	if err == nil {
+		return false
+	}
+
+	errMsg := strings.ToLower(err.Error())
+	hasType := strings.Contains(errMsg, strings.ToLower(objectType))
+	return hasType && (strings.Contains(errMsg, "unknown object type") || strings.Contains(errMsg, "illegal object type"))
+}
 
 var _ = Describe("Go Client", func() {
 	var connector *ConnectorFacadeE2E
@@ -162,30 +173,29 @@ var _ = Describe("Go Client", func() {
 		search := &ibclient.DtcMonitor{}
 		err := connector.GetObject(search, "", nil, &res)
 		Expect(err).To(BeNil())
-		Expect(*res[0].Comment).To(Equal("Default ICMP health monitor"))
-		Expect(*res[0].Name).To(Equal("icmp"))
-		Expect(res[0].Ref).To(MatchRegexp("^dtc:monitor.*icmp$"))
-		Expect(res[0].Type).To(Equal("ICMP"))
+		Expect(len(res)).To(BeNumerically(">=", 5))
 
-		Expect(*res[1].Comment).To(Equal("Default HTTP health monitor"))
-		Expect(*res[1].Name).To(Equal("http"))
-		Expect(res[1].Ref).To(MatchRegexp("^dtc:monitor.*http$"))
-		Expect(res[1].Type).To(Equal("HTTP"))
+		monitorsByName := map[string]ibclient.DtcMonitor{}
+		for _, monitor := range res {
+			if monitor.Name != nil {
+				monitorsByName[*monitor.Name] = monitor
+			}
+		}
 
-		Expect(*res[2].Comment).To(Equal("Default HTTPS health monitor"))
-		Expect(*res[2].Name).To(Equal("https"))
-		Expect(res[2].Ref).To(MatchRegexp("^dtc:monitor.*https$"))
-		Expect(res[2].Type).To(Equal("HTTP"))
+		expectMonitor := func(name, expectedComment, expectedType, refPattern string) {
+			monitor, ok := monitorsByName[name]
+			Expect(ok).To(BeTrue(), "monitor %s not found", name)
+			Expect(monitor.Comment).NotTo(BeNil(), "monitor %s has nil comment", name)
+			Expect(*monitor.Comment).To(Equal(expectedComment))
+			Expect(monitor.Ref).To(MatchRegexp(refPattern))
+			Expect(monitor.Type).To(Equal(expectedType))
+		}
 
-		Expect(*res[3].Comment).To(Equal("Default SIP health monitor"))
-		Expect(*res[3].Name).To(Equal("sip"))
-		Expect(res[3].Ref).To(MatchRegexp("^dtc:monitor.*sip$"))
-		Expect(res[3].Type).To(Equal("SIP"))
-
-		Expect(*res[4].Comment).To(Equal("Default PDP health monitor"))
-		Expect(*res[4].Name).To(Equal("pdp"))
-		Expect(res[4].Ref).To(MatchRegexp("^dtc:monitor.*pdp$"))
-		Expect(res[4].Type).To(Equal("PDP"))
+		expectMonitor("icmp", "Default ICMP health monitor", "ICMP", "^dtc:monitor.*icmp$")
+		expectMonitor("http", "Default HTTP health monitor", "HTTP", "^dtc:monitor.*http$")
+		expectMonitor("https", "Default HTTPS health monitor", "HTTP", "^dtc:monitor.*https$")
+		expectMonitor("sip", "Default SIP health monitor", "SIP", "^dtc:monitor.*sip$")
+		expectMonitor("pdp", "Default PDP health monitor", "PDP", "^dtc:monitor.*pdp$")
 	})
 
 	It("Should get the DTC HTTP monitor object", Label("ID: 17", "RO"), func() {
@@ -2046,6 +2056,9 @@ var _ = Describe("Go Client", func() {
 			search := &ibclient.Namedacl{}
 			err = connector.GetObject(search, "", nil, &res)
 			Expect(err).To(BeNil())
+			Expect(res).NotTo(BeEmpty())
+			Expect(res[0].Comment).NotTo(BeNil())
+			Expect(res[0].Name).NotTo(BeNil())
 			Expect(*res[0].Comment).To(Equal("No acls present"))
 			Expect(res[0].Ref).To(MatchRegexp("wapi-na2"))
 			Expect(*res[0].Name).To(Equal("wapi-na2"))
@@ -2066,6 +2079,9 @@ var _ = Describe("Go Client", func() {
 			search.SetReturnFields([]string{"name", "comment"})
 			err = connector.GetObject(search, "", nil, &resMod)
 			Expect(err).To(BeNil())
+			Expect(resMod).NotTo(BeEmpty())
+			Expect(resMod[0].Comment).NotTo(BeNil())
+			Expect(resMod[0].Name).NotTo(BeNil())
 			Expect(*resMod[0].Comment).To(Equal("modified"))
 			Expect(resMod[0].Ref).To(MatchRegexp("^namedacl.*wapi-mod$"))
 			Expect(*resMod[0].Name).To(Equal("wapi-mod"))
@@ -2338,7 +2354,7 @@ var _ = Describe("DNS Forward Zone", func() {
 			Comment:        utils.StringPtr("wapi added"),
 			ForwardersOnly: utils.BoolPtr(true),
 			ForwardingServers: &ibclient.NullableForwardingServers{
-				[]*ibclient.Forwardingmemberserver{
+				Servers: []*ibclient.Forwardingmemberserver{
 					{
 						Name:           "infoblox.localdomain",
 						ForwardersOnly: true,
@@ -2351,7 +2367,7 @@ var _ = Describe("DNS Forward Zone", func() {
 						},
 						UseOverrideForwarders: false,
 					}},
-				false,
+				IsNull: false,
 			},
 		}
 		ref, err := connector.CreateObject(zone)
@@ -4558,6 +4574,7 @@ var _ = Describe("SharedNetwork Record", func() {
 
 var _ = Describe("Network Range Object", func() {
 	var connector *ConnectorFacadeE2E
+	var dhcpMemberName string
 
 	BeforeEach(func() {
 		hostConfig := ibclient.HostConfig{
@@ -4577,6 +4594,17 @@ var _ = Describe("Network Range Object", func() {
 		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 		Expect(err).To(BeNil())
 		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		var members []ibclient.Member
+		memberSearch := &ibclient.Member{}
+		memberSearch.SetReturnFields([]string{"host_name"})
+		err = connector.GetObject(memberSearch, "", nil, &members)
+		Expect(err).To(BeNil())
+		Expect(members).NotTo(BeEmpty())
+		Expect(members[0].HostName).NotTo(BeNil())
+		dhcpMemberName = *members[0].HostName
+		Expect(dhcpMemberName).NotTo(BeEmpty())
+
 		var (
 			networkCidr = "60.0.0.0/24"
 			networkView = "default"
@@ -4584,7 +4612,7 @@ var _ = Describe("Network Range Object", func() {
 		network := ibclient.NewNetwork(networkView, networkCidr, false, "comment string", nil)
 		network.Members = []ibclient.NetworkMember{
 			{
-				DhcpMember: &ibclient.Dhcpmember{Name: "infoblox.localdomain"},
+				DhcpMember: &ibclient.Dhcpmember{Name: dhcpMemberName},
 			},
 		}
 		_, err = connector.CreateObject(network)
@@ -4620,7 +4648,7 @@ var _ = Describe("Network Range Object", func() {
 			EndAddr:   utils.StringPtr("60.0.0.35"),
 			Comment:   utils.StringPtr("new comment"),
 			Member: &ibclient.Dhcpmember{
-				Name: "infoblox.localdomain",
+				Name: dhcpMemberName,
 			},
 			ServerAssociationType: "MEMBER",
 			Network:               utils.StringPtr("60.0.0.0/24"),
@@ -4652,7 +4680,7 @@ var _ = Describe("Network Range Object", func() {
 			Comment:   utils.StringPtr("new comment"),
 			Name:      utils.StringPtr("range 1"),
 			Member: &ibclient.Dhcpmember{
-				Name: "infoblox.localdomain",
+				Name: dhcpMemberName,
 			},
 			ServerAssociationType: "MEMBER",
 			Network:               utils.StringPtr("60.0.0.0/24"),
@@ -4673,7 +4701,7 @@ var _ = Describe("Network Range Object", func() {
 		errCode := connector.GetObject(search, ref, nil, &res)
 		Expect(errCode).To(BeNil())
 		Expect(res.Name).To(Equal(utils.StringPtr("range 1")))
-		Expect(res.Member.Name).To(Equal("infoblox.localdomain"))
+		Expect(res.Member.Name).To(Equal(dhcpMemberName))
 		Expect(res.Disable).To(Equal(utils.BoolPtr(true)))
 		Expect(res.ServerAssociationType).To(Equal("MEMBER"))
 		Expect(res.Ea["Site"]).To(Equal("India"))
@@ -4776,6 +4804,12 @@ var _ = Describe("SVCB Record", func() {
 		ibclientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 		Expect(err).To(BeNil())
 		connector = &ConnectorFacadeE2E{*ibclientConnector, make([]string, 0)}
+
+		probeSVCB := ibclient.RecordSVCB{Name: "__svcb_probe__.invalid"}
+		_, err = connector.CreateObject(&probeSVCB)
+		if isUnsupportedObjectType(err, "record:svcb") {
+			Skip("Skipping SVCB tests: appliance does not support record:svcb")
+		}
 
 		zone := &ibclient.ZoneAuth{
 			View: utils.StringPtr("default"),
@@ -5047,6 +5081,13 @@ var _ = Describe("HTTPS Record Object", func() {
 		ibClientConnector, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
 		Expect(err).To(BeNil())
 		connector = &ConnectorFacadeE2E{*ibClientConnector, make([]string, 0)}
+
+		probeHTTPS := ibclient.RecordHttps{Name: "__https_probe__.invalid"}
+		_, err = connector.CreateObject(&probeHTTPS)
+		if isUnsupportedObjectType(err, "record:https") {
+			Skip("Skipping HTTPS record tests: appliance does not support record:https")
+		}
+
 		zones := ibclient.ZoneAuth{
 			Fqdn: "testing-https.com",
 		}
