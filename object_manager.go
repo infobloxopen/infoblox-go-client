@@ -26,6 +26,7 @@ type IBObjectManager interface {
 	CreateAliasRecord(name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
 	CreateDtcPool(comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, userMonitors []map[string]interface{}, availability string, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
 	CreateDtcServer(comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostname string, useSniHostname bool) (*DtcServer, error)
+	CreateDtcTopology(comment string, name string, rules []*DtcTopologyRule, ea EA) (*DtcTopology, error)
 	CreateNSRecord(name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
@@ -33,7 +34,7 @@ type IBObjectManager interface {
 	CreateDtcLbdn(name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
-	CreateHTTPSRecord(name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool , disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordHttps, error)
+	CreateHTTPSRecord(name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordHttps, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, enabledhcp bool, recordName string, netview string, dnsview string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddr string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
 	CreateMXRecord(dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
@@ -58,6 +59,7 @@ type IBObjectManager interface {
 	DeleteIpv4SharedNetwork(ref string) (string, error)
 	DeleteDtcPool(ref string) (string, error)
 	DeleteDtcServer(ref string) (string, error)
+	DeleteDtcTopology(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
 	DeleteZoneForward(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
@@ -88,13 +90,16 @@ type IBObjectManager interface {
 	GetAllDtcPool(queryParams *QueryParams) ([]DtcPool, error)
 	GetDtcPool(name string) (*DtcPool, error)
 	GetAllDtcServer(queryParams *QueryParams) ([]DtcServer, error)
+	GetAllDtcTopology(queryParams *QueryParams) ([]DtcTopology, error)
 	GetAllHTTPSRecord(queryParams *QueryParams) ([]RecordHttps, error)
 	GetDtcServer(name string, host string) (*DtcServer, error)
+	GetDtcTopology(name string) (*DtcTopology, error)
 	GetAllDtcLbdn(queryParams *QueryParams) ([]DtcLbdn, error)
 	GetDtcLbdn(name string) (*DtcLbdn, error)
 	GetDtcLbdnByRef(ref string) (*DtcLbdn, error)
 	GetDtcPoolByRef(ref string) (*DtcPool, error)
 	GetDtcServerByRef(ref string) (*DtcServer, error)
+	GetDtcTopologyByRef(ref string) (*DtcTopology, error)
 	GetNetworkRangeByRef(ref string) (*Range, error)
 	GetNetworkRange(queryParams *QueryParams) ([]Range, error)
 	GetEADefinition(name string) (*EADefinition, error)
@@ -143,6 +148,7 @@ type IBObjectManager interface {
 	UpdateAliasRecord(ref string, name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
 	UpdateDtcPool(ref string, comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, availability string, consolidatedMonitors []map[string]interface{}, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
 	UpdateDtcServer(ref string, comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostName string, useSniHostName bool) (*DtcServer, error)
+	UpdateDtcTopology(ref string, comment string, name string, ea EA, rules []*DtcTopologyRule) (*DtcTopology, error)
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
 	UpdateDtcLbdn(ref string, name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
@@ -192,6 +198,7 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	DtcTopologyConst      = "DtcTopology"
 	NetworkRangeConst     = "Range"
 	FixedAddressConst     = "FixedAddress"
 	SharedNetworkConst    = "SharedNetwork"
@@ -302,6 +309,9 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	DtcTopologyConst: func(ref string) IBObject {
+		return NewEmptyDtcTopology()
 	},
 	NetworkRangeConst: func(ref string) IBObject {
 		return NewEmptyRange()

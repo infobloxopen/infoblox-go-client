@@ -154,21 +154,27 @@ This library is compatible with Go 1.25.8 or later.
    * CreateDtcLbdn
    * CreateDtcPool
    * CreateDtcServer
+   * CreateDtcTopology
    * DeleteDtcLbdn
    * DeleteDtcPool
    * DeleteDtcServer
+   * DeleteDtcTopology
    * GetAllDtcPool
    * GetDtcPool
    * GetDtcPoolByRef
    * GetAllDtcServer
+   * GetAllDtcTopology
    * GetDtcServer
    * GetDtcServerByRef
+   * GetDtcTopology
+   * GetDtcTopologyByRef
    * GetAllDtcLbdn
    * GetDtcLbdn
    * GetDtcLbdnByRef
    * UpdateDtcPool
    * UpdateDtcServer
    * UpdateDtcLbdn
+   * UpdateDtcTopology
    * CreateAliasRecord
    * CreateNSRecord
    * CreateIpv4SharedNetwork

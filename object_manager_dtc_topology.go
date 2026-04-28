@@ -5,182 +5,135 @@ import (
 	"fmt"
 )
 
-func (d *DtcServer) MarshalJSON() ([]byte, error) {
-	type Alias DtcServer
+// helpers for DtcTopology
+
+// find all dtc:topology:rule objects belonging to the given dtc:topology by their reference to it
+func getDtcRules(topologyRef string, objMgr *ObjectManager) ([]*DtcTopologyRule, error) {
+	var dtcRules []*DtcTopologyRule
+
+	searchFields := map[string]string{
+		"topology": topologyRef,
+	}
+	objMgr.connector.GetObject(&DtcTopologyRule{}, "", NewQueryParams(false, searchFields), &dtcRules)
+
+	return dtcRules, nil
+}
+
+// DtcTopology implementation
+
+func (d *DtcTopology) MarshalJSON() ([]byte, error) {
+	// correctly encode if rules is empty  (NOTE: copied from DtcServer)
+	type Alias DtcTopology
 	aux := &struct {
-		Monitors []*DtcServerMonitor `json:"monitors"`
+		Rules []*DtcTopologyRule `json:"rules"`
 		*Alias
 	}{
 		Alias: (*Alias)(d),
 	}
 
-	if len(d.Monitors) == 0 {
-		aux.Monitors = []*DtcServerMonitor{}
+	if len(d.Rules) == 0 {
+		aux.Rules = []*DtcTopologyRule{}
 	} else {
-		aux.Monitors = d.Monitors
+		aux.Rules = d.Rules
 	}
 
 	return json.Marshal(aux)
 }
 
-func NewEmptyDtcServer() *DtcServer {
-	dtcServer := &DtcServer{}
-	dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
-	return dtcServer
+func NewEmptyDtcTopology() *DtcTopology {
+	dtcTopology := &DtcTopology{}
+	dtcTopology.SetReturnFields(append(dtcTopology.ReturnFields(), "extattrs",
+		"rules.dest_type", "rules.destination_link", "rules.return_type", "rules.sources", "rules.valid"))
+	return dtcTopology
 }
 
-func NewDtcServer(comment string,
-	name string,
-	host string,
-	autoCreateHostRecord bool,
-	disable bool,
-	ea EA,
-	monitors []*DtcServerMonitor,
-	sniHostname string,
-	useSniHostname bool,
-) *DtcServer {
-	DtcServer := NewEmptyDtcServer()
-	DtcServer.Comment = &comment
-	DtcServer.Name = &name
-	DtcServer.Host = &host
-	DtcServer.AutoCreateHostRecord = &autoCreateHostRecord
-	DtcServer.Disable = &disable
-	DtcServer.Ea = ea
-	DtcServer.Monitors = monitors
-	DtcServer.SniHostname = &sniHostname
-	DtcServer.UseSniHostname = &useSniHostname
-	return DtcServer
-}
-
-func (objMgr *ObjectManager) CreateDtcServer(
+func NewDtcTopology(
 	comment string,
 	name string,
-	host string,
-	autoCreateHostRecord bool,
-	disable bool,
+	rules []*DtcTopologyRule,
 	ea EA,
-	monitors []map[string]interface{},
-	sniHostname string,
-	useSniHostname bool,
-) (*DtcServer, error) {
+) *DtcTopology {
+	DtcTopology := NewEmptyDtcTopology()
+	DtcTopology.Comment = &comment
+	DtcTopology.Name = &name
+	DtcTopology.Rules = rules
+	DtcTopology.Ea = ea
+	return DtcTopology
+}
 
-	if name == "" || host == "" {
-		return nil, fmt.Errorf("name and host fields are required to create a Dtc Server object")
+func (objMgr *ObjectManager) CreateDtcTopology(
+	comment string,
+	name string,
+	dtcRules []*DtcTopologyRule, // rules []TopologyRule,
+	ea EA,
+) (*DtcTopology, error) {
+	if name == "" {
+		return nil, fmt.Errorf("name field is required to create a Dtc Topology object")
 	}
-	if (useSniHostname && sniHostname == "") || (!useSniHostname && sniHostname != "") {
-		return nil, fmt.Errorf("'sni_hostname' must be provided when 'use_sni_hostname' is enabled, " +
-			"and 'use_sni_hostname' must be enabled if 'sni_hostname' is provided")
-	}
-	var serverMonitors []*DtcServerMonitor
-	for _, userMonitor := range monitors {
-		monitor, okMonitor := userMonitor["monitor"].(Monitor)
-		monitorHost, _ := userMonitor["host"].(string)
-		if !okMonitor {
-			return nil, fmt.Errorf("required field missing: monitor")
-		}
-		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
-		if err != nil {
-			return nil, err
-		}
 
-		serverMonitor := &DtcServerMonitor{
-			Monitor: monitorRef,
-			Host:    monitorHost,
-		}
-
-		serverMonitors = append(serverMonitors, serverMonitor)
-	}
-	dtcServer := NewDtcServer(comment, name, host, autoCreateHostRecord, disable, ea, serverMonitors, sniHostname, useSniHostname)
-	ref, err := objMgr.connector.CreateObject(dtcServer)
+	dtcTopology := NewDtcTopology(comment, name, dtcRules, ea)
+	ref, err := objMgr.connector.CreateObject(dtcTopology)
 	if err != nil {
 		return nil, err
 	}
-	dtcServer.Ref = ref
-	return dtcServer, nil
+	dtcTopology.Ref = ref
+	return dtcTopology, nil
 }
 
-func (objMgr *ObjectManager) GetAllDtcServer(queryParams *QueryParams) ([]DtcServer, error) {
-	var res []DtcServer
-	server := NewEmptyDtcServer()
-	err := objMgr.connector.GetObject(server, "", queryParams, &res)
+func (objMgr *ObjectManager) GetAllDtcTopology(queryParams *QueryParams) ([]DtcTopology, error) {
+	var res []DtcTopology
+	topology := NewEmptyDtcTopology()
+	err := objMgr.connector.GetObject(topology, "", queryParams, &res)
 	if err != nil {
-		return nil, fmt.Errorf("error getting Dtc Server object, err: %s", err)
+		return nil, fmt.Errorf("error getting Dtc Topology object, err: %s", err)
 	}
 	return res, nil
 }
 
-func (objMgr *ObjectManager) GetDtcServer(name string, host string) (*DtcServer, error) {
-	var res []DtcServer
-	server := NewEmptyDtcServer()
-	if name == "" || host == "" {
-		return nil, fmt.Errorf("name and host of the server are required to retreive a unique dtc server")
+func (objMgr *ObjectManager) GetDtcTopology(name string) (*DtcTopology, error) {
+	var res []DtcTopology
+	topology := NewEmptyDtcTopology()
+	if name == "" {
+		return nil, fmt.Errorf("name of the topology is required to retreive a unique dtc topology")
 	}
 	sf := map[string]string{
 		"name": name,
-		"host": host,
 	}
 	queryParams := NewQueryParams(false, sf)
-	err := objMgr.connector.GetObject(server, "", queryParams, &res)
+	err := objMgr.connector.GetObject(topology, "", queryParams, &res)
 	if err != nil {
 		return nil, err
 	} else if res == nil || len(res) == 0 {
 		return nil, NewNotFoundError(
-			fmt.Sprintf("Dtc server with name '%s' and host '%s' not found", name, host))
+			fmt.Sprintf("Dtc topology with name '%s' not found", name))
 	}
 	return &res[0], nil
 }
 
-func (objMgr *ObjectManager) UpdateDtcServer(
+func (objMgr *ObjectManager) UpdateDtcTopology(
 	ref string,
 	comment string,
 	name string,
-	host string,
-	autoCreateHostRecord bool,
-	disable bool,
 	ea EA,
-	monitors []map[string]interface{},
-	sniHostname string,
-	useSniHostname bool) (*DtcServer, error) {
-	if (useSniHostname && sniHostname == "") || (!useSniHostname && sniHostname != "") {
-		return nil, fmt.Errorf("'sni_hostname' must be provided when 'use_sni_hostname' is enabled, " +
-			"and 'use_sni_hostname' must be enabled if 'sni_hostname' is provided")
-	}
-	var serverMonitors []*DtcServerMonitor
-	for _, userMonitor := range monitors {
-		monitor, okMonitor := userMonitor["monitor"].(Monitor)
-		monitorHost, _ := userMonitor["host"].(string)
-		if !okMonitor {
-			return nil, fmt.Errorf("required field missing: monitor")
-		}
-		monitorRef, err := getMonitorReference(monitor.Name, monitor.Type, objMgr)
-		if err != nil {
-			return nil, err
-		}
-
-		serverMonitor := &DtcServerMonitor{
-			Monitor: monitorRef,
-			Host:    monitorHost,
-		}
-
-		serverMonitors = append(serverMonitors, serverMonitor)
-	}
-	dtcServer := NewDtcServer(comment, name, host, autoCreateHostRecord, disable, ea, serverMonitors, sniHostname, useSniHostname)
-	dtcServer.Ref = ref
-	ref, err := objMgr.connector.UpdateObject(dtcServer, ref)
+	dtcRules []*DtcTopologyRule, // rules []TopologyRule,
+) (*DtcTopology, error) {
+	dtcTopology := NewDtcTopology(comment, name, dtcRules, ea)
+	dtcTopology.Ref = ref
+	ref, err := objMgr.connector.UpdateObject(dtcTopology, ref)
 	if err != nil {
 		return nil, err
 	}
-	dtcServer.Ref = ref
-	return dtcServer, nil
+	dtcTopology.Ref = ref
+	return dtcTopology, nil
 }
 
-func (objMgr *ObjectManager) GetDtcServerByRef(ref string) (*DtcServer, error) {
-	serverDtc := NewEmptyDtcServer()
+func (objMgr *ObjectManager) GetDtcTopologyByRef(ref string) (*DtcTopology, error) {
+	topologyDtc := NewEmptyDtcTopology()
 	err := objMgr.connector.GetObject(
-		serverDtc, ref, NewQueryParams(false, nil), &serverDtc)
-	return serverDtc, err
+		topologyDtc, ref, NewQueryParams(false, nil), &topologyDtc)
+	return topologyDtc, err
 }
 
-func (objMgr *ObjectManager) DeleteDtcServer(ref string) (string, error) {
+func (objMgr *ObjectManager) DeleteDtcTopology(ref string) (string, error) {
 	return objMgr.connector.DeleteObject(ref)
 }
