@@ -781,7 +781,7 @@ type RecordSVCB struct {
 type SVCParams struct {
 	Mandatory bool     `json:"mandatory"`
 	SvcKey    string   `json:"svc_key,omitempty"`
-	SvcValue  []string `json:"svc_value,omitempty"`
+	SvcValue  []string `json:"svc_value"`
 }
 
 func (RecordSVCB) ObjectType() string {
