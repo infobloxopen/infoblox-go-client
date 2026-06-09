@@ -45,6 +45,7 @@ This library is compatible with Go 1.25.8 or later.
          hostConfig := ibclient.HostConfig{
             Scheme:  "https",
          	Host:    "<NIOS grid IP>",
+            BasePath: "<Optional uri base path before /wapi path>",
             Version: "<WAPI version>",
             Port:    "PORT",
          }
