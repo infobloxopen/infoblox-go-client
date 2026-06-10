@@ -19,10 +19,37 @@ func getDtcRules(topologyRef string, objMgr *ObjectManager) ([]*DtcTopologyRule,
 	return dtcRules, nil
 }
 
+// DtcTopologyRule implementation
+
+// Custom JSON decoder, because WAPI returns "destination_link" as an object, but objects_generated.go#DtcTopologyRule.DestinationLink is a *string
+func (d *DtcTopologyRule) UnmarshalJSON(data []byte) error {
+	// define a distinct type so we don't call DtcTopologyRule.UnmarshalJSON leading to infinite recursion
+	type DtcTopologyRuleNoMethods DtcTopologyRule
+
+	type dtcTopologyRuleWAPIResponse struct {
+		DtcTopologyRuleNoMethods
+
+		DestinationLink struct {
+			Ref     *string `json:"_ref,omitempty"`
+			Comment *string `json:"comment,omitempty"`
+			Name    *string `json:"name,omitempty"`
+		} `json:"destination_link"`
+	}
+
+	var resp dtcTopologyRuleWAPIResponse
+	if err := json.Unmarshal(data, &resp); err != nil {
+		return err
+	}
+	var decoded = DtcTopologyRule(resp.DtcTopologyRuleNoMethods)
+	*d = decoded // NOTE: `d = &decoded` would not work, because d is scoped to this method only
+	d.DestinationLink = resp.DestinationLink.Ref
+	return nil
+}
+
 // DtcTopology implementation
 
 func (d *DtcTopology) MarshalJSON() ([]byte, error) {
-	// correctly encode if rules is empty  (NOTE: copied from DtcServer)
+	// correctly encode if rules is empty  (NOTE: copied from DtcServer) // TODO: neccessary?
 	type Alias DtcTopology
 	aux := &struct {
 		Rules []*DtcTopologyRule `json:"rules"`
@@ -60,6 +87,8 @@ func NewDtcTopology(
 	DtcTopology.Ea = ea
 	return DtcTopology
 }
+
+// ObjectManager DtcTopology interface
 
 func (objMgr *ObjectManager) CreateDtcTopology(
 	comment string,
