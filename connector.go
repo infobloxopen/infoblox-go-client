@@ -497,13 +497,13 @@ var ValidateConnector = validateConnector
 
 func validateConnector(c *Connector) (err error) {
 	// GET UserProfile request is used here to validate connector's basic auth and reachability.
-	// TODO: It seems to be broken, needs to be fixed.
-	//var response []UserProfile
-	//userprofile := NewUserProfile(UserProfile{})
-	//err = c.GetObject(userprofile, "", &response)
-	//if err != nil {
-	//	log.Printf("Failed to connect to the Grid, err: %s \n", err)
-	//}
+	var response []UserProfile
+	userProfile := NewUserProfile(UserProfile{})
+	queryParams := NewQueryParams(false, map[string]string{})
+	err = c.GetObject(userProfile, "", queryParams, &response)
+	if err != nil {
+		log.Printf("Failed to connect to the Grid, err: %s \n", err)
+	}
 	return
 }
 
