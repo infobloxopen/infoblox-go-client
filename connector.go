@@ -56,7 +56,7 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 			return
 		}
 		if !caPool.AppendCertsFromPEM(cert) {
-			err = fmt.Errorf("cannot append certificate from file '%s'", sslVerify)
+			log.Printf("cannot append certificate from file '%s'", sslVerify)
 			return
 		}
 		cfg.certPool = caPool
