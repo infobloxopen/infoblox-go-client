@@ -36,7 +36,7 @@ type HostConfig struct {
 
 type TransportConfig struct {
 	SslVerify           bool
-	certPool            *x509.CertPool
+	CertPool            *x509.CertPool
 	HttpRequestTimeout  time.Duration // in seconds
 	HttpPoolConnections int
 	ProxyUrl            *url.URL
@@ -59,7 +59,7 @@ func NewTransportConfig(sslVerify string, httpRequestTimeout int, httpPoolConnec
 			err = fmt.Errorf("cannot append certificate from file '%s'", sslVerify)
 			return
 		}
-		cfg.certPool = caPool
+		cfg.CertPool = caPool
 		cfg.SslVerify = true
 	}
 
@@ -181,7 +181,7 @@ func (whr *WapiHttpRequestor) Init(authCfg AuthConfig, trCfg TransportConfig) {
 
 	tr := &http.Transport{
 		TLSClientConfig: &tls.Config{
-			RootCAs:            trCfg.certPool,
+			RootCAs:            trCfg.CertPool,
 			ClientAuth:         clientAuthType,
 			Certificates:       certList,
 			InsecureSkipVerify: !trCfg.SslVerify,
