@@ -26,6 +26,11 @@ type IBObjectManager interface {
 	CreateAliasRecord(name string, dnsView string, targetName string, targetType string, comment string, disable bool, ea EA, ttl uint32, useTtl bool) (*RecordAlias, error)
 	CreateDtcPool(comment string, name string, lbPreferredMethod string, lbDynamicRatioPreferred map[string]interface{}, servers []*DtcServerLink, monitors []Monitor, lbPreferredTopology *string, lbAlternateMethod string, lbAlternateTopology *string, lbDynamicRatioAlternate map[string]interface{}, eas EA, autoConsolidatedMonitors bool, userMonitors []map[string]interface{}, availability string, ttl uint32, useTTL bool, disable bool, quorum uint32) (*DtcPool, error)
 	CreateDtcServer(comment string, name string, host string, autoCreateHostRecord bool, disable bool, ea EA, monitors []map[string]interface{}, sniHostname string, useSniHostname bool) (*DtcServer, error)
+	CreateDtcMonitorHttp(comment, name string, eas EA, port, interval, retry_down, retry_up, timeout uint32,
+		ciphers, client_cert, content_check, content_check_input, content_check_op, content_check_regex string,
+		content_extract_group uint32, content_extract_type, content_extract_value string,
+		enable_sni bool, request, result string, result_code uint32, secure, validate_cert bool) (*DtcMonitorHttp, error)
+	CreateDtcMonitorIcmp(comment, name string, eas EA, interval, retry_down, retry_up, timeout uint32) (*DtcMonitorIcmp, error)
 	CreateNSRecord(name string, nameServer string, dnsView string, addresses []*ZoneNameServer, msDelegationName string) (*RecordNS, error)
 	CreateZoneAuth(fqdn string, ea EA) (*ZoneAuth, error)
 	CreateCNAMERecord(dnsview string, canonical string, recordname string, useTtl bool, ttl uint32, comment string, eas EA) (*RecordCNAME, error)
@@ -33,7 +38,7 @@ type IBObjectManager interface {
 	CreateDtcLbdn(name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
 	CreateZoneForward(comment string, disable bool, eas EA, forwardTo NullableNameServers, forwardersOnly bool, forwardingServers *NullableForwardingServers, fqdn string, nsGroup string, view string, zoneFormat string, externalNsGroup string) (*ZoneForward, error)
-	CreateHTTPSRecord(name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool , disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordHttps, error)
+	CreateHTTPSRecord(name string, priority uint32, targetName string, comment string, creator string, ddnsPrincipal string, ddnsProtected bool, disable bool, ea EA, forbidReclamation bool, svcParams []SVCParams, ttl uint32, useTtl bool, view string) (*RecordHttps, error)
 	CreateEADefinition(eadef EADefinition) (*EADefinition, error)
 	CreateHostRecord(enabledns bool, enabledhcp bool, recordName string, netview string, dnsview string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddr string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
 	CreateMXRecord(dnsView string, fqdn string, mx string, preference uint32, ttl uint32, useTtl bool, comment string, eas EA) (*RecordMX, error)
@@ -58,6 +63,7 @@ type IBObjectManager interface {
 	DeleteIpv4SharedNetwork(ref string) (string, error)
 	DeleteDtcPool(ref string) (string, error)
 	DeleteDtcServer(ref string) (string, error)
+	DeleteDtcMonitor(ref string) (string, error)
 	DeleteZoneAuth(ref string) (string, error)
 	DeleteZoneForward(ref string) (string, error)
 	DeleteCNAMERecord(ref string) (string, error)
@@ -95,6 +101,8 @@ type IBObjectManager interface {
 	GetDtcLbdnByRef(ref string) (*DtcLbdn, error)
 	GetDtcPoolByRef(ref string) (*DtcPool, error)
 	GetDtcServerByRef(ref string) (*DtcServer, error)
+	GetDtcMonitorHttpByRef(ref string) (*DtcMonitorHttp, error)
+	GetDtcMonitorIcmpByRef(ref string) (*DtcMonitorIcmp, error)
 	GetNetworkRangeByRef(ref string) (*Range, error)
 	GetNetworkRange(queryParams *QueryParams) ([]Range, error)
 	GetEADefinition(name string) (*EADefinition, error)
@@ -146,6 +154,11 @@ type IBObjectManager interface {
 	UpdateCNAMERecord(ref string, canonical string, recordName string, useTtl bool, ttl uint32, comment string, setEas EA) (*RecordCNAME, error)
 	UpdateDtcLbdn(ref string, name string, authZones []AuthZonesLink, comment string, disable bool, autoConsolidatedMonitors bool, ea EA,
 		lbMethod string, patterns []string, persistence uint32, pools []*DtcPoolLink, priority uint32, topology *string, types []string, ttl uint32, usettl bool) (*DtcLbdn, error)
+	UpdateDtcMonitorHttp(ref string, comment, name string, eas EA, port, interval, retry_down, retry_up, timeout uint32,
+		ciphers, client_cert, content_check, content_check_input, content_check_op, content_check_regex string,
+		content_extract_group uint32, content_extract_type, content_extract_value string,
+		enable_sni bool, request, result string, result_code uint32, secure, validate_cert bool) (*DtcMonitorHttp, error)
+	UpdateDtcMonitorIcmp(ref string, comment, name string, eas EA, interval, retry_down, retry_up, timeout uint32) (*DtcMonitorIcmp, error)
 	UpdateFixedAddress(fixedAddrRef string, netview string, name string, cidr string, ipAddr string, matchclient string, macOrDuid string, comment string, eas EA, agentCircuitId string, agentRemoteId string, clientIdentifierPrependZero *bool, dhcpClientIdentifier string, disable bool, Options []*Dhcpoption, useOptions bool) (*FixedAddress, error)
 	UpdateHostRecord(hostRref string, enabledns bool, enabledhcp bool, name string, netview string, dnsView string, ipv4cidr string, ipv6cidr string, ipv4Addr string, ipv6Addr string, macAddress string, duid string, useTtl bool, ttl uint32, comment string, eas EA, aliases []string, disable bool) (*HostRecord, error)
 	UpdateIpv4SharedNetwork(ref string, name string, networks []string, networkView string, comment string, eas EA, disable bool, useOptions bool, options []*Dhcpoption) (*SharedNetwork, error)
@@ -192,6 +205,8 @@ const (
 	DtcLbdnConst          = "DtcLbdn"
 	DtcPoolConst          = "DtcPool"
 	DtcServerConst        = "DtcServer"
+	DtcMonitorHttpConst   = "DtcMonitorHttp"
+	DtcMonitorIcmpConst   = "DtcMonitorIcmp"
 	NetworkRangeConst     = "Range"
 	FixedAddressConst     = "FixedAddress"
 	SharedNetworkConst    = "SharedNetwork"
@@ -302,6 +317,12 @@ var getRecordTypeMap = map[string]func(ref string) IBObject{
 		dtcServer := &DtcServer{}
 		dtcServer.SetReturnFields(append(dtcServer.ReturnFields(), "extattrs", "auto_create_host_record", "disable", "health", "monitors", "sni_hostname", "use_sni_hostname"))
 		return dtcServer
+	},
+	DtcMonitorHttpConst: func(ref string) IBObject {
+		return NewEmptyDtcMonitorHttp()
+	},
+	DtcMonitorIcmpConst: func(ref string) IBObject {
+		return NewEmptyDtcMonitorIcmp()
 	},
 	NetworkRangeConst: func(ref string) IBObject {
 		return NewEmptyRange()
@@ -540,6 +561,30 @@ var getObjectWithSearchFieldsMap = map[string]func(recordType IBObject, objMgr *
 		err := objMgr.connector.GetObject(NewEmptyDtcServer(), "", NewQueryParams(false, sf), &dtcServerList)
 		if err == nil && len(dtcServerList) > 0 {
 			res = dtcServerList[0]
+		}
+		return res, err
+	},
+	DtcMonitorHttpConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcMonitorHttp).Ref != "" {
+			return res, nil
+		}
+		var dtcMonitorList []*DtcMonitorHttp
+		err := objMgr.connector.GetObject(NewEmptyDtcMonitorHttp(), "", NewQueryParams(false, sf), &dtcMonitorList)
+		if err == nil && len(dtcMonitorList) > 0 {
+			res = dtcMonitorList[0]
+		}
+		return res, err
+	},
+	DtcMonitorIcmpConst: func(recordType IBObject, objMgr *ObjectManager, sf map[string]string) (interface{}, error) {
+		var res interface{}
+		if recordType.(*DtcMonitorIcmp).Ref != "" {
+			return res, nil
+		}
+		var dtcMonitorList []*DtcMonitorIcmp
+		err := objMgr.connector.GetObject(NewEmptyDtcMonitorIcmp(), "", NewQueryParams(false, sf), &dtcMonitorList)
+		if err == nil && len(dtcMonitorList) > 0 {
+			res = dtcMonitorList[0]
 		}
 		return res, err
 	},
