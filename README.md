@@ -54,6 +54,7 @@ This library is compatible with Go 1.25.8 or later.
             Password: "password",
          }
          transportConfig := ibclient.NewTransportConfig("false", 20, 10)
+         requestBuilder := &ibclient.WapiRequestBuilder{}
          requestor := &ibclient.WapiHttpRequestor{}
          conn, err := ibclient.NewConnector(hostConfig, authConfig, transportConfig, requestBuilder, requestor)
          if err != nil {
@@ -65,7 +66,9 @@ This library is compatible with Go 1.25.8 or later.
          fmt.Println(objMgr.GetGridLicense())
        } 
 
-   `PathPrefix` is optional and is useful when WAPI is published behind a gateway or reverse proxy. The value is a path component, not a complete URL; for example `/infoblox` produces request paths such as `/infoblox/wapi/v<version>/<resource>`.
+   `PathPrefix` is optional and is useful when WAPI is published behind a gateway or reverse proxy.
+   The value is a path component, not a complete URL; for example `/infoblox` produces request
+   paths such as `/infoblox/wapi/v<version>/<resource>`.
 
 ## Supported NIOS operations
 
