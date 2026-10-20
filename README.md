@@ -47,7 +47,6 @@ This library is compatible with Go 1.25.8 or later.
          	Host:    "<NIOS grid IP/FQDN>",
             Version: "<WAPI version>",
             Port:    "PORT",
-            PathPrefix: "",
          }
          authConfig := ibclient.AuthConfig{
             Username: "username",
@@ -66,9 +65,9 @@ This library is compatible with Go 1.25.8 or later.
          fmt.Println(objMgr.GetGridLicense())
        } 
 
-   `PathPrefix` is optional and is useful when WAPI is published behind a gateway or reverse proxy.
-   The value is a path component, not a complete URL; for example `/infoblox` produces request
-   paths such as `/infoblox/wapi/v<version>/<resource>`.
+   `HostConfig.PathPrefix` is optional and is useful when WAPI is published behind a gateway or
+   reverse proxy. The value is a path component, not a complete URL; for example `/infoblox`
+   produces request paths such as `/infoblox/wapi/v<version>/<resource>`.
 
 ## Supported NIOS operations
 
