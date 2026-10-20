@@ -97,6 +97,27 @@ var _ = Describe("Connector", func() {
 		}
 
 		Describe("BuildUrl", func() {
+			It("should normalize host path prefix", func() {
+				prefixes := []string{
+					"gateway/infoblox",
+					"/gateway/infoblox",
+					"gateway/infoblox/",
+					"/gateway/infoblox/",
+				}
+				expectedURLStr := fmt.Sprintf("https://%s:%s/gateway/infoblox/wapi/v%s/networkview",
+					host, port, version)
+
+				for _, prefix := range prefixes {
+					prefixedHostCfg := hostCfg
+					prefixedHostCfg.PathPrefix = prefix
+					prefixedWrb, err := NewWapiRequestBuilder(prefixedHostCfg, authCfg)
+					Expect(err).To(BeNil())
+
+					urlStr := prefixedWrb.BuildUrl(CREATE, "networkview", "", nil, nil)
+					Expect(urlStr).To(Equal(expectedURLStr))
+				}
+			})
+
 			Context("for CREATE request", func() {
 				objType := "networkview"
 				ref := ""
